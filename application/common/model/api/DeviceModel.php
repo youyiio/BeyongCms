@@ -1,15 +1,15 @@
 <?php
-namespace app\common\model;
+namespace app\common\model\api;
 
 use app\common\model\BaseModel;
-use think\Model;
 
 /**
  * 设备模型
  */
 class DeviceModel extends BaseModel
 {
-    protected $name = CMS_PREFIX . 'device';
+    protected $name = 'api_device';
+    protected $pk = 'device_id';
 
     protected $auto   = ['update_time'];
     protected $insert = ['create_time'];

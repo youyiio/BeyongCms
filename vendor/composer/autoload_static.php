@@ -11,22 +11,19 @@ class ComposerStaticInit7d8f984fb4e6efaf682511eaf628e454
         'c964ee0ededf28c96ebd9db5099ef910' => __DIR__ . '/..' . '/guzzlehttp/promises/src/functions_include.php',
         'a0edc8309cc5e1d60e3047b5df6b7052' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/functions_include.php',
         '667aeda72477189d0494fecd327c3641' => __DIR__ . '/..' . '/symfony/var-dumper/Resources/functions/dump.php',
-        '9b552a3cc426e3287cc811caefa3cf53' => __DIR__ . '/..' . '/topthink/think-helper/src/helper.php',
         '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
-        'bd9634f2d41831496de0d3dfe4c94881' => __DIR__ . '/..' . '/symfony/polyfill-php56/bootstrap.php',
+        '9b552a3cc426e3287cc811caefa3cf53' => __DIR__ . '/..' . '/topthink/think-helper/src/helper.php',
         '2c102faa651ef8ea5874edb585946bce' => __DIR__ . '/..' . '/swiftmailer/swiftmailer/lib/swift_required.php',
         'fe62ba7e10580d903cc46d808b5961a4' => __DIR__ . '/..' . '/tightenco/collect/src/Collect/Support/helpers.php',
         'caf31cc6ec7cf2241cb6f12c226c3846' => __DIR__ . '/..' . '/tightenco/collect/src/Collect/Support/alias.php',
-        'cc56288302d9df745d97c934d6a6e5f0' => __DIR__ . '/..' . '/topthink/think-queue/src/common.php',
         'aacd3c22afb916f0f9c4340e2a564b07' => __DIR__ . '/..' . '/cattong/think-addons/src/common.php',
         '1cfd2761b63b0a29ed23657ea394cb2d' => __DIR__ . '/..' . '/topthink/think-captcha/src/helper.php',
-        'ea51e7f80936725691663347d5b38bd9' => __DIR__ . '/..' . '/topthink/think-swoole/src/command.php',
+        'cc56288302d9df745d97c934d6a6e5f0' => __DIR__ . '/..' . '/topthink/think-queue/src/common.php',
     );
 
     public static $prefixLengthsPsr4 = array (
         't' => 
         array (
-            'think\\swoole\\' => 13,
             'think\\helper\\' => 13,
             'think\\composer\\' => 15,
             'think\\captcha\\' => 14,
@@ -40,21 +37,14 @@ class ComposerStaticInit7d8f984fb4e6efaf682511eaf628e454
         array (
             'app\\' => 4,
         ),
-        'X' => 
-        array (
-            'XCron\\' => 6,
-        ),
         'T' => 
         array (
             'Tightenco\\Collect\\' => 18,
         ),
         'S' => 
         array (
-            'Symfony\\Polyfill\\Util\\' => 22,
-            'Symfony\\Polyfill\\Php56\\' => 23,
             'Symfony\\Polyfill\\Mbstring\\' => 26,
             'Symfony\\Component\\VarDumper\\' => 28,
-            'SuperClosure\\' => 13,
         ),
         'Q' => 
         array (
@@ -63,7 +53,6 @@ class ComposerStaticInit7d8f984fb4e6efaf682511eaf628e454
         'P' => 
         array (
             'Psr\\Http\\Message\\' => 17,
-            'PhpParser\\' => 10,
         ),
         'J' => 
         array (
@@ -78,10 +67,6 @@ class ComposerStaticInit7d8f984fb4e6efaf682511eaf628e454
     );
 
     public static $prefixDirsPsr4 = array (
-        'think\\swoole\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/topthink/think-swoole/src',
-        ),
         'think\\helper\\' => 
         array (
             0 => __DIR__ . '/..' . '/topthink/think-helper/src',
@@ -109,21 +94,9 @@ class ComposerStaticInit7d8f984fb4e6efaf682511eaf628e454
         array (
             0 => __DIR__ . '/../..' . '/application',
         ),
-        'XCron\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/xavier/xcron-expression/src/Cron',
-        ),
         'Tightenco\\Collect\\' => 
         array (
             0 => __DIR__ . '/..' . '/tightenco/collect/src/Collect',
-        ),
-        'Symfony\\Polyfill\\Util\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/symfony/polyfill-util',
-        ),
-        'Symfony\\Polyfill\\Php56\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/symfony/polyfill-php56',
         ),
         'Symfony\\Polyfill\\Mbstring\\' => 
         array (
@@ -133,10 +106,6 @@ class ComposerStaticInit7d8f984fb4e6efaf682511eaf628e454
         array (
             0 => __DIR__ . '/..' . '/symfony/var-dumper',
         ),
-        'SuperClosure\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/jeremeamia/superclosure/src',
-        ),
         'QL\\' => 
         array (
             0 => __DIR__ . '/..' . '/jaeger/querylist/src',
@@ -144,10 +113,6 @@ class ComposerStaticInit7d8f984fb4e6efaf682511eaf628e454
         'Psr\\Http\\Message\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/http-message/src',
-        ),
-        'PhpParser\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/nikic/php-parser/lib/PhpParser',
         ),
         'Jaeger\\' => 
         array (

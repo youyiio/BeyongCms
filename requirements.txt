@@ -3,7 +3,7 @@
 composer create-project topthink/think Cms
 
 #更新框架
-composer update topthink/framework 5.1.x-dev
+composer update topthink/framework 5.1.x
 
 #验证码
 composer require topthink/think-captcha 2.x
@@ -34,6 +34,10 @@ composer require youyiio/think-oss
   #内部已依赖
   >composer require aliyuncs/oss-sdk-php
   >composer require qiniu/php-sdk
+
+#swoole 默认不安装
+composer require topthink/think-swoole v2.0.17
+  注意:swoole的Application需要继承\app\common\thinkphp\App
 
 #控制台常用操作
 >composer update  //整体依赖库更新

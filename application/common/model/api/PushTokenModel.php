@@ -1,12 +1,13 @@
 <?php
-namespace app\common\model;
+namespace app\common\model\api;
 
+use app\common\model\BaseModel;
 use app\common\library\Os;
 
-class UserPushTokenModel extends BaseModel
+class PushTokenModel extends BaseModel
 {
-    protected $name = CMS_PREFIX . 'user_push_token';
-    protected $pk = array('uid', 'access_id', 'device_id');
+    protected $name = 'api_push_token';
+    protected $pk = "id";
 
     const STATUS_LOGIN = 1;
     const STATUS_LOGOUT = 2;
@@ -16,22 +17,22 @@ class UserPushTokenModel extends BaseModel
     protected $insert = ['create_time'];
     protected $update = [];
 
-    public function createUserPushToken($userId, $accessId, $deviceId, $os, $pushToken)
+    public function createPushToken($uid, $accessId, $deviceId, $os, $pushToken)
     {
-        $userPushToken = $this->findByUserId($userId, $accessId, $deviceId);
+        $userPushToken = $this->findByUserId($uid, $accessId, $deviceId);
         if ($userPushToken) {
-            $data['uid'] = $userId;
+            $data['uid'] = $uid;
             $data['access_id'] = $accessId;
             $data['device_id'] = $deviceId;
-            $data['status'] = UserPushTokenModel::STATUS_LOGIN;
+            $data['status'] = PushTokenModel::STATUS_LOGIN;
             $data['push_token'] = $pushToken;
 
             $this->isUpdate(true)->save($data);
         } else {
-            $data['uid'] = $userId;
+            $data['uid'] = $uid;
             $data['access_id'] = $accessId;
             $data['device_id'] = $deviceId;
-            $data['status'] = UserPushTokenModel::STATUS_LOGIN;
+            $data['status'] = PushTokenModel::STATUS_LOGIN;
             $data['os'] = $os;
             $data['push_token'] = $pushToken;
 
@@ -42,15 +43,15 @@ class UserPushTokenModel extends BaseModel
         }
 
         //联合主键，find设置方法；顺序与pk字段一致
-        $pk = ['uid' => $userId, 'access_id' => $accessId, 'device_id' => $deviceId];
-        $userPushToken = UserPushTokenModel::get($pk);
+        $pk = ['uid' => $uid, 'access_id' => $accessId, 'device_id' => $deviceId];
+        $userPushToken = PushTokenModel::get($pk);
 
         return $userPushToken;
     }
 
-    public function findByUserId($userId, $accessId, $deviceId)
+    public function findByUserId($uid, $accessId, $deviceId)
     {
-        $where['uid'] = $userId;
+        $where['uid'] = $uid;
         $where['access_id'] = $accessId;
         $where['device_id'] = $deviceId;
 
@@ -62,12 +63,12 @@ class UserPushTokenModel extends BaseModel
         return $resultSet[0];
     }
 
-    public function logout($userId, $accessId, $deviceId)
+    public function logout($uid, $accessId, $deviceId)
     {
-        $data['uid'] = $userId;
+        $data['uid'] = $uid;
         $data['access_id'] = $accessId;
         $data['device_id'] = $deviceId;
-        $data['status'] = UserPushTokenModel::STATUS_LOGOUT;
+        $data['status'] = PushTokenModel::STATUS_LOGOUT;
 
         $count = $this->isUpdate(true)->save($data);
         if ($count < 1) {
@@ -77,20 +78,20 @@ class UserPushTokenModel extends BaseModel
         return true;
     }
 
-    public function getAndroidPushTokens($userId, $accessId = '')
+    public function getAndroidPushTokens($uid, $accessId = '')
     {
         if (empty($accessId)) {
             $accessId = config('middleware_access_id');
         }
         $where = [
-            'uid' => $userId,
+            'uid' => $uid,
             'access_id' => $accessId,
-            'status' => UserPushTokenModel::STATUS_LOGIN,
+            'status' => PushTokenModel::STATUS_LOGIN,
             'os' => Os::Android
         ];
 
-        $UserPushTokenModel = new UserPushTokenModel();
-        $resultSet = $UserPushTokenModel->where($where)->order('update_time desc')->select();
+        $PushTokenModel = new PushTokenModel();
+        $resultSet = $PushTokenModel->where($where)->order('update_time desc')->select();
         if (count($resultSet) == 0) {
             return false;
         }
@@ -106,12 +107,12 @@ class UserPushTokenModel extends BaseModel
         $where = [
             'uid' => $userId,
             'access_id' => $accessId,
-            'status' => UserPushTokenModel::STATUS_LOGIN,
+            'status' => PushTokenModel::STATUS_LOGIN,
             'os' => Os::iOS
         ];
 
-        $UserPushTokenModel = new UserPushTokenModel();
-        $resultSet = $UserPushTokenModel->where($where)->order('update_time desc')->select();
+        $PushTokenModel = new PushTokenModel();
+        $resultSet = $PushTokenModel->where($where)->order('update_time desc')->select();
         if (count($resultSet) == 0) {
             return false;
         }
@@ -119,5 +120,3 @@ class UserPushTokenModel extends BaseModel
         return $resultSet;
     }
 }
-
-?>
