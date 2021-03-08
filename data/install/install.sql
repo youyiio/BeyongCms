@@ -136,7 +136,7 @@ create table api_config_access
    primary key (access_id)
 )
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4;
+DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
 alter table api_config_access comment '访问配置表';
 
@@ -161,7 +161,7 @@ create table api_device
    primary key (device_id)
 )
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4;
+DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
 alter table api_device comment '设备信息表';
 
@@ -182,7 +182,7 @@ create table api_push_token
    primary key (id)
 )
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4;
+DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
 alter table api_push_token comment '推送token表';
 
@@ -203,7 +203,7 @@ create table api_token
    primary key (id)
 )
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4;
+DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
 alter table api_token comment 'token表';
 
@@ -234,7 +234,7 @@ create table cms_action_log
    primary key (id)
 )
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4;
+DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
 alter table cms_action_log comment '操作日志表';
 
@@ -269,7 +269,7 @@ create table cms_ad
    primary key (id)
 )
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4;
+DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
 alter table cms_ad comment '广告表';
 
@@ -290,7 +290,7 @@ create table cms_ad_serving
    primary key (id)
 )
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4;
+DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
 alter table cms_ad_serving comment '广告投放表,';
 
@@ -306,7 +306,7 @@ create table cms_ad_slot
    primary key (id)
 )
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4;
+DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
 alter table cms_ad_slot comment '广告槽位表';
 
@@ -328,7 +328,7 @@ create table cms_addons
    primary key (id)
 )
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4;
+DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
 alter table cms_addons comment '插件表';
 
@@ -365,7 +365,7 @@ create table cms_article
    primary key (id)
 )
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4;
+DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
 alter table cms_article comment '文章表';
 
@@ -424,7 +424,7 @@ create table cms_article_data
    primary key (id)
 )
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4;
+DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
 alter table cms_article_data comment '文章相关表';
 
@@ -466,7 +466,7 @@ create table cms_article_meta
    primary key (id)
 )
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4;
+DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
 alter table cms_article_meta comment '文章meta表';
 
@@ -506,7 +506,7 @@ create table cms_auth_group
    primary key (id)
 )
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4;
+DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
 alter table cms_auth_group comment '分组表';
 
@@ -520,7 +520,7 @@ create table cms_auth_group_access
    primary key (uid, group_id)
 )
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4;
+DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
 alter table cms_auth_group_access comment '分组访问表';
 
@@ -543,7 +543,7 @@ create table cms_auth_rule
    primary key (id)
 )
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4;
+DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
 alter table cms_auth_rule comment '规则表';
 
@@ -563,7 +563,7 @@ create table cms_category
    primary key (id)
 )
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4;
+DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
 alter table cms_category comment '分类表';
 
@@ -578,7 +578,7 @@ create table cms_category_article
    primary key (id)
 )
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4;
+DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
 /*==============================================================*/
 /* Index: idx_category_article_cid                              */
@@ -615,7 +615,7 @@ create table cms_comment
    primary key (id)
 )
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4;
+DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
 alter table cms_comment comment '评论表';
 
@@ -641,7 +641,7 @@ create table cms_config
    primary key (name)
 )
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4;
+DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
 alter table cms_config comment '配置表';
 
@@ -673,7 +673,7 @@ create table cms_crawler
    primary key (id)
 )
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4;
+DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
 alter table cms_crawler comment '采集规则表';
 
@@ -692,12 +692,12 @@ create table cms_crawler_meta
    primary key (id)
 )
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4;
+DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
 alter table cms_crawler_meta comment '采集元数据表';
 
 /*==============================================================*/
-/* Index: idx_crawler_meta_target_id_meta_key                         */
+/* Index: idx_crawler_meta_target_id_meta_key                   */
 /*==============================================================*/
 create index idx_crawler_meta_target_id_meta_key on cms_crawler_meta
 (
@@ -725,7 +725,7 @@ create table cms_feedback
    primary key (id)
 )
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4;
+DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
 alter table cms_feedback comment '意见反馈表';
 
@@ -734,7 +734,7 @@ alter table cms_feedback comment '意见反馈表';
 /*==============================================================*/
 create table cms_file
 (
-   id              int not null auto_increment,
+   id                   int not null auto_increment,
    file_url             varchar(256) not null,
    file_path            varchar(256) not null default '0' comment 'file_ulr所在目录',
    file_name            varchar(128) not null,
@@ -746,7 +746,7 @@ create table cms_file
    primary key (id)
 )
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4;
+DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
 alter table cms_file comment '文件表';
 
@@ -766,7 +766,7 @@ create table cms_hooks
    primary key (id)
 )
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4;
+DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
 alter table cms_hooks comment '钩子表';
 
@@ -775,7 +775,7 @@ alter table cms_hooks comment '钩子表';
 /*==============================================================*/
 create table cms_image
 (
-   id             int not null auto_increment,
+   id                   int not null auto_increment,
    thumb_image_url      varchar(256) not null,
    image_url            varchar(256) not null default '0',
    thumb_image_size     int,
@@ -787,12 +787,12 @@ create table cms_image
    primary key (id)
 )
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4;
+DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
 alter table cms_image comment '图片表';
 
 /*==============================================================*/
-/* Table: cms_link                                             */
+/* Table: cms_link                                              */
 /*==============================================================*/
 create table cms_link
 (
@@ -800,12 +800,12 @@ create table cms_link
    title                varchar(128) not null,
    url                  varchar(256) not null,
    sort                 int not null default 0,
-   status               tinyint(4) not null default 1,
+   status               tinyint not null default 1,
    create_time          datetime not null,
    primary key (id)
 )
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4;
+DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
 alter table cms_link comment '链接';
 
@@ -829,7 +829,7 @@ create table cms_message
    primary key (id)
 )
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4;
+DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
 alter table cms_message comment '消息表';
 
@@ -870,7 +870,7 @@ create table cms_region
    primary key (id)
 )
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4;
+DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
 alter table cms_region comment '地区表,';
 
@@ -902,7 +902,7 @@ create table cms_user
    primary key (id)
 )
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4;
+DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
 alter table cms_user comment '用户信息表';
 
@@ -944,7 +944,7 @@ create table cms_user_meta
    primary key (id)
 )
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4;
+DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
 alter table cms_user_meta comment '用户元数据表';
 
@@ -972,7 +972,7 @@ create table cms_user_verify_code
    primary key (id)
 )
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4;
+DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
 alter table cms_user_verify_code comment '验证码表';
 
