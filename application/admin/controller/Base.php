@@ -27,8 +27,8 @@ class Base extends Controller
         $this->uid = $uid;
 
         //实现用户单个端登录，方法: 通过判断cookie和服务器cache的login_hash值
-        $localLoginHash = cookie($uid . '_login_hash');
-        $cacheLoginHash = cache($uid . '_login_hash');
+        $localLoginHash = cookie($uid . CACHE_SEPARATOR . 'login_hash');
+        $cacheLoginHash = cache($uid . CACHE_SEPARATOR . 'login_hash');
         if ($localLoginHash != $cacheLoginHash) {
             if (request()->isAjax()) {
                 $this->error('请重新登陆', url(request()->module() . '/Sign/index'));

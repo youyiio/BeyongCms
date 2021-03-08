@@ -111,8 +111,8 @@ class Sign extends Controller
         if ($this->defaultConfig['login_multi_client_support'] !== true) {
             //生成login_hash
             $loginHash = uniqid(rand(1000000, 99999999));
-            cookie($uid . '_login_hash', $loginHash);
-            cache($uid . '_login_hash', $loginHash);
+            cookie($uid . CACHE_SEPARATOR . 'login_hash', $loginHash);
+            cache($uid . CACHE_SEPARATOR . 'login_hash', $loginHash);
         }
 
         cookie('username', $username, 3600 * 24 * 15);  //保存用户名在cookie
@@ -358,11 +358,11 @@ class Sign extends Controller
 
         //清除cookie
         cookie('uid', null);
-        cookie($uid . '_login_hash',null);
+        cookie($uid . CACHE_SEPARATOR . 'login_hash',null);
 
         //清理相关缓存
         cache($uid . '_menu', null);
-        cache($uid . '_login_hash', null);
+        cache($uid . CACHE_SEPARATOR . 'login_hash', null);
 
         $this->redirect($this->defaultConfig['logout_success_view']);
     }
