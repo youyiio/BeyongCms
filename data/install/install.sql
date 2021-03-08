@@ -801,7 +801,7 @@ create table cms_link
    url                  varchar(256) not null,
    sort                 int not null default 0,
    status               tinyint(4) not null default 1,
-   create_time          datetime not null
+   create_time          datetime not null,
    primary key (id)
 )
 ENGINE = InnoDB
