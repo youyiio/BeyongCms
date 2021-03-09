@@ -1179,7 +1179,7 @@ INSERT INTO `cms_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`con
 INSERT INTO `cms_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongto) VALUES (7195, 71, '文章访问量统计图', 'admin/Article/echartShow', '', 1, 0, 1, 1,'','admin');
 INSERT INTO `cms_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongto) VALUES (7196, 71, '批量修改分类', 'admin/Article/batchCategory', '', 1, 0, 1, 1,'','admin');
 INSERT INTO `cms_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongto) VALUES (72, 7, '评论管理', 'admin/Article/commentList', '', 1, 1, 1, 1,'','admin');
-INSERT INTO `cms_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongto) VALUES (721, 72, '审核评论', 'admin/Article/auditComment', '', 1, 1, 1, 1,'','admin');
+INSERT INTO `cms_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongto) VALUES (721, 72, '审核评论', 'admin/Article/auditComment', '', 1, 0, 1, 1,'','admin');
 INSERT INTO `cms_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongto) VALUES (722, 72, '回发评论', 'admin/Article/postComment', '', 1, 0, 1, 1,'','admin');
 INSERT INTO `cms_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongto) VALUES (723, 72, '删除评论', 'admin/Article/deleteComment', '', 1, 0, 1, 1,'','admin');
 INSERT INTO `cms_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongto) VALUES (724, 72, '查看评论', 'admin/Article/viewComments', '', 1, 0, 1, 1,'','admin');
