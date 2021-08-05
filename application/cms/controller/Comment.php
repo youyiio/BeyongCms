@@ -8,8 +8,8 @@
 
 namespace app\cms\controller;
 
-use app\common\model\ArticleModel;
-use app\common\model\CommentModel;
+use app\common\model\cms\ArticleModel;
+use app\common\model\cms\CommentModel;
 use app\common\model\MessageModel;
 use app\common\model\UserModel;
 

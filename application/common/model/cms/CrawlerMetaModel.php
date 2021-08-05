@@ -1,13 +1,8 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: cattong
- * Date: 2019-03-19
- * Time: 18:10
- */
+namespace app\common\model\cms;
 
-namespace app\common\model;
-
+use app\common\model\BaseModel;
+use app\common\model\BaseMetaModel;
 
 class CrawlerMetaModel extends BaseMetaModel
 {

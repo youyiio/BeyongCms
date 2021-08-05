@@ -7,9 +7,9 @@
  */
 namespace app\cms\controller;
 
-use app\common\model\ArticleModel;
+use app\common\model\cms\ArticleModel;
 
-use app\common\model\CategoryModel;
+use app\common\model\cms\CategoryModel;
 use think\facade\Env;
 use think\facade\Log;
 use XMLWriter;

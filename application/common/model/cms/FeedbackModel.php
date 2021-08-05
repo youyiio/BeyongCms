@@ -1,12 +1,7 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: cattong
- * Date: 2017-07-06
- * Time: 10:30
- */
+namespace app\common\model\cms;
 
-namespace app\common\model;
+use app\common\model\BaseModel;
 
 
 class FeedbackModel extends BaseModel

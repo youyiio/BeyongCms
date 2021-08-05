@@ -9,7 +9,7 @@
 namespace app\common\logic;
 
 
-use app\common\model\AdModel;
+use app\common\model\cms\AdModel;
 use think\Model;
 
 class AdLogic extends Model

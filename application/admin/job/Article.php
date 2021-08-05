@@ -11,9 +11,9 @@ namespace app\admin\job;
 use think\queue\Job;
 use think\facade\Log;
 
-use app\common\model\ArticleModel;
-use app\common\model\ArticleDataModel;
-use app\common\model\ArticleMetaModel;
+use app\common\model\cms\ArticleModel;
+use app\common\model\cms\ArticleDataModel;
+use app\common\model\cms\ArticleMetaModel;
 
 class Article
 {

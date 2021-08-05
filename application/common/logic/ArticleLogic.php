@@ -9,7 +9,7 @@
 namespace app\common\logic;
 
 
-use app\common\model\ArticleModel;
+use app\common\model\cms\ArticleModel;
 use think\Model;
 
 class ArticleLogic extends Model

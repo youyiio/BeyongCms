@@ -1,13 +1,8 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: cattong
- * Date: 2018-11-22
- * Time: 18:24
- */
+namespace app\common\model\cms;
 
-namespace app\common\model;
-
+use app\common\model\BaseModel;
+use app\common\model\BaseMetaModel;
 
 class ArticleMetaModel extends BaseMetaModel
 {

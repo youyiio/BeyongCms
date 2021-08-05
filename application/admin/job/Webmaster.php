@@ -11,8 +11,8 @@ namespace app\admin\job;
 use think\facade\Log;
 use think\queue\Job;
 
-use app\common\model\ArticleModel;
-use app\common\model\ArticleMetaModel;
+use app\common\model\cms\ArticleModel;
+use app\common\model\cms\ArticleMetaModel;
 
 use QL\QueryList;
 

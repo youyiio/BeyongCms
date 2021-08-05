@@ -98,7 +98,7 @@
                             <td>{$vo.crawlerMeta.crawler.title|default=""}</td>
                             <td>{$vo.title}</td>
                             <td>{$vo.status_text}</td>
-                            <td>{if $vo.status == \app\common\model\ArticleModel::STATUS_PUBLISHED}
+                            <td>{if $vo.status == \app\common\model\cms\ArticleModel::STATUS_PUBLISHED}
                                 {$vo.post_time}
                                 {else /}
                                 {notempty name="$vo.timing"}{$vo.timing}<i class="fa fa-clock-o"></i>{/notempty}

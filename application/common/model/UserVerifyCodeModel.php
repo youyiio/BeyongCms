@@ -4,7 +4,7 @@ namespace app\common\model;
 
 class UserVerifyCodeModel extends BaseModel
 {
-    protected $name = CMS_PREFIX . 'user_verify_code';
+    protected $name = 'sys_user_verify_code';
     protected  $pk = 'id';
 
     const STATUS_UNUSED = 1; //未使用

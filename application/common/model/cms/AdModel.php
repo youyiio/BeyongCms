@@ -1,14 +1,14 @@
 <?php
-namespace app\common\model;
+namespace app\common\model\cms;
 
-use think\Model;
+use app\common\model\BaseModel;
 
 /**
 *   广告模型
 */
 class AdModel extends BaseModel
 {
-    protected $name = CMS_PREFIX. 'ad';
+    protected $name = CMS_PREFIX . 'ad';
 
     const TYPE_HEADLINE = 1; //首页滚动图
     const TYPE_BANNER = 2;   //banner广告图
@@ -41,7 +41,7 @@ class AdModel extends BaseModel
     //关联表:图片
     public function image()
     {
-        return $this->hasOne('ImageModel','id','image_id');
+        return $this->hasOne('app\common\model\ImageModel','id','image_id');
     }
 
     //关联表:投放时间段

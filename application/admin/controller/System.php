@@ -2,9 +2,9 @@
 namespace app\admin\controller;
 
 use app\common\model\ActionLogModel;
-use app\common\model\CategoryModel;
+use app\common\model\cms\CategoryModel;
 use app\common\model\ConfigModel;
-use app\common\model\LinkModel;
+use app\common\model\cms\LinkModel;
 use think\Controller;
 use think\Db;
 use think\facade\Cache;

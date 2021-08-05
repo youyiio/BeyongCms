@@ -8,7 +8,7 @@
 
 namespace app\admin\job;
 
-use app\common\model\CrawlerMetaModel;
+use app\common\model\cms\CrawlerMetaModel;
 use think\facade\Env;
 use think\facade\Log;
 use think\queue\Job;
@@ -16,8 +16,8 @@ use think\Queue;
 
 use QL\QueryList;
 
-use app\common\model\CrawlerModel;
-use app\common\model\ArticleModel;
+use app\common\model\cms\CrawlerModel;
+use app\common\model\cms\ArticleModel;
 
 //采集抓取任务
 class Crawler

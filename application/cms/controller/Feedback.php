@@ -8,7 +8,7 @@
 
 namespace app\cms\controller;
 
-use app\common\model\FeedbackModel;
+use app\common\model\cms\FeedbackModel;
 use app\common\model\UserModel;
 
 /**

@@ -1,15 +1,15 @@
 <?php
 namespace app\admin\controller;
 
-use app\common\model\AdServingModel;
-use app\common\model\AdModel;
-use app\common\model\AdSlotModel;
-use app\common\model\ArticleMetaModel;
-use app\common\model\CommentModel;
+use app\common\model\cms\AdServingModel;
+use app\common\model\cms\AdModel;
+use app\common\model\cms\AdSlotModel;
+use app\common\model\cms\ArticleMetaModel;
+use app\common\model\cms\CommentModel;
 use app\common\model\MessageModel;
 use app\common\model\UserModel;
-use app\common\model\ArticleModel;
-use app\common\model\CategoryModel;
+use app\common\model\cms\ArticleModel;
+use app\common\model\cms\CategoryModel;
 use think\facade\Cookie;
 
 /**

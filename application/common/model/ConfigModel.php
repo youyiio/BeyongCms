@@ -13,6 +13,6 @@ use think\Model;
 
 class ConfigModel extends Model
 {
-    protected $name = CMS_PREFIX . 'config';
+    protected $name = 'sys_config';
     protected $pk = 'name';
 }

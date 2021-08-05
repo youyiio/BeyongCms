@@ -1,5 +1,7 @@
 <?php
-namespace app\common\model;
+namespace app\common\model\cms;
+
+use app\common\model\BaseModel;
 
 use think\facade\Log;
 use think\facade\Cache;
@@ -141,7 +143,7 @@ class ArticleModel extends BaseModel
     //关联表：缩略图
     public function thumbImage()
     {
-        return $this->hasOne('ImageModel', 'id', 'thumb_image_id');
+        return $this->hasOne('app\common\model\ImageModel', 'id', 'thumb_image_id');
     }
 
     //关联表：文章分类

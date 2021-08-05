@@ -13,8 +13,8 @@ use think\facade\Log;
 use think\helper\Time;
 use think\queue\Job;
 
-use app\common\model\ArticleModel;
-use app\common\model\ArticleMetaModel;
+use app\common\model\cms\ArticleModel;
+use app\common\model\cms\ArticleMetaModel;
 
 /**
  * 搜索引擎收录业务逻辑及job入口

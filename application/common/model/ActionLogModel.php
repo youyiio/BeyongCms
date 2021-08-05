@@ -13,7 +13,7 @@ namespace app\common\model;
  */
 class ActionLogModel extends BaseModel
 {
-    protected $name =  CMS_PREFIX . 'action_log';
+    protected $name = 'sys_action_log';
     protected $pk = 'id';
 
     const ACTION_LOGIN = 'login'; //登录

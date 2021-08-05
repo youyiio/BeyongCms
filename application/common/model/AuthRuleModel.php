@@ -2,13 +2,14 @@
 namespace app\common\model;
 
 use think\facade\Env;
+use think\facade\Cache;
 
 /**
  * 权限规则model
  */
 class AuthRuleModel extends BaseModel
 {
-    protected $name = CMS_PREFIX . 'auth_rule';
+    protected $name = 'sys_auth_rule';
 
     public static function init()
     {

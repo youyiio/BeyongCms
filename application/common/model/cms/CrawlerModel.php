@@ -1,13 +1,7 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Administrator
- * Date: 2018/10/23
- * Time: 11:17
- */
-namespace app\common\model;
+namespace app\common\model\cms;
 
-use think\Model;
+use app\common\model\BaseModel;
 
 class CrawlerModel extends BaseModel
 {

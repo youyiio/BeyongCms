@@ -13,7 +13,7 @@ use think\Model;
 
 class FileModel extends Model
 {
-    protected $name = CMS_PREFIX . 'file';
+    protected $name = 'sys_file';
 
     protected $pk = 'id';
 

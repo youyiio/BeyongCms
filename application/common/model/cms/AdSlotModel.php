@@ -1,12 +1,7 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: cattong
- * Date: 2018-01-26
- * Time: 16:30
- */
+namespace app\common\model\cms;
 
-namespace app\common\model;
+use app\common\model\BaseModel;
 
 
 class AdSlotModel extends BaseModel

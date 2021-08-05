@@ -11,7 +11,7 @@ namespace app\common\model;
 
 class HooksModel extends BaseModel
 {
-    protected $name = CMS_PREFIX . 'hooks';
+    protected $name = 'sys_hooks';
 
     const STATUS_REMOVED = -1;
     const STATUS_INSTALLING = 0;

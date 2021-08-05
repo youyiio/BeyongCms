@@ -1,17 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: cattong
- * Date: 2018-03-05
- * Time: 11:31
- */
+namespace app\common\model\cms;
 
-namespace app\common\model;
-
-
+use app\common\model\BaseModel;
 use think\Model;
 
-class AdServingModel extends Model
+class AdServingModel extends BaseModel
 {
     protected $name = CMS_PREFIX . 'ad_serving';
 

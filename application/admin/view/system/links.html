@@ -51,7 +51,7 @@
                                 <td>{$vo.title}</td>
                                 <td>{$vo.url}</td>
                                 <td>
-                                    <input type="checkbox" name="status[]" value="{$vo.id}" class="ajax-switch" {if $vo.status == \app\common\model\LinkModel::STATUS_ONLINE}checked="checked"{/if} >
+                                    <input type="checkbox" name="status[]" value="{$vo.id}" class="ajax-switch" {if $vo.status == \app\common\model\cms\LinkModel::STATUS_ONLINE}checked="checked"{/if} >
                                 </td>
                                 <td>
                                     <a href="javascript:;" data-id="{$vo['id']}" data-title="{$vo['title']}" data-url="{$vo['url']}" data-sort="{$vo['sort']}" onclick="edit(this)">修改</a> |

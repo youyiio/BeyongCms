@@ -1,7 +1,7 @@
 <?php
 namespace app\cms\controller;
 
-use app\common\model\ArticleModel;
+use app\common\model\cms\ArticleModel;
 
 class Index extends Base
 {

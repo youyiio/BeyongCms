@@ -1,7 +1,7 @@
 <?php
-namespace app\common\model;
+namespace app\common\model\cms;
 
-use think\Model;
+use app\common\model\BaseModel;
 
 class CategoryModel extends BaseModel
 {
