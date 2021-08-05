@@ -19,7 +19,7 @@ class Rule extends Base
     public function index()
     {
         $AuthRuleModel = new AuthRuleModel();
-        $data = $AuthRuleModel->getTreeDataBelongto('tree', 'id','title', 'id', 'pid', 'admin');
+        $data = $AuthRuleModel->getTreeDataBelongsTo('tree', 'id','title', 'id', 'pid', 'admin');
 
         $this->assign('data', $data);
         return $this->fetch('index');

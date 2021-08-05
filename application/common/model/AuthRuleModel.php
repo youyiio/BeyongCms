@@ -49,16 +49,16 @@ class AuthRuleModel extends BaseModel
      * @param string $name 值对应的列名
      * @param string $fieldPK 主键列名
      * @param string $filedPid 父节点的列名
-     * @param string $belongto 归属标识
+     * @param string $belongsTo 归属标识
      * @return array|\PDOStatement|string|\think\Collection 结构数据[
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    public function getTreeDataBelongto($type='tree', $order='sort', $name='name', $fieldPK='id', $filedPid='pid', $belongto='')
+    public function getTreeDataBelongsTo($type='tree', $order='sort', $name='name', $fieldPK='id', $filedPid='pid', $belongsTo='')
     {
         $where = [
-            'belongto' => $belongto
+            'belongs_to' => $belongsTo
         ];
         // 判断是否需要排序
         if (empty($order)) {

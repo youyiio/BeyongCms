@@ -66,7 +66,7 @@ class Base extends Controller
             $menus = Cache::get($uid . '_menu');
         } else {
             $AuthRuleModel = new AuthRuleModel();
-            $menus = $AuthRuleModel->getTreeDataBelongto('level', 'sort, id', 'name', 'id', 'pid', 'admin');
+            $menus = $AuthRuleModel->getTreeDataBelongsTo('level', 'sort, id', 'name', 'id', 'pid', 'admin');
             Cache::set($uid . '_menu', $menus);
         }
 

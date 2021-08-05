@@ -15,3 +15,21 @@ ALTER TABLE cms_region rename to sys_region;
 ALTER TABLE cms_user rename to sys_user;
 ALTER TABLE cms_user_meta rename to sys_user_meta;
 ALTER TABLE cms_user_verify_code rename to sys_user_verify_code;
+
+
+ALTER TABLE `api_config_access` 
+DROP COLUMN `xg_app_id`,
+DROP COLUMN `xg_app_key`,
+DROP COLUMN `xg_app_secret`,
+DROP COLUMN `mi_app_id`,
+DROP COLUMN `mi_app_key`,
+DROP COLUMN `mi_app_secret`;
+
+ALTER TABLE `sys_config` 
+ADD COLUMN `id` int(0) NOT NULL AUTO_INCREMENT COMMENT '序号' FIRST,
+DROP PRIMARY KEY,
+ADD PRIMARY KEY (`id`) USING BTREE,
+ADD UNIQUE INDEX `uniq_config_name`(`name`) USING BTREE;
+
+ALTER TABLE `sys_auth_rule` 
+CHANGE COLUMN `belongto` `belongs_to` varchar(16) NULL DEFAULT NULL AFTER `condition`;
