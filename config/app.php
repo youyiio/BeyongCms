@@ -52,7 +52,7 @@ return [
     'controller_suffix'      => false,
 
     // 默认模块名
-    'default_module'         => 'cms',
+    'default_module'         => 'frontend',
     // 禁止访问模块
     'deny_module_list'       => ['common'],
     // 默认控制器名

@@ -160,7 +160,7 @@ class ArticleModel extends BaseModel
     //关联表：用户
     protected function user()
     {
-        return $this->belongsTo('UserModel', 'uid');
+        return $this->belongsTo('\app\common\model\UserModel', 'uid');
     }
 
     //关联表：评论
