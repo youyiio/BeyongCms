@@ -1023,7 +1023,7 @@ VALUES
 truncate table sys_auth_rule;
 
 #控制面板,首页等进入页面,(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongs_to)
-INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongs_to) VALUES (1, 0, '后台面板', 'admin/ShowNav/Index', 'fa-th-large', 1, 1, 1, 1,'','admin');
+INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongs_to) VALUES (1, 0, '综合面板', 'admin/ShowNav/Index', 'fa-th-large', 1, 1, 1, 1,'','admin');
 INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongs_to) VALUES (11, 1, '后台主框架', 'admin/Index/index', '', 1, 0, 1, 1,'','admin');
 INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongs_to) VALUES (111, 11, '面板消息', 'admin/Message/index', '', 1, 0, 1, 1,'','admin');
 INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongs_to) VALUES (12, 1, '欢迎页面', 'admin/Index/welcome', '', 1, 0, 1, 1,'','admin');
