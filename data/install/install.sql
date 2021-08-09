@@ -998,15 +998,14 @@ INSERT INTO `sys_config`(name,value,remark,value_type,tab,sort) VALUES ('ali_end
 INSERT INTO `sys_config`(name,value,remark,value_type,tab,sort) VALUES ('ali_key_id', '阿里云key id', '阿里Access Key ID', 'text', 'aliyun_oss', 3);
 INSERT INTO `sys_config`(name,value,remark,value_type,tab,sort) VALUES ('ali_key_secret', '阿里云key secret', '阿里Access Key Secret', 'text', 'aliyun_oss', 4);
 INSERT INTO `sys_config`(name,value,remark,value_type,tab,sort) VALUES ('ali_url', '阿里云oss域名地址', '阿里oss 访问的地址', 'text', 'aliyun_oss', 5);
-INSERT INTO `sys_config`(name,value,remark,value_type,tab,sort) VALUES ('qiniu_bucket', 'Bucket名称', '七牛oss Bucket', 'text', 'qiniuyun_oss', 3);
-INSERT INTO `sys_config`(name,value,remark,value_type,tab,sort) VALUES ('qiniu_key_id', '', '七牛oss Accesskey', 'text', 'qiniuyun_oss', 1);
-INSERT INTO `sys_config`(name,value,remark,value_type,tab,sort) VALUES ('qiniu_key_secret', '', '七牛oss Secretkey', 'text', 'qiniuyun_oss', 2);
+INSERT INTO `sys_config`(name,value,remark,value_type,tab,sort) VALUES ('qiniu_bucket', 'Bucket名称', '七牛oss Bucket', 'text', 'qiniuyun_oss', 1);
+INSERT INTO `sys_config`(name,value,remark,value_type,tab,sort) VALUES ('qiniu_key_id', '七牛oss Accesskey', '七牛oss Accesskey', 'text', 'qiniuyun_oss', 2);
+INSERT INTO `sys_config`(name,value,remark,value_type,tab,sort) VALUES ('qiniu_key_secret', '七牛oss Secretkey', '七牛oss Secretkey', 'text', 'qiniuyun_oss', 3);
 INSERT INTO `sys_config`(name,value,remark,value_type,tab,sort) VALUES ('qiniu_url', '七牛域名地址', '七牛oss 访问的地址', 'text', 'qiniuyun_oss', 4);
 
 #百度站长资源push
-INSERT INTO `sys_config`(name,value,remark,value_type,tab,sort) VALUES ('zhanzhang_site', '', '站长域名', 'text', '', 0);
-INSERT INTO `sys_config`(name,value,remark,value_type,tab,sort) VALUES ('zhanzhang_token', '', '', '站长token', 'text', 0);
-
+INSERT INTO `sys_config`(name,value,remark,value_type,tab,sort) VALUES ('zhanzhang_site', '站长域名', '', 'text', 'zhanzhang', 1);
+INSERT INTO `sys_config`(name,value,remark,value_type,tab,sort) VALUES ('zhanzhang_token', '站长token', '', 'text', 'zhanzhang', 2);
 
 /* ================================================================================================*/
 /* ============================================数据初始脚本：用户表================================*/
