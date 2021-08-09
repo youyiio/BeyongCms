@@ -18,5 +18,12 @@ return [
     'index/contact' => ['frontend/Index/contact', ['method'=>'get']],
     'index/:name' => ['frontend/Index/__extPage', ['method'=>'get']], //可动态扩充页面
 
+    //用户操作
+    'sign/index' => ['frontend/Sign/index', ['method'=>'get,post']],
+    'sign/login' => ['frontend/Sign/login', ['method'=>'get,post']],
+    'sign/register' => ['frontend/Sign/register', ['method'=>'get,post']],
+    'sign/logout' => ['frontend/Sign/logout', ['method'=>'get,post']],
+    'sign/forget' => ['frontend/Sign/forget', ['method'=>'get,post']],
+
     /*****************frontend 通用路由 end*******************/
 ];

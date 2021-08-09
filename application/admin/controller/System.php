@@ -27,7 +27,7 @@ class System extends Base
 
             $ConfigModel = new ConfigModel();
             foreach ($data as $k => $v) {
-                if (ConfigModel::get($k)) {
+                if ($ConfigModel->where('name', $k)->select()) {
                     $ConfigModel->where('name', $k)->setField('value', $v);
                 } else {
                     $ConfigModel->save(['name' => $k, 'value' => $v]);
@@ -61,7 +61,7 @@ class System extends Base
 
             $ConfigModel = new ConfigModel();
             foreach ($data as $k => $v) {
-                if (ConfigModel::get($k)) {
+                if ($ConfigModel->where('name', $k)->select()) {
                     $ConfigModel->where('name', $k)->setField('value', $v);
                 } else {
                     $ConfigModel->save(['name' => $k, 'value' => $v]);

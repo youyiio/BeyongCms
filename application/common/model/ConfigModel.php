@@ -14,5 +14,5 @@ use think\Model;
 class ConfigModel extends Model
 {
     protected $name = 'sys_config';
-    protected $pk = 'name';
+    protected $pk = 'id';
 }
