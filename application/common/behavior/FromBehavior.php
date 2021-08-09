@@ -1,5 +1,5 @@
 <?php
-namespace app\cms\behavior;
+namespace app\common\behavior;
 
 use think\facade\Request;
 use think\facade\Cookie;

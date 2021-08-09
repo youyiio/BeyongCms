@@ -21,7 +21,7 @@ return [
     'action_begin' => [
         'app\\common\\behavior\\SpiderBehavior',
         'app\\common\\behavior\\LogBehavior',
-        'app\\cms\\behavior\\FromBehavior',
+        'app\\common\\behavior\\FromBehavior',
         'app\\cms\\behavior\\ThemeBehavior',
     ],
     // 视图内容过滤
