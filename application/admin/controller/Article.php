@@ -397,50 +397,6 @@ class Article extends Base
         return $this->fetch('batchCategory');
     }
 
-//    //上头条
-//    public function upTop()
-//    {
-//        $data = input('post.');
-//        $rule = [
-//            'image_id|头条图片' => 'require|number',
-//            'title|标题' => 'require',
-//        ];
-//        $check = $this->validate($data,$rule);
-//        if ($check !== true) {
-//            $this->error($check);
-//        }
-//
-//        $data['type'] = AdSlotModel::TYPE_BANNER_HEADLINE;
-//        $data['create_time'] = date_time();
-//        $AdModel = new AdModel();
-//        $res = $AdModel->allowField(true)->save($data);
-//        if ($res) {
-//            $ArticleModel = new ArticleModel();
-//            $ArticleModel->where('id', $data['artId'])->setField('ad_id', $AdModel->id);
-//            $this->success('成功新增头条');
-//        } else {
-//            $this->error('新增失败');
-//        }
-//    }
-//
-//    //取消头条
-//    public function deleteTop()
-//    {
-//        $adId = input('adId/d', 0);
-//        $artId = input('artId/d', 0);
-//        if (empty($adId) || empty($artId)) {
-//            $this->error('参数错误');
-//        }
-//        $res = AdModel::destroy($adId);
-//        $ArticleModel = new ArticleModel();
-//        $res = $ArticleModel->where('id', $artId)->setField('ad_id', 0);
-//        if ($res) {
-//            $this->success('操作成功');
-//        } else {
-//            $this->error('操作失败');
-//        }
-//    }
-
     //置顶文章
     public function setTop()
     {

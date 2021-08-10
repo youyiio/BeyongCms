@@ -33,3 +33,11 @@ ADD UNIQUE INDEX `uniq_config_name`(`name`) USING BTREE;
 
 ALTER TABLE `sys_auth_rule` 
 CHANGE COLUMN `belongto` `belongs_to` varchar(16) NULL DEFAULT NULL AFTER `condition`;
+
+ALTER TABLE `cms_article` 
+CHANGE COLUMN `ad_id` `relateds` text NULL AFTER `sort`;
+
+ALTER TABLE `cms_link`
+ADD COLUMN `start_time` datetime AFTER `status`;
+ALTER TABLE `cms_link`
+ADD COLUMN `end_time` datetime AFTER `start_time`; 

@@ -242,8 +242,8 @@ create table cms_article
    comment_count        int not null default 0,
    author               varchar(64),
    uid                  int not null,
-   sort                 int default 0,
-   ad_id                int default 0,
+   sort                 int default 0 comment '排序',
+   relateds             text comment '相关文章',
    primary key (id)
 )
 ENGINE = InnoDB
@@ -409,6 +409,8 @@ create table cms_category_article
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
+alter table cms_category_article comment '文章分类关联表';
+
 /*==============================================================*/
 /* Index: idx_category_article_cid                              */
 /*==============================================================*/
@@ -550,13 +552,15 @@ create table cms_link
    url                  varchar(256) not null,
    sort                 int not null default 0,
    status               tinyint not null default 1,
+   start_time           datetime,
+   end_time             datetime,
    create_time          datetime not null,
    primary key (id)
 )
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
-alter table cms_link comment '链接';
+alter table cms_link comment '链接表';
 
 /*==============================================================*/
 /* Table: sys_action_log                                        */
@@ -949,7 +953,7 @@ create index idx_user_verify_code_type_target on sys_user_verify_code
 /* ============================================数据初始脚本：config表================================*/
 truncate table sys_config;
 
-INSERT INTO `sys_config`(name,value,remark,value_type,tab,sort) VALUES ('site_name', 'BeyongX内容管理系统', '网站名称', 'text', 'base', 1);
+INSERT INTO `sys_config`(name,value,remark,value_type,tab,sort) VALUES ('site_name', 'BeyongCms内容管理系统', '网站名称', 'text', 'base', 1);
 INSERT INTO `sys_config`(name,value,remark,value_type,tab,sort) VALUES ('domain_name', 'www.beyongx.com', '域名', 'text', 'base', 2);
 INSERT INTO `sys_config`(name,value,remark,value_type,tab,sort) VALUES ('icp', '闽ICP备xxxxxxxx号-1', '备案号', 'text', 'base', 3);
 INSERT INTO `sys_config`(name,value,remark,value_type,tab,sort) VALUES ('password_key', 'lGfFSc17z8Q15P5kU0guNqq906DHNbA3', '加密密钥', 'text', 'base', 0);
@@ -957,8 +961,8 @@ INSERT INTO `sys_config`(name,value,remark,value_type,tab,sort) VALUES ('theme_p
 INSERT INTO `sys_config`(name,value,remark,value_type,tab,sort) VALUES ('stat_code', '<script>\r\nvar _hmt = _hmt || [];\r\n(function() {\r\n  var hm = document.createElement(\"script\");\r\n  hm.src = \"https://hm.baidu.com/hm.js?3d0c1af3caa383b0cd59822f1e7a751b\";\r\n  var s = document.getElementsByTagName(\"script\")[0]; \r\n  s.parentNode.insertBefore(hm, s);\r\n})();\r\n</script>\r\n<!-- 以下为自动提交代码 -->\r\n<script>\r\n(function(){\r\n    var bp = document.createElement(\"script\");\r\n    var curProtocol = window.location.protocol.split(\":\")[0];\r\n    if (curProtocol === \"https\") {\r\n        bp.src = \"https://zz.bdstatic.com/linksubmit/push.js\";\r\n    }\r\n    else {\r\n        bp.src = \"http://push.zhanzhang.baidu.com/push.js\";\r\n    }\r\n    var s = document.getElementsByTagName(\"script\")[0];\r\n    s.parentNode.insertBefore(bp, s);\r\n})();\r\n</script>\r\n', '统计代码', 'muti_text', 'base', 4);
 
 INSERT INTO `sys_config`(name,value,remark,value_type,tab,sort) VALUES ('title', 'BeyongCms平台', '网站标题', 'text', 'seo', 1);
-INSERT INTO `sys_config`(name,value,remark,value_type,tab,sort) VALUES ('description', 'BeyongX内容管理系统|Beyongx,ThinkPHP,CMS，可二次开发的扩展框架，包含用户管理，权限角色管理及内容管理等', '网站描述', 'muti_text', 'seo', 3);
-INSERT INTO `sys_config`(name,value,remark,value_type,tab,sort) VALUES ('keywords', 'Beyongx,ThinkPHP,CMS内容管理系统,扩展框架', '网站关键词，有英文逗号分隔', 'text', 'seo', 3);
+INSERT INTO `sys_config`(name,value,remark,value_type,tab,sort) VALUES ('description', 'BeyongCms内容管理系统|Beyongx,ThinkPHP,CMS，可二次开发的扩展框架，包含用户管理，权限角色管理及内容管理等', '网站描述', 'muti_text', 'seo', 3);
+INSERT INTO `sys_config`(name,value,remark,value_type,tab,sort) VALUES ('keywords', 'BeyongCms,Beyongx,ThinkPHP,CMS内容管理系统,扩展框架', '网站关键词，有英文逗号分隔', 'text', 'seo', 3);
 
 INSERT INTO `sys_config`(name,value,remark,value_type,tab,sort) VALUES ('company_name', 'XXX公司', '公司名称', 'text', 'company', 1);
 INSERT INTO `sys_config`(name,value,remark,value_type,tab,sort) VALUES ('bank_card', 'xxx', '公司银行账号', 'text', 'company', 0);
@@ -1119,38 +1123,36 @@ INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`con
 INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongs_to) VALUES (625, 6, '更新插件', 'admin/Theme/update', '', 1, 0, 1, 1,'','admin');
 
 #内容管理
-INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongs_to) VALUES (7, 0, '内容管理', 'admin/ShowNav/Cms', 'fa-file-text', 1, 1, 11, 1,'','admin');
-INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongs_to) VALUES (71, 7, '文章管理', 'admin/Article/index', '', 1, 1, 1, 1,'','admin');
-INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongs_to) VALUES (711, 71, '查看文章', 'admin/Article/viewArticle', '', 1, 0, 1, 1,'','admin');
-INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongs_to) VALUES (712, 71, '新增文章', 'admin/Article/addArticle', '', 1, 0, 1, 1,'','admin');
-INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongs_to) VALUES (713, 71, '编辑文章', 'admin/Article/editArticle', '', 1, 0, 1, 1,'','admin');
-INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongs_to) VALUES (714, 71, '删除文章', 'admin/Article/deleteArticle', '', 1, 0, 1, 1,'','admin');
-INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongs_to) VALUES (715, 71, '上头条', 'admin/Article/upTop', '', 1, 0, 1, 1,'','admin');
-INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongs_to) VALUES (716, 71, '取消头条', 'admin/Article/deleteTop', '', 1, 0, 1, 1,'','admin');
-INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongs_to) VALUES (717, 71, '置顶', 'admin/Article/setTop', '', 1, 0, 1, 1,'','admin');
-INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongs_to) VALUES (718, 71, '取消置顶', 'admin/Article/unsetTop', '', 1, 0, 1, 1,'','admin');
-INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongs_to) VALUES (719, 71, '发布文章', 'admin/Article/postArticle', '', 1, 0, 1, 1,'','admin');
-INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongs_to) VALUES (7191, 71, '初审', 'admin/Article/auditFirst', '', 1, 0, 1, 1,'','admin');
-INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongs_to) VALUES (7192, 71, '终审', 'admin/Article/auditSecond', '', 1, 0, 1, 1,'','admin');
-INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongs_to) VALUES (7193, 71, '定时发布', 'admin/Article/setTimingPost', '', 1, 0, 1, 1,'','admin');
-INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongs_to) VALUES (7194, 71, '文章访问统计', 'admin/Article/articleStat', '', 1, 0, 1, 1,'','admin');
-INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongs_to) VALUES (7195, 71, '文章访问量统计图', 'admin/Article/echartShow', '', 1, 0, 1, 1,'','admin');
-INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongs_to) VALUES (7196, 71, '批量修改分类', 'admin/Article/batchCategory', '', 1, 0, 1, 1,'','admin');
-INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongs_to) VALUES (72, 7, '评论管理', 'admin/Article/commentList', '', 1, 1, 1, 1,'','admin');
-INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongs_to) VALUES (721, 72, '审核评论', 'admin/Article/auditComment', '', 1, 0, 1, 1,'','admin');
-INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongs_to) VALUES (722, 72, '回发评论', 'admin/Article/postComment', '', 1, 0, 1, 1,'','admin');
-INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongs_to) VALUES (723, 72, '删除评论', 'admin/Article/deleteComment', '', 1, 0, 1, 1,'','admin');
-INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongs_to) VALUES (724, 72, '查看评论', 'admin/Article/viewComments', '', 1, 0, 1, 1,'','admin');
-INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongs_to) VALUES (73, 7, '文章分类', 'admin/Article/categoryList', '', 1, 1, 1, 1,'','admin');
-INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongs_to) VALUES (731, 73, '新增分类', 'admin/Article/addCategory', '', 1, 0, 1, 1,'','admin');
-INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongs_to) VALUES (732, 73, '编辑分类', 'admin/Article/editCategory', '', 1, 0, 1, 1,'','admin');
-INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongs_to) VALUES (733, 73, '排序分类', 'admin/Article/orderCategory', '', 1, 0, 1, 1,'','admin');
-INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongs_to) VALUES (734, 73, '删除分类', 'admin/Article/deleteCategory', '', 1, 0, 1, 1,'','admin');
-INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongs_to) VALUES (74, 7, '广告管理', 'admin/Article/adList', '', 1, 1, 1, 1,'','admin');
-INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongs_to) VALUES (741, 74, '新增广告', 'admin/Article/addAd', '', 1, 0, 1, 1,'','admin');
-INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongs_to) VALUES (742, 74, '编辑广告', 'admin/Article/editAd', '', 1, 0, 1, 1,'','admin');
-INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongs_to) VALUES (743, 74, '广告排序', 'admin/Article/orderAd', '', 1, 0, 1, 1,'','admin');
-INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongs_to) VALUES (744, 74, '删除广告', 'admin/Article/deleteAd', '', 1, 0, 1, 1,'','admin');
+INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongto) VALUES (7, 0, '内容管理', 'admin/ShowNav/Cms', 'fa-file-text', 1, 1, 11, 1,'','admin');
+INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongto) VALUES (71, 7, '文章管理', 'admin/Article/index', '', 1, 1, 1, 1,'','admin');
+INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongto) VALUES (711, 71, '查看文章', 'admin/Article/viewArticle', '', 1, 0, 1, 1,'','admin');
+INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongto) VALUES (712, 71, '新增文章', 'admin/Article/addArticle', '', 1, 0, 1, 1,'','admin');
+INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongto) VALUES (713, 71, '编辑文章', 'admin/Article/editArticle', '', 1, 0, 1, 1,'','admin');
+INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongto) VALUES (714, 71, '删除文章', 'admin/Article/deleteArticle', '', 1, 0, 1, 1,'','admin');
+INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongto) VALUES (715, 71, '置顶', 'admin/Article/setTop', '', 1, 0, 1, 1,'','admin');
+INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongto) VALUES (716, 71, '取消置顶', 'admin/Article/unsetTop', '', 1, 0, 1, 1,'','admin');
+INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongto) VALUES (717, 71, '发布文章', 'admin/Article/postArticle', '', 1, 0, 1, 1,'','admin');
+INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongto) VALUES (7171, 71, '初审', 'admin/Article/auditFirst', '', 1, 0, 1, 1,'','admin');
+INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongto) VALUES (7172, 71, '终审', 'admin/Article/auditSecond', '', 1, 0, 1, 1,'','admin');
+INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongto) VALUES (7173, 71, '定时发布', 'admin/Article/setTimingPost', '', 1, 0, 1, 1,'','admin');
+INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongto) VALUES (7174, 71, '文章访问统计', 'admin/Article/articleStat', '', 1, 0, 1, 1,'','admin');
+INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongto) VALUES (7175, 71, '文章访问量统计图', 'admin/Article/echartShow', '', 1, 0, 1, 1,'','admin');
+INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongto) VALUES (7176, 71, '批量修改分类', 'admin/Article/batchCategory', '', 1, 0, 1, 1,'','admin');
+INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongto) VALUES (72, 7, '评论管理', 'admin/Article/commentList', '', 1, 1, 1, 1,'','admin');
+INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongto) VALUES (721, 72, '审核评论', 'admin/Article/auditComment', '', 1, 1, 1, 1,'','admin');
+INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongto) VALUES (722, 72, '回发评论', 'admin/Article/postComment', '', 1, 0, 1, 1,'','admin');
+INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongto) VALUES (723, 72, '删除评论', 'admin/Article/deleteComment', '', 1, 0, 1, 1,'','admin');
+INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongto) VALUES (724, 72, '查看评论', 'admin/Article/viewComments', '', 1, 0, 1, 1,'','admin');
+INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongto) VALUES (73, 7, '文章分类', 'admin/Article/categoryList', '', 1, 1, 1, 1,'','admin');
+INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongto) VALUES (731, 73, '新增分类', 'admin/Article/addCategory', '', 1, 0, 1, 1,'','admin');
+INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongto) VALUES (732, 73, '编辑分类', 'admin/Article/editCategory', '', 1, 0, 1, 1,'','admin');
+INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongto) VALUES (733, 73, '排序分类', 'admin/Article/orderCategory', '', 1, 0, 1, 1,'','admin');
+INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongto) VALUES (734, 73, '删除分类', 'admin/Article/deleteCategory', '', 1, 0, 1, 1,'','admin');
+INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongto) VALUES (74, 7, '广告管理', 'admin/Article/adList', '', 1, 1, 1, 1,'','admin');
+INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongto) VALUES (741, 74, '新增广告', 'admin/Article/addAd', '', 1, 0, 1, 1,'','admin');
+INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongto) VALUES (742, 74, '编辑广告', 'admin/Article/editAd', '', 1, 0, 1, 1,'','admin');
+INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongto) VALUES (743, 74, '广告排序', 'admin/Article/orderAd', '', 1, 0, 1, 1,'','admin');
+INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongto) VALUES (744, 74, '删除广告', 'admin/Article/deleteAd', '', 1, 0, 1, 1,'','admin');
 
 #客服管理
 INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongs_to) VALUES (8, 0, '客服管理', 'admin/ShowNav/Feedback', 'fa-comment', 1, 1, 12, 1,'','admin');
