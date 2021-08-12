@@ -114,10 +114,6 @@ drop table if exists sys_user;
 
 drop table if exists sys_user_meta;
 
-#drop index idx_user_verify_code_type_target on sys_user_verify_code;
-
-drop table if exists sys_user_verify_code;
-
 /*==============================================================*/
 /* Table: api_config_access                                     */
 /*==============================================================*/
@@ -917,34 +913,6 @@ create index idx_user_meta_target_id_meta_key on sys_user_meta
 (
    target_id,
    meta_key
-);
-
-/*==============================================================*/
-/* Table: sys_user_verify_code                                  */
-/*==============================================================*/
-create table sys_user_verify_code
-(
-   id                   int not null auto_increment,
-   type                 varchar(32) not null comment 'register:注册验证码;reset_password:重置密码;email_active:邮件激活',
-   target               varchar(32) not null comment '如手机，邮箱或uid',
-   status               tinyint not null comment '1.未使用;2.已使用',
-   code                 varchar(32) not null comment '验证码',
-   expire_time          datetime not null,
-   create_time          datetime not null,
-   primary key (id)
-)
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci;
-
-alter table sys_user_verify_code comment '验证码表';
-
-/*==============================================================*/
-/* Index: idx_user_verify_code_type_target                      */
-/*==============================================================*/
-create index idx_user_verify_code_type_target on sys_user_verify_code
-(
-   type,
-   target
 );
 
 

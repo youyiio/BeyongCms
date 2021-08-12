@@ -1,5 +1,6 @@
 DROP TABLE IF EXISTS api_device;
 DROP TABLE IF EXISTS api_push_token;
+DROP TABLE IF EXISTS cms_user_verify_code;
 
 ALTER TABLE cms_action_log rename to sys_action_log;
 ALTER TABLE cms_addons rename to sys_addons;
@@ -14,7 +15,6 @@ ALTER TABLE cms_message rename to sys_message;
 ALTER TABLE cms_region rename to sys_region;
 ALTER TABLE cms_user rename to sys_user;
 ALTER TABLE cms_user_meta rename to sys_user_meta;
-ALTER TABLE cms_user_verify_code rename to sys_user_verify_code;
 
 
 ALTER TABLE `api_config_access` 

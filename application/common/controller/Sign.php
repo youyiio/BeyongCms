@@ -1,8 +1,6 @@
 <?php
 namespace app\common\controller;
 
-use app\common\logic\CodeLogic;
-use app\common\model\UserVerifyCodeModel;
 use think\facade\Cache;
 use think\Controller;
 use think\facade\Session;
@@ -12,6 +10,7 @@ use think\captcha\Captcha;
 use app\common\model\ActionLogModel;
 use app\common\model\UserModel;
 
+use app\common\logic\CodeLogic;
 use app\common\logic\UserLogic;
 use app\common\logic\ActionLogLogic;
 use youyi\util\StringUtil;
@@ -276,7 +275,7 @@ class Sign extends Controller
             $uid = $user['id'];
 
             $CodeLogic = new CodeLogic();
-            if (!$CodeLogic->checkVerifyCode(UserVerifyCodeModel::TYPE_RESET_PASSWORD, $username, $code)) {
+            if (!$CodeLogic->checkVerifyCode(CodeLogic::TYPE_RESET_PASSWORD, $username, $code)) {
                 $this->error($CodeLogic->getError());
             }
 
@@ -284,7 +283,7 @@ class Sign extends Controller
             $res = $UserModel->modifyPassword($uid, $password);
             if ($res) {
                 //消费验证码
-                $CodeLogic->consumeCode(UserVerifyCodeModel::TYPE_RESET_PASSWORD, $username, $code);
+                $CodeLogic->consumeCode(CodeLogic::TYPE_RESET_PASSWORD, $username, $code);
 
                 $this->success('成功重置密码', url('Sign/login'));
             } else {
@@ -308,7 +307,7 @@ class Sign extends Controller
         }
 
         $CodeLogic = new CodeLogic();
-        $check = $CodeLogic->checkVerifyCode(UserVerifyCodeModel::TYPE_MAIL_ACTIVE, $email, $code);
+        $check = $CodeLogic->checkVerifyCode(CodeLogic::TYPE_MAIL_ACTIVE, $email, $code);
         if (!$check) {
             $this->error($CodeLogic->getError());
         }
@@ -325,7 +324,7 @@ class Sign extends Controller
         //激活用户
         $UserModel->where('id', $user['id'])->setField('status', UserModel::STATUS_ACTIVED);
         //消费验证码
-        $CodeLogic->consumeCode(UserVerifyCodeModel::TYPE_REGISTER, $email, $code);
+        $CodeLogic->consumeCode(CodeLogic::TYPE_REGISTER, $email, $code);
 
         //邮件激活的后置操作
         $this->afterMailActive($email);
