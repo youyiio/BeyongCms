@@ -46,6 +46,28 @@ git pull = git fetch + git merge
 
 冒号后面省略是时，合并到当前工作的分支
 
+## 分支新建及删除
+
+查看分支
+
+> git branch
+
+查看远程分支
+
+> git branch -r
+
+创建分支
+
+> git branch newbranch
+
+#删除分支
+
+> git branch -d newbranch   
+
+#提交分支
+
+> git push gitlab newbranch:newbranch
+
 ## 标签新建及同步
 
 > git tag v1.0
