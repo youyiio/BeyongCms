@@ -304,7 +304,7 @@ class Sign extends Controller
         $code = input('param.code/s');
         $email = input('param.email/s');
         if (empty($code) || empty($email)) {
-            $this->error('错误：参数错误！', url('cms/Index/index'));
+            $this->error('错误：参数错误！', url('frontend/Index/index'));
         }
 
         $CodeLogic = new CodeLogic();

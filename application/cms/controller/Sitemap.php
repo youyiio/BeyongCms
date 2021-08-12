@@ -52,10 +52,10 @@ class Sitemap extends Base
 
 
         //生成index 首页
-        $sitemap->addItem(url('cms/Index/index',null, false, get_config('domain_name')), 1, "hourly", date_time());
-        $sitemap->addItem(url('cms/Index/about',null, false, get_config('domain_name')), 1, "monthly", date_time());
-        $sitemap->addItem(url('cms/Index/contact',null, false, get_config('domain_name')), 1, "monthly", date_time());
-        $sitemap->addItem(url('cms/Index/about',null, false, get_config('domain_name')), 1, "monthly", date_time());
+        $sitemap->addItem(url('frontend/Index/index',null, false, get_config('domain_name')), 1, "hourly", date_time());
+        $sitemap->addItem(url('frontend/Index/about',null, false, get_config('domain_name')), 1, "monthly", date_time());
+        $sitemap->addItem(url('frontend/Index/contact',null, false, get_config('domain_name')), 1, "monthly", date_time());
+        $sitemap->addItem(url('frontend/Index/about',null, false, get_config('domain_name')), 1, "monthly", date_time());
 
         //生成栏目item
         $CategoryModel = new CategoryModel();
