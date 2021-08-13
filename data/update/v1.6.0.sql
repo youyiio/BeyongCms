@@ -32,7 +32,7 @@ ADD PRIMARY KEY (`id`) USING BTREE,
 ADD UNIQUE INDEX `uniq_config_name`(`name`) USING BTREE;
 
 ALTER TABLE `sys_auth_rule` 
-CHANGE COLUMN `belongto` `belongs_to` varchar(16) NULL DEFAULT NULL AFTER `condition`;
+CHANGE COLUMN `beyongs_to` `belongs_to` varchar(16) NULL DEFAULT NULL AFTER `condition`;
 
 ALTER TABLE `cms_article` 
 CHANGE COLUMN `ad_id` `relateds` text NULL AFTER `sort`;
