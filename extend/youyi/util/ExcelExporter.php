@@ -36,14 +36,6 @@ class ExcelExporter
             $writerType = 'xlsx';
         }
 
-        //查询数据
-        // include Env::get('root_path') . 'extend/' . 'PHPExcel/PHPExcel.php';
-        // include Env::get('root_path') . 'extend/' . 'PHPExcel/PHPExcel/IOFactory.php';
-        // include Env::get('root_path') . 'extend/' . 'PHPExcel/PHPExcel/Writer/IWriter.php';
-        // include Env::get('root_path') . 'extend/' . 'PHPExcel/PHPExcel/Writer/Excel5.php';
-        // include Env::get('root_path') . 'extend/' . 'PHPExcel/PHPExcel/Writer/Excel2007.php';
-        // include Env::get('root_path') . 'extend/' . 'PHPExcel/PHPExcel/Cell/DataType.php';
-
         $objPHPExcel = new Spreadsheet();
         $objPHPExcel->setActiveSheetIndex(0);//设置当前sheet为第一个
 
