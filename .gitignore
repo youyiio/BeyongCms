@@ -12,3 +12,4 @@ thinkphp
 data/runtime
 data/backup
 data/install.lock
+data/install/database.php

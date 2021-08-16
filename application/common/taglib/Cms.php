@@ -180,7 +180,7 @@ class Cms extends TagLib
         $cache = empty($tag['cache']) ? $defaultCache : (strtolower($tag['cache'] =='true')? $defaultCache:intval($tag['cache']));
         $limit = empty($tag['limit']) ? 10 : $tag['limit'];
         $id = empty($tag['id']) ? '_id' : $tag['id'];
-
+      
         $assign = empty($tag['assign']) ? $this->_randVarName(10) : $tag['assign'];
 
         //用于绑定上下文变量，此时值允许是表达式
@@ -198,6 +198,9 @@ class Cms extends TagLib
         $parse .= "  } ";
         $parse .= "  \$where = [];";
         $parse .= "  \$where[] = ['status', '=', \app\common\model\cms\LinkModel::STATUS_ONLINE]; ";
+        $parse .= "  \$current_time = date_time(); ";
+        $parse .= "  \$where[] = ['start_time', '<=', \$current_time]; ";
+        $parse .= "  \$where[] = ['end_time', '>', \$current_time]; ";
         $parse .= "  if (empty($internalList)) { ";
         $parse .= "    \$LinkModel = new \app\common\model\cms\LinkModel();";
         $parse .= "    $internalList = \$LinkModel->where(\$where)->field('id,title,url')->order('sort asc')->limit($limit)->select();";
