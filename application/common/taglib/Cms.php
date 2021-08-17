@@ -201,9 +201,13 @@ class Cms extends TagLib
         $parse .= "  \$current_time = date_time(); ";
         $parse .= "  \$where[] = ['start_time', '<=', \$current_time]; ";
         $parse .= "  \$where[] = ['end_time', '>', \$current_time]; ";
+        $parse .= "  \$where2 = [];";
+        $parse .= "  \$where2[] = ['status', '=', \app\common\model\cms\LinkModel::STATUS_ONLINE]; ";
+        $parse .= "  \$where2[] = ['start_time', '=', null]; ";
+        $parse .= "  \$where2[] = ['end_time', '=', null]; ";
         $parse .= "  if (empty($internalList)) { ";
         $parse .= "    \$LinkModel = new \app\common\model\cms\LinkModel();";
-        $parse .= "    $internalList = \$LinkModel->where(\$where)->field('id,title,url')->order('sort asc')->limit($limit)->select();";
+        $parse .= "    $internalList = \$LinkModel->whereOr([\$where,\$where2])->field('id,title,url')->order('sort asc')->limit($limit)->select();";
         $parse .= "    if ($cache) { ";
         $parse .= "      cache(\$cacheMark, $internalList, $cache); ";
         $parse .= "    } ";

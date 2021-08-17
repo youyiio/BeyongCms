@@ -200,6 +200,13 @@ class System extends Base
     public function addLinks()
     {
         $data = input('post.');
+        if (empty($data['start_time'])) {
+            $data['start_time'] = null;
+        }
+        if (empty($data['end_time'])) {
+            $data['end_time'] = null;
+        }
+        
         $LinkModel = new LinkModel();
         $res = $LinkModel->allowField(true)->save($data);
         if ($res) {
@@ -214,7 +221,13 @@ class System extends Base
     public function editLinks()
     {
         $data = input('post.');
-
+        if (empty($data['start_time'])) {
+            $data['start_time'] = null;
+        }
+        if (empty($data['end_time'])) {
+            $data['end_time'] = null;
+        }
+    
         $res = LinkModel::update($data);
         if ($res) {
             cache('links',null);
