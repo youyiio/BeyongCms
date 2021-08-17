@@ -30,7 +30,7 @@ class Article extends Base
             $where[] = ['title', 'like', "%{$key}%"];
         }
 
-        $fields = 'id,title,thumb_image_id,post_time,update_time,create_time,is_top,status,read_count,sort,ad_id';
+        $fields = 'id,title,thumb_image_id,post_time,update_time,create_time,is_top,status,read_count,sort';
         if ($categoryId > 0) {
             $childs = CategoryModel::getChild($categoryId);
             $childCateIds = $childs['ids'];
@@ -818,9 +818,6 @@ class Article extends Base
     {
         $res = AdModel::destroy($adId);
         if ($res) {
-            $ArticleModel = new ArticleModel();
-            $ArticleModel->where('ad_id',$adId)->setField('ad_id',0); //头条文章取消头条
-
             $this->success('删除成功');
         } else {
             $this->error('删除失败');
