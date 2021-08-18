@@ -3,7 +3,6 @@
 composer.lock
 *.log
 .svn
-data/install/database.php
 
 # php & thinkphp
 vendor/*
