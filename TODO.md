@@ -2,12 +2,14 @@
 
 ## v2.0.0 (规划中)
 
-* 引入jwt支持
-* 实现beyongx-app移动端，使用flutter开发;
+* api常用基本接口
+* 实现beyongx-app移动端，使用flutter开发
 
 ## v1.6.1 （开发中）
 
-* 更新echarts 5.0
+* 更新echarts 5.0（youyiio/php-echarts）
+* 引入api模块, 使用jwt支持
+* 阿里、腾讯、极光短信支持（youyiio/beyong-sms）
 
 ## v1.6.0 （开发完成）
 
