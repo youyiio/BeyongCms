@@ -1,10 +1,10 @@
 <?php
 namespace app\api\controller;
 
-class Index
+class Index extends Base
 {
     public function index()
     {
-        return 'api';
+        return 'beyong api module base on jwt!';
     }
 }

@@ -117,15 +117,6 @@ class UserLogic extends Model
     {
         $userId = $user['id'];
 
-        // $PushTokenModel = new PushTokenModel();
-        // $pushTokenModel = $PushTokenModel->findByUserId($userId, $accessId, $deviceId);
-        // if ($pushTokenModel) {
-        //     if ($pushTokenModel['os'] == Os::Android) {
-        //         $user['android_push_token'] = $pushTokenModel['push_token'];
-        //     } else if ($pushTokenModel['os'] == Os::iOS) {
-        //         $user['ios_push_token'] = $pushTokenModel['push_token'];
-        //     }
-        // }
         $user['device_id'] = $deviceId;
 
         $tokenInfo = $this->findOrCreateToken($userId, $accessId, $deviceId);
