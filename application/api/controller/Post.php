@@ -10,7 +10,7 @@ use app\common\model\cms\ArticleModel;
 // 需要登录验证的继承JwtBase
 // use app\api\controller\JwtBase;
 
-class Post extends JwtBase
+class Post extends Base
 {
     //查询列表
     public function list($page=1, $size=10) {

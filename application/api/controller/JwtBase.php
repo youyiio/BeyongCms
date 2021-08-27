@@ -2,13 +2,14 @@
 
 namespace app\api\controller;
 
+use think\facade\Request;
 
 class JwtBase extends Base {
     // 用户信息
     protected $user_info;
 
     public function initialize() {
-        $token = input('server.authorization');dump($token);
+        $token = Request::header('authorization');
 
         // 验证是否登录
         if (is_null($token)) {

@@ -24,7 +24,7 @@ const ERRNO_MAP = [
     'UNKOWNERR'  => '未知错误',
 ];
 const ERRNO = [
-    'OK'         => '0',
+    'OK'         => '1',
     'DBERR'      => '4001',
     'NODATA'     => '4002',
     'DATAEXIST'  => '4003',
@@ -52,13 +52,13 @@ function ajaxReturn() {
     if (1 === $args_num) {
         return json([
             'code' => ERRNO['OK'],
-            'message'   => '成功',
+            'message' => '成功',
             'data'  => $args[0]]);
     }
     if (2 === $args_num) {
         return \json([
             'code' => $args[0],
-            'message'   => $args[1]]);
+            'message' => $args[1]]);
     }
     if (3 === $args_num) {
         return \json([
@@ -93,7 +93,7 @@ function setJWT($data) {
         'exp'  => (time() + 60 * 60 * 24 * 7), // 过期时间  7天后的时间戳
         'data' => $data,
     );
-    $jwt = $jwt::encode($token, config('jwt_key'), 'HS256');
+    $jwt = $jwt::encode($token, config('jwt_jwt_key'), config('jwt_jwt_alg'));
 
     return $jwt;
 }
@@ -103,7 +103,7 @@ function getJWT($token) {
     $jwt = new JWT();
     $data = null;
     try {
-        $jwt_data = $jwt::decode($token, config('jwt_key'), array('HS256'));
+        $jwt_data = $jwt::decode($token, config('jwt.jwt_key'), config('jwt.jwt_alg'));
         $data     = (array) ($jwt_data->data);
     } catch (\Throwable $e) {
         Log::write($e->getMessage(), 'error');

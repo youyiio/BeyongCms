@@ -45,7 +45,7 @@ class ApiHandle extends Handle
         // 参数验证错误
         if ($e instanceof ValidateException) {
             $data["code"] = ResultCode::E_DATA_VERIFY_ERROR;
-            $data["message"] = "ResultCode::E_DATA_VERIFY_ERROR";
+            $data["message"] = "ResultCode::E_DATA_VERIFY_ERROR:" . $e->getMessage();
 
             return json($data);
         }

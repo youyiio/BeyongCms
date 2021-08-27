@@ -20,8 +20,7 @@ return [
     // 操作开始执行
     'action_begin' => [
         'app\\common\\behavior\\LogBehavior',
-        //'app\\api\\behavior\\SignBehavior',
-        //'app\\api\\behavior\\TokenBehavior'
+        'app\\api\\behavior\\JWTBehavior',
     ],
     // 视图内容过滤
     'view_filter'  => [],
