@@ -92,19 +92,18 @@ class Sign extends Base
         $needParams = ['username', 'password'];
         
         $params = $params = $this->request->put();;
-        // if (!in_array($params['type'], config('login_type'))) {
-        //     return ajax_error(\ApiCode::E_USER_LOGIN_ERROR, '登录方式不正确！');
-        // }
 
+        //登录次数判断
         $tryLoginCountMark = $params['username'] . '_try_login_count';
         $tryLoginCount = Cache::get($tryLoginCountMark);
-       if ($tryLoginCount > 5) {
+        if ($tryLoginCount > 5) {
            return ajax_error(ResultCode::E_USER_STATE_FREED, '登录错误超过5次,账号被临时冻结1天');
-       }
-       if ($tryLoginCount >= 5) {
+        }
+        if ($tryLoginCount >= 5) {
            Cache::set($tryLoginCountMark, $tryLoginCount + 1, strtotime(date('Y-m-d 23:59:59'))-time());
+           
            return ajax_error(ResultCode::E_USER_STATE_FREED, '登录错误超过5次,账号被临时冻结1天');
-       }
+        }
 
         //初始化登录错误次数
         Cache::remember($tryLoginCountMark, function () {
