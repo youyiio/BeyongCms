@@ -60,8 +60,8 @@ class ApiHandle extends Handle
 
         //model层异常
         if ($e instanceof ModelException) {
-            $data["code"] = ResultCode::E_MODEL_OPERATION_ERROR;
-            $data["message"] = $e->getMessage();
+            $data["code"] = $e->getModelCode();
+            $data["message"] = $e->getModelMessage();
 
             return json($data);
         }

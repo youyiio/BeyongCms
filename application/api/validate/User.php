@@ -1,8 +1,10 @@
 <?php
-namespace app\common\validate;
+namespace app\api\validate;
 
 use app\common\model\UserModel;
 use think\Validate;
+use youyi\util\PregUtil;
+
 /**
 * 用户验证规则
 */
@@ -12,10 +14,11 @@ class User extends Validate
     protected $rule = [
         'uid'        => ['require', 'integer'],
         'nickname'   => ['require','max'=> 32],
+        'username'   => ['require','checkUsername'],
         'email'      => ['email','unique:' . 'sys_user,email'],
         'password'   => ['require','min'=> 6, 'max'=> 16],
         'repassword' => ['require','confirm:password'],
-        'code'       => ['require','captcha'],
+        'code'       => ['require','regex'=>'/^[0-9]{6}$/'],
         'sex'        => ['in'=> [0,1,2]],
         'born'       => ['date'],
         'qq'         => ['regex'=>'/^[1-9][0-9]{5,}$/'],
@@ -26,6 +29,25 @@ class User extends Validate
         'newPwd'   => ['require','min'=> 6, 'max'=> 16, 'checkNewPwd'],
         'newRePwd' => ['require','confirm:newPwd'],
     ];
+
+    protected function checkUsername($value, $rule, $data)
+    {
+        if (empty($value)) {
+            return '账号不能为空!';
+        }
+        if (isset($data['type'])) {
+            $type = $data['type'];
+            if ($type == "mobile" && !PregUtil::isMobile($value)) {
+                return "手机号格式不正确!";
+            }
+
+            if ($type == "email" && !PregUtil::isEmail($value)) {
+                return "邮箱格式不正确";
+            }
+        }
+
+        return true;
+    }
 
     protected function checkNewPwd($value, $rule, $data)
     {
@@ -49,7 +71,7 @@ class User extends Validate
         'password.max'     => '密码最多16个字符',
         'repassword'       => '两次密码不一致',
         'code.require'     => '验证码必填',
-        'code.captcha'     => '验证码错误',
+        'code.regex'       => '验证码为6位数字',
         'sex'              => '性别选择有误',
         'born'             => '出生日期有误',
         'qq'               => 'QQ号有误',
@@ -63,8 +85,8 @@ class User extends Validate
     ];
 
     protected $scene = [
-        'register' => ['nickname','email','password','repassword','code'],
-        'login' => ['email.email','password','code'],
+        'register' => ['username','password','repassword','code'],
+        'login' => ['username','password','code'],
         'add' => ['email','password','repassword'],
         'profile' => ['nickname','sex','born','qq','mobile','phone','website'],
         'modifyPassword' => ['password','newPwd','newRePwd'], //自己修改

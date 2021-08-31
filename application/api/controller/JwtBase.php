@@ -16,7 +16,7 @@ class JwtBase extends Base {
             header('Content-Type:application/json; charset=utf-8');
             $response = json_encode([
                 'code'  => ERRNO['SESSIONERR'],
-                'error' => '用户未登陆'
+                'message' => '用户未登陆'
             ]);
             exit($response);
         }
@@ -28,7 +28,7 @@ class JwtBase extends Base {
 
             $response = json_encode([
                 'code'  => ERRNO['SESSIONERR'],
-                'error' => '登录已过期'
+                'message' => '登录已过期'
             ]);
             exit($response);
         }

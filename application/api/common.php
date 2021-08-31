@@ -3,6 +3,7 @@
 use think\facade\Log;
 
 use Firebase\JWT\JWT;
+use app\common\library\ResultCode;
 
 const ERRNO_MAP = [
     'OK'         => '成功',
@@ -43,30 +44,37 @@ const ERRNO = [
     'UNKOWNERR'  => '4501',
 ];
 
+class ApiCode {
+    const E_USER_LOGIN_ERROR			 = 10009;		//登录方式不正确
+}
+
 // 向前端返回JSON数据
-function ajaxReturn() {
-    // 形参个数
-    $args_num = func_num_args();
-    // 形参列表
-    $args = func_get_args();
-    if (1 === $args_num) {
-        return json([
-            'code' => ERRNO['OK'],
-            'message' => '成功',
-            'data'  => $args[0]]);
-    }
-    if (2 === $args_num) {
-        return \json([
-            'code' => $args[0],
-            'message' => $args[1]]);
-    }
-    if (3 === $args_num) {
-        return \json([
-            'code' => $args[0],
-            'message'   => $args[1],
-            'data'  => $args[2]]);
-    }
-    throw new Exception("Error The number of parameters can be one or two or three");
+function ajax_return($code, $message = 'success', $data = []) {
+
+    return json([
+        'code' => $code,
+        'message' => $message,
+        'data'  => $data
+    ]);
+    
+}
+// 向前端返回JSON SUCCESS数据
+function ajax_success($data = []) {
+
+    return json([
+        'code' => ResultCode::ACTION_SUCCESS,
+        'message' => 'success',
+        'data'  => $data
+    ]);
+    
+}
+// 向前端返回JSON ERROR数据
+function ajax_error($code, $message = 'fail') {
+    return json([
+        'code' => $code,
+        'message' => $message,
+        'data'  => null
+    ]);
 }
 
 // 格式标准的page

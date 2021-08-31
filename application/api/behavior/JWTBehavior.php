@@ -11,8 +11,9 @@ class JWTBehavior
 
     public function run()
     {
-        $action = strtolower(Request::action());
-        if (in_array($action, config('jwt.jwt_action_excludes'))) {
+        $url = strtolower(Request::url());
+        $url = str_replace("/api", "", $url);
+        if (in_array($url, config('jwt.jwt_action_excludes'))) {
             return true;
         }
         
@@ -28,7 +29,7 @@ class JWTBehavior
         }
 
         $token = substr($authorization, 7);
-        $payload = JWT::decode($token, config('jwt.jwt_key'), [config('jwt_jwt_alg')]);
+        $payload = JWT::decode($token, config('jwt.jwt_key'), [config('jwt.jwt_alg')]);
 
         session('jwt_payload_data', $payload->data);
 

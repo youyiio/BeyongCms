@@ -1,10 +1,9 @@
 <?php
 namespace app\api\controller;
 
-use app\api\controller\JwtBase;
-
 // 不需要认证的话继承Base
 use app\api\controller\Base;
+use app\common\library\ResultCode;
 use app\common\model\cms\ArticleModel;
 
 // 需要登录验证的继承JwtBase
@@ -29,28 +28,28 @@ class Post extends Base
         $ArticleModel = new ArticleModel();
         $list = $ArticleModel->where($where)->field($fields)->order($order)->paginate($size, false, $pageConfig);
 
-        return ajaxReturn(ERRNO['OK'], '查询成功', to_standard_pagelist($list));
+        return ajax_success(to_standard_pagelist($list));
     }
 
     // crud 增删查改
     public function query($aid) {
         $article = ArticleModel::get($aid);
 
-        return ajaxReturn(ERRNO['OK'], '查询成功', $article);
+        return ajax_success($article);
     }
 
     public function create() {
         $data = input("post.");
         $article = ArticleModel::create($data);
 
-        return ajaxReturn(ERRNO['OK'], '创建成功', $article);
+        return ajax_return(ResultCode::ACTION_SUCCESS, '创建成功', $article);
     }
 
     public function edit($aid) {
         $data = input("post.");
         $article = ArticleModel::update($data, ["id" => $aid]);
 
-        return ajaxReturn(ERRNO['OK'], 'ok', $article);
+        return ajax_success($article);
     }
 
     public function delete($aid) {
@@ -59,6 +58,6 @@ class Post extends Base
         ];
         $res = ArticleModel::update($data, $aid);
 
-        return ajaxReturn(ERRNO['OK'], 'ok', $res);
+        return ajax_return(ResultCode::ACTION_SUCCESS, '删除成功');
     }
 }
