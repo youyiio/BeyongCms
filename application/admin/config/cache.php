@@ -10,19 +10,15 @@
 // +----------------------------------------------------------------------
 
 // +----------------------------------------------------------------------
-// | 日志设置
+// | 缓存设置
 // +----------------------------------------------------------------------
 
 use think\facade\Env;
 
+$global_config = require(Env::get('root_path') . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'cache.php');
 return [
-    // 日志记录方式，内置 file socket 支持扩展
-    'type'  => 'File',
-    // 日志保存目录
-    'path'  => Env::get('runtime_path') . 'log' . DIRECTORY_SEPARATOR . 'admin' . DIRECTORY_SEPARATOR,
-    // 日志记录级别
-    'level' => ['error', 'notice', 'info', 'log', 'debug'],
-    //独立日志
-    'apart_level'  =>  ['error'],
-    'json' => false,
+    // 缓存前缀
+    'prefix' => 'admin_',
+    // 缓存有效期 0表示永久缓存,3600表示60*60一个小时
+    'expire' => 3600,
 ];

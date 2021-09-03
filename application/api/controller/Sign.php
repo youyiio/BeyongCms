@@ -13,8 +13,6 @@ use youyi\util\StringUtil;
 
 class Sign extends Base
 {
-    //use \app\common\controller\SignTrait; //使用trait
-
     // 注册
     public function register()
     {
@@ -25,15 +23,30 @@ class Sign extends Base
         //请求的body数据
         $params = $this->request->put();
 
-        //$needParams = ['account', 'nickname', 'mobile', 'email', 'password', 'repassword'];
-
         $check = validate('User')->scene('register')->check($params);
         if ($check !== true) {
             return ajax_error(ResultCode::E_DATA_VERIFY_ERROR, validate('User')->getError());
         }
 
-        $UserLogic = new UserLogic();
+        //验证码验证
+        if (PregUtil::isMobile($params['username'])) {
+            $cacheCode = Cache::get($params['username'] . "_sms_code", '');
+            if ($cacheCode != $params['code']) {
+                return ajax_error(ResultCode::E_DATA_VERIFY_ERROR, "验证码不正确！");
+            }
 
+            Cache::rm($params['username'] . "_sms_code");
+        } else if (PregUtil::isEmail($params['username'])) {
+            $cacheCode = Cache::get($params['username'] . "_email_code", '');
+            if ($cacheCode != $params['code']) {
+                return ajax_error(ResultCode::E_DATA_VERIFY_ERROR, "验证码不正确！");
+            }
+
+            Cache::rm($params['username'] . "_email_code");
+        }
+       
+
+        //注册
         $mobile = StringUtil::getRandNum(11);
         $email = $mobile .'@' . StringUtil::getRandString(6) . '.com';
         if (PregUtil::isMobile($params['username'])) {
@@ -44,7 +57,8 @@ class Sign extends Base
         
         $nickname = isset($params['nickname']) ? $params['nickname'] : '用户' . substr($mobile, 5);
 
-        $user  = $UserLogic->register($mobile, $params['password'], $nickname, $email, '', UserModel::STATUS_ACTIVED);
+        $UserLogic = new UserLogic();
+        $user = $UserLogic->register($mobile, $params['password'], $nickname, $email, '', UserModel::STATUS_ACTIVED);
         if (!$user) {
             return ajax_error(ResultCode::E_DB_OPERATION_ERROR, $UserLogic->getError());
         }
@@ -146,13 +160,6 @@ class Sign extends Base
         $token = JWT::encode($payload, config('jwt.jwt_key'), config('jwt.jwt_alg'));
 
         $data = [
-            // 'uid' => $uid,
-            // 'account' => $user->account,
-            // 'nickname' => $user->nickname,
-            // 'mobile' => $user->mobile,
-            // 'email' => $user->email,
-            // 'status' => $user->status,
-            // 'registerTime' => $user->register_time,
             'token' => 'Bearer ' . $token
         ];
 

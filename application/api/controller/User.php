@@ -37,6 +37,8 @@ class User extends Base
             'mobile' => $user->mobile,
             'email' => $user->email,
             'status' => $user->status,
+            'head_url' => $user->head_url,
+            'sex' => $user->sex,
             'registerTime' => $user->register_time,
         ];
 
