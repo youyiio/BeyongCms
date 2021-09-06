@@ -31,7 +31,8 @@
         "jaeger/querylist": "4.*",
         "topthink/think-queue": "^2.0",
         "phpoffice/phpspreadsheet": "^1.0",
-        "firebase/php-jwt": "^5.4"
+        "firebase/php-jwt": "^5.4",
+        "youyiio/beyong-sms": "^0.9.1"
     },
     "autoload": {
         "psr-4": {

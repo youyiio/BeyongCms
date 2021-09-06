@@ -10,6 +10,7 @@ use Firebase\JWT\JWT;
 use think\facade\Cache;
 use youyi\util\PregUtil;
 use youyi\util\StringUtil;
+use app\common\logic\CodeLogic;
 
 class Sign extends Base
 {
@@ -164,5 +165,63 @@ class Sign extends Base
         ];
 
         return ajax_success($data);
+    }
+
+    /**
+     * 忘记密码,重置密码
+     */
+    public function reset()
+    {
+        if ($this->request->method() != 'POST') {
+            return ajax_error(ResultCode::SC_FORBIDDEN, '非法访问！请检查请求方式！');
+        }
+
+        if ($this->defaultConfig['reset_enable'] !== true) {
+            return ajax_error(ResultCode::SC_FORBIDDEN, '暂不提供此功能，请联系管理员！');
+        }
+
+        $username = input('username', '');
+        $code = input('code', '');
+
+        //验证账号是否存在
+        $UserModel = new UserModel();
+        $user = null;
+        if ($this->defaultConfig['reset_code_type'] === 'mail') {
+            $user = $UserModel->findByEmail($username);
+        } else if ($this->defaultConfig['reset_code_type'] === 'mobile') {
+            $user = $UserModel->findByMobile($username);
+        } else {
+            return ajax_error(ResultCode::ACTION_FAILED, '不支持的重置密码发送方式！');
+        }
+
+        if (!$user) {
+            return ajax_error(ResultCode::ACTION_FAILED, '用户不存在');
+        }
+        
+        $check = $this->validate(input('post.'), 'User.resetPwd');
+        if ($check !== true) {
+            return ajax_error(ResultCode::E_DATA_VERIFY_ERROR, $check);
+        }
+
+        $password = input('post.password');
+        $uid = $user['id'];
+
+        $CodeLogic = new CodeLogic();
+        if (!$CodeLogic->checkVerifyCode(CodeLogic::TYPE_RESET_PASSWORD, $username, $code)) {
+            return ajax_error(ResultCode::ACTION_FAILED, $CodeLogic->getError());
+        }
+
+        $UserModel = new UserModel();
+        $res = $UserModel->modifyPassword($uid, $password);
+        if ($res) {
+            //消费验证码
+            $CodeLogic->consumeCode(CodeLogic::TYPE_RESET_PASSWORD, $username, $code);
+
+            return ajax_return(ResultCode::ACTION_SUCCESS, '成功重置密码', null);
+        } else {
+            return ajax_error(ResultCode::ACTION_FAILED, '密码重置失败');
+        }
+        
+
     }
 }
