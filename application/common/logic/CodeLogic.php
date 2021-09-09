@@ -8,14 +8,12 @@
 namespace app\common\logic;
 
 use think\Exception;
-use think\facade\Env;
 use think\Model;
 use app\common\model\UserModel;
 use think\facade\Cache;
-use think\facade\Config;
 
-use youyi\util\PregUtil;
-use youyi\util\StringUtil;
+use beyong\commons\utils\PregUtils;
+use beyong\commons\utils\StringUtils;
 
 /**
  * 验证码管理
@@ -47,7 +45,7 @@ class CodeLogic extends Model
             return false;
         }
 
-        $code = StringUtil::getRandString(12);
+        $code = StringUtils::getRandString(12);
         // 缓存验证码
         Cache::set(self::TYPE_MAIL_ACTIVE . CACHE_SEPARATOR . $email, $code, 24 * 60 * 60);
         
@@ -91,7 +89,7 @@ class CodeLogic extends Model
      */
     public function sendResetMail($email)
     {
-        if (!PregUtil::isEmail($email)) {
+        if (!PregUtils::isEmail($email)) {
             $this->error = '邮箱格式不正确';
             return false;
         }
@@ -110,7 +108,7 @@ class CodeLogic extends Model
             return false;
         }
 
-        $code = StringUtil::getRandString(12);
+        $code = StringUtils::getRandString(12);
         // 缓存验证码
         Cache::set(self::TYPE_RESET_PASSWORD . CACHE_SEPARATOR . $email, $code, 24 * 60 * 60);
 
@@ -137,7 +135,7 @@ class CodeLogic extends Model
      */
     public function sendResetSms($mobile)
     {
-        if (!PregUtil::isMobile($mobile)) {
+        if (!PregUtils::isMobile($mobile)) {
             $this->error = '手机格式不正确';
             return false;
         }

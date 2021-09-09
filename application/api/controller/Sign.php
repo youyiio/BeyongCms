@@ -8,8 +8,8 @@ use app\common\model\AuthGroupAccessModel;
 use app\common\model\UserModel;
 use Firebase\JWT\JWT;
 use think\facade\Cache;
-use youyi\util\PregUtil;
-use youyi\util\StringUtil;
+use beyong\commons\utils\PregUtils;
+use beyong\commons\utils\StringUtils;
 use app\common\logic\CodeLogic;
 
 class Sign extends Base
@@ -30,14 +30,14 @@ class Sign extends Base
         }
 
         //验证码验证
-        if (PregUtil::isMobile($params['username'])) {
+        if (PregUtils::isMobile($params['username'])) {
             $cacheCode = Cache::get($params['username'] . "_sms_code", '');
             if ($cacheCode != $params['code']) {
                 return ajax_error(ResultCode::E_DATA_VERIFY_ERROR, "验证码不正确！");
             }
 
             Cache::rm($params['username'] . "_sms_code");
-        } else if (PregUtil::isEmail($params['username'])) {
+        } else if (PregUtils::isEmail($params['username'])) {
             $cacheCode = Cache::get($params['username'] . "_email_code", '');
             if ($cacheCode != $params['code']) {
                 return ajax_error(ResultCode::E_DATA_VERIFY_ERROR, "验证码不正确！");
@@ -48,11 +48,11 @@ class Sign extends Base
        
 
         //注册
-        $mobile = StringUtil::getRandNum(11);
-        $email = $mobile .'@' . StringUtil::getRandString(6) . '.com';
-        if (PregUtil::isMobile($params['username'])) {
+        $mobile = StringUtils::getRandNum(11);
+        $email = $mobile .'@' . StringUtils::getRandString(6) . '.com';
+        if (PregUtils::isMobile($params['username'])) {
             $mobile = $params['username'];
-        } else if (PregUtil::isEmail($params['username'])) {
+        } else if (PregUtils::isEmail($params['username'])) {
             $email = $params['username'];
         }
         

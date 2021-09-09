@@ -7,8 +7,8 @@ use app\common\logic\UserLogic;
 use app\common\model\AuthGroupAccessModel;
 use app\common\model\UserModel;
 use think\facade\Cache;
-use youyi\util\PregUtil;
-use youyi\util\StringUtil;
+use beyong\commons\utils\PregUtils;
+use beyong\commons\utils\StringUtils;
 
 use Firebase\JWT\JWT;
 
@@ -22,7 +22,8 @@ class Sms extends Base
 
         $params = $this->request->put();
         $mobile = $params["mobile"];
-        if (!PregUtil::isMobile($mobile)) {
+        $action = isset($params["action"]) ? $params["action"] : "login";
+        if (!PregUtils::isMobile($mobile)) {
             return ajax_error(ResultCode::ACTION_FAILED, "手机号格式不正确!");
         }
 
@@ -35,15 +36,18 @@ class Sms extends Base
         }
 
         $smsConfig = config('sms.');
+        if (!isset($smsConfig["actions"][$action])) {
+            return ajax_error(ResultCode::ACTION_FAILED, "短信action类型不支持或者未配置!");
+        }
         \beyong\sms\Config::init($smsConfig);
 
         $client = \beyong\sms\SmsClient::instance();
         
         //$sign、$template和$templateParams 服务商控制台获取
-        $sign = $smsConfig['actions']['login']['sign'];
-        $template = $smsConfig['actions']['login']['template'];
+        $sign = $smsConfig['actions'][$action]['sign'];
+        $template = $smsConfig['actions'][$action]['template'];
 
-        $code = StringUtil::getRandNum(6);
+        $code = StringUtils::getRandNum(6);
         $templateParams = ['code' => $code];
         
         
@@ -71,10 +75,10 @@ class Sms extends Base
 
         $mobile = $params["mobile"];
         $code = $params["code"];
-        if (!PregUtil::isMobile($mobile)) {
+        if (!PregUtils::isMobile($mobile)) {
             return ajax_error(ResultCode::ACTION_FAILED, "手机号格式不正确!");
         }
-        if (strlen($code) !== 6 || !PregUtil::isNumber($code)) {
+        if (strlen($code) !== 6 || !PregUtils::isNumber($code)) {
             return ajax_error(ResultCode::ACTION_FAILED, "验证码为6位的数字!");
         }
 
@@ -138,7 +142,7 @@ class Sms extends Base
     private function addUser($mobile)
     {
         $nickname = '用户' . substr($mobile, 5);
-        $password = StringUtil::getRandString(12);
+        $password = StringUtils::getRandString(12);
 
         $UserLogic = new UserLogic();
         $user = $UserLogic->register($mobile, $password, $nickname, '', '', UserModel::STATUS_ACTIVED);

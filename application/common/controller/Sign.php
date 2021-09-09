@@ -13,7 +13,7 @@ use app\common\model\UserModel;
 use app\common\logic\CodeLogic;
 use app\common\logic\UserLogic;
 use app\common\logic\ActionLogLogic;
-use youyi\util\StringUtil;
+use beyong\commons\utils\StringUtils;
 
 /**
  * 登录/注册/帐号处理控制器
@@ -163,7 +163,7 @@ class Sign extends Controller
             }
 
             $userLogic = new UserLogic();
-            $mobile = StringUtil::getRandNum(11);
+            $mobile = StringUtils::getRandNum(11);
             $user  = $userLogic->register($mobile, $data['password'], $data['nickname'], $data['email'], '', UserModel::STATUS_APPLY);
             if (!$user) {
                 $this->error($userLogic->getError());
