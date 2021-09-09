@@ -11,6 +11,7 @@ use beyong\commons\utils\PregUtils;
 use beyong\commons\utils\StringUtils;
 
 use Firebase\JWT\JWT;
+use app\common\logic\CodeLogic;
 
 class Sms extends Base
 {
@@ -27,40 +28,37 @@ class Sms extends Base
             return ajax_error(ResultCode::ACTION_FAILED, "手机号格式不正确!");
         }
 
+        if (!in_array($action, ['register', 'login'])) {
+            return ajax_error(ResultCode::E_DATA_VERIFY_ERROR, '短信action类型不正确!');
+        }
+
+        $type = CodeLogic::TYPE_REGISTER;
+        if ($action == 'register') {
+            $type = CodeLogic::TYPE_REGISTER;
+        } else if ($action == 'login') {
+            $type = CodeLogic::TYPE_LOGIN;
+        }
+
         // 防止短信被刷
-        $mobileFrequency = Cache::get($mobile . "_sms_code_frequency");
-        $ipFrequency = Cache::get($this->request->ip(0, true) . "_sms_code_frequency");
+        $mobileFrequency = Cache::get($mobile . "_send_code_frequency");
+        $ipFrequency = Cache::get($this->request->ip(0, true) . "_send_code_frequency");
         $frequencyLimited = !empty($mobileFrequency) || !empty($ipFrequency);
         if ($frequencyLimited) {
             return ajax_error(ResultCode::ACTION_FAILED, "您操作过于频繁，请稍候再试!");
         }
 
-        $smsConfig = config('sms.');
-        if (!isset($smsConfig["actions"][$action])) {
-            return ajax_error(ResultCode::ACTION_FAILED, "短信action类型不支持或者未配置!");
+        //验证码发送
+        try {
+            $codeLogic = new CodeLogic();
+                 
+            $codeLogic->sendCodeByMobile($mobile, $type, $action);
+        } catch(\Exception $e) {
+            return ajax_error(ResultCode::ACTION_FAILED, $e->getMessage());
         }
-        \beyong\sms\Config::init($smsConfig);
-
-        $client = \beyong\sms\SmsClient::instance();
-        
-        //$sign、$template和$templateParams 服务商控制台获取
-        $sign = $smsConfig['actions'][$action]['sign'];
-        $template = $smsConfig['actions'][$action]['template'];
-
-        $code = StringUtils::getRandNum(6);
-        $templateParams = ['code' => $code];
-        
-        
-        $response = $client->to($params['mobile'])->sign($sign)->template($template, $templateParams)->send();
-        if ($response !== true) {            
-            return ajax_error(ResultCode::ACTION_FAILED, $client->getError());
-        }
-        
-        Cache::set($mobile . "_sms_code", $code, 5 * 60);
 
         //频率限制
-        Cache::set($mobile . "_sms_code_frequency", '60s', 60);
-        Cache::set($this->request->ip(0, true) . "_sms_code_frequency", '20s', 20);
+        Cache::set($mobile . "_send_code_frequency", '60s', 60);
+        Cache::set($this->request->ip(0, true) . "_send_code_frequency", '20s', 20);
 
         return ajax_success(null);        
     }
@@ -100,12 +98,15 @@ class Sms extends Base
         }, strtotime(date('Y-m-d 23:59:59')) - time());
         Cache::inc($tryLoginCountMark);
 
-        $cacheCode = Cache::get($mobile . "_sms_code", '');
-        if ($cacheCode != $code) {
-            return ajax_error(ResultCode::E_PARAM_ERROR, "验证码不正确！");
+        $codeLogic = new CodeLogic();
+        $check = $codeLogic->checkCode(CodeLogic::TYPE_LOGIN, $mobile, $code);
+        if ($check !== true) {
+            return ajax_error(ResultCode::E_PARAM_ERROR, $codeLogic->getError());
         }
 
-        Cache::rm($mobile . "_sms_code");
+        //清掉验证码
+        $codeLogic->consumeCode(CodeLogic::TYPE_LOGIN, $mobile, $code);
+
         Cache::rm($tryLoginCountMark);
 
         $UserMobile = new UserModel();

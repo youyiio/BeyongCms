@@ -14,6 +14,7 @@ use think\facade\Cache;
 
 use beyong\commons\utils\PregUtils;
 use beyong\commons\utils\StringUtils;
+use LogicException;
 
 /**
  * 验证码管理
@@ -24,9 +25,10 @@ class CodeLogic extends Model
     const STATUS_UNUSED = 1; //未使用
     const STATUS_USED = 2;  //已使用
 
-    const TYPE_REGISTER = 'register';
-    const TYPE_RESET_PASSWORD = 'reset_password';
-    const TYPE_MAIL_ACTIVE = 'mail_active';
+    const TYPE_REGISTER = 'register_code';
+    const TYPE_LOGIN = 'login_code';
+    const TYPE_RESET_PASSWORD = 'reset_password_code';
+    const TYPE_MAIL_ACTIVE = 'mail_active_code';
 
     /**
      * 发送激活邮件，条件：1、设置邮件发送配置；2、发送的邮件模板,theme/xxx/email/email_template.html
@@ -67,18 +69,106 @@ class CodeLogic extends Model
     }
 
     /**
+     * 发送注册邮箱验证码
+     * @param $email
+     * @throws Exception
+     */
+    public function sendRegisterCodeByEmail($email)
+    {
+        $UserModel = new UserModel();
+        $user = $UserModel->findByEmail($email);
+        if (empty($user)) {
+            $this->error = '邮箱不存在';
+            return false;
+        }
+
+        $code = StringUtils::getRandNum(6);
+
+        $url = url('frontend/Index/index');
+
+        $subject = '新用户注册';
+        $message = "您的注册验证码：{code}，10分钟内有效! {url}";
+        $data = [
+            'code' => $code,
+            'url' => $url
+        ];
+
+        $res = send_mail($email, $subject, $message, true, $data);
+        if ($res !== true) {
+            throw new LogicException($res);
+        }
+
+        // 缓存验证码
+        Cache::set(self::TYPE_REGISTER . CACHE_SEPARATOR . $email, $code, 10 * 60);
+        
+        return true;
+    }
+
+    /**
      * 发送注册短信验证码，条件：1、配置短信通道；
      * @param $mobile
      * @throws Exception
      */
-    public function sendRegisterSms($mobile)
+    public function sendRegisterCodeByMobile($mobile)
     {
-        $channel = get_config('sms_channel');
-        if (empty($channel)) {
-            throw new Exception("未配置短信通道");
+        $smsConfig = config('sms.');
+        $action = 'register';
+        if (!isset($smsConfig["actions"][$action])) {
+            throw new LogicException("短信action类型不支持或者未配置!");
         }
 
-        throw new Exception("短信发送正在实现中...");
+        \beyong\sms\Config::init($smsConfig);
+
+        $client = \beyong\sms\SmsClient::instance();
+        
+        //$sign、$template和$templateParams 服务商控制台获取
+        $sign = $smsConfig['actions'][$action]['sign'];
+        $template = $smsConfig['actions'][$action]['template'];
+
+        $code = StringUtils::getRandNum(6);
+        $templateParams = ['code' => $code];
+        
+        $response = $client->to($mobile)->sign($sign)->template($template, $templateParams)->send();
+        if ($response !== true) {            
+            throw new LogicException($client->getError());
+        }
+
+        Cache::set(self::TYPE_REGISTER . CACHE_SEPARATOR . $mobile, $code, 5 * 60);
+
+        return true;
+    }
+
+    /**
+     * 发送短信验证码，条件：1、配置短信通道；
+     * @param $mobile
+     * @throws Exception
+     */
+    public function sendCodeByMobile($mobile, $type, $action)
+    {
+        $smsConfig = config('sms.');
+        if (!isset($smsConfig["actions"][$action])) {
+            throw new LogicException("短信action类型不支持或者未配置!");
+        }
+        
+        \beyong\sms\Config::init($smsConfig);
+
+        $client = \beyong\sms\SmsClient::instance();
+        
+        //$sign、$template和$templateParams 服务商控制台获取
+        $sign = $smsConfig['actions'][$action]['sign'];
+        $template = $smsConfig['actions'][$action]['template'];
+
+        $code = StringUtils::getRandNum(6);
+        $templateParams = ['code' => $code];
+        
+        $response = $client->to($mobile)->sign($sign)->template($template, $templateParams)->send();
+        if ($response !== true) {            
+            throw new LogicException($client->getError());
+        }
+
+        Cache::set($type . CACHE_SEPARATOR . $mobile, $code, 5 * 60);
+
+        return true;
     }
 
     /**
@@ -155,9 +245,9 @@ class CodeLogic extends Model
      * @param $code
      * @return bool
      */
-    public function checkVerifyCode($type, $target, $code)
+    public function checkCode($type, $username, $code)
     {
-        $cacheCode = Cache::get($type . CACHE_SEPARATOR . $target, null);
+        $cacheCode = Cache::get($type . CACHE_SEPARATOR . $username, null);
         if ($cacheCode == null || $cacheCode !== $code) {
             $this->error = '验证码不正确或已过期!';
             return false;
@@ -173,15 +263,15 @@ class CodeLogic extends Model
      * @param $code
      * @return bool
      */
-    public function consumeCode($type, $target, $code)
+    public function consumeCode($type, $username, $code)
     {
-        $cacheCode = Cache::get($type . CACHE_SEPARATOR . $target, null);
+        $cacheCode = Cache::get($type . CACHE_SEPARATOR . $username, null);
         if ($cacheCode == null || $cacheCode !== $code) {
             $this->error = '验证码不正确或已过期!';
             return false;
         }
 
-        Cache::rm($type . CACHE_SEPARATOR . $target);
+        Cache::rm($type . CACHE_SEPARATOR . $username);
 
         return true;
     }

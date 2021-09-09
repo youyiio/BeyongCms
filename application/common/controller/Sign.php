@@ -13,7 +13,11 @@ use app\common\model\UserModel;
 use app\common\logic\CodeLogic;
 use app\common\logic\UserLogic;
 use app\common\logic\ActionLogLogic;
+
 use beyong\commons\utils\StringUtils;
+use beyong\commons\utils\PregUtils;
+use app\common\library\ResultCode;
+use Exception;
 
 /**
  * 登录/注册/帐号处理控制器
@@ -25,9 +29,9 @@ class Sign extends Controller
         'login_success_view' => '', //登录成功后，跳转地址
         'logout_success_view' => '', //注销后，跳转地址
         'register_enable' => false, //注册功能是否支持
-        'register_code_type' => 'mail', //注册码方式，值为：mail,mobile
+        'register_code_type' => 'email', //注册码方式，值为：email,mobile
         'reset_enable' => false, //忘记密码功能是否支持
-        'reset_code_type' => 'mail', //重置密码，值为：mail,mobile
+        'reset_code_type' => 'email', //重置密码，值为：email,mobile
     ];
 
     public function initialize()
@@ -137,7 +141,7 @@ class Sign extends Controller
 
     /**
      * 注册页面
-     *  params required: email,password,repassword,nickname
+     *  params required: username,password,repassword,code,nickname
      *  params optional:
      */
     public function register()
@@ -146,60 +150,84 @@ class Sign extends Controller
             $this->error('暂不提供注册功能，请联系管理员！');
         }
 
-        if (request()->isAjax()) {
-            $data  = input('post.');
-            $check = $this->validate($data, 'User.register');
+        //网页展示
+        if (!$this->request->isAjax()) {
+            return $this->fetch('register');
+        }
+        
+        $data = input('post.');
+        $check = $this->validate($data, 'User.register');
+        if ($check !== true) {
+            $this->error($check);
+        }
+
+        $code = $data["code"];
+
+        //验证码验证
+        $codeLogic = new CodeLogic();
+        if (PregUtils::isMobile($data['username'])) {
+            $check = $codeLogic->checkCode(CodeLogic::TYPE_REGISTER, $data['username'], $code);
             if ($check !== true) {
-                $this->error($check);
+                $this->error($codeLogic->getError());
             }
-
-            //推荐人判断处理
-            $invite = input('param.invite', '');
-            if (empty($invite)) {
-                $data['referee'] = 1; //推荐人
-            } else {
-                $UserModel = new UserModel();
-                $data['referee'] = $UserModel->where('account', $invite)->value('id');
-            }
-
-            $userLogic = new UserLogic();
-            $mobile = StringUtils::getRandNum(11);
-            $user  = $userLogic->register($mobile, $data['password'], $data['nickname'], $data['email'], '', UserModel::STATUS_APPLY);
-            if (!$user) {
-                $this->error($userLogic->getError());
-            }
-            
-            $UserModel = new UserModel();
-            //完善用户资料
-            $profileData = [
-                'id' => $user['id'],
-                'head_url' => '/static/cms/image/head/0002.jpg',
-                'referee' => $data['referee'], //推荐人
-                'register_ip' => request()->ip(0, true),
-                'from_referee' => cookie('from_referee'),
-                'entrance_url'     => cookie('entrance_url'),
-            ];
-            $UserModel->where('id', $user['id'])->setField($profileData);
-
-            //资料扩展
-            //$UserModel->ext('xxx', 'vvv');
-            //$UserModel->meta('xxx', 'vvv');
-
-            //注册的后置操作
-            $this->afterRegister($user['id']);
-
-            //发送激活邮件
-            $CodeLogic = new CodeLogic();
-            $res = $CodeLogic->sendActiveMail($user['email'], request()->module() . '/Sign/mailActive');
-            if ($res) {
-                $param = ['uid'=>$user['id'], 'email'=>$user['email']];
-                $this->success('注册成功, 请登录邮箱激活您的帐号!', url(request()->module() . '/Sign/login'), $param);
-            } else {
-                $this->success('注册成功, 邮件发送失败!', url(request()->module() . '/Sign/login'), ['uid'=>$user['id'], 'email'=>$user['email']]);
+        } else if (PregUtils::isEmail($data['username'])) {
+            $check = $codeLogic->checkCode(CodeLogic::TYPE_REGISTER, $data['username'], $code);
+            if ($check !== true) {
+                $this->error($codeLogic->getError());
             }
         }
 
-        return $this->fetch('register');
+        //推荐人判断处理
+        $invite = input('param.invite', '');
+        if (empty($invite)) {
+            $data['referee'] = 1; //推荐人
+        } else {
+            $UserModel = new UserModel();
+            $data['referee'] = $UserModel->where('account', $invite)->value('id');
+        }
+
+        //确认注册各字段
+        $mobile = StringUtils::getRandNum(11);
+        $email = $mobile .'@' . StringUtils::getRandString(12) . '.com';
+        if (PregUtils::isMobile($data['username'])) {
+            $mobile = $data['username'];
+        } else if (PregUtils::isEmail($data['username'])) {
+            $email = $data['username'];
+        }
+        
+        $nickname = isset($data['nickname']) ? $data['nickname'] : '用户' . substr($mobile, 5);
+
+        $userLogic = new UserLogic();
+        $mobile = StringUtils::getRandNum(11);
+        $user  = $userLogic->register($mobile, $data['password'], $nickname, $email, '', UserModel::STATUS_ACTIVED);
+        if (!$user) {
+            $this->error($userLogic->getError());
+        }
+        
+        //消耗掉验证码
+        $codeLogic->consumeCode(CodeLogic::TYPE_REGISTER, $data['username'], $code);
+
+        $UserModel = new UserModel();
+        //完善用户资料
+        $profileData = [
+            'id' => $user['id'],
+            'head_url' => '/static/common/img/head/default.jpg',
+            'referee' => $data['referee'], //推荐人
+            'register_ip' => request()->ip(0, true),
+            'from_referee' => cookie('from_referee'),
+            'entrance_url'  => cookie('entrance_url'),
+        ];
+        $UserModel->where('id', $user['id'])->setField($profileData);
+
+        //资料扩展
+        //$UserModel->ext('xxx', 'vvv');
+        //$UserModel->meta('xxx', 'vvv');
+
+        //注册的后置操作
+        $this->afterRegister($user['id']);
+
+        //注册成功，调整登录页面
+        $this->success("恭喜您，账号注册成功！", url(request()->module() . '/Sign/login'));
     }
 
     /**
@@ -210,6 +238,57 @@ class Sign extends Controller
     protected function afterRegister($uid)
     {
 
+    }
+
+    /**
+     * 发送邮箱或短信验证码
+     *
+     * @return void
+     */
+    public function sendCode()
+    {
+        if ($this->request->method() != 'POST') {
+            $this->error('非法访问！请检查请求方式！');
+        }
+        if (!in_array($this->defaultConfig["register_code_type"], ["email", "mobile"])) {
+            $this->error('注册方式 register_code_type 配置不正确！');
+        }
+
+        $params = input('post.');
+        $username = $params["username"];
+        $action = isset($params["action"]) ? $params["action"] : "login";
+        if ($this->defaultConfig["register_code_type"] == "mobile" && !PregUtils::isMobile($username)) {
+            $this->error("手机号格式不正确!");
+        }
+        if ($this->defaultConfig["register_code_type"] == "email" && !PregUtils::isEmail($username)) {
+            $this->error("邮箱格式不正确!");
+        }
+
+        // 防止短信被刷,频率限制验证
+        $usernameFrequency = Cache::get($username . "_send_code_frequency");
+        $ipFrequency = Cache::get($this->request->ip(0, true) . "_send_code_frequency");
+        $frequencyLimited = !empty($usernameFrequency) || !empty($ipFrequency);
+        if ($frequencyLimited) {
+            return $this->error("您操作过于频繁，请稍候再试!");
+        }
+
+        //验证码发送
+        try {
+            $codeLogic = new CodeLogic();
+            if ($this->defaultConfig["register_code_type"] == "mobile") {
+                $res = $codeLogic->sendRegisterCodeByMobile($username);
+            } else if ($this->defaultConfig["register_code_type"] == "email") {
+                $res = $codeLogic->sendRegisterCodeByEmail($username);
+            }
+        } catch(Exception $e) {
+            $this->error($e->getMessage());
+        }
+
+        //频率限制
+        Cache::set($username . "_send_code_frequency", '60s', 60);
+        Cache::set($this->request->ip(0, true) . "_send_code_frequency", '20s', 20);
+
+        $this->success("验证码发送成功!");
     }
 
     /**
@@ -286,7 +365,7 @@ class Sign extends Controller
             $uid = $user['id'];
 
             $CodeLogic = new CodeLogic();
-            if (!$CodeLogic->checkVerifyCode(CodeLogic::TYPE_RESET_PASSWORD, $username, $code)) {
+            if (!$CodeLogic->checkCode(CodeLogic::TYPE_RESET_PASSWORD, $username, $code)) {
                 $this->error($CodeLogic->getError());
             }
 
@@ -318,7 +397,7 @@ class Sign extends Controller
         }
 
         $CodeLogic = new CodeLogic();
-        $check = $CodeLogic->checkVerifyCode(CodeLogic::TYPE_MAIL_ACTIVE, $email, $code);
+        $check = $CodeLogic->checkCode(CodeLogic::TYPE_MAIL_ACTIVE, $email, $code);
         if (!$check) {
             $this->error($CodeLogic->getError());
         }

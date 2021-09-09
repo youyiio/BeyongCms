@@ -27,5 +27,3 @@ class ModelException extends DbException  {
         return $this->modelMessage;
     }
 }
-
-?>

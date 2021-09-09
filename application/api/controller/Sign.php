@@ -29,25 +29,24 @@ class Sign extends Base
             return ajax_error(ResultCode::E_DATA_VERIFY_ERROR, validate('User')->getError());
         }
 
+        $code = $params["code"];
+
         //验证码验证
+        $codeLogic = new CodeLogic();
         if (PregUtils::isMobile($params['username'])) {
-            $cacheCode = Cache::get($params['username'] . "_sms_code", '');
-            if ($cacheCode != $params['code']) {
-                return ajax_error(ResultCode::E_DATA_VERIFY_ERROR, "验证码不正确！");
+            $check = $codeLogic->checkCode(CodeLogic::TYPE_REGISTER, $params['username'], $code);
+            if ($check !== true) {
+                return ajax_error(ResultCode::E_DATA_VERIFY_ERROR, $codeLogic->getError());
             }
-
-            Cache::rm($params['username'] . "_sms_code");
         } else if (PregUtils::isEmail($params['username'])) {
-            $cacheCode = Cache::get($params['username'] . "_email_code", '');
-            if ($cacheCode != $params['code']) {
-                return ajax_error(ResultCode::E_DATA_VERIFY_ERROR, "验证码不正确！");
+            $check = $codeLogic->checkCode(CodeLogic::TYPE_REGISTER, $params['username'], $code);
+            if ($check !== true) {
+                return ajax_error(ResultCode::E_DATA_VERIFY_ERROR, $codeLogic->getError());
             }
-
-            Cache::rm($params['username'] . "_email_code");
         }
        
 
-        //注册
+        //确认注册各字段
         $mobile = StringUtils::getRandNum(11);
         $email = $mobile .'@' . StringUtils::getRandString(6) . '.com';
         if (PregUtils::isMobile($params['username'])) {
@@ -68,7 +67,7 @@ class Sign extends Base
         //完善用户资料
         $profileData = [
             'id' => $user['id'],
-            'head_url' => '/static/cms/image/head/0002.jpg',
+            'head_url' => '/static/common/img/head/default.jpg',
             'referee' => 1, //$data['referee'], //推荐人
             'register_ip' => request()->ip(0, true),
             'from_referee' => cookie('from_referee'),
@@ -207,7 +206,7 @@ class Sign extends Base
         $uid = $user['id'];
 
         $CodeLogic = new CodeLogic();
-        if (!$CodeLogic->checkVerifyCode(CodeLogic::TYPE_RESET_PASSWORD, $username, $code)) {
+        if (!$CodeLogic->checkCode(CodeLogic::TYPE_RESET_PASSWORD, $username, $code)) {
             return ajax_error(ResultCode::ACTION_FAILED, $CodeLogic->getError());
         }
 
