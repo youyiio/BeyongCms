@@ -24,6 +24,7 @@ return [
     'sign/register' => ['frontend/Sign/register', ['method'=>'get,post']],
     'sign/logout' => ['frontend/Sign/logout', ['method'=>'get,post']],
     'sign/forget' => ['frontend/Sign/forget', ['method'=>'get,post']],
-
+    'sign/captcha' => ['frontend/Sign/captcha', ['method'=>'get,post']],
+    
     /*****************frontend 通用路由 end*******************/
 ];

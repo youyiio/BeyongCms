@@ -44,6 +44,7 @@ class CodeLogic extends Model
         $user = $UserModel->findByEmail($email);
         if (empty($user)) {
             $this->error = '邮箱不存在';
+            throw new LogicException("邮箱不存在！");
             return false;
         }
 
@@ -77,20 +78,22 @@ class CodeLogic extends Model
     {
         $UserModel = new UserModel();
         $user = $UserModel->findByEmail($email);
-        if (empty($user)) {
-            $this->error = '邮箱不存在';
+        if ($user) {
+            //$this->error = '邮箱已经注册！';
+            throw new LogicException("邮箱已经注册！");
             return false;
         }
 
         $code = StringUtils::getRandNum(6);
 
-        $url = url('frontend/Index/index');
+        $url = url('frontend/Index/index', '', false, get_config('domain_name'));
 
         $subject = '新用户注册';
-        $message = "您的注册验证码：{code}，10分钟内有效! {url}";
+        $message = "您的注册验证码：{code}，10分钟内有效! <a href=\"{url}\">{site_name}</a>";
         $data = [
             'code' => $code,
-            'url' => $url
+            'url' => $url,
+            'site_name' => get_config('site_name')
         ];
 
         $res = send_mail($email, $subject, $message, true, $data);
@@ -111,6 +114,14 @@ class CodeLogic extends Model
      */
     public function sendRegisterCodeByMobile($mobile)
     {
+        $UserModel = new UserModel();
+        $user = $UserModel->findByMobile($mobile);
+        if ($user) {
+            //$this->error = '手机已经注册！';
+            throw new LogicException("手机已经注册！");
+            return false;
+        }
+
         $smsConfig = config('sms.');
         $action = 'register';
         if (!isset($smsConfig["actions"][$action])) {
@@ -232,7 +243,7 @@ class CodeLogic extends Model
 
         $channel = get_config('sms_channel');
         if (empty($channel)) {
-            throw new Exception("未配置短信通道");
+            throw new LogicException("未配置短信通道");
         }
 
         throw new Exception("短信发送正在实现中...");
@@ -248,8 +259,12 @@ class CodeLogic extends Model
     public function checkCode($type, $username, $code)
     {
         $cacheCode = Cache::get($type . CACHE_SEPARATOR . $username, null);
+        if ($cacheCode === null) {
+            $this->error = '验证码已过期!';
+            return false;
+        }
         if ($cacheCode == null || $cacheCode !== $code) {
-            $this->error = '验证码不正确或已过期!';
+            $this->error = '验证码不正确!';
             return false;
         }
 

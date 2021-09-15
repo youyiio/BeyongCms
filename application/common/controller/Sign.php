@@ -16,8 +16,6 @@ use app\common\logic\ActionLogLogic;
 
 use beyong\commons\utils\StringUtils;
 use beyong\commons\utils\PregUtils;
-use app\common\library\ResultCode;
-use Exception;
 
 /**
  * 登录/注册/帐号处理控制器
@@ -161,17 +159,18 @@ class Sign extends Controller
             $this->error($check);
         }
 
+        $username = $data['username'];
         $code = $data["code"];
 
         //验证码验证
         $codeLogic = new CodeLogic();
-        if (PregUtils::isMobile($data['username'])) {
-            $check = $codeLogic->checkCode(CodeLogic::TYPE_REGISTER, $data['username'], $code);
+        if (PregUtils::isMobile($username)) {
+            $check = $codeLogic->checkCode(CodeLogic::TYPE_REGISTER, $username, $code);
             if ($check !== true) {
                 $this->error($codeLogic->getError());
             }
-        } else if (PregUtils::isEmail($data['username'])) {
-            $check = $codeLogic->checkCode(CodeLogic::TYPE_REGISTER, $data['username'], $code);
+        } else if (PregUtils::isEmail($username)) {
+            $check = $codeLogic->checkCode(CodeLogic::TYPE_REGISTER, $username, $code);
             if ($check !== true) {
                 $this->error($codeLogic->getError());
             }
@@ -189,23 +188,22 @@ class Sign extends Controller
         //确认注册各字段
         $mobile = StringUtils::getRandNum(11);
         $email = $mobile .'@' . StringUtils::getRandString(12) . '.com';
-        if (PregUtils::isMobile($data['username'])) {
-            $mobile = $data['username'];
-        } else if (PregUtils::isEmail($data['username'])) {
-            $email = $data['username'];
+        if (PregUtils::isMobile($username)) {
+            $mobile = $username;
+        } else if (PregUtils::isEmail($username)) {
+            $email = $username;
         }
         
         $nickname = isset($data['nickname']) ? $data['nickname'] : '用户' . substr($mobile, 5);
 
         $userLogic = new UserLogic();
-        $mobile = StringUtils::getRandNum(11);
         $user  = $userLogic->register($mobile, $data['password'], $nickname, $email, '', UserModel::STATUS_ACTIVED);
         if (!$user) {
             $this->error($userLogic->getError());
         }
         
         //消耗掉验证码
-        $codeLogic->consumeCode(CodeLogic::TYPE_REGISTER, $data['username'], $code);
+        $codeLogic->consumeCode(CodeLogic::TYPE_REGISTER, $username, $code);
 
         $UserModel = new UserModel();
         //完善用户资料
@@ -220,8 +218,11 @@ class Sign extends Controller
         $UserModel->where('id', $user['id'])->setField($profileData);
 
         //资料扩展
-        //$UserModel->ext('xxx', 'vvv');
-        //$UserModel->meta('xxx', 'vvv');
+        if (PregUtils::isMobile($username)) {
+            $user->meta('mobile_verified', '1');
+        } else if (PregUtils::isEmail($username)) {
+            $user->meta('email_verified', '1');
+        }
 
         //注册的后置操作
         $this->afterRegister($user['id']);
@@ -275,12 +276,16 @@ class Sign extends Controller
         //验证码发送
         try {
             $codeLogic = new CodeLogic();
+            $res = false;
             if ($this->defaultConfig["register_code_type"] == "mobile") {
                 $res = $codeLogic->sendRegisterCodeByMobile($username);
             } else if ($this->defaultConfig["register_code_type"] == "email") {
-                $res = $codeLogic->sendRegisterCodeByEmail($username);
+                $res = $codeLogic->sendRegisterCodeByEmail($username);                
             }
-        } catch(Exception $e) {
+            if ($res !== true) {
+                $this->error($codeLogic->getError());
+            }
+        } catch(\Exception $e) {
             $this->error($e->getMessage());
         }
 
@@ -304,7 +309,7 @@ class Sign extends Controller
             $username = input('post.username', '');
 
             $CodeLogic = new CodeLogic();
-            if ($this->defaultConfig['reset_code_type'] === 'mail') {
+            if ($this->defaultConfig['reset_code_type'] === 'email') {
                 //发送重置邮件
                 $res = $CodeLogic->sendResetMail($username);
                 if ($res) {
@@ -343,7 +348,7 @@ class Sign extends Controller
         //验证账号是否存在
         $UserModel = new UserModel();
         $user = null;
-        if ($this->defaultConfig['reset_code_type'] === 'mail') {
+        if ($this->defaultConfig['reset_code_type'] === 'email') {
             $user = $UserModel->findByEmail($username);
         } else if ($this->defaultConfig['reset_code_type'] === 'mobile') {
             $user = $UserModel->findByMobile($username);

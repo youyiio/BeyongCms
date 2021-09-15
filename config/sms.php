@@ -9,19 +9,19 @@
  use think\facade\Env;
  
 return [
-    'driver'      => '', // 服务提供商, 支持 aliyun|tencent|jiguang 三种
-    'key'         => '', // 短信服务key
-    'secret'      => '', // 短信服务secret
-    'SDKAppID'    => '', // 腾讯短信平台需要
+    'driver'      => Env::get('sms.driver', 'jiguang'), // 服务提供商, 支持 aliyun|tencent|jiguang 三种
+    'key'         => Env::get('sms.key', ''), // 短信服务key
+    'secret'      => Env::get('sms.secret', ''), // 短信服务secret
+    'SDKAppID'    => Env::get('sms.SDKAppID', ''), // 腾讯短信平台需要
     'actions'     => [
         'register' => [
-            'sign' => '',
-            'template' => '',
+            'sign' => Env::get('sms.register_sign', ''),
+            'template' => Env::get('sms.register_template', ''),
             'params' => ['code' => ''],
         ],
         'login' => [
-            'sign' => '',
-            'template' => '',
+            'sign' => Env::get('sms.login_sign', ''),
+            'template' => Env::get('sms.login_template', ''),
             'params' => ['code' => '']
         ]
     ],
