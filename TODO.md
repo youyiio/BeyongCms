@@ -5,7 +5,7 @@
 * api常用基本接口
 * 实现beyongx-app移动端，使用flutter开发
 
-## v1.6.1 （开发中）
+## v1.6.1 （开发完成）
 
 * 更新echarts 5.0（youyiio/php-echarts）
 * 引入api模块, 使用jwt支持
