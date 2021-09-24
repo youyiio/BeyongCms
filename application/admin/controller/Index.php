@@ -113,7 +113,8 @@ class Index extends Base
         return view();
     }
 
-    public function today(){
+    public function today()
+    {
         $where = [];
         $xAxisData = [];
         $yAxisData = [];
@@ -141,11 +142,12 @@ class Index extends Base
         $chart["data"] = $yAxisData;
 
         $option->series([$chart]);
-        echo json_encode($option);
 
+        $this->success('ok', '', $option);
     }
 
-    public function month(){
+    public function month()
+    {
         $where = [];
         $xAxisData = [];
         $yAxisData = [];
@@ -173,11 +175,12 @@ class Index extends Base
         $chart["data"] = $yAxisData;
 
         $option->series([$chart]);
-        echo json_encode($option);
 
+        $this->success('ok', '', $option);
     }
 
-    public function year(){
+    public function year()
+    {
         $where = [];
         $xAxisData = [];
         $yAxisData = [];
@@ -205,7 +208,8 @@ class Index extends Base
         $chart["data"] = $yAxisData;
 
         $option->series([$chart]);
-        echo json_encode($option);
+
+        $this->success('ok', '', $option);
     }
 
 }

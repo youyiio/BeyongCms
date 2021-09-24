@@ -183,9 +183,13 @@
 
             var url = $(this).data('action');
             myChart.showLoading();
-            $.getJSON(url, [], function (option) {
+            $.getJSON(url, [], function (res) {
                 myChart.hideLoading();
-                myChart.setOption(option);
+                if (res.code != 1) {
+                    return;
+                }
+                
+                myChart.setOption(res.data);
             });
         });
         $(".btn-tab:first").trigger('click');
