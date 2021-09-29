@@ -297,40 +297,41 @@ class Sign extends Controller
     }
 
     /**
-     * 忘记密码
+     * 发送重置验证码
      */
-    public function forget()
+    public function resetCode()
     {
         if ($this->defaultConfig['reset_enable'] !== true) {
             $this->error('暂不提供此功能，请联系管理员！');
         }
 
-        if (request()->isAjax()) {
-            $username = input('post.username', '');
-
-            $CodeLogic = new CodeLogic();
-            if ($this->defaultConfig['reset_code_type'] === 'email') {
-                //发送重置邮件
-                $res = $CodeLogic->sendResetMail($username);
-                if ($res) {
-                    $this->success('验证码已发生到您的邮箱!', url('Sign/reset', ['username' => $username]));
-                } else {
-                    $this->error($CodeLogic->getError());
-                }
-            } else if ($this->defaultConfig['reset_code_type'] === 'mobile') {
-                //发送重置短信
-                $res = $CodeLogic->sendResetSms($username);
-                if ($res) {
-                    $this->success('验证码短信已发送到您的手机!', url('Sign/reset', ['username' => $username]));
-                } else {
-                    $this->error($CodeLogic->getError());
-                }
-            } else {
-                $this->error('不支持的重置密码发送方式！');
-            }
+        if (!$this->request->isAjax()) {
+            $this->error('请求方式错误！');
         }
 
-        return $this->fetch('forget');
+        
+        $username = input('post.username', '');
+
+        $CodeLogic = new CodeLogic();
+        if ($this->defaultConfig['reset_code_type'] === 'email') {
+            //发送重置邮件
+            $res = $CodeLogic->sendResetCodeByEmail($username);
+            if ($res) {
+                $this->success('验证码已发生到您的邮箱!', url('Sign/reset', ['username' => $username]));
+            } else {
+                $this->error($CodeLogic->getError());
+            }
+        } else if ($this->defaultConfig['reset_code_type'] === 'mobile') {
+            //发送重置短信
+            $res = $CodeLogic->sendResetCodeByMobile($username);
+            if ($res) {
+                $this->success('验证码短信已发送到您的手机!', url('Sign/reset', ['username' => $username]));
+            } else {
+                $this->error($CodeLogic->getError());
+            }
+        } else {
+            $this->error('不支持的重置密码发送方式！');
+        }
     }
 
     /**

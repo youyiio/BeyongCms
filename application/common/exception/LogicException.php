@@ -1,24 +1,32 @@
 <?php
 namespace app\common\exception;
 
+use app\common\library\ResultCode;
 
 class LogicException extends \Exception  {
     protected $logicCode;
     protected $logicMessage;
 
-    public function __construct($logicCode, $logicMessage = '') {
-
-        $this->logicCode = $logicCode;
-        $this->logicMessage = empty($logicMessage)? config('resultcode.'.$logicCode): $logicMessage;
+    public function __construct($logicCode=0, $logicMessage='') 
+    {
+        if (is_int($logicCode)) {
+            $this->logicCode = $logicCode;
+            $this->logicMessage = empty($logicMessage)? config('resultcode.'.$logicCode): $logicMessage;
+        } else {//is_string
+            $this->logicCode = ResultCode::ACTION_FAILED;
+            $this->logicMessage = $logicCode;
+        }
+        
+        parent::__construct($this->logicMessage, $this->logicCode);
     }
 
-    public function getModelCode()
+    public function getLogicCode()
     {
-        return $this->modelCode;
+        return $this->logicCode;
     }
 
-    public function getModelMessage()
+    public function getLogicMessage()
     {
-        return $this->modelMessage;
+        return $this->LogicMessage;
     }
 }

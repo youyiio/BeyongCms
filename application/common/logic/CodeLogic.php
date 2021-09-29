@@ -25,10 +25,10 @@ class CodeLogic extends Model
     const STATUS_UNUSED = 1; //未使用
     const STATUS_USED = 2;  //已使用
 
-    const TYPE_REGISTER = 'register_code';
-    const TYPE_LOGIN = 'login_code';
-    const TYPE_RESET_PASSWORD = 'reset_password_code';
-    const TYPE_MAIL_ACTIVE = 'mail_active_code';
+    const TYPE_REGISTER = 'register';
+    const TYPE_LOGIN = 'login';
+    const TYPE_RESET_PASSWORD = 'reset_password';
+    const TYPE_MAIL_ACTIVE = 'mail_active';
 
     /**
      * 发送激活邮件，条件：1、设置邮件发送配置；2、发送的邮件模板,theme/xxx/email/email_template.html
@@ -123,7 +123,7 @@ class CodeLogic extends Model
         }
 
         $smsConfig = config('sms.');
-        $action = 'register';
+        $action = self::TYPE_REGISTER;
         if (!isset($smsConfig["actions"][$action])) {
             throw new LogicException("短信action类型不支持或者未配置!");
         }
@@ -144,7 +144,7 @@ class CodeLogic extends Model
             throw new LogicException($client->getError());
         }
 
-        Cache::set(self::TYPE_REGISTER . CACHE_SEPARATOR . $mobile, $code, 5 * 60);
+        Cache::set($action . CACHE_SEPARATOR . $mobile, $code, 5 * 60);
 
         return true;
     }
@@ -154,7 +154,7 @@ class CodeLogic extends Model
      * @param $mobile
      * @throws Exception
      */
-    public function sendCodeByMobile($mobile, $type, $action)
+    public function sendCodeByMobile($mobile, $action)
     {
         $smsConfig = config('sms.');
         if (!isset($smsConfig["actions"][$action])) {
@@ -177,18 +177,18 @@ class CodeLogic extends Model
             throw new LogicException($client->getError());
         }
 
-        Cache::set($type . CACHE_SEPARATOR . $mobile, $code, 5 * 60);
+        Cache::set($action . CACHE_SEPARATOR . $mobile, $code, 5 * 60);
 
         return true;
     }
 
     /**
-     * 发送重置的验证码
+     * 发送重置的邮箱验证码
      * @param $email
      * @return bool|\mix
      * @throws \mailer\lib\Exception
      */
-    public function sendResetMail($email)
+    public function sendResetCodeEmail($email)
     {
         if (!PregUtils::isEmail($email)) {
             $this->error = '邮箱格式不正确';
@@ -234,19 +234,40 @@ class CodeLogic extends Model
      * @return bool|\mix
      * @throws Exception
      */
-    public function sendResetSms($mobile)
+    public function sendResetCodeByMobile($mobile)
     {
-        if (!PregUtils::isMobile($mobile)) {
-            $this->error = '手机格式不正确';
+        $UserModel = new UserModel();
+        $user = $UserModel->findByMobile($mobile);
+        if (!$user) {
+            throw new LogicException("手机号不正确！");
             return false;
         }
 
-        $channel = get_config('sms_channel');
-        if (empty($channel)) {
-            throw new LogicException("未配置短信通道");
+        $smsConfig = config('sms.');
+        $action = self::TYPE_RESET_PASSWORD;
+        if (!isset($smsConfig["actions"][$action])) {
+            throw new LogicException("短信action类型不支持或者未配置!");
+        }
+        
+        \beyong\sms\Config::init($smsConfig);
+
+        $client = \beyong\sms\SmsClient::instance();
+        
+        //$sign、$template和$templateParams 服务商控制台获取
+        $sign = $smsConfig['actions'][$action]['sign'];
+        $template = $smsConfig['actions'][$action]['template'];
+
+        $code = StringUtils::getRandNum(6);
+        $templateParams = ['code' => $code];
+        
+        $response = $client->to($mobile)->sign($sign)->template($template, $templateParams)->send();
+        if ($response !== true) {            
+            throw new LogicException($client->getError());
         }
 
-        throw new Exception("短信发送正在实现中...");
+        Cache::set($action . CACHE_SEPARATOR . $mobile, $code, 5 * 60);
+
+        return true;
     }
 
     /**

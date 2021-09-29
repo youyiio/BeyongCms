@@ -14,6 +14,26 @@ use app\common\logic\CodeLogic;
 
 class Sign extends Base
 {
+    protected $defaultConfig = [
+        'login_multi_client_support' => false, //支持单个用户多个端同时登录
+        'login_success_view' => '', //登录成功后，跳转地址
+        'logout_success_view' => '', //注销后，跳转地址
+        'register_enable' => false, //注册功能是否支持
+        'register_code_type' => '', //注册码方式，值为：email,mobile
+        'reset_enable' => false, //忘记密码功能是否支持
+        'reset_code_type' => '', //重置密码，值为：email,mobile
+    ];
+
+    public function initialize()
+    {
+        parent::initialize();
+
+        $config = config('sign.');
+
+        $this->defaultConfig = array_merge($this->defaultConfig, $config);
+
+    }
+    
     // 注册
     public function register()
     {

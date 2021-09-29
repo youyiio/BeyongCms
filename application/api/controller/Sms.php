@@ -28,15 +28,8 @@ class Sms extends Base
             return ajax_error(ResultCode::ACTION_FAILED, "手机号格式不正确!");
         }
 
-        if (!in_array($action, ['register', 'login'])) {
+        if (!in_array($action, [CodeLogic::TYPE_REGISTER, CodeLogic::TYPE_LOGIN, CodeLogic::TYPE_RESET_PASSWORD])) {
             return ajax_error(ResultCode::E_DATA_VERIFY_ERROR, '短信action类型不正确!');
-        }
-
-        $type = CodeLogic::TYPE_REGISTER;
-        if ($action == 'register') {
-            $type = CodeLogic::TYPE_REGISTER;
-        } else if ($action == 'login') {
-            $type = CodeLogic::TYPE_LOGIN;
         }
 
         // 防止短信被刷
@@ -51,7 +44,7 @@ class Sms extends Base
         try {
             $codeLogic = new CodeLogic();
                  
-            $codeLogic->sendCodeByMobile($mobile, $type, $action);
+            $codeLogic->sendCodeByMobile($mobile, $action);
         } catch(\Exception $e) {
             return ajax_error(ResultCode::ACTION_FAILED, $e->getMessage());
         }
