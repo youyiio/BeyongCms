@@ -23,6 +23,11 @@ return [
             'sign' => Env::get('sms.login_sign', ''),
             'template' => Env::get('sms.login_template', ''),
             'params' => ['code' => '']
+        ],
+        'reset_password' => [
+            'sign' => Env::get('sms.reset_password_sign', ''),
+            'template' => Env::get('sms.reset_password_template', ''),
+            'params' => ['code' => '']
         ]
     ],
 
