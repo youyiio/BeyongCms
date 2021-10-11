@@ -1,18 +1,15 @@
 <?php
 namespace app\api\controller;
 
-// 不需要认证的话继承Base
 use app\api\controller\Base;
 use app\common\library\ResultCode;
 use app\common\model\cms\ArticleModel;
 
-// 需要登录验证的继承JwtBase
-// use app\api\controller\JwtBase;
-
-class Post extends Base
+// 文章相关接口
+class Article extends Base
 {
     //查询列表
-    public function list($page=1, $size=10) 
+    public function list($page=1, $size=10)
     {
         $where = [
             "status" => ArticleModel::STATUS_PUBLISHED
