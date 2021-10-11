@@ -1,6 +1,7 @@
 <?php
 namespace app\api\controller;
 
+use app\common\library\ResultCode;
 use think\facade\Request;
 
 /**
@@ -40,5 +41,17 @@ trait JwtBase
 
         // 存储用户信息
         $this->user_info = $user_info;
+
+        //Api权限验证        
+        $uid = $user_info['uid'];
+        $node = request()->module().'/'.request()->controller().'/'.request()->action();
+        $auth = \think\auth\Auth::instance();
+        if (!$auth->check($node, $uid)) {
+            $response = json_encode([
+                'code'  => ResultCode::ACCESS_NOT_AUTH,
+                'message' => "$node 没有访问权限"
+            ]);
+            exit($response);
+        }
     }
 }
