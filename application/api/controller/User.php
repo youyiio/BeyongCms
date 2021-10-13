@@ -32,14 +32,15 @@ class User extends Base
 
         $returnData = [
             'uid' => $uid,
-            'account' => $user->account,
+            //'account' => $user->account,
             'nickname' => $user->nickname,
             'mobile' => $user->mobile,
             'email' => $user->email,
-            'status' => $user->status,
-            'head_url' => $user->head_url,
+            //'status' => $user->status,
+            'headUrl' => $user->head_url,
             'sex' => $user->sex,
-            'register_time' => $user->register_time,
+            'registerTime' => $user->register_time,
+            'roles' => ['admin']
         ];
 
         return ajax_success($returnData);
