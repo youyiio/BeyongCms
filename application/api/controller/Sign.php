@@ -12,6 +12,9 @@ use beyong\commons\utils\PregUtils;
 use beyong\commons\utils\StringUtils;
 use app\common\logic\CodeLogic;
 
+use app\common\model\ActionLogModel;
+use think\facade\Session;
+
 class Sign extends Base
 {
     protected $defaultConfig = [
@@ -184,6 +187,38 @@ class Sign extends Base
         ];
 
         return ajax_success($data);
+    }
+
+    //注销登录
+    public function logout()
+    {
+        $payloadData = session('jwt_payload_data');
+        if (!$payloadData) {
+            return ajax_error(ResultCode::ACTION_FAILED, 'TOKEN自定义参数不存在！');
+        }
+        $uid = $payloadData->uid;
+        if (!$uid) {
+            return ajax_error(ResultCode::E_USER_NOT_EXIST, '用户不存在！');
+        }
+
+        $actionLog = new ActionLogLogic();
+        $actionLog->addLog($uid, ActionLogModel::ACTION_LOGOUT, '登出 ');
+
+        $uid = session('uid');
+
+        //清除session
+        Session::clear();
+        Session::delete('uid');
+
+        //清除cookie
+        cookie('uid', null);
+        cookie($uid . CACHE_SEPARATOR . 'login_hash',null);
+
+        //清理相关缓存
+        cache($uid . '_menu', null);
+        cache($uid . CACHE_SEPARATOR . 'login_hash', null);
+
+        return ajax_success(null);
     }
 
     /**
