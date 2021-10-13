@@ -33,13 +33,15 @@ class JWTBehavior
         $payload = JWT::decode($token, config('jwt.jwt_key'), [config('jwt.jwt_alg')]);
 
         //Api权限验证
-        $user_info = $payload->data;
-        $uid = $user_info['uid'];      
-        $node = request()->module().'/'.request()->controller().'/'.request()->action();
-        $auth = \think\auth\Auth::instance();        
-        if (!$auth->check($node, $uid)) {
-            throw new ValidateException(ResultCode::ACCESS_NOT_AUTH, "$node 没有访问权限");
-        }
+        if (config('jwt.jwt_auth_on') !== 'off') {
+            $user_info = $payload->data;
+            $uid = $user_info->uid;      
+            $node = request()->module().'/'.request()->controller().'/'.request()->action();
+            $auth = \think\auth\Auth::instance();        
+            if (!$auth->check($node, $uid)) {
+                throw new ValidateException(ResultCode::ACCESS_NOT_AUTH, "$node 没有访问权限");
+            }
+        }        
 
         session('jwt_payload_data', $payload->data);
 

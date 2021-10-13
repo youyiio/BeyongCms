@@ -112,7 +112,7 @@ function getJWT($token) {
     $data = null;
     try {
         $jwt_data = $jwt::decode($token, config('jwt.jwt_key'), config('jwt.jwt_alg'));
-        $data     = (array) ($jwt_data->data);
+        $data     = $jwt_data->data;
     } catch (\Throwable $e) {
         Log::write($e->getMessage(), 'error');
         return null;
