@@ -12,10 +12,10 @@ Route::group('api', function () {
 
     Route::rule("user/getInfo", 'api/User/getInfo', 'get');
 
-    Route::rule("post/create", 'api/Post/create', 'post');
-    Route::rule("post/:aid", 'api/Post/query', 'get');    
-    Route::rule("post/:aid", 'api/Post/edit', 'post');
-    Route::rule("post/:aid", 'api/Post/delete', 'delete');
+    Route::rule("Article/create", 'api/Article/create', 'post');
+    Route::rule("Article/:aid", 'api/Article/query', 'get');    
+    Route::rule("Article/:aid", 'api/Article/edit', 'post');
+    Route::rule("Article/:aid", 'api/Article/delete', 'delete');
 
     Route::rule("post/list", 'api/Post/list', 'get');
 
