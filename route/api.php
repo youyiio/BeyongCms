@@ -14,10 +14,10 @@ Route::group('api', function () {
 
     Route::rule("Article/create", 'api/Article/create', 'post');
     Route::rule("Article/:aid", 'api/Article/query', 'get');    
-    Route::rule("Article/:aid", 'api/Article/edit', 'post');
+    Route::rule("Article/:aid", 'api/Article/edit', 'POST');
     Route::rule("Article/:aid", 'api/Article/delete', 'delete');
 
-    Route::rule("post/list", 'api/Post/list', 'get');
+    Route::rule("Article/list", 'api/Article/list', 'get');
 
     Route::rule("sms/sendCode", 'api/Sms/sendCode', 'post');
     Route::rule("sms/login", 'api/Sms/login', 'post');

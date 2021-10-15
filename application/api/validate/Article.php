@@ -19,6 +19,8 @@ class Article extends Validate
         'thumb_image_id' => ["requireIf:category_id,27","requireIf:category_id,26","requireIf:category_id,36"],
         'author' => ["requireIf:category_id,27","requireIf:category_id,26","requireIf:category_id,36"],
         'oldCateIds' => 'require',
+        'page' => 'require',
+        'size' => 'require',
     ];
 
     //错误信息
@@ -36,11 +38,14 @@ class Article extends Validate
         'thumb_image_id' => '请上传缩略图',
         'author' => '请输入文章作者',
         'oldCateIds' => '旧的分类不存在',
+        'size' => '未指定数量',
+        'page' => '未指定页码',
     ];
 
     //验证场景
     protected $scene = [
         'create' => ['category_ids','title','keywords','description','content','thumb_image_id','author'],
         'edit' => ['id'=>'require|number','category_ids','title','keywords','description','content','thumb_image_id','author'],
+        'list' => ['size','page']
     ];
 }
