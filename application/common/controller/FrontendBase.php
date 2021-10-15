@@ -1,0 +1,30 @@
+<?php
+namespace app\common\controller;
+
+use think\Controller;
+
+/**
+ * Trait 前端页面 Base Controller 组件
+ * 使用方法：use \app\common\controller\FrontendBase;
+ * @package app\common\controller
+ */
+trait FrontendBase
+{
+
+    //空操作：系统在找不到指定的操作方法的时候，会定位到空操作
+    public function _empty()
+    {
+        return $this->fetch('public/404');
+    }
+
+    public function initialize()
+    {
+        parent::initialize();
+        if (!session('uid') && !session('visitor')) {
+            $ip = request()->ip(0, true);
+            $visitor = '游客-' . ip_to_address($ip, 'province,city');
+            session('visitor', $visitor);
+        }
+    }
+
+}

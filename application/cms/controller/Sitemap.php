@@ -7,11 +7,12 @@
  */
 namespace app\cms\controller;
 
-use app\common\model\cms\ArticleModel;
-
-use app\common\model\cms\CategoryModel;
 use think\facade\Env;
 use think\facade\Log;
+
+use app\frontend\controller\Base;
+use app\common\model\cms\ArticleModel;
+use app\common\model\cms\CategoryModel;
 use XMLWriter;
 
 class Sitemap extends Base

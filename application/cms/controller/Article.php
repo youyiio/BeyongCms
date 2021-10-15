@@ -1,6 +1,7 @@
 <?php
 namespace app\cms\controller;
 
+use app\frontend\controller\Base;
 use app\common\model\cms\ArticleMetaModel;
 use app\common\model\cms\ArticleModel;
 use app\common\model\cms\CategoryModel;

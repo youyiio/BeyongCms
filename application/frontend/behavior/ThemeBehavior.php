@@ -6,7 +6,7 @@
  * Time: 15:18
  */
 
-namespace app\cms\behavior;
+namespace app\frontend\behavior;
 
 use think\facade\Config;
 use think\facade\Env;

@@ -1,12 +1,5 @@
 <?php
-/**
- * Created by VSCode.
- * User: cattong
- * Date: 2018-03-16
- * Time: 12:31
- */
-
-namespace app\cms\controller;
+namespace app\frontend\controller;
 
 use think\Controller;
 

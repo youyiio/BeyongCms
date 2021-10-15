@@ -30,7 +30,7 @@ class ApiHandle extends Handle
         ];
         $detailError = "[file: {$data['file']}: (line: {$data['line']}) ]  [error code: {$data['code']}] : \n {$data['message']}";
 
-        Log::error('##### ExceptionHandle #### exception class: ' . get_class($e));
+        Log::error('##### ApiHandle #### exception class: ' . get_class($e));
         //Log::error('print: [file][line] [error code]: ');
         Log::error($detailError);
         Log::error('Exception stack:');

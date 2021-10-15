@@ -9,7 +9,7 @@ use think\facade\Request;
  * 使用方法：use \app\common\controller\ApiBase;
  * @package app\common\controller
  */
-trait JwtBase
+trait ApiBase
 {
     // 用户信息
     protected $user_info;
