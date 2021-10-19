@@ -45,7 +45,7 @@ class Article extends Validate
     //验证场景
     protected $scene = [
         'create' => ['category_ids','title','keywords','description','content','thumb_image_id','author'],
-        'edit' => ['id'=>'require|number','category_ids','title','keywords','description','content','thumb_image_id','author'],
+        'edit' => ['id'=>'require|number','category_ids','title','keywords','description','content'],
         'list' => ['size','page']
     ];
 }
