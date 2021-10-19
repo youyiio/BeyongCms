@@ -211,8 +211,8 @@ class Cms extends TagLib
         $parse .= "    if ($cache) { ";
         $parse .= "      cache(\$cacheMark, $internalList, $cache); ";
         $parse .= "    } ";
-        $parse .= "  $assign = $internalList;";
         $parse .= "  } ";
+        $parse .= "  $assign = $internalList;";
         $parse .= '  ?>';
 
         $parse .= "  {volist name='$internalList' id='$id'}";
