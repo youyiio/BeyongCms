@@ -244,6 +244,10 @@ class Article extends Base
         $params = $this->request->put();
         $params = parse_fields($params,0);
         
+        if ($aid !== $params['id']) {
+            return ajax_error(ResultCode::E_PARAM_ERROR, '参数错误');
+        }
+        
         //更新数据
         $articleLogic = new ArticleLogic();
         $res = $articleLogic->editArticle($params);
@@ -293,19 +297,126 @@ class Article extends Base
         return ajax_return(ResultCode::ACTION_SUCCESS, '更新成功', $returnData);
     }
 
-    public function delete($aid) 
+    //发布文章
+    public function publish()
     {
-        $art = ArticleModel::get($aid);
-
-        if (!$art) {
-            return ajax_return(ResultCode::SC_NOT_FOUND, '文章不存在');
+        $params = $this->request->put();
+       
+        if (count($params) !== 1) {
+            return ajax_return(ResultCode::ACTION_FAILED, '参数错误');
         }
 
-        $res = ArticleModel::update(['id'=>$aid, 'status'=>ArticleModel::STATUS_DELETED]);
-        if (!$res) {
-            return ajax_return(ResultCode::E_DB_OPERATION_ERROR, '删除失败', $art->getError());
+        if (isset($params['id']) && !is_int($params['id'])) {
+            return ajax_return(ResultCode::ACTION_FAILED, '参数错误');
         }
 
-        return ajax_return(ResultCode::ACTION_SUCCESS, '删除成功');
+        if (isset($params['ids']) && count($params['ids']) == 1) {
+            return ajax_return(ResultCode::ACTION_FAILED, '参数错误');
+        }
+
+        $data = [
+            'status' => ArticleModel::STATUS_PUBLISHING,
+            'post_time' => date_time()
+        ];
+        //审核开关关闭时
+        if (get_config('article_audit_switch') === 'false') {
+            $data['status'] = ArticleModel::STATUS_PUBLISHED;
+        }
+
+        //发布文章
+        if (isset($params['id'])) {
+            $ids = $params['id'];        
+        } 
+        if (is_array($params['ids'])) {
+            $ids = $params['ids'];        
+        }
+
+        $ArticleModel = new ArticleModel();
+    
+        $success = $ArticleModel->where('id', 'in', $ids)->setField($data);
+        $fails = count($ids) - $success;
+
+        $returnData = ['success'=> $success, 'fail' => $fails];
+        return ajax_return(ResultCode::ACTION_SUCCESS, '发布文章成功!', $returnData);
+        
+    }
+
+    //审核文章
+    public function audit()
+    {
+        $params = $this->request->put();
+        if (count($params) !== 1) {
+            return ajax_return(ResultCode::ACTION_FAILED, '参数错误');
+        }
+
+        if (isset($params['id']) && !is_int($params['id'])) {
+            return ajax_return(ResultCode::ACTION_FAILED, '参数错误');
+        }
+
+        if (isset($params['ids']) && count($params['ids']) == 1) {
+            return ajax_return(ResultCode::ACTION_FAILED, '参数错误');
+        }
+
+        $data = [
+            'status' => ArticleModel::STATUS_PUBLISHED,
+            'post_time' => date_time()
+        ];
+
+        //发布文章
+        if (isset($params['id'])) {
+            $ids = $params['id'];        
+        } 
+        if (is_array($params['ids'])) {
+            $ids = $params['ids'];        
+        }
+
+        $ArticleModel = new ArticleModel();
+    
+        $success = $ArticleModel->where('id', 'in', $ids)->setField($data);
+        $fails = count($ids) - $success;
+
+        $returnData = ['success'=> $success, 'fail' => $fails];
+        return ajax_return(ResultCode::ACTION_SUCCESS, '审核文章成功!', $returnData);
+    }
+
+
+    //删除文章
+    public function delete() 
+    {
+        $params = $this->request->put();
+        if (count($params) !== 1) {
+            return ajax_return(ResultCode::ACTION_FAILED, '参数错误');
+        }
+
+        if (isset($params['id']) && !is_int($params['id'])) {
+            return ajax_return(ResultCode::ACTION_FAILED, '参数错误');
+        }
+
+        if (isset($params['ids']) && count($params['ids']) == 1) {
+            return ajax_return(ResultCode::ACTION_FAILED, '参数错误');
+        }
+
+        //删除文章
+        if (isset($params['id'])) {
+            $ids = $params['id'];        
+        } 
+        if (is_array($params['ids'])) {
+            $ids = $params['ids'];        
+        }
+
+        $ArticleModel = new ArticleModel();
+        $success = $ArticleModel->where('id', 'in', $ids)->setField('status', '=', ArticleModel::STATUS_DELETED);
+        $fails = count($ids) - $success;
+
+        $returnData = ['success'=> $success, 'fail' => $fails];
+        return ajax_return(ResultCode::ACTION_SUCCESS, '删除文章成功!', $returnData);
+    }
+
+    public function comments($id)
+    {
+        $CommentModel = new CommentModel();
+        $comment = $CommentModel->where('id', '=', $id)->find();
+        $comment = 
+
     }
 }
