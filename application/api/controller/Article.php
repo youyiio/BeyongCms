@@ -4,146 +4,307 @@ namespace app\api\controller;
 use app\admin\controller\Image;
 use app\api\controller\Base;
 use app\common\library\ResultCode;
+use app\common\logic\ArticleLogic;
 use app\common\model\BaseModel;
 use app\common\model\cms\ArticleMetaModel;
 use app\common\model\cms\ArticleModel;
+use app\common\model\cms\CategoryModel;
+use app\common\model\cms\CommentModel;
 use app\common\model\ImageModel;
 use app\common\model\UserModel;
+
 
 // 文章相关接口
 class Article extends Base
 {
     //查询列表
+    protected $payloadData;
+    protected $uid;
+    
+    public function initialize() {
+        
+        $this->payloadData = session('jwt_payload_data');
+        if (!$this->payloadData) {
+            return ajax_error(ResultCode::ACTION_FAILED, 'TOKEN自定义参数不存在！');
+        }
+        $this->uid = $this->payloadData->uid;
+        if (!$this->uid) {
+            return ajax_error(ResultCode::E_USER_NOT_EXIST, '用户不存在！');
+        }
+    }
+    
     public function list($page=1, $size=10)
     {
-        $where = [
-            "status" => ArticleModel::STATUS_PUBLISHED
-        ];
-        $fields = 'id,title,thumb_image_id,post_time,update_time,create_time,is_top,status,read_count,sort,relateds';
+        $ArticleModel = new ArticleModel();
+
+        $params = $this->request->put();
+        $check = validate('Article')->scene('list')->check($params);
+        if ($check !== true) {
+            return ajax_error(ResultCode::E_DATA_VERIFY_ERROR, validate('Article')->getError());
+        }
+     
+        $page = $params['page'];
+        $size = $params['size'];
+        $filters = $params['filters']; 
+
+        $where = [];
+        $fields = 'id,title,thumb_image_id,post_time,update_time,create_time,is_top,status,read_count,sort';
+        if ($filters['keywords']) {
+            $where[] = ['keywords', 'like', '%'.$filters['keywords'].'%'];
+        }
+      
+        if ($filters['categoryId'] > 0) {
+            $childs = CategoryModel::getChild($filters['categoryId']);
+            $childCateIds = $childs['ids'];
+            array_push($childCateIds, $filters['categoryId']);
+
+            $fields = 'ArticleModel.id,title,thumb_image_id,post_time,update_time,create_time,is_top,status,read_count,sort';
+            $ArticleModel = ArticleModel::hasWhere('CategoryArticle', [['category_id','in',$childCateIds]], $fields)->group([]); //hack:group用于清理hasmany默认加group key
+        }
+
+        //文章状态
+        $status = $filters['status'];
+        if ($status !== '') {
+            $where[] = ['status', '=', $status];
+        }
+
+        //查询时间
+        $queryTimeField = ($status == '' || $status == ArticleModel::STATUS_PUBLISHED) ? 'post_time' : 'create_time';
+        if (!empty($filters['startTime'])) {
+            $where[] = [$queryTimeField, '>=', $filters['startTime'] . '00:00:00'];
+        }
+        if (!empty($filters['endTime'])) {
+            $where[] = [$queryTimeField, '<=', $filters['endTime'] . '23:59:59'];
+        }
+      
         $order = [
             'sort' => 'desc',
             'post_time' => 'desc',
         ];
         $pageConfig = [
-            'query' => ['page' => $page]
+            'query' => input('param.')
         ];
-
-        $ArticleModel = new ArticleModel();
+   
         $list = $ArticleModel->where($where)->field($fields)->order($order)->paginate($size, false, $pageConfig);
 
-        return ajax_success(to_standard_pagelist($list));
+        return ajax_return(ResultCode::ACTION_SUCCESS, '查询成功!', $list);
     }
 
-    // crud 增删查改
+    // 查询文章内容
     public function query($aid) 
     {
-        $article = ArticleModel::get($aid);
+        $art = ArticleModel::get($aid);
 
-        return ajax_success($article);
-    }
-
-    public function create() 
-    {
-        $payloadData = session('jwt_payload_data');
-        if (!$payloadData) {
-            return ajax_error(ResultCode::ACTION_FAILED, 'TOKEN自定义参数不存在！');
-        }
-        $uid = $payloadData->uid;
-        if (!$uid) {
-            return ajax_error(ResultCode::E_USER_NOT_EXIST, '用户不存在！');
+        if (!$art) {
+            return ajax_error(ResultCode::SC_NOT_FOUND, '文章不存在');
         }
 
-        //请求的body数据
-        $params = $this->request->put();
-        $check = validate('Article')->scene('create')->check($params);
-        if ($check !== true) {
-            return ajax_error(ResultCode::E_DATA_VERIFY_ERROR, validate('Article')->getError());
+        //文章标签
+        $articleMetaModel = new ArticleMetaModel();
+        $tags = $articleMetaModel->_metas($art['id'], 'tag');
+        //缩略图
+        $fullThumbImageUrl = '';
+        if (!empty($art['thumb_image_id'])) {
+            $field = 'id,image_name,thumb_image_url,image_url,oss_image_url,create_time';
+            $ImageModel = new ImageModel();
+            $thumbImage = ImageModel::get($art['thumb_image_id']);
+            $fullThumbImageUrl = $ImageModel->getFullImageUrlAttr('',$thumbImage);
         }
         
-        $articleModel = new ArticleModel();
+        //附加图片和文件
+        $Images = get_image($art->metas('image'));
+        $Images = $Images->toArray();
+        $metaImages = parse_fields($Images,1);
+      
+        $metaFiles = get_file($art->metas('file'));
+        $metaFiles = $metaFiles->toArray();
+        $metaFiles = parse_fields($metaFiles,1);
+      
+        //返回数据
+        $returnData = [
+            'id' => $art['id'],
+            'title' => $art['title'],
+            'keywords' => $art['keywords'],
+            'description' => $art['description'],
+            'tags' => $tags,
+            'fullThumbImageUrl' => $fullThumbImageUrl,
+            'content' => $art['content'],
+            'readCount' => $art['read_count'],
+            'commentCount' => $art['comment_count'],
+            'author' => $art['author'],
+            'status' => $art['status'],
+            'createTime' => $art['create_time'],
+            'postTime' => $art['post_time'],
+            'updateTime' => $art['update_time'],
+            'metaImages' => $metaImages,
+            'metaFiles' => $metaFiles
+        ];
+
+        return ajax_return(ResultCode::ACTION_SUCCESS, '查询成功!', $returnData);
+    }
+
+    //新增文章
+    public function create() 
+    {
+        //请求的body数据
+        $params = $this->request->put();
+
         //新增文章
+        $articleModel = new ArticleModel();
         if (get_config('article_audit_switch') === 'false') {
             $status = $articleModel::STATUS_PUBLISHED;
         } else {
             $status = $articleModel::STATUS_PUBLISHING;        
         }
      
-        $userModel = new UserModel();
-        $author = $userModel->where('id', $uid)->value('nickname');
+        if (empty($params['author'])) {
+            $userModel = new UserModel();
+            $author = $userModel->where('id', $this->uid)->value('nickname');
+        } else {
+            $author = $params['author'];
+        }
+        
         $data = [
-            'uid' => $uid,
+            'uid' => $this->uid,
             'title' => $params['title'],
-            'category_ids' => $params['category_ids'],
-            'tags' => $params['tags'],
-            'status' => $status,
             'description' => $params['description'],
             'keywords' => $params['keywords'],
-            'content' => remove_xss($params['content']),
-            'post_time' => date_time(),
             'author' => $author,
-            'thumb_image_id' => isset($params['thumb_image_id']) ? $params['thumb_image_id'] : ''
+            'tags' => $params['tags']?: '',
+            'content' => remove_xss($params['content']),
+            'category_ids' => $params['categoryIds'],
+            'thumb_image_id' => $params['thumbImageId']?: '',
+            'meta_image_ids' => $params['metaImageIds']?: '',
+            'meta_file_ids' => $params['metaFileIds']?: '',
+            'status' => $status,
         ];
+
+        $articleLogic = new ArticleLogic();
+        $artId = $articleLogic->addArticle($data);
         
-        $res = $articleModel->add($data);
-        if (!$res) {
-            return ajax_return(ResultCode::ACTION_FAILED, '创建失败',$articleModel->getError());
+        if (!$artId) {
+            return ajax_error(ResultCode::E_DB_OPERATION_ERROR, '新增失败',$artId->geterror());
         }
 
         //返回数据
-        $articleId = $articleModel->id;
-        $article = ArticleModel::get($articleId);
+        $art = ArticleModel::get($artId);
+
         $articleMetaModel = new ArticleMetaModel();
-        $tags = $articleMetaModel->_metas($articleId, 'tag');
+        $tags = $articleMetaModel->_metas($artId, 'tag');
         
-        if (empty($article['thumb_image_id'])) {
-            $fullThumbImageUrl = '';
-        } else {
-            $imageModel = new ImageModel();
-            $thumbImageUrl = $imageModel->where('id', $article['thumb_image_id'])->value('thumb_image_url');
-            
-            $switch = get_config('oss_switch');
-            if ($switch !== 'true') {
-                $fullThumbImageUrl = url_add_domain($thumbImageUrl);
-                $fullThumbImageUrl = str_replace('\\', '/', $fullThumbImageUrl);
-            } else {
-                $fullThumbImageUrl = $data['oss_image_url'];
-            }
+        //缩略图
+        $thumbImage = '';
+        if (!empty($art['thumb_image_id'])) {
+            //$field = 'id,image_name,thumb_image_url,image_url,oss_image_url,create_time';
+            $ImageModel = new ImageModel();
+            $thumbImage = $ImageModel::get($art['thumb_image_id']);
+         
+            $thumbImage['fullImageUrl'] = $ImageModel->getFullImageUrlAttr('',$thumbImage);
+            $thumbImage['FullThumbImageUrlAttr'] = $ImageModel->getFullThumbImageUrlAttr('',$thumbImage);
+        
+            $thumbImage = $thumbImage->toArray();
+            $thumbImage = parse_fields($thumbImage,1);
         }
 
+        //附件图片和文件
+        $Images = get_image($art->metas('image'));
+        $Images = $Images->toArray();
+        $metaImages = parse_fields($Images,1);
+      
+        $metaFiles = get_file($art->metas('file'));
+        $metaFiles = $metaFiles->toArray();
+        $metaFiles = parse_fields($metaFiles,1);
+      
+        //返回json格式
         $returnData = [
-            'id' => $article['id'],
-            'title' => $article['title'],
-            'keywords' => $article['keywords'],
-            'description' => $article['description'],
-            'content' => $article['content'],
-            'author' => $article['author'],
-            'status' => $article['status'],
-            'createTime' => $article['create_time'],
-            'postTime' => $article['post_time'],
-            'updateTime' => $article['update_time'],
+            'id' => $art['id'],
+            'title' => $art['title'],
+            'keywords' => $art['keywords'],
+            'description' => $art['description'],
             'tags' => $tags,
+            'thumbImage' => $thumbImage,
+            'content' => $art['content'],
             'readCount' => 0,
             'commentCount' => 0,
-            'fullThumbImageUrl' => $fullThumbImageUrl
+            'author' => $art['author'],
+            'status' => $art['status'],
+            'createTime' => $art['create_time'],
+            'postTime' => $art['post_time'],
+            'updateTime' => $art['update_time'],
+            'metaImages' => $metaImages,
+            'metaFiles' => $metaFiles
         ];
 
-        return ajax_return(ResultCode::ACTION_SUCCESS, '创建成功', $returnData);
+        return ajax_return(ResultCode::ACTION_SUCCESS, '创建成功!', $returnData);
     }
 
     public function edit($aid) 
     {
-        $data = input("post.");
-        $article = ArticleModel::update($data, ["id" => $aid]);
+        //请求的body数据
+        $params = $this->request->put();
+        $params = parse_fields($params,0);
+        
+        //更新数据
+        $articleLogic = new ArticleLogic();
+        $res = $articleLogic->editArticle($params);
 
-        return ajax_success($article);
+        if(!$res){
+            return ajax_return(ResultCode::E_DB_OPERATION_ERROR, '更新失败');
+        }
+
+        //返回数据
+        $articleModel = new ArticleModel();
+        $fields = 'id,title,keywords,description,content,read_count,comment_count,author,status,create_time,post_time,update_time,thumb_image_id';
+        $art = $articleModel->where('id', '=', $aid)->field($fields)->find();
+        
+        //标签
+        $articleMetaModel = new ArticleMetaModel();
+        $tags = $articleMetaModel->_metas($aid, 'tag');
+
+        //缩略图
+        $thumbImage = '';
+        if (!empty($art['thumb_image_id'])) {
+            $ImageModel = new ImageModel();
+            $thumbImage = $ImageModel::get($art['thumb_image_id']);
+        
+            $thumbImage['fullImageUrl'] = $ImageModel->getFullImageUrlAttr('',$thumbImage);
+            $thumbImage['FullThumbImageUrlAttr'] = $ImageModel->getFullThumbImageUrlAttr('',$thumbImage);
+        
+            $thumbImage = $thumbImage->toArray();
+            $thumbImage = parse_fields($thumbImage,1);
+        }
+        unset($art['thumb_image_id']);
+        //附件图片和文件
+        $Images = get_image($art->metas('image'));
+        $Images = $Images->toArray();
+        $metaImages = parse_fields($Images,1);
+      
+        $metaFiles = get_file($art->metas('file'));
+        $metaFiles = $metaFiles->toArray();
+        $metaFiles = parse_fields($metaFiles,1);
+
+        //返回json格式
+        $returnData = parse_fields($art->toArray(),1);
+        $returnData['tags'] = $tags;
+        $returnData['thumbImage'] = $thumbImage;
+        $returnData['metaFiles'] = $metaFiles;
+        $returnData['metaImages'] = $metaImages;
+          
+        return ajax_return(ResultCode::ACTION_SUCCESS, '更新成功', $returnData);
     }
 
     public function delete($aid) 
     {
-        $data = [
-            "status" => ArticleModel::STATUS_DELETED
-        ];
-        $res = ArticleModel::update($data, $aid);
+        $art = ArticleModel::get($aid);
+
+        if (!$art) {
+            return ajax_return(ResultCode::SC_NOT_FOUND, '文章不存在');
+        }
+
+        $res = ArticleModel::update(['id'=>$aid, 'status'=>ArticleModel::STATUS_DELETED]);
+        if (!$res) {
+            return ajax_return(ResultCode::E_DB_OPERATION_ERROR, '删除失败', $art->getError());
+        }
 
         return ajax_return(ResultCode::ACTION_SUCCESS, '删除成功');
     }
