@@ -2,7 +2,7 @@
 
 tar -xzf bundle.tar.gz
 
-deploy_path=/data/web/demo.beyongcms.com
+deploy_path=$1
 
 if [ ! -d $deploy_path ]; then
   mkdir $deploy_path

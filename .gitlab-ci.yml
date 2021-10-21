@@ -47,7 +47,7 @@ deploy_for_ci_job:
     - scp -P $ci_ssh_port ./$bundle_name root@$ci_server_ip:$upload_path/
     - scp -P $ci_ssh_port .gitlab-ci.sh root@$ci_server_ip:$upload_path/
     - ssh root@$ci_server_ip -p $ci_ssh_port "ls -l $upload_path"
-    - ssh root@$ci_server_ip -p $ci_ssh_port "cd $upload_path && chmod +x .gitlab-ci.sh && ./.gitlab-ci.sh"
+    - ssh root@$ci_server_ip -p $ci_ssh_port "cd $upload_path && chmod +x .gitlab-ci.sh && ./.gitlab-ci.sh $deploy_path"
 
 # 持续交付，部署生产环境，需重新编译打包
 deploy_for_cd_job:
@@ -67,7 +67,7 @@ deploy_for_cd_job:
     - scp -P $cd_ssh_port ./$bundle_name root@$cd_server_ip:$upload_path/
     - scp -P $cd_ssh_port .gitlab-ci.sh root@$cd_server_ip:$upload_path/
     - ssh root@$cd_server_ip -p $cd_ssh_port "ls -l $upload_path"
-    - ssh root@$cd_server_ip -p $cd_ssh_port "cd $upload_path && chmod +x .gitlab-ci.sh && ./.gitlab-ci.sh"
+    - ssh root@$cd_server_ip -p $cd_ssh_port "cd $upload_path && chmod +x .gitlab-ci.sh && ./.gitlab-ci.sh $deploy_path"
   artifacts:
     when: on_success # job成功时上传artifacts
     expire_in: 1 week # 一周后过期
