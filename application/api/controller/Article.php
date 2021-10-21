@@ -43,9 +43,9 @@ class Article extends Base
             return ajax_error(ResultCode::E_DATA_VERIFY_ERROR, validate('Article')->getError());
         }
      
-        $page = $params['page'];
-        $size = $params['size'];
-        $filters = $params['filters']; 
+        $pages = $params['page']?: 1;
+        $size = $params['size']?: 10;
+        $filters = $params['filters']?: ''; 
 
         $where = [];
         $fields = 'id,title,thumb_image_id,post_time,update_time,create_time,is_top,status,read_count,sort';
@@ -82,12 +82,13 @@ class Article extends Base
             'post_time' => 'desc',
         ];
         $pageConfig = [
-            'query' => input('param.')
+            'page' => $pages,
+            'query' => ''
         ];
-   
+        
         $list = $ArticleModel->where($where)->field($fields)->order($order)->paginate($size, false, $pageConfig);
 
-        return ajax_return(ResultCode::ACTION_SUCCESS, '查询成功!', $list);
+        return ajax_return(ResultCode::ACTION_SUCCESS, '查询成功!', to_standard_pagelist($list));
     }
 
     // 查询文章内容
@@ -414,9 +415,31 @@ class Article extends Base
 
     public function comments($id)
     {
+        $article = ArticleModel::get($id);
+        
+        if (empty($article)) {
+            return ajax_return(ResultCode::E_PARAM_ERROR, '文章不存在');
+        }
+
+        $params = $this->request->put();
+        $pages = $params['page']?: 1;
+        $size = $params['size']?: 5;
+        $query = $params['filters']?: '';
+        //查询评论
         $CommentModel = new CommentModel();
-        $comment = $CommentModel->where('id', '=', $id)->find();
-        $comment = 
+        
+        $where['article_id'] = $id;
+        $where['status'] = CommentModel::STATUS_PUBLISHED;
+
+        $pageConfig = [
+            'pages' => $pages,
+            'query' => $query
+        ];
+
+        $list = $CommentModel->where($where)->paginate($size, false, $pageConfig);
+        //总页数
+
+        return ajax_return(ResultCode::ACTION_SUCCESS, '查询成功!', to_standard_pagelist($list));
 
     }
 }

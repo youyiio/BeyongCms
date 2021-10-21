@@ -84,6 +84,7 @@ function to_standard_pagelist($paginator)
     return [
         'total'    => $paginator->total(),
         'size'     => $paginator->listRows(),
+        'pages'     => $paginator->lastPage(),
         'current'  => $paginator->currentPage(),
         'records'  => $paginator->items(),
     ];
