@@ -43,7 +43,7 @@ class Article extends Base
             return ajax_error(ResultCode::E_DATA_VERIFY_ERROR, validate('Article')->getError());
         }
      
-        $pages = $params['page']?: 1;
+        $page = $params['page']?: 1;
         $size = $params['size']?: 10;
         $filters = $params['filters']?: ''; 
 
@@ -82,7 +82,7 @@ class Article extends Base
             'post_time' => 'desc',
         ];
         $pageConfig = [
-            'page' => $pages,
+            'page' => $page,
             'query' => ''
         ];
         
@@ -406,7 +406,7 @@ class Article extends Base
         }
 
         $ArticleModel = new ArticleModel();
-        $success = $ArticleModel->where('id', 'in', $ids)->setField('status', '=', ArticleModel::STATUS_DELETED);
+        $success = $ArticleModel->where('id', 'in', $ids)->setField('status', ArticleModel::STATUS_DELETED);
         $fails = count($ids) - $success;
 
         $returnData = ['success'=> $success, 'fail' => $fails];
@@ -422,7 +422,7 @@ class Article extends Base
         }
 
         $params = $this->request->put();
-        $pages = $params['page']?: 1;
+        $page = $params['page']?: 1;
         $size = $params['size']?: 5;
         $query = $params['filters']?: '';
         //查询评论
@@ -432,7 +432,7 @@ class Article extends Base
         $where['status'] = CommentModel::STATUS_PUBLISHED;
 
         $pageConfig = [
-            'pages' => $pages,
+            'page' => $page,
             'query' => $query
         ];
 
