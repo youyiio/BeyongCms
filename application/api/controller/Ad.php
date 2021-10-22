@@ -29,7 +29,7 @@ class Ad extends Base
         $limit = $params["limit"];
 
         $AdSlotModel = new AdSlotModel();
-        $adSlot = $AdSlotModel->where(['title_en' => $slot])->find();
+        $adSlot = $AdSlotModel->where(['name' => $slot])->find();
         if (!$adSlot) {
             return ajax_error(ResultCode::E_DATA_NOT_FOUND, "广告slot不存在!");
         }
@@ -59,7 +59,7 @@ class Ad extends Base
         $limit = $params["limit"];
 
         $AdSlotModel = new AdSlotModel();
-        $adSlot = $AdSlotModel->where(['title_en' => $slot])->find();
+        $adSlot = $AdSlotModel->where(['name' => $slot])->find();
         if (!$adSlot) {
             return ajax_error(ResultCode::E_DATA_NOT_FOUND, "广告slot不存在!");
         }
