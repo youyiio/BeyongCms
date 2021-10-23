@@ -22,6 +22,12 @@ Route::group('api', function () {
 
     Route::rule("Article/list", 'api/Article/list', 'get');
 
+    Route::rule("Comment/list", 'api/Comment/list', 'get');
+    Route::rule("Comment/:cid", 'api/Comment/query', 'get');
+    Route::rule("Comment/create", 'api/Comment/create', 'post');
+    Route::rule("Comment/audit", 'api/Comment/audit', 'post');
+    Route::rule("Comment/delete", 'api/Comment/delete', 'delete');
+    
     Route::rule("sms/sendCode", 'api/Sms/sendCode', 'post');
     Route::rule("sms/login", 'api/Sms/login', 'post');
 
