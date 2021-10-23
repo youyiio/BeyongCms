@@ -27,6 +27,18 @@ Route::group('api', function () {
     Route::rule("Comment/create", 'api/Comment/create', 'post');
     Route::rule("Comment/audit", 'api/Comment/audit', 'post');
     Route::rule("Comment/delete", 'api/Comment/delete', 'delete');
+
+    Route::rule("Category/list", 'api/Category/list', 'get');
+    Route::rule("Category/create", 'api/Category/create', 'post');
+    Route::rule("Category/edit", 'api/Category/edit', 'post');
+    Route::rule("Category/setStatus", 'api/Category/setStatus', 'post');
+    Route::rule("Category/:id", 'api/Category/delete', 'delete');
+
+    Route::rule("Ad/list", 'api/Ad/list', 'get');
+    Route::rule("Ad/slots", 'api/Ad/slots', 'get');
+    Route::rule("Ad/create", 'api/Ad/create', 'post');
+    Route::rule("Ad/edit", 'api/Ad/edit', 'post');
+    Route::rule("Ad/:id", 'api/Ad/delete', 'delete');
     
     Route::rule("sms/sendCode", 'api/Sms/sendCode', 'post');
     Route::rule("sms/login", 'api/Sms/login', 'post');
