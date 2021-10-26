@@ -43,17 +43,17 @@ class Article extends Base
             return ajax_error(ResultCode::E_DATA_VERIFY_ERROR, validate('Article')->getError());
         }
      
-        $page = $params['page']?: 1;
-        $size = $params['size']?: 10;
-        $filters = $params['filters']?: ''; 
+        $page = $params['page'] ?: 1;
+        $size = $params['size'] ?: 10;
+        $filters = $params['filters'] ?? []; 
 
         $where = [];
         $fields = 'id,title,thumb_image_id,post_time,update_time,create_time,is_top,status,read_count,sort';
-        if ($filters['keywords']) {
+        if (isset($filters['keywords']) && $filters['keywords']) {
             $where[] = ['keywords', 'like', '%'.$filters['keywords'].'%'];
         }
       
-        if ($filters['categoryId'] > 0) {
+        if (isset($filters['categoryId']) && $filters['categoryId'] > 0) {
             $childs = CategoryModel::getChild($filters['categoryId']);
             $childCateIds = $childs['ids'];
             array_push($childCateIds, $filters['categoryId']);
@@ -62,12 +62,12 @@ class Article extends Base
             $ArticleModel = ArticleModel::hasWhere('CategoryArticle', [['category_id','in',$childCateIds]], $fields)->group([]); //hack:group用于清理hasmany默认加group key
         }
 
-        //文章状态
-        $status = $filters['status'];
-        if ($status !== '') {
-            $where[] = ['status', '=', $status];
+        //文章状态        
+        if (isset($filters['status']) && $filters['status']) {
+            $where[] = ['status', '=', $filters['status']];
         }
 
+        $status = $filters['status'] ?? '';
         //查询时间
         $queryTimeField = ($status == '' || $status == ArticleModel::STATUS_PUBLISHED) ? 'post_time' : 'create_time';
         if (!empty($filters['startTime'])) {
