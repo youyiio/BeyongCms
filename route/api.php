@@ -18,7 +18,7 @@ Route::group('api', function () {
     Route::rule("article/delete", 'api/Article/delete', 'delete');
     Route::rule("article/publish", 'api/Article/publish', 'post');
     Route::rule("article/audit", 'api/Article/audit', 'post');
-    Route::rule("article/comments/:id", 'api/Article/comments', 'get');
+    Route::rule("article/comments/:id", 'api/Article/comments', 'get|post');
 
     Route::rule("article/list", 'api/Article/list', 'get|post');
 

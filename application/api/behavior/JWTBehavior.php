@@ -31,6 +31,7 @@ class JWTBehavior
         }
 
         $token = substr($authorization, 7);
+        $payload = null;
         try {
             $payload = JWT::decode($token, config('jwt.jwt_key'), [config('jwt.jwt_alg')]);
         } catch (\Throwable $e) {}
