@@ -40,7 +40,7 @@ class Article extends Base
         $params = $this->request->put();
         $check = validate('Article')->scene('list')->check($params);
         if ($check !== true) {
-            return ajax_error(ResultCode::E_DATA_VERIFY_ERROR, validate('Article')->getError());
+            return ajax_error(ResultCode::E_PARAM_VALIDATE_ERROR, validate('Article')->getError());
         }
      
         $page = $params['page'] ?: 1;
@@ -184,7 +184,7 @@ class Article extends Base
         $artId = $articleLogic->addArticle($data);
         
         if (!$artId) {
-            return ajax_error(ResultCode::E_DB_OPERATION_ERROR, '新增失败',$artId->geterror());
+            return ajax_error(ResultCode::E_LOGIC_ERROR, '新增失败',$artId->geterror());
         }
 
         //返回数据
@@ -254,7 +254,7 @@ class Article extends Base
         $res = $articleLogic->editArticle($params);
 
         if(!$res){
-            return ajax_return(ResultCode::E_DB_OPERATION_ERROR, '更新失败');
+            return ajax_return(ResultCode::E_DB_ERROR, '更新失败');
         }
 
         //返回数据

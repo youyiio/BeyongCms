@@ -21,7 +21,7 @@ trait ApiBase
         if (is_null($token)) {
             header('Content-Type:application/json; charset=utf-8');
             $response = json_encode([
-                'code'  => ERRNO['SESSIONERR'],
+                'code'  => ResultCode::E_TOKEN_EMPTY,
                 'message' => '用户未登陆'
             ]);
             exit($response);
@@ -33,7 +33,7 @@ trait ApiBase
             header('Content-Type:application/json; charset=utf-8');
 
             $response = json_encode([
-                'code'  => ERRNO['SESSIONERR'],
+                'code'  => ResultCode::E_TOKEN_EXPIRED,
                 'message' => '登录已过期'
             ]);
             exit($response);
@@ -49,7 +49,7 @@ trait ApiBase
             $auth = \think\auth\Auth::instance();
             if (!$auth->check($node, $uid)) {
                 $response = json_encode([
-                    'code'  => ResultCode::ACCESS_NOT_AUTH,
+                    'code'  => ResultCode::E_ACCESS_NOT_AUTH,
                     'message' => "$node 没有访问权限"
                 ]);
                 exit($response);

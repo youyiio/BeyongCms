@@ -13,7 +13,7 @@ class Base extends Controller
 
     public function miss() {
         return json([
-            'code' => \ERRNO['PARAMERR'],
+            'code' => ResultCode::E_PARAM_ERROR,
             'message'   => '访问接口不存在或参数错误']);
     }
 

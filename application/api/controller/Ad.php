@@ -23,7 +23,7 @@ class Ad extends Base
             'limit' => 'require|integer'
         ]);
         if (!$validate->check($params)) {
-            return ajax_error(ResultCode::E_DATA_VERIFY_ERROR, $validate->getError());
+            return ajax_error(ResultCode::E_PARAM_VALIDATE_ERROR, $validate->getError());
         };
 
         $slot = $params["slot"];
@@ -53,7 +53,7 @@ class Ad extends Base
             'size' => 'require|integer'
         ]);
         if (!$validate->check($params)) {
-            return ajax_error(ResultCode::E_DATA_VERIFY_ERROR, $validate->getError());
+            return ajax_error(ResultCode::E_PARAM_VALIDATE_ERROR, $validate->getError());
         };
 
         $page = $params["page"];

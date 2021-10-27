@@ -77,7 +77,7 @@ class Comment extends Base
         $params = $this->request->put();
         $check = validate('Comment')->scene('create')->check($params);
         if ($check !== true) {
-            return ajax_error(ResultCode::E_DATA_VERIFY_ERROR, validate('Comment')->getError());
+            return ajax_error(ResultCode::E_PARAM_VALIDATE_ERROR, validate('Comment')->getError());
         }
 
         $ArticleModel = new ArticleModel();

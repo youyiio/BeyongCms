@@ -49,7 +49,7 @@ class Sign extends Base
 
         $check = validate('User')->scene('register')->check($params);
         if ($check !== true) {
-            return ajax_error(ResultCode::E_DATA_VERIFY_ERROR, validate('User')->getError());
+            return ajax_error(ResultCode::E_PARAM_VALIDATE_ERROR, validate('User')->getError());
         }
 
         $code = $params["code"];
@@ -59,12 +59,12 @@ class Sign extends Base
         if (PregUtils::isMobile($params['username'])) {
             $check = $codeLogic->checkCode(CodeLogic::TYPE_REGISTER, $params['username'], $code);
             if ($check !== true) {
-                return ajax_error(ResultCode::E_DATA_VERIFY_ERROR, $codeLogic->getError());
+                return ajax_error(ResultCode::E_PARAM_VALIDATE_ERROR, $codeLogic->getError());
             }
         } else if (PregUtils::isEmail($params['username'])) {
             $check = $codeLogic->checkCode(CodeLogic::TYPE_REGISTER, $params['username'], $code);
             if ($check !== true) {
-                return ajax_error(ResultCode::E_DATA_VERIFY_ERROR, $codeLogic->getError());
+                return ajax_error(ResultCode::E_PARAM_VALIDATE_ERROR, $codeLogic->getError());
             }
         }
        
@@ -83,7 +83,7 @@ class Sign extends Base
         $UserLogic = new UserLogic();
         $user = $UserLogic->register($mobile, $params['password'], $nickname, $email, '', UserModel::STATUS_ACTIVED);
         if (!$user) {
-            return ajax_error(ResultCode::E_DB_OPERATION_ERROR, $UserLogic->getError());
+            return ajax_error(ResultCode::E_LOGIC_ERROR, $UserLogic->getError());
         }
 
         $UserModel = new UserModel();
@@ -254,7 +254,7 @@ class Sign extends Base
         
         $check = $this->validate(input('post.'), 'User.resetPwd');
         if ($check !== true) {
-            return ajax_error(ResultCode::E_DATA_VERIFY_ERROR, $check);
+            return ajax_error(ResultCode::E_PARAM_VALIDATE_ERROR, $check);
         }
 
         $password = input('post.password');
