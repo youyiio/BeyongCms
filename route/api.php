@@ -12,38 +12,37 @@ Route::group('api', function () {
 
     Route::rule("user/getInfo", 'api/User/getInfo', 'get');
 
-    Route::rule("Article/create", 'api/Article/create', 'post');
-    Route::rule("Article/:aid", 'api/Article/query', 'get');    
-    Route::rule("Article/:aid", 'api/Article/edit', 'POST');
-    Route::rule("Article/delete", 'api/Article/delete', 'delete');
-    Route::rule("Article/publish", 'api/Article/publish', 'post');
-    Route::rule("Article/audit", 'api/Article/audit', 'post');
-    Route::rule("Article/comments/:id", 'api/Article/comments', 'get');
+    Route::rule("article/create", 'api/Article/create', 'post');
+    Route::rule("article/:aid", 'api/Article/query', 'get');    
+    Route::rule("article/:aid", 'api/Article/edit', 'post');
+    Route::rule("article/delete", 'api/Article/delete', 'delete');
+    Route::rule("article/publish", 'api/Article/publish', 'post');
+    Route::rule("article/audit", 'api/Article/audit', 'post');
+    Route::rule("article/comments/:id", 'api/Article/comments', 'get');
 
-    Route::rule("Article/list", 'api/Article/list', 'get');
+    Route::rule("article/list", 'api/Article/list', 'get|post');
 
-    Route::rule("Comment/list", 'api/Comment/list', 'get');
-    Route::rule("Comment/:cid", 'api/Comment/query', 'get');
-    Route::rule("Comment/create", 'api/Comment/create', 'post');
-    Route::rule("Comment/audit", 'api/Comment/audit', 'post');
-    Route::rule("Comment/delete", 'api/Comment/delete', 'delete');
+    Route::rule("comment/list", 'api/Comment/list', 'get|post');
+    Route::rule("comment/:cid", 'api/Comment/query', 'get');
+    Route::rule("comment/create", 'api/Comment/create', 'post');
+    Route::rule("comment/audit", 'api/Comment/audit', 'post');
+    Route::rule("comment/delete", 'api/Comment/delete', 'delete');
 
-    Route::rule("Category/list", 'api/Category/list', 'get');
-    Route::rule("Category/create", 'api/Category/create', 'post');
-    Route::rule("Category/edit", 'api/Category/edit', 'post');
-    Route::rule("Category/setStatus", 'api/Category/setStatus', 'post');
-    Route::rule("Category/:id", 'api/Category/delete', 'delete');
+    Route::rule("category/list", 'api/Category/list', 'get|post');
+    Route::rule("category/create", 'api/Category/create', 'post');
+    Route::rule("category/edit", 'api/Category/edit', 'post');
+    Route::rule("category/setStatus", 'api/Category/setStatus', 'post');
+    Route::rule("category/:id", 'api/Category/delete', 'delete');
 
-    Route::rule("Ad/list", 'api/Ad/list', 'get');
-    Route::rule("Ad/slots", 'api/Ad/slots', 'get');
-    Route::rule("Ad/create", 'api/Ad/create', 'post');
-    Route::rule("Ad/edit", 'api/Ad/edit', 'post');
-    Route::rule("Ad/:id", 'api/Ad/delete', 'delete');
+    Route::rule("ad/list", 'api/Ad/list', 'get|post');
+    Route::rule("ad/slots", 'api/Ad/slots', 'get');
+    Route::rule("ad/create", 'api/Ad/create', 'post');
+    Route::rule("ad/edit", 'api/Ad/edit', 'post');
+    Route::rule("ad/:id", 'api/Ad/delete', 'delete');
     
     Route::rule("sms/sendCode", 'api/Sms/sendCode', 'post');
     Route::rule("sms/login", 'api/Sms/login', 'post');
 
-    Route::rule("ad/list", 'api/Ad/list', 'get');
     Route::rule("ad/carousel", 'api/Ad/carousel', 'get');
 
     // 定义miss路由
