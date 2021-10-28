@@ -45,6 +45,12 @@ Route::group('api', function () {
 
     Route::rule("ad/carousel", 'api/Ad/carousel', 'get');
 
+    //运维管理相关
+    Route::rule("server/status", 'api/Server/status', 'get');
+
+    //系统相关
+    Route::rule("user/list", 'api/User/list', 'get|post');
+
     // 定义miss路由
     Route::miss('api/Base/miss');
 
