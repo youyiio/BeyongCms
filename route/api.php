@@ -23,7 +23,7 @@ Route::group('api', function () {
     Route::rule("article/list", 'api/Article/list', 'get|post');
 
     Route::rule("comment/list", 'api/Comment/list', 'get|post');
-    Route::rule("comment/:cid", 'api/Comment/query', 'get');
+    Route::rule("comment/:id", 'api/Comment/query', 'get');
     Route::rule("comment/create", 'api/Comment/create', 'post');
     Route::rule("comment/audit", 'api/Comment/audit', 'post');
     Route::rule("comment/delete", 'api/Comment/delete', 'delete');

@@ -50,9 +50,15 @@ class Comment extends Base
         ];
 
         $CommentModel = new CommentModel();
-        $list = $CommentModel->where($where)->paginate($size, false, $pageConfig);
-      
-        return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!', to_standard_pagelist($list));
+        $list = $CommentModel->where($where)->paginate($size, false, $pageConfig)->toArray();
+       
+        $returnData['current'] = $list['current_page'];
+        $returnData['pages'] = $list['last_page'];
+        $returnData['size'] = $list['per_page'];
+        $returnData['total'] = $list['total'];
+        $returnData['data'] = parse_fields($list['data'], 1);
+     
+        return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!', $returnData);
     }
 
     //查询评论内容
@@ -63,8 +69,10 @@ class Comment extends Base
             ajax_return(ResultCode::E_DATA_NOT_FOUND, '评论不存在!');
         }
 
-        ajax_return(ResultCode::E_DATA_NOT_FOUND, '操作成功!', $comment);
-        
+        $comment = $comment->toArray();
+        $returnData = parse_fields($comment, 1);
+
+        return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!', $returnData);   
     }
 
     //新增评论
@@ -124,8 +132,10 @@ class Comment extends Base
             $msgContent = $author . '评论了文章 “' . $article['title'] . '”';
             send_message(0, 1, $msgTitle, $msgContent, MessageModel::TYPE_COMMENT);
 
-            $returnData = CommentModel::get($comId);
-            return ajax_return(ResultCode::ACTION_FAILED, '操作成功!', $returnData);
+            $data = CommentModel::get($comId);
+            $data = $data->toArray();
+            $returnData = parse_fields($data, 1);
+            return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!', $returnData);
         }
     }
 
