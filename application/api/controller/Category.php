@@ -28,9 +28,15 @@ class Category extends Base
         ];
 
         $CommentModel = new CategoryModel();
-        $list = $CommentModel->where($where)->paginate($size, false, $pageConfig);
-      
-        return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!', to_standard_pagelist($list));
+        $list = $CommentModel->where($where)->paginate($size, false, $pageConfig)->toArray();
+        
+        $returnData['current'] = $list['current_page'];
+        $returnData['pages'] = $list['last_page'];
+        $returnData['size'] = $list['per_page'];
+        $returnData['total'] = $list['total'];
+        $returnData['data'] = parse_fields($list['data'], 1);
+        
+        return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!', $returnData);
     }
 
     public function create()
@@ -59,9 +65,11 @@ class Category extends Base
             return ajax_return(ResultCode::ACTION_FAILED, "操作失败!");
         } 
 
-        $returenData = CategoryModel::get($categoryModel->id);
+        $data = CategoryModel::get($categoryModel->id);
+        $data = $data->toArray();
+        $returnData = parse_fields($data, 1);
 
-        return ajax_return(ResultCode::ACTION_SUCCESS, "操作成功!", $returenData);
+        return ajax_return(ResultCode::ACTION_SUCCESS, "操作成功!", $returnData);
     }
 
     public function edit()
@@ -94,8 +102,11 @@ class Category extends Base
             return ajax_return(ResultCode::ACTION_FAILED, "操作失败!");
         }
 
-        $returenData = CategoryModel::get($params['id']);
-        return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!', $returenData);
+        $data = CategoryModel::get($params['id']);
+
+        $data = $data->toArray();
+        $returnData = parse_fields($data, 1);
+        return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!', $returnData);
     }
 
     //上线下线分类

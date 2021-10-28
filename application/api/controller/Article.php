@@ -10,6 +10,7 @@ use app\common\model\cms\ArticleMetaModel;
 use app\common\model\cms\ArticleModel;
 use app\common\model\cms\CategoryModel;
 use app\common\model\cms\CommentModel;
+use app\common\model\FileModel;
 use app\common\model\ImageModel;
 use app\common\model\UserModel;
 
@@ -17,23 +18,8 @@ use app\common\model\UserModel;
 // 文章相关接口
 class Article extends Base
 {
-    //查询列表
-    protected $payloadData;
-    protected $uid;
-    
-    public function initialize() {
-        
-        $this->payloadData = session('jwt_payload_data');
-        if (!$this->payloadData) {
-            return ajax_error(ResultCode::ACTION_FAILED, 'TOKEN自定义参数不存在！');
-        }
-        $this->uid = $this->payloadData->uid;
-        if (!$this->uid) {
-            return ajax_error(ResultCode::E_USER_NOT_EXIST, '用户不存在！');
-        }
-    }
-    
-    public function list($page=1, $size=10)
+    //文章列表
+    public function list()
     {
         $ArticleModel = new ArticleModel();
 
@@ -48,7 +34,7 @@ class Article extends Base
         $filters = $params['filters'] ?? []; 
 
         $where = [];
-        $fields = 'id,title,thumb_image_id,post_time,update_time,create_time,is_top,status,read_count,sort';
+        $fields = 'id,title,thumb_image_id,post_time,update_time,create_time,is_top,status,read_count,sort,author';
         if (isset($filters['keywords']) && $filters['keywords']) {
             $where[] = ['keywords', 'like', '%'.$filters['keywords'].'%'];
         }
@@ -58,7 +44,7 @@ class Article extends Base
             $childCateIds = $childs['ids'];
             array_push($childCateIds, $filters['categoryId']);
 
-            $fields = 'ArticleModel.id,title,thumb_image_id,post_time,update_time,create_time,is_top,status,read_count,sort';
+            $fields = 'ArticleModel.id,title,thumb_image_id,post_time,update_time,create_time,is_top,status,read_count,sort,author';
             $ArticleModel = ArticleModel::hasWhere('CategoryArticle', [['category_id','in',$childCateIds]], $fields)->group([]); //hack:group用于清理hasmany默认加group key
         }
 
@@ -66,8 +52,8 @@ class Article extends Base
         if (isset($filters['status']) && $filters['status']) {
             $where[] = ['status', '=', $filters['status']];
         }
-
         $status = $filters['status'] ?? '';
+
         //查询时间
         $queryTimeField = ($status == '' || $status == ArticleModel::STATUS_PUBLISHED) ? 'post_time' : 'create_time';
         if (!empty($filters['startTime'])) {
@@ -85,10 +71,23 @@ class Article extends Base
             'page' => $page,
             'query' => ''
         ];
-        
         $list = $ArticleModel->where($where)->field($fields)->order($order)->paginate($size, false, $pageConfig);
+       
+       
+        //添加缩略图
+        foreach ($list as $art) {
+            $art['thumbImage'] = $this->findThumbImage($art);
+        }
 
-        return ajax_return(ResultCode::ACTION_SUCCESS, '查询成功!', to_standard_pagelist($list));
+        $list = $list->toArray();
+        //返回数据
+        $returnData['current'] = $list['current_page'];
+        $returnData['pages'] = $list['last_page'];
+        $returnData['size'] = $list['per_page'];
+        $returnData['total'] = $list['total'];
+        $returnData['data'] = parse_fields($list['data'], 1);
+
+        return ajax_return(ResultCode::ACTION_SUCCESS, '查询成功!', $returnData);
     }
 
     // 查询文章内容
@@ -103,23 +102,13 @@ class Article extends Base
         //文章标签
         $articleMetaModel = new ArticleMetaModel();
         $tags = $articleMetaModel->_metas($art['id'], 'tag');
+
         //缩略图
-        $fullThumbImageUrl = '';
-        if (!empty($art['thumb_image_id'])) {
-            $field = 'id,image_name,thumb_image_url,image_url,oss_image_url,create_time';
-            $ImageModel = new ImageModel();
-            $thumbImage = ImageModel::get($art['thumb_image_id']);
-            $fullThumbImageUrl = $ImageModel->getFullImageUrlAttr('',$thumbImage);
-        }
-        
-        //附加图片和文件
-        $Images = get_image($art->metas('image'));
-        $Images = $Images->toArray();
-        $metaImages = parse_fields($Images,1);
-      
-        $metaFiles = get_file($art->metas('file'));
-        $metaFiles = $metaFiles->toArray();
-        $metaFiles = parse_fields($metaFiles,1);
+        $thumbImage = $this->findThumbImage($art);
+        //附加图片
+        $metaImages = $this->FindMetaImages($art);
+        //附加文件
+        $metaFiles = $this->findMetaFiles($art);
       
         //返回数据
         $returnData = [
@@ -128,7 +117,7 @@ class Article extends Base
             'keywords' => $art['keywords'],
             'description' => $art['description'],
             'tags' => $tags,
-            'fullThumbImageUrl' => $fullThumbImageUrl,
+            'thumbImage' => $thumbImage,
             'content' => $art['content'],
             'readCount' => $art['read_count'],
             'commentCount' => $art['comment_count'],
@@ -157,16 +146,17 @@ class Article extends Base
         } else {
             $status = $articleModel::STATUS_PUBLISHING;        
         }
-     
+        $user = $this->user_info;
+        $uid = $user->uid;
         if (empty($params['author'])) {
             $userModel = new UserModel();
-            $author = $userModel->where('id', $this->uid)->value('nickname');
+            $author = $userModel->where('id', $uid)->value('nickname');
         } else {
             $author = $params['author'];
         }
         
         $data = [
-            'uid' => $this->uid,
+            'uid' => $uid,
             'title' => $params['title'],
             'description' => $params['description'],
             'keywords' => $params['keywords'],
@@ -194,27 +184,11 @@ class Article extends Base
         $tags = $articleMetaModel->_metas($artId, 'tag');
         
         //缩略图
-        $thumbImage = '';
-        if (!empty($art['thumb_image_id'])) {
-            //$field = 'id,image_name,thumb_image_url,image_url,oss_image_url,create_time';
-            $ImageModel = new ImageModel();
-            $thumbImage = $ImageModel::get($art['thumb_image_id']);
-         
-            $thumbImage['fullImageUrl'] = $ImageModel->getFullImageUrlAttr('',$thumbImage);
-            $thumbImage['FullThumbImageUrlAttr'] = $ImageModel->getFullThumbImageUrlAttr('',$thumbImage);
-        
-            $thumbImage = $thumbImage->toArray();
-            $thumbImage = parse_fields($thumbImage,1);
-        }
-
-        //附件图片和文件
-        $Images = get_image($art->metas('image'));
-        $Images = $Images->toArray();
-        $metaImages = parse_fields($Images,1);
-      
-        $metaFiles = get_file($art->metas('file'));
-        $metaFiles = $metaFiles->toArray();
-        $metaFiles = parse_fields($metaFiles,1);
+        $thumbImage = $this->findThumbImage($art);
+        //附加图片
+        $metaImages = $this->FindMetaImages($art);
+        //附加文件
+        $metaFiles = $this->findMetaFiles($art);
       
         //返回json格式
         $returnData = [
@@ -267,26 +241,11 @@ class Article extends Base
         $tags = $articleMetaModel->_metas($aid, 'tag');
 
         //缩略图
-        $thumbImage = '';
-        if (!empty($art['thumb_image_id'])) {
-            $ImageModel = new ImageModel();
-            $thumbImage = $ImageModel::get($art['thumb_image_id']);
-        
-            $thumbImage['fullImageUrl'] = $ImageModel->getFullImageUrlAttr('',$thumbImage);
-            $thumbImage['FullThumbImageUrlAttr'] = $ImageModel->getFullThumbImageUrlAttr('',$thumbImage);
-        
-            $thumbImage = $thumbImage->toArray();
-            $thumbImage = parse_fields($thumbImage,1);
-        }
-        unset($art['thumb_image_id']);
-        //附件图片和文件
-        $Images = get_image($art->metas('image'));
-        $Images = $Images->toArray();
-        $metaImages = parse_fields($Images,1);
-      
-        $metaFiles = get_file($art->metas('file'));
-        $metaFiles = $metaFiles->toArray();
-        $metaFiles = parse_fields($metaFiles,1);
+        $thumbImage = $this->findThumbImage($art);
+        //附加图片
+        $metaImages = $this->FindMetaImages($art);
+        //附加文件
+        $metaFiles = $this->findMetaFiles($art);
 
         //返回json格式
         $returnData = parse_fields($art->toArray(),1);
@@ -441,5 +400,64 @@ class Article extends Base
 
         return ajax_return(ResultCode::ACTION_SUCCESS, '查询成功!', to_standard_pagelist($list));
 
+    }
+
+    //查找文章的缩略图
+    public function findThumbImage($art)
+    {
+        $thumbImage = [];
+        if (empty($art['thumb_image_id']) || $art['thumb_image_id'] == 0) {
+            return $thumbImage;
+        }
+        $ImageModel = new ImageModel();
+        $thumbImage = $ImageModel::get($art['thumb_image_id']);
+    
+        if (empty($thumbImage)) {
+            return $thumbImage;
+        }
+
+        //完整路径
+        $thumbImage['fullImageUrl'] = $ImageModel->getFullImageUrlAttr('',$thumbImage);
+        $thumbImage['FullThumbImageUrlAttr'] = $ImageModel->getFullThumbImageUrlAttr('',$thumbImage);
+        unset($thumbImage['remark']);
+        unset($thumbImage['image_size']);
+        unset($thumbImage['thumb_image_size']);
+        unset($art['thumb_image_id']);
+
+        $thumbImage = $thumbImage->toArray();
+        $thumbImage = parse_fields($thumbImage,1);
+        return $thumbImage;
+    }
+
+    //查找文章的附加图片
+    public function FindMetaImages($art)
+    {
+        $metaImages = get_image($art->metas('image'));
+        foreach ($metaImages as $image) {
+            //获取完整路径
+            $image['fullImageUrl'] = $image->getFullImageUrlAttr('',$image);
+            $image['FullThumbImageUrlAttr'] = $image->getFullThumbImageUrlAttr('',$image);
+            unset($image['remark']);
+            unset($image['image_size']);
+            unset($image['thumb_image_size']);
+        }
+        $metaImages = $metaImages->toArray();
+        $metaImages = parse_fields($metaImages, 1);
+    
+        return $metaImages;
+    }
+
+    //查找文章的附加文件
+    public function findMetaFiles($art)
+    {
+        $metaFiles = get_file($art->metas('file'));
+        foreach ($metaFiles as $file) {
+            $file['fullFileUrl'] = $file->getFullFileUrlAttr('',$file);
+            unset($file['remark']);
+        }
+        $metaFiles = $metaFiles->toArray();
+        $metaFiles = parse_fields($metaFiles, 1);
+
+        return $metaFiles;
     }
 }
