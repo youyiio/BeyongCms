@@ -189,12 +189,16 @@ class Ad extends Base
     public function delete($id)
     {
         $ad = AdModel::get($id);
+       
         if (!$ad) {
             $this->error('广告不存在!');
         }
 
         $ad->delete();
 
+        $AdServingModel = new AdServingModel();
+        $AdServingModel->where('ad_id', $id)->delete();
+        
         return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!');
     }
 
