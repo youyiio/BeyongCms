@@ -36,7 +36,7 @@ class Article extends Base
         $where = [];
         $fields = 'id,title,thumb_image_id,post_time,update_time,create_time,is_top,status,read_count,sort,author';
         if (isset($filters['keywords']) && $filters['keywords']) {
-            $where[] = ['keywords', 'like', '%'.$filters['keywords'].'%'];
+            $where[] = ['keywords|title', 'like', '%'.$filters['keywords'].'%'];
         }
       
         if (isset($filters['categoryId']) && $filters['categoryId'] > 0) {
@@ -49,7 +49,7 @@ class Article extends Base
         }
 
         //文章状态        
-        if (isset($filters['status']) && $filters['status']) {
+        if (!empty($filters['status'])) {
             $where[] = ['status', '=', $filters['status']];
         }
         $status = $filters['status'] ?? '';
@@ -71,8 +71,8 @@ class Article extends Base
             'page' => $page,
             'query' => ''
         ];
+    
         $list = $ArticleModel->where($where)->field($fields)->order($order)->paginate($size, false, $pageConfig);
-       
        
         //添加缩略图
         foreach ($list as $art) {
@@ -285,14 +285,14 @@ class Article extends Base
 
         //发布文章
         if (isset($params['id'])) {
-            $ids = $params['id'];        
+            $ids[] = $params['id'];    
         } 
-        if (is_array($params['ids'])) {
+
+        if (isset($params['ids']) && is_array($params['ids'])) {
             $ids = $params['ids'];        
         }
-
+       
         $ArticleModel = new ArticleModel();
-    
         $success = $ArticleModel->where('id', 'in', $ids)->setField($data);
         $fails = count($ids) - $success;
 
@@ -322,11 +322,11 @@ class Article extends Base
             'post_time' => date_time()
         ];
 
-        //发布文章
+        //审核
         if (isset($params['id'])) {
-            $ids = $params['id'];        
+            $ids[] = $params['id'];    
         } 
-        if (is_array($params['ids'])) {
+        if (isset($params['ids']) && is_array($params['ids'])) {
             $ids = $params['ids'];        
         }
 
@@ -356,11 +356,12 @@ class Article extends Base
             return ajax_return(ResultCode::ACTION_FAILED, '参数错误');
         }
 
-        //删除文章
+        //删除
         if (isset($params['id'])) {
-            $ids = $params['id'];        
+            $ids[] = $params['id'];    
         } 
-        if (is_array($params['ids'])) {
+
+        if (isset($params['ids']) && is_array($params['ids'])) {
             $ids = $params['ids'];        
         }
 

@@ -155,11 +155,12 @@ class Comment extends Base
             return ajax_return(ResultCode::ACTION_FAILED, '参数错误');
         }
 
-        //评论ID
+        //审核
         if (isset($params['id'])) {
-            $ids = $params['id'];        
+            $ids[] = $params['id'];    
         } 
-        if (is_array($params['ids'])) {
+
+        if (isset($params['ids']) && is_array($params['ids'])) {
             $ids = $params['ids'];        
         }
 
@@ -193,9 +194,10 @@ class Comment extends Base
     
         //删除评论
         if (isset($params['id'])) {
-            $ids = $params['id'];        
+            $ids[] = $params['id'];    
         } 
-        if (is_array($params['ids'])) {
+
+        if (isset($params['ids']) && is_array($params['ids'])) {
             $ids = $params['ids'];        
         }
         
