@@ -11,6 +11,7 @@ Route::group('api', function () {
     Route::rule("sign/reset", 'api/Sign/reset', 'post|get');
 
     Route::rule("user/getInfo", 'api/User/getInfo', 'get');
+    Route::rule("user/list", 'api/User/list', 'get|post');
 
     Route::rule("article/create", 'api/Article/create', 'post');
     Route::rule("article/:aid", 'api/Article/query', 'get');    
@@ -39,6 +40,14 @@ Route::group('api', function () {
     Route::rule("ad/create", 'api/Ad/create', 'post');
     Route::rule("ad/edit", 'api/Ad/edit', 'post');
     Route::rule("ad/:id", 'api/Ad/delete', 'delete');
+
+    Route::rule("link/list", 'api/Link/list', 'get|post');
+
+    Route::rule("role/list", 'api/Role/list', 'get');
+
+    Route::rule("menu/list", 'api/Menu/list', 'get');
+
+    Route::rule("log/list", 'api/Log/list', 'get');
     
     Route::rule("sms/sendCode", 'api/Sms/sendCode', 'post');
     Route::rule("sms/login", 'api/Sms/login', 'post');
