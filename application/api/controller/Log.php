@@ -10,12 +10,12 @@ class Log extends Base
     //日志列表
     public function list()
     {
-        $parmas = $this->request->put();
+        $params = $this->request->put();
 
-        $page = $parmas['page'];
-        $size = $parmas['size'];
+        $page = $params['page'];
+        $size = $params['size'];
 
-        $filters = $parmas['filters'];
+        $filters = $params['filters'];
         $action = $filters['action']??'';
         $startTime = $filters['startime']??'';
         $endTime = $filters['endtime']??'';
