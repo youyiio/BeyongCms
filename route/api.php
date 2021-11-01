@@ -40,25 +40,20 @@ Route::group('api', function () {
     Route::rule("ad/create", 'api/Ad/create', 'post');
     Route::rule("ad/edit", 'api/Ad/edit', 'post');
     Route::rule("ad/:id", 'api/Ad/delete', 'delete');
+    Route::rule("ad/carousel", 'api/Ad/carousel', 'get');
 
-    Route::rule("link/list", 'api/Link/list', 'get|post');
-
-    Route::rule("role/list", 'api/Role/list', 'get');
-
-    Route::rule("menu/list", 'api/Menu/list', 'get');
-
-    Route::rule("log/list", 'api/Log/list', 'get');
-    
     Route::rule("sms/sendCode", 'api/Sms/sendCode', 'post');
     Route::rule("sms/login", 'api/Sms/login', 'post');
-
-    Route::rule("ad/carousel", 'api/Ad/carousel', 'get');
 
     //运维管理相关
     Route::rule("server/status", 'api/Server/status', 'get');
 
     //系统相关
     Route::rule("user/list", 'api/User/list', 'get|post');
+    Route::rule("link/list", 'api/Link/list', 'get|post');
+    Route::rule("role/list", 'api/Role/list', 'get|post');
+    Route::rule("menu/list", 'api/Menu/list', 'get|post');
+    Route::rule("log/list", 'api/Log/list', 'get|post');
 
     // 定义miss路由
     Route::miss('api/Base/miss');

@@ -64,6 +64,11 @@ class User extends Base
         $UserModel = new UserModel();
         $list = $UserModel->where($where)->field($fields)->paginate($size, false, ['page' =>$page]);
 
+        //查询部门
+        foreach ($list as $val) {
+            $val['dept'] = [];
+        }
+
         $list = $list->toArray();
         //返回数据
         $returnData['current'] = $list['current_page'];

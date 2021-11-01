@@ -48,13 +48,12 @@ class Log extends Base
             $val['username'] = $user['nickname'];
             $val['address'] = ip_to_address($val['ip'], 'province,city');
             //还没有的字段
-            $val['还没有的字段component'] = '';
+            $val['component'] = '';
             $val['actionTime'] = '';
             $val['responseTime'] = '';
             $val['params'] = '';
             $val['userAgent'] = '';
         }
-
 
         $list = $list->toArray();
         //返回数据
