@@ -3,14 +3,13 @@ namespace app\api\controller;
 
 use app\common\library\ResultCode;
 use app\common\model\ActionLogModel;
+use app\common\model\UserModel;
 
 class Log extends Base 
 {
     //日志列表
     public function list()
     {
-        $ActionLogModel = new ActionLogModel();
-
         $parmas = $this->request->put();
 
         $page = $parmas['page'];
@@ -38,10 +37,24 @@ class Log extends Base
         if ($key !== '') {
             $where[] = ['remark', 'like', "%{$key}%"];
         }
-
        
-        $fields = 'id, uid,action, module, ip, remark, data, create_time';
+        $fields = 'id,uid,action,module,ip,data,remark,create_time';
+        $ActionLogModel = new ActionLogModel();
         $list = $ActionLogModel->where($where)->field($fields)->order('id desc')->paginate($size, false, ['page'=>$page]);
+        
+        //处理数据
+        foreach ($list as $val) {
+            $user = UserModel::get($val['uid']);
+            $val['username'] = $user['nickname'];
+            $val['address'] = ip_to_address($val['ip'], 'province,city');
+            //还没有的字段
+            $val['还没有的字段component'] = '';
+            $val['actionTime'] = '';
+            $val['responseTime'] = '';
+            $val['params'] = '';
+            $val['userAgent'] = '';
+        }
+
 
         $list = $list->toArray();
         //返回数据
