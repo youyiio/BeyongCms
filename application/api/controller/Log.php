@@ -15,14 +15,14 @@ class Log extends Base
 
         $page = $parmas['page'];
         $size = $parmas['size'];
+
         $filters = $parmas['filters'];
-        
-        
         $action = $filters['action']??'';
         $startTime = $filters['startime']??'';
         $endTime = $filters['endtime']??'';
         $key = $filters['keyword']??'';
-        if (!(empty($startTime) && empty($endTime))) {
+       
+        if (empty($startTime) && empty($endTime)) {
             $startTime  = date('Y-m-d',strtotime('-31 day'));
             $endTime   = date('Y-m-d');
         }
@@ -30,25 +30,17 @@ class Log extends Base
         $startDatetime = date('Y-m-d 00:00:00', strtotime($startTime));
         $endDatetime = date('Y-m-d 23:59:59', strtotime($endTime));
 
-        $where = [
-            ['remark', 'like', "%{$key}%"],
-            ['action', '=', $action],
-            ['create_time', 'between', [$startDatetime, $endDatetime]],
-        ];
-        if ($action == '' && $key == '') {
-            $where = [
-                ['create_time', 'between', [$startDatetime, $endDatetime]],
-            ];
-        } else if ($action == ''){
-            $where = [
-                ['remark', 'like', "%{$key}%"],
-                ['create_time', 'between', [$startDatetime, $endDatetime]],
-            ];
+        $where[] = ['create_time', 'between', [$startDatetime, $endDatetime]];
+        if ($action !== '') {
+            $where[] =  ['action', '=', $action];
         }
 
-        $fields = 'id, uid,action, module, ip, remark, data, create_time';
+        if ($key !== '') {
+            $where[] = ['remark', 'like', "%{$key}%"];
+        }
+
        
-        halt($where);
+        $fields = 'id, uid,action, module, ip, remark, data, create_time';
         $list = $ActionLogModel->where($where)->field($fields)->order('id desc')->paginate($size, false, ['page'=>$page]);
 
         $list = $list->toArray();
