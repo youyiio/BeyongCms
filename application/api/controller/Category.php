@@ -34,7 +34,7 @@ class Category extends Base
         $returnData['pages'] = $list['last_page'];
         $returnData['size'] = $list['per_page'];
         $returnData['total'] = $list['total'];
-        $returnData['data'] = parse_fields($list['data'], 1);
+        $returnData['records'] = parse_fields($list['data'], 1);
         
         return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!', $returnData);
     }

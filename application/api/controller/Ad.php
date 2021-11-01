@@ -88,7 +88,7 @@ class Ad extends Base
         $returnData['pages'] = $list['last_page'];
         $returnData['size'] = $list['per_page'];
         $returnData['total'] = $list['total'];
-        $returnData['data'] = parse_fields($list['data'], 1);
+        $returnData['records'] = parse_fields($list['data'], 1);
 
         return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!', $returnData);
     }
@@ -189,12 +189,16 @@ class Ad extends Base
     public function delete($id)
     {
         $ad = AdModel::get($id);
+       
         if (!$ad) {
             $this->error('广告不存在!');
         }
 
         $ad->delete();
 
+        $AdServingModel = new AdServingModel();
+        $AdServingModel->where('ad_id', $id)->delete();
+        
         return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!');
     }
 

@@ -34,22 +34,23 @@ class Article extends Base
         $filters = $params['filters'] ?? []; 
 
         $where = [];
-        $fields = 'id,title,thumb_image_id,post_time,update_time,create_time,is_top,status,read_count,sort,author';
-        if (isset($filters['keywords']) && $filters['keywords']) {
-            $where[] = ['keywords|title', 'like', '%'.$filters['keywords'].'%'];
+        if (isset($filters['keyword']) && $filters['keyword']) {
+            $where[] = ['keywords|title', 'like', '%'.$filters['keyword'].'%'];
         }
       
+        $fields = 'id,title,keywords,thumb_image_id,post_time,update_time,create_time,is_top,status,read_count,sort,author';
         if (isset($filters['categoryId']) && $filters['categoryId'] > 0) {
             $childs = CategoryModel::getChild($filters['categoryId']);
             $childCateIds = $childs['ids'];
             array_push($childCateIds, $filters['categoryId']);
 
-            $fields = 'ArticleModel.id,title,thumb_image_id,post_time,update_time,create_time,is_top,status,read_count,sort,author';
+            $fields = 'ArticleModel.id,title,keywords,thumb_image_id,post_time,update_time,create_time,is_top,status,read_count,sort,author';
             $ArticleModel = ArticleModel::hasWhere('CategoryArticle', [['category_id','in',$childCateIds]], $fields)->group([]); //hack:group用于清理hasmany默认加group key
         }
 
-        //文章状态        
-        if (!empty($filters['status'])) {
+        //文章状态 
+               
+        if (isset($filters['status']) && $filters['status'] !== '') {
             $where[] = ['status', '=', $filters['status']];
         }
         $status = $filters['status'] ?? '';
@@ -85,7 +86,7 @@ class Article extends Base
         $returnData['pages'] = $list['last_page'];
         $returnData['size'] = $list['per_page'];
         $returnData['total'] = $list['total'];
-        $returnData['data'] = parse_fields($list['data'], 1);
+        $returnData['records'] = parse_fields($list['data'], 1);
 
         return ajax_return(ResultCode::ACTION_SUCCESS, '查询成功!', $returnData);
     }
