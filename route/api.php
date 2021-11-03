@@ -10,9 +10,27 @@ Route::group('api', function () {
     Route::rule("sign/logout", 'api/Sign/logout', 'post|get');
     Route::rule("sign/reset", 'api/Sign/reset', 'post|get');
 
-    Route::rule("user/getInfo", 'api/User/getInfo', 'get');
+    //用户管理相关
+    Route::rule("user/:id", 'api/User/query', 'get');
     Route::rule("user/list", 'api/User/list', 'get|post');
+    Route::rule("user/create", 'api/User/create', 'post');
+    Route::rule("user/edit", 'api/User/edit', 'post');
+    Route::rule("user/:id", 'api/User/delete', 'delete');
+    Route::rule("user/modifyPassword", 'api/User/modifyPassword', 'post');
+    Route::rule("user/freeze", 'api/User/freeze', 'post');
+    Route::rule("user/unfreeze", 'api/User/unfreeze', 'post');
+    Route::rule("user/addRoles", 'api/User/addRoles', 'post');
 
+    //角色管理相关
+    Route::rule("role/list", 'api/Role/list', 'get|post');
+    Route::rule("role/create", 'api/Role/create', 'post');
+    Route::rule("role/edit", 'api/Role/edit', 'post');
+    Route::rule("role/:id", 'api/Role/delete', 'delete');
+    Route::rule("role/addMenus/:id", 'api/Role/addMenus', 'post');
+    Route::rule("role/menu/:id", 'api/Role/query', 'get');
+    
+    //文章管理相关
+    Route::rule("article/list", 'api/Article/list', 'get|post');
     Route::rule("article/create", 'api/Article/create', 'post');
     Route::rule("article/:aid", 'api/Article/query', 'get');    
     Route::rule("article/:aid", 'api/Article/edit', 'post');
@@ -21,20 +39,21 @@ Route::group('api', function () {
     Route::rule("article/audit", 'api/Article/audit', 'post');
     Route::rule("article/comments/:id", 'api/Article/comments', 'get|post');
 
-    Route::rule("article/list", 'api/Article/list', 'get|post');
-
+    //评论相关
     Route::rule("comment/list", 'api/Comment/list', 'get|post');
     Route::rule("comment/:id", 'api/Comment/query', 'get');
     Route::rule("comment/create", 'api/Comment/create', 'post');
     Route::rule("comment/audit", 'api/Comment/audit', 'post');
     Route::rule("comment/delete", 'api/Comment/delete', 'delete');
 
+    //文章分类相关
     Route::rule("category/list", 'api/Category/list', 'get|post');
     Route::rule("category/create", 'api/Category/create', 'post');
     Route::rule("category/edit", 'api/Category/edit', 'post');
     Route::rule("category/setStatus", 'api/Category/setStatus', 'post');
     Route::rule("category/:id", 'api/Category/delete', 'delete');
 
+    //广告相关
     Route::rule("ad/list", 'api/Ad/list', 'get|post');
     Route::rule("ad/slots", 'api/Ad/slots', 'get');
     Route::rule("ad/create", 'api/Ad/create', 'post');
@@ -49,9 +68,8 @@ Route::group('api', function () {
     Route::rule("server/status", 'api/Server/status', 'get');
 
     //系统相关
-    Route::rule("user/list", 'api/User/list', 'get|post');
     Route::rule("link/list", 'api/Link/list', 'get|post');
-    Route::rule("role/list", 'api/Role/list', 'get|post');
+  
     Route::rule("menu/list", 'api/Menu/list', 'get|post');
     Route::rule("log/list", 'api/Log/list', 'get|post');
 

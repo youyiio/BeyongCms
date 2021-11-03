@@ -32,6 +32,39 @@ class Role extends Base
         $returnData['total'] = $list['total'];
         $returnData['records'] = parse_fields($list['data'], 1);
 
-        return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功', $returnData);
+        return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!', $returnData);
+    }
+
+    //新增角色
+    public function create()
+    {
+        $params = $this->request->put();
+        
+        $name = $params['name']?? '';
+        $remark = $params['remark']?? '';
+
+        if (empty($name)) {
+            return ajax_return(ResultCode::E_DATA_VALIDATE_ERROR, '操作失败!');
+        }
+
+        $AuthGroupModel = new AuthGroupModel();
+        $result = $AuthGroupModel->save(['title'=>$name]);
+        // $result = $AuthGroupModel->save([['title'=>$name], ['remark'=>$remark]]);
+        if (!$result) {
+            return ajax_return(ResultCode::E_DB_ERROR, '操作失败!');
+        }
+
+        $id = $AuthGroupModel->id;
+        $returnData = $AuthGroupModel->where('id', '=' ,$id)->find();
+
+        return ajax_return(ResultCode::E_DB_ERROR, '操作成功!', $returnData);
+    }
+
+    //编辑角色
+    public function audit()
+    {
+        $params = $this->request->put();
+
+        
     }
 }

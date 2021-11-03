@@ -34,7 +34,14 @@ class Category extends Base
         $returnData['pages'] = $list['last_page'];
         $returnData['size'] = $list['per_page'];
         $returnData['total'] = $list['total'];
-        $returnData['records'] = parse_fields($list['data'], 1);
+        
+        // 获取树形或者结构数据
+        $tree = new \beyong\commons\data\Tree();
+        $data = $tree::tree($list['data'], 'title', 'id', 'pid');
+        $data = $tree::channelLevel($list['data'], 0, '&nbsp;', 'id');
+
+        //返回数据
+        $returnData['records'] = parse_fields($data, 1);
         
         return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!', $returnData);
     }
