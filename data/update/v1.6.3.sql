@@ -15,3 +15,21 @@ ADD COLUMN `create_by` varchar(255) NULL AFTER `sort`,
 ADD COLUMN `update_by` varchar(255) NULL AFTER `create_by`,
 ADD COLUMN `create_time` datetime(0) NULL AFTER `update_by`,
 ADD COLUMN `update_time` datetime(0) NULL AFTER `create_time`;
+
+drop index uniq_config_name on sys_config;
+
+/*==============================================================*/
+/* Index: idx_sys_config_group                                  */
+/*==============================================================*/
+create index idx_sys_config_group on sys_config
+(
+   `group`
+);
+
+/*==============================================================*/
+/* Index: uniq_sys_config_key                                   */
+/*==============================================================*/
+create unique index uniq_sys_config_key on sys_config
+(
+   `key`
+);
