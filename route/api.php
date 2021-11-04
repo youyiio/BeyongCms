@@ -26,8 +26,9 @@ Route::group('api', function () {
     Route::rule("role/create", 'api/Role/create', 'post');
     Route::rule("role/edit", 'api/Role/edit', 'post');
     Route::rule("role/:id", 'api/Role/delete', 'delete');
+    Route::rule("role/menus/:id", 'api/Role/menus', 'get');
     Route::rule("role/addMenus/:id", 'api/Role/addMenus', 'post');
-    Route::rule("role/menu/:id", 'api/Role/query', 'get');
+    Route::rule("role/users/:id", 'api/Role/userList', 'get');
     
     //文章管理相关
     Route::rule("article/list", 'api/Article/list', 'get|post');

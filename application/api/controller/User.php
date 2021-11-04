@@ -176,6 +176,7 @@ class User extends Base
             return ajax_return(ResultCode::E_DATA_VALIDATE_ERROR, '删除失败!');
         }
 
+        //删除用户角色
         return ajax_return(ResultCode::ACTION_SUCCESS, '删除成功!');
     }
 
