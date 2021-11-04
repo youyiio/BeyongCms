@@ -84,11 +84,9 @@ class User extends Validate
 
     protected $scene = [
         'create' => ['nickname','mobile','email','password','roleIds'], //新增用户
-        'audit' => ['id','nickname','mobile','email','roleIds','qq','wechat'], 
+        'edit' => ['id','nickname','mobile','email','roleIds','qq','wechat'], 
         'profile' => ['nickname','sex','born','qq','mobile','phone','website'],
         'modifyPassword' => ['id','password'], 
         'addRoles' => ['id', 'roleIds']
     ];
-
-
 }

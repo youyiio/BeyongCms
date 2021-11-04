@@ -65,6 +65,17 @@ class Role extends Base
     {
         $params = $this->request->put();
 
+        $id = $params['id'];
+
+        $role = AuthGroupModel::get($id);
+
+        if (!$role) {
+            return ajax_return(ResultCode::E_PARAM_ERROR, '角色不存在!');
+        }
+
+        $role->name = $params['name'];
+        // $role->remark = $params['remark'];
+        $role->save();
         
     }
 }
