@@ -117,15 +117,33 @@ class User extends Base
     {
         $params = $this->request->put();
 
-        $check = Validate('User')->scene('audit')->check($params);
+        $check = Validate('User')->scene('edit')->check($params);
         if ($check !== true) {
             return ajax_error(ResultCode::E_PARAM_VALIDATE_ERROR, validate('User')->getError());
         }
 
         $uid = $params['id'];
+
+        $user = UserModel::get($uid);
+        $user->nickname = $params['nickname'];
+        $user->mobile = $params['mobile'];
+        $user->email = $params['email'];
+        if (isset($params['qq'])) {
+            $user->qq = $params['qq'];
+        }
+        if (isset($params['weixin'])) {
+            $user->weixin = $params['weixin'];
+        }
+        $res = $user->save();
+
+        if (!$res) {
+            return ajax_return(ResultCode::ACTION_SUCCESS, '操作失败!');
+        }
+
         // 修改权限
         $AuthGroupAccessModel = new AuthGroupAccessModel();
         $AuthGroupAccessModel->where(['uid'=>$uid])->delete();
+       
         if (!empty($params['roleIds'])) {
             $group = [];
             foreach ($params['roleIds'] as $k => $v) {
@@ -138,16 +156,8 @@ class User extends Base
         }
         Cache::tag('menu')->rm($uid); //删除用户菜单配置缓存
 
-        $userModel = new UserModel();
-        $res = $userModel->allowField(true)->isUpdate(true)->save($params, ['id' => $uid]);
-
-        if (!$res) {
-            return ajax_return(ResultCode::E_DATA_VALIDATE_ERROR, '操作失败!');
-        }
-
         //返回数据
-        $returnData = UserModel::get($uid);
-        $AuthGroupAccessModel = new AuthGroupAccessModel();
+        $returnData = $user;
         $returnData['roleIds'] = $AuthGroupAccessModel->where('uid', $uid)->column('group_id');
 
         return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!', $returnData);
