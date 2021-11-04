@@ -46,6 +46,9 @@ Route::group('api', function () {
     Route::rule("comment/audit", 'api/Comment/audit', 'post');
     Route::rule("comment/delete", 'api/Comment/delete', 'delete');
 
+    //个人中心相关
+    Route::rule("ucenter/getInfo", 'api/Ucenter/getInfo', 'get');
+
     //文章分类相关
     Route::rule("category/list", 'api/Category/list', 'get|post');
     Route::rule("category/create", 'api/Category/create', 'post');
