@@ -8,10 +8,9 @@ return [
     'jwt_expired_time'    => 3600, //过期时间秒
     'jwt_auth_on'         => 'off', //api权限验证, on|off
     'jwt_action_excludes' => [
-        '/sign/login', 
-        '/sign/register', 
-        '/sms/sendcode', '/sms/login',
-        '/anime/categorylist', '/anime/topiclist', 
-        '/anime/chapterlist', '/anime/getanime'
+        '/sign/login', //登录
+        '/sign/register',  //注册
+        '/sms/sendcode', //发送验证码
+        '/sms/login', //短信登录
     ],  //jwt验证例外列表
 ];
