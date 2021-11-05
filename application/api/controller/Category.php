@@ -3,6 +3,7 @@ namespace app\api\controller;
 
 use app\common\library\ResultCode;
 use app\common\model\cms\CategoryModel;
+use beyong\commons\data\Tree;
 use PhpOffice\PhpSpreadsheet\Calculation\Statistical\Distributions\F;
 
 class Category extends Base
@@ -13,13 +14,13 @@ class Category extends Base
 
         $page = $params['page']?: 1;
         $size = $params['size']?: 10;
-        $query = $params['filters']?: '';
+        $filters = $params['filters']?: '';
 
         if (!empty($filters['startTime'])) {
-            $where[] = ['create_time', '>=', $query['startTime'] . '00:00:00'];
+            $where[] = ['create_time', '>=', $filters['startTime'] . '00:00:00'];
         }
         if (!empty($filters['endTime'])) {
-            $where[] = ['create_time', '<=', $query['endTime'] . '23:59:59'];
+            $where[] = ['create_time', '<=', $filters['endTime'] . '23:59:59'];
         }
         $where = ['status' => CategoryModel::STATUS_ONLINE];
 
@@ -36,9 +37,10 @@ class Category extends Base
         $returnData['total'] = $list['total'];
         
         // 获取树形或者结构数据
-        $tree = new \beyong\commons\data\Tree();
-        $data = $tree::tree($list['data'], 'title', 'id', 'pid');
-        $data = $tree::channelLevel($list['data'], 0, '&nbsp;', 'id');
+        $data = Tree::tree($list['data'], 'title', 'id', 'pid');
+        if (isset($filters['struct']) && $filters['struct'] === 'list') {
+            $data = getLevel($list['data'], 0, '&nbsp;', 'id');
+        } 
 
         //返回数据
         $returnData['records'] = parse_fields($data, 1);

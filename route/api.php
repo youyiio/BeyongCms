@@ -71,10 +71,18 @@ Route::group('api', function () {
     //运维管理相关
     Route::rule("server/status", 'api/Server/status', 'get');
 
-    //系统相关
-    Route::rule("link/list", 'api/Link/list', 'get|post');
-  
-    Route::rule("menu/list", 'api/Menu/list', 'get|post');
+    //友链相关
+    Route::rule("link/list", 'api/Link/list', 'get');
+    Route::rule("link/create", 'api/Link/create', 'post');
+    Route::rule("link/edit", 'api/Link/edit', 'post');
+    Route::rule("link/:id", 'api/Link/delete', 'delete');
+
+    //菜单管理相关
+    Route::rule("menu/list", 'api/Menu/list', 'get');
+    Route::rule("menu/create", 'api/Menu/create', 'post');
+    Route::rule("menu/edit", 'api/Menu/edit', 'post');
+    Route::rule("menu/:id", 'api/Menu/delete', 'delete');
+
     Route::rule("log/list", 'api/Log/list', 'get|post');
 
     // 定义miss路由

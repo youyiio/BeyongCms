@@ -84,3 +84,23 @@ function getJWT($token) {
 
     return $data;
 }
+
+function getLevel($data, $pid = 0, $html = "&nbsp;", $fieldPri = 'cid', $fieldPid = 'pid', $level = 1)
+{
+    if (empty($data)) {
+        return false;
+    }
+    $arr = array();
+    foreach ($data as $v) {
+        if ($v[$fieldPid] == $pid) {
+            $arr[$v[$fieldPri]] = $v;
+            $arr[$v[$fieldPri]]['_level'] = $level;
+            $arr[$v[$fieldPri]]['_html'] = str_repeat($html, $level - 1);
+            if(getLevel($data, $v[$fieldPri], $html, $fieldPri, $fieldPid, $level + 1) == false) {
+                continue;
+            }
+            $arr[$v[$fieldPri]]["_children"] = getLevel($data, $v[$fieldPri], $html, $fieldPri, $fieldPid, $level + 1);
+        }
+    }
+    return $arr;
+}

@@ -26,9 +26,8 @@ class Role extends Base
         }
 
         $AuthGroupModel = new AuthGroupModel();
-        $list = $AuthGroupModel->where($where)->field($fields)->paginate($size, false, ['page'=>$page]);
+        $list = $AuthGroupModel->where($where)->field($fields)->paginate($size, false, ['page'=>$page])->toArray();
 
-        $list = $list->toArray();
         //返回数据
         $returnData['current'] = $list['current_page'];
         $returnData['pages'] = $list['last_page'];
@@ -148,30 +147,28 @@ class Role extends Base
         $params = $this->request->put();
         $page = $params['page']?? '1';
         $size = $params['size']?? '10';
-      
-        $AuthGroupAcessModel = new AuthGroupAccessModel();
-        $list = $AuthGroupAcessModel->where('group_id', $id)->field('uid')->paginate($size, false, ['page'=>$page])->toArray(); 
+        $filters = $params['filters'];
+        $keyword = $filters['keyword'];
+        $where = [];
+        if (!empty($keyword)) {
+            $where[] = ['nickname|mobile|email', 'like', '%'.$keyword.'%'];
+        }
 
-        $ids = $list['data'];
-        $records = [];
-        if (!empty($ids)) {
-            $UserModel = new UserModel();
-            $fields = 'id,nickname,sex,mobile,email,head_url,qq,weixin,referee,register_time,register_ip,from_referee,entrance_url,last_login_time,last_login_ip';
-            foreach ($ids as $val) {
-                $userInfo = $UserModel->where('id',$val['uid'])->field($fields)->find();
-                $data = $userInfo;
-                $data['dept'] = '';
-                unset($data['uid']);
-                array_push($records, $data);
-            }
-        } 
-        
+        $AuthGroupAcessModel = new AuthGroupAccessModel();
+        $uids = $AuthGroupAcessModel->where('group_id', $id)->column('uid');
+      
+        //查找符合条件的用户
+        $where[] = ['id', 'in', $uids];
+        $fields = 'id,nickname,sex,mobile,email,head_url,qq,weixin,referee,register_time,register_ip,from_referee,entrance_url,last_login_time,last_login_ip';
+        $UserModel = new UserModel();
+        $list = $UserModel->where($where)->field($fields)->paginate($size, false, ['page'=>$page])->toArray();
+     
         //返回数据
         $returnData['current'] = $list['current_page'];
         $returnData['pages'] = $list['last_page'];
         $returnData['size'] = $list['per_page'];
         $returnData['total'] = $list['total'];
-        $returnData['records'] = parse_fields($records, 1);
+        $returnData['records'] = parse_fields($list['data'], 1);
 
         return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!', $returnData);
     }

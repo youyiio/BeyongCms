@@ -3,6 +3,8 @@ namespace app\api\controller;
 
 use app\common\library\ResultCode;
 use app\common\model\AuthRuleModel;
+use beyong\commons\data\Tree;
+use think\Validate;
 
 class Menu extends Base
 {
@@ -22,22 +24,97 @@ class Menu extends Base
         }
         
         $AuthRuleModel = new AuthRuleModel();
-        $list = $AuthRuleModel->where($where)->order('id asc')->paginate($size, false, ['page'=>$page]);
+        $list = $AuthRuleModel->where($where)->order('id asc')->paginate($size, false, ['page'=>$page])->toArray();
        
-        $list = $list->toArray();
+        // 获取树形或者结构数据
+        $data = Tree::tree($list['data'], 'name', 'id', 'pid');
+        if (isset($filters['struct']) && $filters['struct'] === 'list') {
+            $data = getLevel($list['data'], 0, '&nbsp;', 'id');
+        } 
+        
+        //返回数据
         $returnData['current'] = $list['current_page'];
         $returnData['pages'] = $list['last_page'];
         $returnData['size'] = $list['per_page'];
         $returnData['total'] = $list['total'];
-
-        // 获取树形或者结构数据
-        $tree = new \beyong\commons\data\Tree();
-        $data = $tree::tree($list['data'], 'title', 'id', 'pid');
-        $data = $tree::channelLevel($list['data'], 0, '&nbsp;', 'id');
-        
-        //返回数据
         $returnData['records'] = parse_fields($data, 1);
 
-        return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功', $returnData);
+        return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!', $returnData);
+    }
+
+    //新增菜单
+    public function create()
+    {
+        $params = $this->request->put();
+
+        $validate = Validate::make([
+            'pid' => 'require|integer',
+            'name' => 'require|unique:'. config('database.prefix') . 'sys_auth_rule,name',
+            'title' => 'require',
+            'type' => 'require|integer',
+           
+        ]);
+        if (!$validate->check($params)) {
+            return ajax_return(ResultCode::ACTION_FAILED, '操作失败!', $validate->getError());
+        }
+        
+        $AuthRuleModel = new AuthRuleModel();
+        $res = $AuthRuleModel->save($params);
+        $id = $AuthRuleModel->id;
+        if (!$res) {
+            return ajax_return(ResultCode::ACTION_FAILED, '操作失败!');
+        }
+
+        $returnData = AuthRuleModel::get($id);
+        return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!', $returnData);
+    }
+
+    //编辑菜单
+    public function edit()
+    {
+        $params = $this->request->put();
+
+        $validate = Validate::make([
+            'id' => 'require',
+            'name' => 'require|unique:'. config('database.prefix') . 'sys_auth_rule,name',
+            'title' => 'require',
+            'type' => 'require|integer',
+           
+        ]);
+        if (!$validate->check($params)) {
+            return ajax_return(ResultCode::ACTION_FAILED, '操作失败!', $validate->getError());
+        }
+
+        $menu = AuthRuleModel::get($params['id']);
+     
+        $menu->name = $params['name']?? '';
+        $menu->title = $params['title']?? '';
+        $menu->icon = $params['icon']?? '';
+        $menu->type = $params['type']?? '';
+        $menu->is_menu = $params['isMenu']?? '';
+        $menu->sort = $params['sort']?? '';
+        $menu->belongs_to = $params['belongsTo']?? '';
+        $res = $menu->save();
+
+        if (!$res) {
+            return ajax_return(ResultCode::ACTION_FAILED, '操作失败!');
+        }
+
+        $data = AuthRuleModel::get($params['id']);
+        $returnData = parse_fields($data, 1);
+        return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!', $returnData);
+    }
+
+    //删除菜单
+    public function delete($id)
+    {
+        $menu = AuthRuleModel::get($id);
+        $res = $menu->delete();
+
+        if (!$res) {
+            return ajax_return(ResultCode::ACTION_FAILED, '操作失败!');
+        }
+
+        return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!');
     }
 }
