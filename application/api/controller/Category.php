@@ -24,30 +24,26 @@ class Category extends Base
         }
         $where = ['status' => CategoryModel::STATUS_ONLINE];
 
-        $pageConfig = [
-            'page' => $page,
-        ];
-
         $CommentModel = new CategoryModel();
-        $list = $CommentModel->where($where)->paginate($size, false, $pageConfig)->toArray();
+        $list = $CommentModel->where($where)->paginate($size, false, ['page'=>$page])->toArray();
         
         $returnData['current'] = $list['current_page'];
         $returnData['pages'] = $list['last_page'];
         $returnData['size'] = $list['per_page'];
         $returnData['total'] = $list['total'];
         
-        // 获取树形或者结构数据
+        // 获取树形或者层级数据
         $data = Tree::tree($list['data'], 'title', 'id', 'pid');
         if (isset($filters['struct']) && $filters['struct'] === 'list') {
             $data = getLevel($list['data'], 0, '&nbsp;', 'id');
         } 
-
         //返回数据
         $returnData['records'] = parse_fields($data, 1);
         
         return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!', $returnData);
     }
 
+    //新增分类
     public function create()
     {
         $params = $this->request->put();
@@ -67,9 +63,8 @@ class Category extends Base
             return ajax_return(ResultCode::E_PARAM_ERROR, "分类名已存在!");
         }
 
-       
         $categoryModel = new CategoryModel();
-        $categoryModel->save($params);
+        $categoryModel->allowField(true)->isUpdate(false)->save($params);
         if (!$categoryModel->id) {
             return ajax_return(ResultCode::ACTION_FAILED, "操作失败!");
         } 
@@ -81,6 +76,7 @@ class Category extends Base
         return ajax_return(ResultCode::ACTION_SUCCESS, "操作成功!", $returnData);
     }
 
+    //编辑分类
     public function edit()
     {
         $params = $this->request->put();
@@ -91,17 +87,16 @@ class Category extends Base
             return ajax_return(ResultCode::E_DATA_NOT_FOUND, '分类不存在!');
         }
 
+        
         //查看分类名是否已存在
         $CategoryModel = new CategoryModel();
         $name = $CategoryModel->where('name', $params['name'])->limit(1)->select();
         if (count($name) >= 1) {
             return ajax_return(ResultCode::E_PARAM_ERROR, "分类名已存在!");
         }
-
         if (empty($params['name'])) {
             return ajax_return(ResultCode::E_DATA_NOT_FOUND, "参数错误!");
         }
-
         if (isset($params['pid']) && !is_numeric($params['pid'])) {
             return ajax_return(ResultCode::E_DATA_NOT_FOUND, "参数错误!");
         }
@@ -112,8 +107,8 @@ class Category extends Base
         }
 
         $data = CategoryModel::get($params['id']);
-
         $data = $data->toArray();
+
         $returnData = parse_fields($data, 1);
         return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!', $returnData);
     }
@@ -145,7 +140,6 @@ class Category extends Base
         if (!$category) {
             $this->error('分类不存在!');
         }
-
         $category->delete();
 
         return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!');
