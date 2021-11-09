@@ -83,6 +83,12 @@ Route::group('api', function () {
     Route::rule("menu/edit", 'api/Menu/edit', 'post');
     Route::rule("menu/:id", 'api/Menu/delete', 'delete');
 
+    //字典管理相关
+    Route::rule("config/list", 'api/Config/list', 'get');
+    Route::rule("config/create", 'api/Config/create', 'post');
+    Route::rule("config/edit", 'api/Config/edit', 'post');
+    Route::rule("config/:id", 'api/Config/delete', 'delete');
+
     Route::rule("log/list", 'api/Log/list', 'get|post');
 
     // 定义miss路由

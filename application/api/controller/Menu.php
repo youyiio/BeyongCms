@@ -16,6 +16,8 @@ class Menu extends Base
 
         $filters = $params['filters'];
         $keyword = $filters['keyword']?? '';
+        $pid = $filters['pid']?? 0;
+        $depth = $filters['depth']?? 1;
 
         $where = [];
         $where[] = ['belongs_to', '=', 'admin'];
@@ -25,11 +27,12 @@ class Menu extends Base
         
         $AuthRuleModel = new AuthRuleModel();
         $list = $AuthRuleModel->where($where)->order('id asc')->paginate($size, false, ['page'=>$page])->toArray();
+     
        
-        // 获取树形或者结构数据
-        $data = Tree::tree($list['data'], 'name', 'id', 'pid');
+        // 获取树形或者list数据
+        $data = getTree($list['data'], $pid, 'id', 'pid', $depth);
         if (isset($filters['struct']) && $filters['struct'] === 'list') {
-            $data = getLevel($list['data'], 0, '&nbsp;', 'id');
+            $data = getList($list['data'], $pid, 'id', 'pid', $depth);
         } 
         
         //返回数据

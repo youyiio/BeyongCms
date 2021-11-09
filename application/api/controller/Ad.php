@@ -8,7 +8,6 @@ use app\common\model\cms\AdModel;
 use app\common\model\cms\AdServingModel;
 use app\common\model\cms\AdSlotModel;
 use app\common\model\ImageModel;
-use PhpOffice\PhpSpreadsheet\Calculation\Statistical\Distributions\F;
 use think\Validate;
 
 class Ad extends Base
@@ -18,7 +17,7 @@ class Ad extends Base
     {
         $params = $this->request->put();
 
-        //数据验证
+        //数据验证git
         $validate = new Validate();
         $validate->rule([
             'slot' => 'require',

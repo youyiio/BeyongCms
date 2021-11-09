@@ -4,7 +4,6 @@ namespace app\api\controller;
 use app\common\library\ResultCode;
 use app\common\model\cms\CategoryModel;
 use beyong\commons\data\Tree;
-use PhpOffice\PhpSpreadsheet\Calculation\Statistical\Distributions\F;
 
 class Category extends Base
 {
@@ -15,6 +14,8 @@ class Category extends Base
         $page = $params['page']?: 1;
         $size = $params['size']?: 10;
         $filters = $params['filters']?: '';
+        $pid = $filters['pid']?? 0;
+        $depth = $filters['depth']?? 1;
 
         if (!empty($filters['startTime'])) {
             $where[] = ['create_time', '>=', $filters['startTime'] . '00:00:00'];
@@ -22,21 +23,24 @@ class Category extends Base
         if (!empty($filters['endTime'])) {
             $where[] = ['create_time', '<=', $filters['endTime'] . '23:59:59'];
         }
+        
+        
         $where = ['status' => CategoryModel::STATUS_ONLINE];
 
-        $CommentModel = new CategoryModel();
-        $list = $CommentModel->where($where)->paginate($size, false, ['page'=>$page])->toArray();
-        
+        $CategoryModel = new CategoryModel();
+        $list = $CategoryModel->where($where)->paginate($size, false, ['page'=>$page])->toArray();
+      
         $returnData['current'] = $list['current_page'];
         $returnData['pages'] = $list['last_page'];
         $returnData['size'] = $list['per_page'];
         $returnData['total'] = $list['total'];
         
-        // 获取树形或者层级数据
-        $data = Tree::tree($list['data'], 'title', 'id', 'pid');
+        // 获取树形或者list数据
+        $data = getTree($list['data'], $pid, 'id', 'pid', $depth);
         if (isset($filters['struct']) && $filters['struct'] === 'list') {
-            $data = getLevel($list['data'], 0, '&nbsp;', 'id');
+            $data = getList($list['data'], $pid, 'id', 'pid', $depth);
         } 
+
         //返回数据
         $returnData['records'] = parse_fields($data, 1);
         
