@@ -3,7 +3,6 @@ namespace app\api\controller;
 
 use app\common\library\ResultCode;
 use app\common\model\cms\CategoryModel;
-use beyong\commons\data\Tree;
 
 class Category extends Base
 {

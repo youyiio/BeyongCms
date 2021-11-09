@@ -89,7 +89,7 @@ function getJWT($token) {
 function getTree($data, $pid = 0, $fieldPK = 'id', $fieldPid = 'pid', $depth = 1, $currentDepth = 1)
 {
     if (empty($data)) {
-        return false;
+        return array();
     }
     
     $arr = array();
@@ -97,20 +97,22 @@ function getTree($data, $pid = 0, $fieldPK = 'id', $fieldPid = 'pid', $depth = 1
         if ($v[$fieldPid] == $pid) {
             $arr[$v[$fieldPK]] = $v;
             $arr[$v[$fieldPK]]['level'] = $currentDepth;
+            $children = getTree($data, $v[$fieldPK], $fieldPK, $fieldPid, $depth, $currentDepth + 1);
 
-            if(getTree($data, $v[$fieldPK], $fieldPK, $fieldPid, $depth, $currentDepth++) == false) {
+            //判断是否有children
+            if (empty($children)) {
                 $arr[$v[$fieldPK]]["hasChildren"] = false;
                 continue;
             }
             $arr[$v[$fieldPK]]["hasChildren"] = true;
 
-            if ($currentDepth == $depth+1) {
-                $arr[$v[$fieldPK]]["children"] = [];
+            //判断深度
+            if ($depth == $currentDepth) {
+                $arr[$v[$fieldPK]]['children'] = [];
                 continue;
             }
-            $arr[$v[$fieldPK]]["children"] = getTree($data, $v[$fieldPK], $fieldPK, $fieldPid, $depth, $currentDepth++);
+            $arr[$v[$fieldPK]]['children'] = $children;
         }
-       
     }
 
     return array_merge($arr);
