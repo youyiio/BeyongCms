@@ -23,9 +23,6 @@ class Category extends Base
             $where[] = ['create_time', '<=', $filters['endTime'] . '23:59:59'];
         }
         
-        
-        $where = ['status' => CategoryModel::STATUS_ONLINE];
-
         $CategoryModel = new CategoryModel();
         $list = $CategoryModel->where($where)->paginate($size, false, ['page'=>$page])->toArray();
       
