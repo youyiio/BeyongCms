@@ -16,6 +16,7 @@ class Category extends Base
         $pid = $filters['pid']?? 0;
         $depth = $filters['depth']?? 1;
 
+        $where = [];
         if (!empty($filters['startTime'])) {
             $where[] = ['create_time', '>=', $filters['startTime'] . '00:00:00'];
         }
