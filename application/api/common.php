@@ -119,7 +119,7 @@ function getTree($data, $pid = 0, $fieldPK = 'id', $fieldPid = 'pid', $depth = 1
 }
 
 //获取list数据结构
-function getList($data, $pid = 0, $fieldPri = 'cid', $fieldPid = 'pid', $level = 1)
+function getList($data, $pid = 0, $fieldPri = 'id', $fieldPid = 'pid', $level = 1)
 {
     if (empty($data)) {
         return array();

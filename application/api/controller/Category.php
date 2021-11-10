@@ -15,6 +15,7 @@ class Category extends Base
         $filters = $params['filters']?: '';
         $pid = $filters['pid']?? 0;
         $depth = $filters['depth']?? 1;
+        $struct = $filters['struct']?? '';
 
         $where = [];
         if (!empty($filters['startTime'])) {
@@ -33,10 +34,11 @@ class Category extends Base
         $returnData['total'] = $list['total'];
         
         // 获取树形或者list数据
-        $data = getTree($list['data'], $pid, 'id', 'pid', $depth);
-        if (isset($filters['struct']) && $filters['struct'] === 'list') {
+        if ($struct === 'list') {
             $data = getList($list['data'], $pid, 'id', 'pid', $depth);
-        } 
+        } else {
+            $data = getTree($list['data'], $pid, 'id', 'pid', $depth);
+        }
 
         //返回数据
         $returnData['records'] = parse_fields($data, 1);
