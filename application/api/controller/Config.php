@@ -85,9 +85,31 @@ class Config extends Base
         $config = ConfigModel::get($id);
 
         if (!$config) {
-            return ajax_return(ResultCode::E_ACCESS_NOT_FOUND, '操作失败!');
+            return ajax_return(ResultCode::E_ACCESS_NOT_FOUND, '数据未找到!');
         }
 
+        $res = $config->isUpdate(false)->allowField(true)->save($params, ['id'=>$id]);
 
+        if (!$res) {
+            return ajax_return(ResultCode::E_DB_ERROR, '操作失败!');
+        }
+
+        $returnData = parse_fields($config, 1);
+
+        return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功', $returnData);
+    }
+
+    //删除字典
+    public function delete($id)
+    {
+        //删除role表中的数据
+        $config = ConfigModel::get($id);
+        $res = $config->delete();
+        
+        if (!$res) {
+            return ajax_return(ResultCode::E_DB_ERROR, '操作失败!');
+        }
+
+        return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!');
     }
 }
