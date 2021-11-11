@@ -8,6 +8,7 @@ use app\common\logic\ArticleLogic;
 use app\common\model\BaseModel;
 use app\common\model\cms\ArticleMetaModel;
 use app\common\model\cms\ArticleModel;
+use app\common\model\cms\CategoryArticleModel;
 use app\common\model\cms\CategoryModel;
 use app\common\model\cms\CommentModel;
 use app\common\model\FileModel;
@@ -69,10 +70,20 @@ class Article extends Base
         ];
      
         $list = $ArticleModel->where($where)->field($fields)->order($order)->paginate($size, false, ['page'=>$page]);
-       
-        //添加缩略图
+      
+        //添加缩略图和分类
+        $CategoryArticleModel = new CategoryArticleModel();
         foreach ($list as $art) {
             $art['thumbImage'] = $this->findThumbImage($art);
+
+            $categotyIds = $CategoryArticleModel->where('article_id', '=', $art['id'])->column('category_id');
+            $categotys = [];
+            foreach ($categotyIds as $cateId) {
+                $CategotyModel = new CategoryModel();
+                $categotys[] = $CategotyModel->where('id', '=', $cateId)->field('id,name,title')->find();
+            }
+            $art['categorys'] = $categotys;
+
         }
 
         $list = $list->toArray();
@@ -321,7 +332,7 @@ class Article extends Base
         $fails = count($ids) - $success;
 
         $returnData = ['success'=> $success, 'fail' => $fails];
-        return ajax_return(ResultCode::ACTION_SUCCESS, '删除文章成功!', $returnData);
+        return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!', $returnData);
     }
 
     //查询文章评论

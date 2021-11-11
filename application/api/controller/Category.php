@@ -10,8 +10,8 @@ class Category extends Base
     {
         $params = $this->request->put();
 
-        $page = $params['page']?: 1;
-        $size = $params['size']?: 10;
+        $page = $params['page']?? 1;
+        $size = $params['size']?? 10;
         $filters = $params['filters']?: '';
         $pid = $filters['pid']?? 0;
         $depth = $filters['depth']?? 1;
