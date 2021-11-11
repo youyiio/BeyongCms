@@ -35,7 +35,7 @@ class Category extends Base
         
         // 获取树形或者list数据
         if ($struct === 'list') {
-            $data = getList($list['data'], $pid, 'id', 'pid', $depth);
+            $data = getList($list['data'], $pid, 'id', 'pid');
         } else {
             $data = getTree($list['data'], $pid, 'id', 'pid', $depth);
         }
@@ -88,14 +88,6 @@ class Category extends Base
         $category = CategoryModel::get($id);
         if (!$category) {
             return ajax_return(ResultCode::E_DATA_NOT_FOUND, '分类不存在!');
-        }
-
-        
-        //查看分类名是否已存在
-        $CategoryModel = new CategoryModel();
-        $name = $CategoryModel->where('name', $params['name'])->limit(1)->select();
-        if (count($name) >= 1) {
-            return ajax_return(ResultCode::E_PARAM_ERROR, "分类名已存在!");
         }
         if (empty($params['name'])) {
             return ajax_return(ResultCode::E_DATA_NOT_FOUND, "参数错误!");

@@ -22,8 +22,8 @@ class Log extends Base
         $key = $filters['keyword']??'';
        
         if (empty($startTime) && empty($endTime)) {
-            $startTime  = date('Y-m-d',strtotime('-31 day'));
-            $endTime   = date('Y-m-d');
+            $startTime = date('Y-m-d',strtotime('-31 day'));
+            $endTime = date('Y-m-d');
         }
 
         $startDatetime = date('Y-m-d 00:00:00', strtotime($startTime));
@@ -47,12 +47,6 @@ class Log extends Base
             $user = UserModel::get($val['uid']);
             $val['username'] = $user['nickname'];
             $val['address'] = ip_to_address($val['ip'], 'province,city');
-            //还没有的字段
-            $val['component'] = '';
-            $val['actionTime'] = '';
-            $val['responseTime'] = '';
-            $val['params'] = '';
-            $val['userAgent'] = '';
         }
 
         $list = $list->toArray();
@@ -62,6 +56,7 @@ class Log extends Base
         $returnData['size'] = $list['per_page'];
         $returnData['total'] = $list['total'];
         $returnData['records'] = parse_fields($list['data'], 1);
+        
         return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功', $returnData);
     }
 }
