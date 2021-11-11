@@ -367,6 +367,30 @@ class User extends Base
         $this->success('success', '', $option);
     }
 
+    //开通vip会员N天操作
+    public function vip()
+    {
+        $vipDays = input('vipDays/d', 0);
+        $uid = input('uid/d', 0);
+
+        $UserModel = new UserModel();
+        $user = $UserModel->find($uid);
+        $isVip = $user->meta('is_vip');
+        $vipToDate = $user->meta('vip_to_date');
+        $nowTime = time();
+        if ($isVip && strtotime($vipToDate) > $nowTime) {
+            $vipToDate = strtotime($vipToDate) + 3600 * 24 * $vipDays;
+        } else {
+            $vipToDate = $nowTime + 3600 * 24 * $vipDays;
+        }
+        $vipToDate = date_time($vipToDate);
+
+        $user->meta('is_vip', 1);
+        $user->meta('vip_to_date', $vipToDate);
+
+       $this->success('操作成功');
+    }
+
     //给用户发送邮件
     public function sendMail()
     {

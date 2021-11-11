@@ -1053,6 +1053,7 @@ INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`con
 INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongs_to) VALUES (316, 31, '激活用户', 'admin/User/active', '', 1, 0, 1, 1,'','admin');
 INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongs_to) VALUES (317, 31, '冻结用户', 'admin/User/freeze', '', 1, 0, 1, 1,'','admin');
 INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongs_to) VALUES (318, 33, '统计报表数据', 'admin/User/echartShow', '', 1, 0, 1, 1,'','admin');
+INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongs_to) VALUES (319, 31, '延迟会员时间', 'admin/User/vip', '', 1, 0, 1, 1,'','admin');
 
 #权限管理模块
 INSERT INTO `sys_auth_rule`(id,pid,title,name,icon,type,is_menu,sort,status,`condition`,belongs_to) VALUES (4, 0, '权限管理', 'admin/ShowNav/Rule', 'fa-key', 1, 1, 17, 1,'','admin');
