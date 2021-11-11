@@ -47,9 +47,9 @@ class Sign extends Base
         //请求的body数据
         $params = $this->request->put();
 
-        $check = validate('User')->scene('register')->check($params);
+        $check = validate('Sign')->scene('register')->check($params);
         if ($check !== true) {
-            return ajax_error(ResultCode::E_PARAM_VALIDATE_ERROR, validate('User')->getError());
+            return ajax_error(ResultCode::E_PARAM_VALIDATE_ERROR, validate('Sign')->getError());
         }
 
         $code = $params["code"];
@@ -126,9 +126,13 @@ class Sign extends Base
             return ajax_error(ResultCode::SC_FORBIDDEN, '非法访问！请检查请求方式！');
         }
 
-        $needParams = ['username', 'password'];
-        
-        $params = $params = $this->request->put();;
+        //请求的body数据
+        $params = $this->request->put();
+
+        $check = validate('Sign')->scene('login')->check($params);
+        if ($check !== true) {
+            return ajax_error(ResultCode::E_PARAM_VALIDATE_ERROR, validate('Sign')->getError());
+        }
 
         //登录次数判断
         $tryLoginCountMark = $params['username'] . '_try_login_count';
@@ -166,7 +170,7 @@ class Sign extends Base
 
         $uid = $user['id'];
         $ActionLogLogic = new ActionLogLogic();
-        $ActionLogLogic->addLog($uid, \ApiCode::E_USER_LOGIN_ERROR, '登录');
+        $ActionLogLogic->addRequestLog('login', $uid, $params, '登录成功');
 
         $payload = [
             'iss' => 'jwt_admin',  //该JWT的签发者
