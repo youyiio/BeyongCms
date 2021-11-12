@@ -12,9 +12,11 @@ class Config extends Base
     {
         $ConfigModel = new ConfigModel();
         
-        $list = $ConfigModel->select();
+        $fields = 'id,name,group,key,value,value_type,remark';
+        $list = $ConfigModel->field($fields)->select();
 
-        return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!', to_standard_pagelist($list));
+        $returnData = parse_fields($list, 1);
+        return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!', $returnData);
     }
 
     //查询状态字典

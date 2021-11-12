@@ -97,6 +97,9 @@ Route::group('api', function () {
     Route::rule("log/list", 'api/Log/list', 'get|post');
 
     //移动端通用公共接口
+    Route::rule('app/config/:name/status', 'api/app.Config/status', 'get');
+    Route::rule('app/config/base', 'api/app.Config/base', 'get');
+    Route::rule('app/carousel', 'api/Ad/carousel', 'post');
 
     // 定义miss路由
     Route::miss('api/Base/miss');

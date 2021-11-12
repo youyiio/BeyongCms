@@ -75,13 +75,13 @@ class Article extends Base
         foreach ($list as $art) {
             $art['thumbImage'] = $this->findThumbImage($art);
 
-            $categotyIds = $CategoryArticleModel->where('article_id', '=', $art['id'])->column('category_id');
-            $categotys = [];
-            foreach ($categotyIds as $cateId) {
-                $CategotyModel = new CategoryModel();
-                $categotys[] = $CategotyModel->where('id', '=', $cateId)->field('id,name,title')->find();
+            $categoryIds = $CategoryArticleModel->where('article_id', '=', $art['id'])->column('category_id');
+            $categorys = [];
+            foreach ($categoryIds as $cateId) {
+                $CategoryModel = new CategoryModel();
+                $categorys[] = $CategoryModel->where('id', '=', $cateId)->field('id,name,title')->find();
             }
-            $art['categorys'] = $categotys;
+            $art['categorys'] = $categorys;
         }
 
         $list = $list->toArray();
@@ -111,6 +111,21 @@ class Article extends Base
         $articleMetaModel = new ArticleMetaModel();
         $tags = $articleMetaModel->_metas($art['id'], 'tag');
 
+        //查询文章分类
+
+        $data = $art->categorys()->select();
+
+        $categorys = [];
+        if (!empty($data)) {
+            foreach ($data as $val) {
+                $categorys[] = [
+                    'id' => $val['id'],
+                    'name' => $val['name'],
+                    'title' => $val['title'],
+                ];
+            }
+        }
+       
         //缩略图
         $thumbImage = $this->findThumbImage($art);
         //附加图片
@@ -122,6 +137,7 @@ class Article extends Base
         
         $returnData = parse_fields($art->toArray(), 1);
         $returnData['tags'] = $tags;
+        $returnData['categorys'] = $categorys;
         $returnData['thumbImage'] = $thumbImage;
         $returnData['metaImages'] = $metaImages;
         $returnData['metaFiles'] = $metaFiles;
@@ -158,12 +174,12 @@ class Article extends Base
             'description' => $params['description'],
             'keywords' => $params['keywords'],
             'author' => $author,
-            'tags' => $params['tags']?: '',
+            'tags' => $params['tags']?? '',
             'content' => remove_xss($params['content']),
             'category_ids' => $params['categoryIds'],
-            'thumb_image_id' => $params['thumbImageId']?: '',
-            'meta_image_ids' => $params['metaImageIds']?: '',
-            'meta_file_ids' => $params['metaFileIds']?: '',
+            'thumb_image_id' => $params['thumbImageId']?? '',
+            'meta_image_ids' => $params['metaImageIds']?? '',
+            'meta_file_ids' => $params['metaFileIds']?? '',
             'status' => $status,
         ];
         $articleLogic = new ArticleLogic();
