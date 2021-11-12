@@ -37,7 +37,27 @@ class Config extends Base
         return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!', $returnData);
     }
 
-    //新增字段
+    //查询状态字典
+    public function status($name)
+    {
+        $ConfigModel = new ConfigModel();
+        $list = $ConfigModel->where('group', '=', $name.'_status')->field('key,value')->select();
+
+        if (empty($list)) {
+            return ajax_return(ResultCode::E_DATA_NOT_FOUND, '数据未找到');
+        }
+
+        $returnData = [];
+        foreach ($list as $val) {
+            $returnData[] = [
+                $val['key'] => $val['value']
+            ];
+        }
+
+        return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功', $returnData);
+    }
+
+    //新增字典
     public function create()
     {
         $params = $this->request->put();

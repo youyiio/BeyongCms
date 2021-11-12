@@ -15,7 +15,6 @@ use app\common\model\FileModel;
 use app\common\model\ImageModel;
 use app\common\model\UserModel;
 
-
 // 文章相关接口
 class Article extends Base
 {
@@ -83,7 +82,6 @@ class Article extends Base
                 $categotys[] = $CategotyModel->where('id', '=', $cateId)->field('id,name,title')->find();
             }
             $art['categorys'] = $categotys;
-
         }
 
         $list = $list->toArray();
@@ -121,7 +119,8 @@ class Article extends Base
         $metaFiles = $this->findMetaFiles($art);
       
         //返回数据
-        $returnData = parse_fields($art, 1);
+        
+        $returnData = parse_fields($art->toArray(), 1);
         $returnData['tags'] = $tags;
         $returnData['thumbImage'] = $thumbImage;
         $returnData['metaImages'] = $metaImages;
@@ -190,7 +189,7 @@ class Article extends Base
         $metaFiles = $this->findMetaFiles($art);
       
         //返回数据
-        $returnData = parse_fields($art, 1);
+        $returnData = parse_fields($art->toArray(), 1);
         $returnData['tags'] = $tags;
         $returnData['thumbImage'] = $thumbImage;
         $returnData['metaImages'] = $metaImages;
