@@ -73,7 +73,7 @@ class Article extends Base
         //添加缩略图和分类
         $CategoryArticleModel = new CategoryArticleModel();
         foreach ($list as $art) {
-            $art['thumbImage'] = $this->findThumbImage($art);
+            $art['thumbImage'] = findThumbImage($art);
 
             $categoryIds = $CategoryArticleModel->where('article_id', '=', $art['id'])->column('category_id');
             $categorys = [];
@@ -107,14 +107,8 @@ class Article extends Base
             return ajax_error(ResultCode::E_DATA_NOT_FOUND, '文章不存在');
         }
 
-        //文章标签
-        $articleMetaModel = new ArticleMetaModel();
-        $tags = $articleMetaModel->_metas($art['id'], 'tag');
-
         //查询文章分类
-
         $data = $art->categorys()->select();
-
         $categorys = [];
         if (!empty($data)) {
             foreach ($data as $val) {
@@ -126,12 +120,15 @@ class Article extends Base
             }
         }
        
+        //文章标签
+        $articleMetaModel = new ArticleMetaModel();
+        $tags = $articleMetaModel->_metas($art['id'], 'tag');
         //缩略图
-        $thumbImage = $this->findThumbImage($art);
+        $thumbImage = findThumbImage($art);
         //附加图片
-        $metaImages = $this->FindMetaImages($art);
+        $metaImages = findMetaImages($art);
         //附加文件
-        $metaFiles = $this->findMetaFiles($art);
+        $metaFiles = findMetaFiles($art);
       
         //返回数据
         
@@ -198,11 +195,11 @@ class Article extends Base
         $articleMetaModel = new ArticleMetaModel();
         $tags = $articleMetaModel->_metas($artId, 'tag');
         //缩略图
-        $thumbImage = $this->findThumbImage($art);
+        $thumbImage = findThumbImage($art);
         //附加图片
-        $metaImages = $this->FindMetaImages($art);
+        $metaImages = findMetaImages($art);
         //附加文件
-        $metaFiles = $this->findMetaFiles($art);
+        $metaFiles = findMetaFiles($art);
       
         //返回数据
         $returnData = parse_fields($art->toArray(), 1);
@@ -227,7 +224,6 @@ class Article extends Base
         //更新数据
         $articleLogic = new ArticleLogic();
         $res = $articleLogic->editArticle($params);
-
         if(!$res){
             return ajax_return(ResultCode::E_DB_ERROR, '更新失败');
         }
@@ -240,13 +236,12 @@ class Article extends Base
         //标签
         $articleMetaModel = new ArticleMetaModel();
         $tags = $articleMetaModel->_metas($aid, 'tag');
-
         //缩略图
-        $thumbImage = $this->findThumbImage($art);
+        $thumbImage = findThumbImage($art);
         //附加图片
-        $metaImages = $this->FindMetaImages($art);
+        $metaImages = FindMetaImages($art);
         //附加文件
-        $metaFiles = $this->findMetaFiles($art);
+        $metaFiles = findMetaFiles($art);
 
         //返回json格式
         $returnData = parse_fields($art->toArray(),1);
@@ -376,61 +371,4 @@ class Article extends Base
         return ajax_return(ResultCode::ACTION_SUCCESS, '查询成功!', to_standard_pagelist($list));
     }
 
-    //查找文章的缩略图
-    public function findThumbImage($art)
-    {
-        $thumbImage = [];
-        if (empty($art['thumb_image_id']) || $art['thumb_image_id'] == 0) {
-            return $thumbImage;
-        }
-
-        $ImageModel = new ImageModel();
-        $thumbImage = $ImageModel::get($art['thumb_image_id']);
-    
-        if (empty($thumbImage)) {
-            return $thumbImage;
-        }
-
-        //完整路径
-        $thumbImage['fullImageUrl'] = $ImageModel->getFullImageUrlAttr('',$thumbImage);
-        $thumbImage['FullThumbImageUrlAttr'] = $ImageModel->getFullThumbImageUrlAttr('',$thumbImage);
-        unset($thumbImage['remark']);
-        unset($thumbImage['image_size']);
-        unset($thumbImage['thumb_image_size']);
-        unset($art['thumb_image_id']);
-
-        $thumbImage = parse_fields($thumbImage->toArray(),1);
-        
-        return $thumbImage;
-    }
-
-    //查找文章的附加图片
-    public function FindMetaImages($art)
-    {
-        $metaImages = get_image($art->metas('image'));
-        foreach ($metaImages as $image) {
-            //获取完整路径
-            $image['fullImageUrl'] = $image->getFullImageUrlAttr('',$image);
-            $image['FullThumbImageUrlAttr'] = $image->getFullThumbImageUrlAttr('',$image);
-            unset($image['remark']);
-            unset($image['image_size']);
-            unset($image['thumb_image_size']);
-        }
-        $metaImages = parse_fields($metaImages->toArray(), 1);
-    
-        return $metaImages;
-    }
-
-    //查找文章的附加文件
-    public function findMetaFiles($art)
-    {
-        $metaFiles = get_file($art->metas('file'));
-        foreach ($metaFiles as $file) {
-            $file['fullFileUrl'] = $file->getFullFileUrlAttr('',$file);
-            unset($file['remark']);
-        }
-        $metaFiles = parse_fields($metaFiles->toArray(), 1);
-
-        return $metaFiles;
-    }
 }
