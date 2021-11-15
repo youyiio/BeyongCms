@@ -109,7 +109,7 @@ Route::group('api', function () {
     Route::rule('app/article/comments/:aid', 'api/app.Article/comments', 'get|post');
     Route::rule('app/article/related/:aid', 'api/app.Article/related', 'get|post');
     Route::rule('app/category/list', 'api/app.Article/categoryList', 'get|post');
-    Route::rule('app/link/list', 'api/Link/list', 'get|post');
+    Route::rule('app/link/list', 'api/app.Article/linkList', 'get|post');
 
     // 定义miss路由
     Route::miss('api/Base/miss');

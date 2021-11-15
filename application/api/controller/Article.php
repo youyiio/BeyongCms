@@ -29,8 +29,8 @@ class Article extends Base
             return ajax_error(ResultCode::E_PARAM_VALIDATE_ERROR, validate('Article')->getError());
         }
      
-        $page = $params['page'] ?: 1;
-        $size = $params['size'] ?: 10;
+        $page = $params['page'] ?? 1;
+        $size = $params['size'] ?? 10;
         $filters = $params['filters'] ?? []; 
 
         $where = [];
@@ -173,7 +173,7 @@ class Article extends Base
             'author' => $author,
             'tags' => $params['tags']?? '',
             'content' => remove_xss($params['content']),
-            'category_ids' => $params['categoryIds'],
+            'category_ids' => $params['categoryIds']?? '',
             'thumb_image_id' => $params['thumbImageId']?? '',
             'meta_image_ids' => $params['metaImageIds']?? '',
             'meta_file_ids' => $params['metaFileIds']?? '',
@@ -354,14 +354,14 @@ class Article extends Base
         }
 
         $params = $this->request->put();
-        $page = $params['page']?: 1;
-        $size = $params['size']?: 5;
-        $filters = $params['filters']?: '';
-
+        $page = $params['page']?? 1;
+        $size = $params['size']?? 5;
+        $filters = $params['filters']?? '';
+        $keyword = $filters['keyword']?? '';
         //查询评论
         $CommentModel = new CommentModel();
         $where =[
-            ['content', 'like', '%'. $filters['keyword'].'%'],
+            ['content', 'like', '%'.$keyword.'%'],
             ['article_id', '=', $id],
             ['status', '=', CommentModel::STATUS_PUBLISHED]
         ];

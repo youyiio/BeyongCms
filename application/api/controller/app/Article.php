@@ -3,11 +3,13 @@ namespace app\api\controller\app;
 
 use app\api\controller\Base;
 use app\common\library\ResultCode;
+use app\common\model\cms\ArticleDataModel;
 use app\common\model\cms\ArticleMetaModel;
 use app\common\model\cms\ArticleModel;
 use app\common\model\cms\CategoryArticleModel;
 use app\common\model\cms\CategoryModel;
 use app\common\model\cms\CommentModel;
+use app\common\model\cms\LinkModel;
 use app\common\model\ImageModel;
 
 class Article extends Base
@@ -137,7 +139,6 @@ class Article extends Base
         $cname = $filters['cname']?? '';
     
         $ArticleModel = new ArticleModel();
-        $fields = 'id,title,keywords,thumb_image_id,post_time,update_time,create_time,is_top,status,read_count,sort,author';
         if (empty($cid) && !empty($cname)) {
             $category = CategoryModel::where(['name'=> $cname])->find();
             if (!empty($category)) {
@@ -149,6 +150,7 @@ class Article extends Base
 
         $where[] = ['status', '=', ArticleModel::STATUS_PUBLISHED];
         $order = 'read_count desc';
+        $fields = 'id,title,keywords,thumb_image_id,post_time,update_time,create_time,is_top,status,read_count,sort,author';
         if ($cid) {
             $childs = CategoryModel::getChild($cid);
             $cids = $childs['ids'];
@@ -255,9 +257,150 @@ class Article extends Base
         return ajax_return(ResultCode::ACTION_SUCCESS, '查询成功!', to_standard_pagelist($list));
     }
 
+    //查询相关推荐
+    public function related($aid)
+    {
+        $params = $this->request->put();
+        $page = $params['page']?? 1;
+        $size = $params['size']?? 10;
+        $filters = $params['filters']?? '';
+        $cid = $filters['cid']?? 0;
+        $cname = $filters['cname']?? '';
+
+        if (empty($cid) && !empty($cname)) {
+            $category = CategoryModel::where(['name'=> $cname])->find();
+            if (!empty($category)) {
+                $cid = $category['id'];
+            } else {
+                $cid = -1;
+            }
+        }
+
+        $where[] = ['article_a_id', '=', $aid];
+        $whereOr[] = ['article_b_id', '=', $aid];
+        $field = 'id,article_a_id,article_b_id,title_similar,content_similar';
+        $ArticleDataModel = new ArticleDataModel();
+        $dataList = $ArticleDataModel->where($where)->whereOr($whereOr)->field($field)->order('title_similar desc,content_similar desc')->limit(100)->select();
+        $ids = [];
+        foreach ($dataList as $articleData) {
+            if ($articleData['article_a_id'] == $aid) {
+                $ids[] = $articleData['article_b_id'];
+            } else {
+                $ids[] = $articleData['article_a_id'];
+            }
+        }
+
+        $where = [];
+        $where[] = ['status', '=', ArticleModel::STATUS_PUBLISHED];
+        $where[] = ['id', 'in', $ids];
+        $order = 'read_count desc';
+        $fields = 'id,title,keywords,thumb_image_id,post_time,update_time,create_time,is_top,status,read_count,sort,author';
+        $ArticleModel = new ArticleModel();
+        if ($cid) {
+            $childs = CategoryModel::getChild($cid);
+            $cids = $childs['ids'];
+            $fields = 'cms_article.id,title,keywords,thumb_image_id,post_time,update_time,create_time,is_top,status,read_count,sort,author';
+            $list = ArticleModel::hasWhere('CategoryArticle', [['category_id','in',$cids]],$fields)->where($where)->order($order)->paginate($size,false,['page'=>$page]);
+        } else {
+            $list = $ArticleModel->where($where)->field($fields)->order($order)->paginate($size, false, ['page'=>$page]);
+        }
+
+        //添加缩略图和分类
+        $CategoryArticleModel = new CategoryArticleModel();
+        foreach ($list as $art) {
+            $art['thumbImage'] = findThumbImage($art);
+
+            $categotyIds = $CategoryArticleModel->where('article_id', '=', $art['id'])->column('category_id');
+            $categotys = [];
+            foreach ($categotyIds as $cateId) {
+                $CategoryModel = new CategoryModel();
+                $categotys[] = $CategoryModel->where('id', '=', $cateId)->field('id,name,title')->find();
+            }
+            $art['categorys'] = $categotys;
+        }
+
+        $list = $list->toArray();
+        //返回数据
+        $returnData['current'] = $list['current_page'];
+        $returnData['pages'] = $list['last_page'];
+        $returnData['size'] = $list['per_page'];
+        $returnData['total'] = $list['total'];
+        $returnData['records'] = parse_fields($list['data'], 1);
+
+        return ajax_return(ResultCode::ACTION_SUCCESS, '查询成功!', $returnData);
+
+    }
+
     //查询分类列表
     public function categoryList()
     {
+        $params = $this->request->put();
 
+        $page = $params['page']?? 1;
+        $size = $params['size']?? 10;
+        $filters = $params['filters']?? '';
+        $pid = $filters['pid']?? 0;
+        $depth = $filters['depth']?? 1;
+        $struct = $filters['struct']?? '';
+
+        $where = [];
+        if (!empty($filters['startTime'])) {
+            $where[] = ['create_time', '>=', $filters['startTime'] . '00:00:00'];
+        }
+        if (!empty($filters['endTime'])) {
+            $where[] = ['create_time', '<=', $filters['endTime'] . '23:59:59'];
+        }
+        
+        $CategoryModel = new CategoryModel();
+        $list = $CategoryModel->where($where)->paginate($size, false, ['page'=>$page])->toArray();
+      
+        $returnData['current'] = $list['current_page'];
+        $returnData['pages'] = $list['last_page'];
+        $returnData['size'] = $list['per_page'];
+        $returnData['total'] = $list['total'];
+        
+        // 获取树形或者list数据
+        if ($struct === 'list') {
+            $data = getList($list['data'], $pid, 'id', 'pid');
+        } else {
+            $data = getTree($list['data'], $pid, 'id', 'pid', $depth);
+        }
+
+        //返回数据
+        $returnData['records'] = parse_fields($data, 1);
+        
+        return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!', $returnData);
+    }
+
+    //查询友链列表
+    public function linkList()
+    {
+        $params = $this->request->put();
+
+        $page = $params['page'];
+        $size = $params['size'];
+        $filters = $params['filters'] ?? []; 
+
+        $where = [];
+        $fields = 'id,title,url,sort,status,start_time,end_time,create_time';
+        if (isset($filters['keyword'])) {
+            $where[] = ['title', 'like', '%'.$filters['keyword'].'%'];
+        }
+        if (isset($filters['status']) && $filters['status'] !== '') {
+            $where[] = ['status', '=', $filters['status']];
+        }
+
+        $LinkModel = new LinkModel();
+        
+        $list = $LinkModel->where($where)->field($fields)->paginate($size, false, ['page' =>$page])->toArray();
+
+        //返回数据
+        $returnData['current'] = $list['current_page'];
+        $returnData['pages'] = $list['last_page'];
+        $returnData['size'] = $list['per_page'];
+        $returnData['total'] = $list['total'];
+        $returnData['records'] = parse_fields($list['data'], 1);
+
+        return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功', $returnData);
     }
 }

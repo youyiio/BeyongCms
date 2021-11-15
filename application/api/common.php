@@ -138,9 +138,9 @@ function getList($data, $pid = 0, $fieldPri = 'id', $fieldPid = 'pid', $level = 
     return array_merge($arr);
 }
 
- //查找文章的缩略图
- function findThumbImage($art)
- {
+//查找文章的缩略图
+function findThumbImage($art)
+{
     $thumbImage = [];
     if (empty($art['thumb_image_id']) || $art['thumb_image_id'] == 0) {
         return $thumbImage;
@@ -164,11 +164,11 @@ function getList($data, $pid = 0, $fieldPri = 'id', $fieldPid = 'pid', $level = 
     $thumbImage = parse_fields($thumbImage->toArray(),1);
     
     return $thumbImage;
- }
+}
 
- //查找文章的附加图片
- function findMetaImages($art)
- {
+//查找文章的附加图片
+function findMetaImages($art)
+{
     $metaImages = get_image($art->metas('image'));
     foreach ($metaImages as $image) {
         //获取完整路径
@@ -181,11 +181,11 @@ function getList($data, $pid = 0, $fieldPri = 'id', $fieldPid = 'pid', $level = 
     $metaImages = parse_fields($metaImages->toArray(), 1);
 
     return $metaImages;
- }
+}
 
- //查找文章的附加文件
- function findMetaFiles($art)
- {
+//查找文章的附加文件
+function findMetaFiles($art)
+{
     $metaFiles = get_file($art->metas('file'));
     foreach ($metaFiles as $file) {
         $file['fullFileUrl'] = $file->getFullFileUrlAttr('',$file);
@@ -194,4 +194,4 @@ function getList($data, $pid = 0, $fieldPri = 'id', $fieldPid = 'pid', $level = 
     $metaFiles = parse_fields($metaFiles->toArray(), 1);
 
     return $metaFiles;
- }
+}
