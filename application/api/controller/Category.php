@@ -27,12 +27,7 @@ class Category extends Base
         
         $CategoryModel = new CategoryModel();
         $list = $CategoryModel->where($where)->paginate($size, false, ['page'=>$page])->toArray();
-      
-        $returnData['current'] = $list['current_page'];
-        $returnData['pages'] = $list['last_page'];
-        $returnData['size'] = $list['per_page'];
-        $returnData['total'] = $list['total'];
-        
+         
         // 获取树形或者list数据
         if ($struct === 'list') {
             $data = getList($list['data'], $pid, 'id', 'pid');
@@ -41,6 +36,10 @@ class Category extends Base
         }
 
         //返回数据
+        $returnData['current'] = $list['current_page'];
+        $returnData['pages'] = $list['last_page'];
+        $returnData['size'] = $list['per_page'];
+        $returnData['total'] = count($data);
         $returnData['records'] = parse_fields($data, 1);
         
         return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!', $returnData);

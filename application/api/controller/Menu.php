@@ -39,7 +39,7 @@ class Menu extends Base
         $returnData['current'] = $list['current_page'];
         $returnData['pages'] = $list['last_page'];
         $returnData['size'] = $list['per_page'];
-        $returnData['total'] = $list['total'];
+        $returnData['total'] = count($data);
         $returnData['records'] = parse_fields($data, 1);
 
         return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!', $returnData);
