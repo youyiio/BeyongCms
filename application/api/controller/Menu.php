@@ -56,7 +56,7 @@ class Menu extends Base
 
         $validate = Validate::make([
             'pid' => 'require|integer',
-            'name' => 'require|unique:'. config('database.prefix') . 'sys_auth_rule,name',
+            'name' => 'unique:'. config('database.prefix') . 'sys_auth_rule,name',
             'title' => 'require',
             'type' => 'require|integer',
            
@@ -83,7 +83,7 @@ class Menu extends Base
 
         $validate = Validate::make([
             'id' => 'require',
-            'name' => 'require|unique:'. config('database.prefix') . 'sys_auth_rule,name',
+            'name' => 'unique:'. config('database.prefix') . 'sys_auth_rule,name',
             'title' => 'require',
             'type' => 'require|integer',
            
