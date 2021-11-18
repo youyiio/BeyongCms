@@ -31,6 +31,7 @@ class Article extends Base
      
         $page = $params['page'] ?? 1;
         $size = $params['size'] ?? 10;
+        $orders = $params['orders'] ?? []; 
         $filters = $params['filters'] ?? []; 
 
         $where = [];
@@ -63,12 +64,15 @@ class Article extends Base
         if (!empty($filters['endTime'])) {
             $where[] = [$queryTimeField, '<=', $filters['endTime'] . '23:59:59'];
         }
-        $order = [
-            'sort' => 'desc',
-            'post_time' => 'desc',
-        ];
+    if (empty($orders)) {
+            $orders = [
+                'sort' => 'desc',
+                'post_time' => 'desc',
+            ];
+        }
+        $orders = parse_fields($orders);
      
-        $list = $ArticleModel->where($where)->field($fields)->order($order)->paginate($size, false, ['page'=>$page]);
+        $list = $ArticleModel->where($where)->field($fields)->order($orders)->paginate($size, false, ['page'=>$page]);
       
         //添加缩略图和分类
         $CategoryArticleModel = new CategoryArticleModel();
