@@ -123,19 +123,15 @@ class User extends Base
         }
 
         $uid = $params['id'];
-
         $user = UserModel::get($uid);
-        $user->nickname = $params['nickname'];
-        $user->mobile = $params['mobile'];
-        $user->email = $params['email'];
-        if (isset($params['qq'])) {
-            $user->qq = $params['qq'];
+        if (!$user) {
+            return ajax_return(ResultCode::E_DATA_NOT_FOUND, '用户不存在!');
         }
-        if (isset($params['weixin'])) {
-            $user->weixin = $params['weixin'];
+        if (isset($params['password'])) {
+            $params['password'] = encrypt_password($params['password'], get_config('password_key'));
         }
-        $res = $user->save();
 
+        $res = $user->allowField(true)->save($params);
         if (!$res) {
             return ajax_return(ResultCode::ACTION_SUCCESS, '操作失败!');
         }
@@ -190,21 +186,15 @@ class User extends Base
             return ajax_error(ResultCode::E_PARAM_VALIDATE_ERROR, validate('User')->getError());
         }
 
-        $uid = $params['id'];
-        $password = $params['password'];
-        $newPassword = encrypt_password($password, get_config('password_key'));
-
-        $data['id'] = $uid;
-        $data['password'] = $newPassword;
+        $data['id'] = $params['id'];
+        $data['password'] = encrypt_password($params['password'], get_config('password_key'));
         $UserModel = new UserModel();
-        $UserModel->isUpdate(true)->save($data);
+        $res = $UserModel->isUpdate(true)->save($data);
+        if (!$res) {
+            return ajax_error(ResultCode::E_DB_ERROR, '修改失败!');
+        }
 
-        //返回数据
-        $returnData = UserModel::get($uid);
-        $AuthGroupAccessModel = new AuthGroupAccessModel();
-        $returnData['roleIds'] = $AuthGroupAccessModel->where('uid', $uid)->column('group_id');
-
-        return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!', $returnData);
+        return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!', '');
     }
 
     //冻结用户
