@@ -64,7 +64,7 @@ class Article extends Base
         if (!empty($filters['endTime'])) {
             $where[] = [$queryTimeField, '<=', $filters['endTime'] . '23:59:59'];
         }
-    if (empty($orders)) {
+        if (empty($orders)) {
             $orders = [
                 'sort' => 'desc',
                 'post_time' => 'desc',
@@ -79,13 +79,8 @@ class Article extends Base
         foreach ($list as $art) {
             $art['thumbImage'] = findThumbImage($art);
 
-            $categoryIds = $CategoryArticleModel->where('article_id', '=', $art['id'])->column('category_id');
-            $categorys = [];
-            foreach ($categoryIds as $cateId) {
-                $CategoryModel = new CategoryModel();
-                $categorys[] = $CategoryModel->where('id', '=', $cateId)->field('id,name,title')->find();
-            }
-            $art['categorys'] = $categorys;
+            $categorysIds = CategoryArticleModel::where('article_id', '=', $art['id'])->column('category_id');
+            $art['categorys'] = CategoryModel::where('id', 'in', $categorysIds)->field('id,name,title')->select();
         }
 
         $list = $list->toArray();
@@ -112,17 +107,8 @@ class Article extends Base
         }
 
         //查询文章分类
-        $data = $art->categorys()->select();
-        $categorys = [];
-        if (!empty($data)) {
-            foreach ($data as $val) {
-                $categorys[] = [
-                    'id' => $val['id'],
-                    'name' => $val['name'],
-                    'title' => $val['title'],
-                ];
-            }
-        }
+        $categorysIds = CategoryArticleModel::where('article_id', '=', $art['id'])->column('category_id');
+        $categorys = CategoryModel::where('id', 'in', $categorysIds)->field('id,name,title')->select();
        
         //文章标签
         $articleMetaModel = new ArticleMetaModel();
