@@ -37,13 +37,40 @@ class Config extends Base
         return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!', $returnData);
     }
 
+    //查询字典信息
+    public function query()
+    {
+        $params = $this->request->put();
+        $key = $params['key'] ?? '';
+        $group = $params['group'] ?? '';
+
+        if (empty($key) && empty($group)) {
+            return ajax_return(ResultCode::E_PARAM_ERROR, '参数错误');
+        }
+
+        $where = [];
+        if (!empty($key)) {
+            $where[] = ['key', '=', $key];
+        }
+        if (!empty($group)) {
+            $where[] = ['group', '=', $group];
+        }
+
+        $ConfigModel = new ConfigModel();
+        $fields = 'id,name,group,key,value,value_type,status,sort,remark';
+        $list = $ConfigModel->where($where)->field($fields)->select();
+
+        $returnData = parse_fields($list->toArray(), 1);
+        return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功', $returnData);
+    }
+
     //查询状态字典
     public function status($name)
     {
         $ConfigModel = new ConfigModel();
-        $list = $ConfigModel->where('group', '=', $name.'_status')->field('key,value')->select();
+        $list = $ConfigModel->where('group', '=', $name . '_status')->field('key,value')->select();
 
-        if (empty($list)) {
+        if (($list->isEmpty())) {
             return ajax_return(ResultCode::E_DATA_NOT_FOUND, '数据未找到');
         }
 
