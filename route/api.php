@@ -9,6 +9,8 @@ Route::group('api', function () {
     Route::rule('config/query', 'api/Config/query', 'post');
     Route::rule('config/:name/status', 'api/Config/status', 'get');
     Route::rule("ad/carousel", 'api/Ad/carousel', 'get');
+    Route::rule('image/upload', 'api/Upload/image', 'post');
+    Route::rule('file/upload', 'api/Upload/file', 'post');
 
     //登录注册相关
     Route::rule("sign/login", 'api/Sign/login', 'post|get');
@@ -77,6 +79,8 @@ Route::group('api', function () {
 
     //运维管理相关
     Route::rule("server/status", 'api/Server/status', 'get');
+    Route::rule("log/list", 'api/Log/list', 'get|post');
+    Route::rule("db/tables", 'api/Database/tables', 'get|post');
 
     //友链相关
     Route::rule("link/list", 'api/Link/list', 'get|post');
