@@ -26,7 +26,7 @@ class Category extends Base
         }
         
         $CategoryModel = new CategoryModel();
-        $list = $CategoryModel->where($where)->select();
+        $list = $CategoryModel->where($where)->select()->toArray();
          
         // 获取树形或者list数据
         if ($struct === 'list') {
