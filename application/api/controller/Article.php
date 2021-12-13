@@ -50,11 +50,12 @@ class Article extends Base
         }
 
         //文章状态 
-               
-        if (isset($filters['status']) && $filters['status'] !== '') {
-            $where[] = ['status', '=', $filters['status']];
-        }
         $status = $filters['status'] ?? '';
+        if ($status !== '') {
+            $where[] = ['status', '=', $status];
+        } else {
+            $where[] = ['status', '>=', ArticleModel::STATUS_DRAFT];
+        }
 
         //查询时间
         $queryTimeField = ($status == '' || $status == ArticleModel::STATUS_PUBLISHED) ? 'post_time' : 'create_time';
@@ -75,10 +76,8 @@ class Article extends Base
         $list = $ArticleModel->where($where)->field($fields)->order($orders)->paginate($size, false, ['page'=>$page]);
       
         //添加缩略图和分类
-        $CategoryArticleModel = new CategoryArticleModel();
         foreach ($list as $art) {
             $art['thumbImage'] = findThumbImage($art);
-
             $categorysIds = CategoryArticleModel::where('article_id', '=', $art['id'])->column('category_id');
             $art['categorys'] = CategoryModel::where('id', 'in', $categorysIds)->field('id,name,title')->select();
         }

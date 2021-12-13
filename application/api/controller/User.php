@@ -15,14 +15,13 @@ class User extends Base
     // 获取用户信息
     public function query($id)
     {
-        $fields = 'id,account,nickname,sex,mobile,email,status,head_url,qq,weixin,referee,register_time,register_ip,from_referee,entrance_url,last_login_time,last_login_ip';
         $UserModel = new UserModel();
+        $fields = 'id,account,nickname,sex,mobile,email,status,head_url,qq,weixin,referee,register_time,register_ip,from_referee,entrance_url,last_login_time,last_login_ip';
         $user = $UserModel->where('id', $id)->field($fields)->find();
 
         if (empty($user)) {
             return ajax_return(ResultCode::E_USER_NOT_EXIST, '用户不存在');
         }
-        
         if ($user['status'] !== UserModel::STATUS_ACTIVED) {
             if ($user['status'] == UserModel::STATUS_APPLY) {
                 return ajax_return(ResultCode::E_USER_STATE_NOT_ACTIVED, '用户未激活');
@@ -36,10 +35,9 @@ class User extends Base
 
             return ajax_return(ResultCode::E_UNKNOW_ERROR, '未知错误!');
         }
+       
+        $returnData = parse_fields($user->toArray(), 1);
 
-        $user['dept'] = [];
-        unset($user['status']);
-        $returnData = $user;
         return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!', $returnData);
     }
 
@@ -48,11 +46,21 @@ class User extends Base
     {
         $params = $this->request->put();
 
-        $page = $params['page'];
-        $size = $params['size'];
-        $filters = $params['filters'] ?? []; 
+        $page = $params['page'] ?? 1;
+        $size = $params['size'] ?? 10;
+        $filters = $params['filters'] ?? '';
 
         $where = [];
+        foreach ($filters as $key => $value) {
+            if (in_array($key, ['status', 'id']) && $value !== '') {
+                $where[] = [$key, '=', $value];
+                continue;
+            } elseif ($value == '') {
+                continue;
+            } else {
+                $where[] = [$key, 'like', '%' . $value . '%'];
+            }
+        }
         $fields = 'id,nickname,sex,mobile,email,head_url,qq,weixin,referee,register_time,register_ip,from_referee,entrance_url,last_login_time,last_login_ip';
         if (isset($filters['keyword'])) {
             $where[] = ['id|mobile|email|nickname', 'like', '%'.$filters['keyword'].'%'];
