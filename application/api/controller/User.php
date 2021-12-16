@@ -69,11 +69,7 @@ class User extends Base
         $UserModel = new UserModel();
         $list = $UserModel->where($where)->field($fields)->paginate($size, false, ['page' =>$page]);
 
-        //查询部门
-        foreach ($list as $val) {
-            $val['dept'] = [];
-        }
-
+     
         $list = $list->toArray();
         //返回数据
         $returnData['current'] = $list['current_page'];
@@ -135,11 +131,12 @@ class User extends Base
         if (!$user) {
             return ajax_return(ResultCode::E_DATA_NOT_FOUND, '用户不存在!');
         }
-        if (isset($params['password'])) {
-            $params['password'] = encrypt_password($params['password'], get_config('password_key'));
-        }
 
-        $res = $user->allowField(true)->save($params);
+        $user->account = $params['account'];
+        $user->email = $params['email'];
+        $user->mobile = $params['mobile'];
+        $user->nickname = $params['nickname'];
+        $res = $user->save();
         if (!$res) {
             return ajax_return(ResultCode::ACTION_SUCCESS, '操作失败!');
         }
