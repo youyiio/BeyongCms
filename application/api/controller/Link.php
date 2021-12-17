@@ -103,8 +103,11 @@ class Link extends Base
     public function delete($id)
     {
         $link = LinkModel::get($id);
-        $res = $link->delete();
+        if (!$link) {
+            return ajax_return(ResultCode::E_DATA_NOT_FOUND, '友链不存在!');
+        }
 
+        $res = $link->delete();
         if (!$res) {
             return ajax_return(ResultCode::ACTION_FAILED, '操作失败!');
         }

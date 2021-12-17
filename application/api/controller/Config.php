@@ -3,6 +3,7 @@ namespace app\api\controller;
 
 use app\common\library\ResultCode;
 use app\common\model\ConfigModel;
+use app\common\model\UserModel;
 use think\Validate;
 
 class Config extends Base
@@ -88,6 +89,7 @@ class Config extends Base
     public function create()
     {
         $params = $this->request->put();
+        $params = parse_fields($params);
         $validate = Validate::make([
             'name' => 'require',
             'group' => 'require',
@@ -97,27 +99,21 @@ class Config extends Base
         ]);
 
         if (!$validate->check($params)) {
-            ajax_return(ResultCode::E_PARAM_ERROR, '操作成功!');
+            ajax_return(ResultCode::E_PARAM_ERROR, '操作成功!', $validate->getError());
         }
 
+        $user = $this->user_info;
+        $userInfo = UserModel::get($user->uid);
+        $params['create_by'] = $userInfo['nickname'] ?? '';
+        $params['create_time'] = date_time();
+        $params['status'] = $params['status'] ?? ConfigModel::STATUS_ACTIVED;
         $Config = new ConfigModel();
-        $Config->name = $params['name'];
-        $Config->group = $params['group']; 
-        $Config->key = $params['key']; 
-        $Config->value = $params['value']; 
-        $Config->value_type = $params['value_type']; 
-        $Config->sort = $params['sort']?? ''; 
-        $Config->remark = $params['remark']?? ''; 
-        $Config->save();
-
-        $id = $Config->id;
-
+        $id = $Config->insertGetId($params);
         if (!$id) {
-            return ajax_return(ResultCode::E_DB_ERROR, '操作失败!');
+            return ajax_return(ResultCode::E_DB_ERROR, '新增失败!');
         }
 
         $list = ConfigModel::get($id);
-
         $returnData = parse_fields($list->toArray(), 1);
 
         return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功', $returnData);
@@ -130,11 +126,11 @@ class Config extends Base
         $id = $params['id'];
 
         $config = ConfigModel::get($id);
-
         if (!$config) {
             return ajax_return(ResultCode::E_ACCESS_NOT_FOUND, '数据未找到!');
         }
 
+        $params = parse_fields($params);
         $res = $config->isUpdate(false)->allowField(true)->save($params, ['id'=>$id]);
 
         if (!$res) {
@@ -149,10 +145,12 @@ class Config extends Base
     //删除字典
     public function delete($id)
     {
-        //删除role表中的数据
         $config = ConfigModel::get($id);
+        if (!$config) {
+            return ajax_return(ResultCode::E_DATA_NOT_FOUND, '字典不存在!');
+        }
+
         $res = $config->delete();
-        
         if (!$res) {
             return ajax_return(ResultCode::E_DB_ERROR, '操作失败!');
         }

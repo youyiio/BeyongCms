@@ -9,6 +9,10 @@ class AuthGroupModel extends BaseModel
 {
     protected $name = 'sys_auth_group';
 
+	const STATUS_DELETED = 1; //激活
+	const STATUS_ACTIVED = 2; //冻结
+	const STATUS_FREEZED = 3; //删除
+
 	/**
 	 * 传递主键id删除数据
 	 * @param  array   $map  主键id

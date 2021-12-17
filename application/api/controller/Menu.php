@@ -116,8 +116,11 @@ class Menu extends Base
     public function delete($id)
     {
         $menu = AuthRuleModel::get($id);
-        $res = $menu->delete();
+        if (!$menu) {
+            return ajax_return(ResultCode::E_DATA_NOT_FOUND, '菜单不存在!');
+        }
 
+        $res = $menu->delete();
         if (!$res) {
             return ajax_return(ResultCode::ACTION_FAILED, '操作失败!');
         }

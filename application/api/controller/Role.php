@@ -89,18 +89,18 @@ class Role extends Base
     //删除角色
     public function delete($id)
     {
-        
-        //删除AuthGroup表中的数据
-        $role = AuthGroupModel::get($id);
-        $res = $role->delete();
-        
+        $Role = AuthGroupModel::get($id);
+        if (!$Role) {
+            return ajax_return(ResultCode::E_DATA_NOT_FOUND, '角色不存在!');
+        }
+        $res = $Role->save(['status' => AuthGroupModel::STATUS_DELETED]);
         if (!$res) {
             return ajax_return(ResultCode::E_DB_ERROR, '操作失败!');
         }
 
         //删除AuthGroupAccess表中的数据
-        $AuthGroupAcessModel = new AuthGroupAccessModel();
-        $AuthGroupAcessModel->where('group_id', '=', $id)->delete();
+        // $AuthGroupAcessModel = new AuthGroupAccessModel();
+        // $AuthGroupAcessModel->where('group_id', '=', $id)->delete();
 
         return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!');
     }
