@@ -11,6 +11,7 @@ Route::group('api', function () {
     Route::rule("ad/carousel", 'api/Ad/carousel', 'get');
     Route::rule('image/upload', 'api/Upload/image', 'post');
     Route::rule('file/upload', 'api/Upload/file', 'post');
+    Route::rule('user/quickSelect', 'api/User/quickSelect', 'post');
 
     //登录注册相关
     Route::rule("sign/login", 'api/Sign/login', 'post|get');
