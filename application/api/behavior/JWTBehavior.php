@@ -4,6 +4,7 @@ namespace app\api\behavior;
 
 use Firebase\JWT\JWT;
 use think\exception\ValidateException;
+use app\api\library\RolePermission;
 use app\common\exception\JwtException;
 use think\facade\Request;
 use app\common\library\ResultCode;
@@ -46,11 +47,12 @@ class JWTBehavior
         //Api权限验证
         if (config('jwt.jwt_auth_on') !== 'off') {
             $user_info = $payload->data;
-            $uid = $user_info->uid;      
-            $node = request()->module().'/'.request()->controller().'/'.request()->action();
-            $auth = \think\auth\Auth::instance();        
-            if (!$auth->check($node, $uid)) {
-                throw new ValidateException(ResultCode::E_ACCESS_NOT_AUTH, "$node 没有访问权限");
+            $uid = $user_info->uid;
+            $permission = request()->controller() . ':' . request()->action();
+            $permission = strtolower($permission);
+            $rolePermission = new RolePermission();
+            if (!$rolePermission->checkPermission($uid, $permission)) {
+                throw new JwtException(ResultCode::E_ACCESS_NOT_AUTH, "访问的资源没有权限：Subject has no permission [$permission]", 'E_ACCESS_NOT_AUTH');
             }
         }
 

@@ -2,7 +2,6 @@
 namespace app\api\controller;
 
 use app\common\library\ResultCode;
-use app\common\model\AuthRuleModel;
 use app\common\model\MenuModel;
 use app\common\model\UserModel;
 use beyong\commons\data\Tree;
