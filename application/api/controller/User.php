@@ -4,8 +4,9 @@ namespace app\api\controller;
 
 use app\common\library\ResultCode;
 use app\common\logic\UserLogic;
-use app\common\model\AuthGroupAccessModel;
+use app\common\model\RoleModel;
 use app\common\model\UserModel;
+use app\common\model\UserRoleModel;
 use think\facade\Cache;
 use think\facade\Validate;
 
@@ -103,15 +104,22 @@ class User extends Base
             foreach ($params['roleIds'] as $k => $v) {
                 $group[] = [
                     'uid' => $uid,
-                    'group_id' => $v
+                    'role_id' => $v
                 ];
             }
-            $AuthGroupAccessModel = new AuthGroupAccessModel();
-            $AuthGroupAccessModel->insertAll($group);
+            $UserRoleModel = new UserRoleModel();
+            $UserRoleModel->insertAll($group);
         }
 
-        $user = UserModel::get($uid);
-        $returnData = parse_fields($user, 1);
+        //返回数据
+        $UserModel = new UserModel();
+        $fields = 'id,account,nickname,sex,mobile,email,head_url,qq,weixin,referee,status,register_time,register_ip,from_referee,entrance_url,last_login_time,last_login_ip';
+        $user = $UserModel->where('id', '=', $uid)->field($fields)->find();
+        //角色
+        $user['roleIds'] = UserRoleModel::where('uid', '=', $user['id'])->column('role_id');
+        $user['roles'] = RoleModel::hasWhere('UserRole', ['uid' => $user['id']], 'id,name,title')->select()->toArray();
+
+        $returnData = parse_fields($user->toArray(), 1);
 
         return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!', $returnData);  
     }
@@ -120,7 +128,6 @@ class User extends Base
     public function edit()
     {
         $params = $this->request->put();
-
         $check = Validate('User')->scene('edit')->check($params);
         if ($check !== true) {
             return ajax_error(ResultCode::E_PARAM_VALIDATE_ERROR, validate('User')->getError());
@@ -141,25 +148,28 @@ class User extends Base
             return ajax_return(ResultCode::ACTION_SUCCESS, '操作失败!');
         }
 
-        // 修改权限
-        $AuthGroupAccessModel = new AuthGroupAccessModel();
-        $AuthGroupAccessModel->where(['uid'=>$uid])->delete();
-       
+        //修改对应角色
         if (!empty($params['roleIds'])) {
-            $group = [];
+            $UserRoleModel = new UserRoleModel();
+            $UserRoleModel->where(['uid' => $uid])->delete();
+            $data = [];
             foreach ($params['roleIds'] as $k => $v) {
-                $group[] = [
-                    'uid'=>$uid,
-                    'group_id'=>$v
+                $data[] = [
+                    'uid' => $uid,
+                    'role_id' => $v
                 ];
             }
-            $AuthGroupAccessModel->insertAll($group);
+            $UserRoleModel->insertAll($data);
         }
         Cache::tag('menu')->rm($uid); //删除用户菜单配置缓存
 
         //返回数据
-        $returnData = $user;
-        $returnData['roleIds'] = $AuthGroupAccessModel->where('uid', $uid)->column('group_id');
+        $UserModel = new UserModel();
+        $fields = 'id,account,nickname,sex,mobile,email,head_url,qq,weixin,referee,register_time,register_ip,from_referee,entrance_url,last_login_time,last_login_ip';
+        $user = $UserModel->where(['id' => $uid])->field($fields)->find();
+        $user['roleIds'] = UserRoleModel::where('uid', '=', $user['id'])->column('role_id');
+
+        $returnData = parse_fields($user->toArray(), 1);
 
         return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!', $returnData);
     }
@@ -254,24 +264,24 @@ class User extends Base
 
         $uid = $params['id'];
         // 修改权限
-        $AuthGroupAccessModel = new AuthGroupAccessModel();
-        $AuthGroupAccessModel->where(['uid'=>$uid])->delete();
+        $UserRoleModel = new UserRoleModel();
+        $UserRoleModel->where(['uid' => $uid])->delete();
         if (!empty($params['roleIds'])) {
-            $group = [];
+            $data = [];
             foreach ($params['roleIds'] as $k => $v) {
-                $group[] = [
-                    'uid'=>$uid,
-                    'group_id'=>$v
+                $data[] = [
+                    'uid' => $uid,
+                    'role_id' => $v
                 ];
             }
-            $AuthGroupAccessModel->insertAll($group);
+            $UserRoleModel->insertAll($data);
         }
         Cache::tag('menu')->rm($uid); //删除用户菜单配置缓存
 
         //返回数据
-        $returnData = UserModel::get($uid);
-        $AuthGroupAccessModel = new AuthGroupAccessModel();
-        $returnData['roleIds'] = $AuthGroupAccessModel->where('uid', $uid)->column('group_id');
+        $UserModel = new UserModel();
+        $returnData = $UserModel->where('id', $uid)->field('id,nickname')->find();
+        $returnData['roleIds'] = RoleModel::hasWhere('userRole', ['uid' => $uid], 'id,name')->select();
 
         return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!', $returnData);
     }

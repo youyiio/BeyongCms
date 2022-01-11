@@ -53,6 +53,19 @@ function to_standard_pagelist($paginator)
     ];
 }
 
+// 分页列表转为驼峰
+function pagelist_to_hump($list)
+{
+    $list = $list->toArray();
+    $return['current'] = $list['current_page'];
+    $return['pages'] = $list['last_page'];
+    $return['size'] = $list['per_page'];
+    $return['total'] = $list['total'];
+    $return['records'] = parse_fields($list['data'], 1);
+
+    return $return;
+}
+
 // 设置JWT
 function setJWT($data) {
     $jwt = new JWT();

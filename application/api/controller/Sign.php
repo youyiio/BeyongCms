@@ -4,7 +4,6 @@ namespace app\api\controller;
 use app\common\library\ResultCode;
 use app\common\logic\ActionLogLogic;
 use app\common\logic\UserLogic;
-use app\common\model\AuthGroupAccessModel;
 use app\common\model\UserModel;
 use Firebase\JWT\JWT;
 use think\facade\Cache;
@@ -13,6 +12,7 @@ use beyong\commons\utils\StringUtils;
 use app\common\logic\CodeLogic;
 
 use app\common\model\ActionLogModel;
+use app\common\model\UserRoleModel;
 use think\facade\Session;
 
 class Sign extends Base
@@ -104,10 +104,10 @@ class Sign extends Base
         //权限初始化
         $group[] = [
             'uid' => $user->id,
-            'group_id' => config('user_group_id')
+            'role_id' => config('user_group_id')
         ];
-        $AuthGroupAccessModel = new AuthGroupAccessModel();
-        $AuthGroupAccessModel->insertAll($group);
+        $UserRoleModel = new UserRoleModel();
+        $UserRoleModel->insertAll($group);
 
         $returnData = [
             'uid' => $user->id,

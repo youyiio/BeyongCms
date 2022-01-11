@@ -3,6 +3,8 @@ namespace app\api\controller;
 
 use app\common\library\ResultCode;
 use app\common\model\AuthRuleModel;
+use app\common\model\MenuModel;
+use app\common\model\UserModel;
 use beyong\commons\data\Tree;
 use think\Validate;
 
@@ -20,13 +22,12 @@ class Menu extends Base
         $depth = $filters['depth']?? 1;
 
         $where = [];
-        $where[] = ['belongs_to', '=', 'admin'];
         if (!empty($keyword)) {
-            $where[] = ['title', 'like', '%'.$keyword.'%'];
+            $where[] = ['title', 'like', '%' . $keyword . '%'];
         }
-        
-        $AuthRuleModel = new AuthRuleModel();
-        $list = $AuthRuleModel->where($where)->order('id asc')->select();
+
+        $MenuModel = new MenuModel();
+        $list = $MenuModel->where($where)->order('id asc')->select()->toArray();
      
         // 获取树形或者list数据
         $data = getTree($list, $pid, 'id', 'pid', $depth);
@@ -53,26 +54,35 @@ class Menu extends Base
     public function create()
     {
         $params = $this->request->put();
-
         $validate = Validate::make([
             'pid' => 'require|integer',
-            'name' => 'unique:'. config('database.prefix') . 'sys_auth_rule,name',
+            'name' => 'unique:' . config('database.prefix') . 'sys_menu,name',
             'title' => 'require',
             'type' => 'require|integer',
-           
+
         ]);
         if (!$validate->check($params)) {
             return ajax_return(ResultCode::ACTION_FAILED, '操作失败!', $validate->getError());
         }
-        
-        $AuthRuleModel = new AuthRuleModel();
-        $res = $AuthRuleModel->save($params);
-        $id = $AuthRuleModel->id;
+
+        $user = $this->user_info;
+        $userInfo = UserModel::get($user->uid);
+
+        $data = parse_fields($params);
+        $data['create_time'] = date_time();
+        $data['create_by'] = $userInfo['nickname'] ?? '';
+
+        $MenuModel = new MenuModel();
+        $res = $MenuModel->save($data);
+        $id = $MenuModel->id;
+
         if (!$res) {
             return ajax_return(ResultCode::ACTION_FAILED, '操作失败!');
         }
 
-        $returnData = AuthRuleModel::get($id);
+        $menu = MenuModel::get($id);
+        $returnData = parse_fields($menu->toArray(), 1);
+
         return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!', $returnData);
     }
 
@@ -80,42 +90,38 @@ class Menu extends Base
     public function edit()
     {
         $params = $this->request->put();
-
         $validate = Validate::make([
             'id' => 'require',
-            'name' => 'unique:'. config('database.prefix') . 'sys_auth_rule,name',
+            'name' => 'unique:' . config('database.prefix') . 'sys_menu,name',
             'title' => 'require',
             'type' => 'require|integer',
-           
         ]);
         if (!$validate->check($params)) {
             return ajax_return(ResultCode::ACTION_FAILED, '操作失败!', $validate->getError());
         }
+        $user = $this->user_info;
+        $userInfo = UserModel::get($user->uid);
 
-        $menu = AuthRuleModel::get($params['id']);
-     
-        $menu->name = $params['name']?? '';
-        $menu->title = $params['title']?? '';
-        $menu->icon = $params['icon']?? '';
-        $menu->type = $params['type']?? '';
-        $menu->is_menu = $params['isMenu']?? '';
-        $menu->sort = $params['sort']?? '';
-        $menu->belongs_to = $params['belongsTo']?? '';
-        $res = $menu->save();
+        $params = parse_fields($params);
+        $params['update_time'] = date_time();
+        $params['update_by'] = $userInfo['nickname'] ?? '';
 
+        $MenuModel = new MenuModel();
+        $res = $MenuModel->isUpdate(true)->allowField(true)->save($params);
         if (!$res) {
             return ajax_return(ResultCode::ACTION_FAILED, '操作失败!');
         }
 
-        $data = AuthRuleModel::get($params['id']);
-        $returnData = parse_fields($data, 1);
+        $data = $MenuModel->where('id', '=', $params['id'])->select();
+        $returnData = parse_fields($data->toArray(), 1);
+
         return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!', $returnData);
     }
 
     //删除菜单
     public function delete($id)
     {
-        $menu = AuthRuleModel::get($id);
+        $menu = MenuModel::get($id);
         if (!$menu) {
             return ajax_return(ResultCode::E_DATA_NOT_FOUND, '菜单不存在!');
         }

@@ -4,7 +4,6 @@ namespace app\api\controller;
 
 use app\common\library\ResultCode;
 use app\common\logic\UserLogic;
-use app\common\model\AuthGroupAccessModel;
 use app\common\model\UserModel;
 use think\facade\Cache;
 use beyong\commons\utils\PregUtils;
@@ -12,6 +11,7 @@ use beyong\commons\utils\StringUtils;
 
 use Firebase\JWT\JWT;
 use app\common\logic\CodeLogic;
+use app\common\model\UserRoleModel;
 
 class Sms extends Base
 {
@@ -159,10 +159,10 @@ class Sms extends Base
         //权限初始化
         $group[] = [
             'uid' => $user->id,
-            'group_id' => config('user_group_id')
+            'role_id' => config('user_group_id')
         ];
-        $AuthGroupAccessModel = new AuthGroupAccessModel();
-        $AuthGroupAccessModel->insertAll($group);
+        $UserRoleModel = new UserRoleModel();
+        $UserRoleModel->insertAll($group);
 
         return $user;
     }

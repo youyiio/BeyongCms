@@ -3,10 +3,13 @@
 namespace app\api\controller;
 
 use app\common\library\ResultCode;
-use app\common\model\AuthGroupAccessModel;
-use app\common\model\AuthGroupModel;
-use app\common\model\AuthRuleModel;
+use app\common\model\DeptModel;
+use app\common\model\JobModel;
+use app\common\model\MenuModel;
+use app\common\model\RoleMenuModel;
+use app\common\model\RoleModel;
 use app\common\model\UserModel;
+use app\common\model\UserRoleModel;
 use think\Validate;
 
 //个人中心
@@ -15,54 +18,46 @@ class Ucenter extends Base
     // 获取用户信息
     public function getInfo()
     {
-        if ($this->request->method() != 'GET') {
-            return ajax_error(ResultCode::SC_FORBIDDEN, '非法访问！请检查请求方式！');
-        }
+        $user_info = $this->user_info;
+        $uid = $user_info->uid;
 
-        $params = $this->request->put();
-        
-        $payloadData = session('jwt_payload_data');
-        if (!$payloadData) {
-            return ajax_error(ResultCode::ACTION_FAILED, 'TOKEN自定义参数不存在！');
-        }
-        $uid = $payloadData->uid;
-        if (!$uid) {
-            return ajax_error(ResultCode::E_USER_NOT_EXIST, '用户不存在！');
-        }
-        $user = UserModel::get(['id' => $uid]);
+        $UserModel = new UserModel();
+        $fields = 'id,account,nickname,sex,mobile,email,head_url';
+        $user = $UserModel->where('id', '=', $uid)->field($fields)->find();
         if (empty($user)) {
             return ajax_error(ResultCode::E_USER_NOT_EXIST, '用户不存在！');
         }
 
-        $returnData = [
-            'uid' => $uid,
-            //'account' => $user->account,
-            'nickname' => $user->nickname,
-            'mobile' => $user->mobile,
-            'email' => $user->email,
-            //'status' => $user->status,
-            'headUrl' => $user->head_url,
-            'sex' => $user->sex,
-            'registerTime' => $user->register_time,
-            'roles' => ['admin']
-        ];
+        $data = $user;
+        //描述
+        $data['description'] = $user->meta('description');
+        //角色
+        $user['roles'] = RoleModel::hasWhere('UserRole', ['uid' => $user['id']], 'id,name,title')->select()->toArray();
 
-        return ajax_success($returnData);
+        $returnData = parse_fields($data->toArray(), 1);
+
+        return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!', $returnData);
     }
-    
+
     //编辑个人资料
     public function profile()
     {
         $userInfo = $this->user_info;
-        $user = UserModel::get($userInfo->uid);
+        $uid = $userInfo->uid;
+        $user = UserModel::get($uid);
 
         if (!$user) {
             ajax_return(ResultCode::E_DATA_NOT_FOUND, '用户不存在!');
         }
 
         $params = $this->request->put();
-        $res = $user->isUpdate(true)->allowField(true)->save($params);
+        $params = parse_fields($params);
+        $check = Validate('User')->scene('edit')->check($params);
+        if ($check !== true) {
+            return ajax_error(ResultCode::E_PARAM_VALIDATE_ERROR, validate('User')->getError());
+        }
 
+        $res = $user->isUpdate(true)->allowField(true)->save($params);
         if (!$res) {
             ajax_return(ResultCode::E_DB_ERROR, '操作失败!');
         }
@@ -72,11 +67,11 @@ class Ucenter extends Base
 
         //返回数据
         $UserModel = new UserModel();
-        $data = $UserModel->where('id', $userInfo->uid)->field('id,nickname,head_url')->find();
-        $roleIds = AuthGroupAccessModel::where(['uid'=> $userInfo->uid])->column('group_id');
+        $data = $UserModel->where('id', $uid)->field('id,nickname,head_url')->find();
+        $roleIds = UserRoleModel::where(['uid' => $uid])->column('role_id');
 
-        $AuthGroupModel = new AuthGroupModel();
-        $data['roles'] = $AuthGroupModel->where('id', 'in', $roleIds)->field('id,title')->select();
+        $RoleModel = new RoleModel();
+        $data['roles'] = $RoleModel->where('id', 'in', $roleIds)->field('id,name')->select();
         $data['description'] = $user->metas('description');
         $returnData = parse_fields($data->toArray(), 1);
 
@@ -87,27 +82,21 @@ class Ucenter extends Base
     public function menus()
     {
         $userInfo = $this->user_info;
-        $user = UserModel::get($userInfo->uid);
-
+        $uid = $userInfo->uid;
+        $user = UserModel::get($uid);
         if (!$user) {
             ajax_return(ResultCode::E_DATA_NOT_FOUND, '用户不存在!');
         }
 
-        $roleIds = AuthGroupAccessModel::where(['uid'=> $userInfo->uid])->column('group_id');
+        $roleIds = $user->roles->column('id');
+        $field = 'id,pid,title,name,component,path,icon,type,is_menu,permission,status,sort,belongs_to';
+        $MenuModel = MenuModel::hasWhere('roleMenus', [['role_id', 'in', $roleIds]], $field)->group([]);
 
-        $menus = [];
-        $AuthGroupModel = new AuthGroupModel();
-        foreach ($roleIds as $id) {
-           $rules = $AuthGroupModel->where('id', $id)->value('rules');
-           $array = explode(',', $rules);
-           $menus = array_merge($menus, $array);
-        }
-        
-        $AuthRuleModel = new AuthRuleModel();
-        $list = $AuthRuleModel->where('id', 'in', $menus)->select();
+        $where[] = ['belongs_to', '=', 'api'];
+        $list = $MenuModel->where($where)->select();
 
-        $list = parse_fields($list, 1);
-        $returnData = getTree($list, 0 , 'id', 'pid', 6);
+        $list = parse_fields($list->toArray(), 1);
+        $returnData = getTree($list, 0, 'id', 'pid', 6);
 
         return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!', $returnData);
     }
@@ -117,9 +106,9 @@ class Ucenter extends Base
     {
         $params = $this->request->put();
         $validate = Validate::make([
-                'oldPassword' => 'require',
-                'password' => 'require|length:6,20|alphaDash'
-            ]);
+            'oldPassword' => 'require',
+            'password' => 'require|length:6,20|alphaDash'
+        ]);
 
         if (!$validate->check($params)) {
             return ajax_error(ResultCode::E_PARAM_VALIDATE_ERROR, $validate->getError());
