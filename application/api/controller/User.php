@@ -140,7 +140,7 @@ class User extends Base
         }
 
         $UserLogic = new UserLogic();
-        $res = $UserLogic->updateUser($uid, $params);
+        $res = $UserLogic->editUser($uid, $params);
         if (!$res) {
             return ajax_return(ResultCode::ACTION_SUCCESS, '操作失败!');
         }

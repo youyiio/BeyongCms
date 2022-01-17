@@ -52,24 +52,47 @@ class Ucenter extends Base
         }
 
         $params = $this->request->put();
-        $params = parse_fields($params);
         $check = Validate('User')->scene('ucenterEdit')->check($params);
         if ($check !== true) {
             return ajax_error(ResultCode::E_PARAM_VALIDATE_ERROR, validate('User')->getError());
         }
 
-        $userLogic = new UserLogic();
-        $res = $userLogic->updateUser($uid, $params);
+        if (isset($params['mobile']) && $user['mobile'] != $params['mobile']) {
+            if ($user->findByMobile($params['mobile'])) {
+                return ajax_return(ResultCode::E_USER_MOBILE_HAS_EXIST, '手机号已经存在!');
+            }
+        }
+        if (isset($params['email']) && $user['email'] != $params['email']) {
+            if ($user->findByEmail($params['email'])) {
+                return ajax_return(ResultCode::E_USER_EMAIL_HAS_EXIST, '邮箱已经存在');
+            }
+        }
+
+        $params = parse_fields($params);
+        $user->nickname = $params['nickname'];
+        $user->mobile = $params['mobile'];
+        $user->email = $params['email'];
+        $user->sex = $params['sex'];
+        if (isset($params['qq'])) {
+            $user->qq = $params['qq'];
+        }
+        if (isset($params['weixin'])) {
+            $user->weixin = $params['weixin'];
+        }
+        if (isset($params['head_url'])) {
+            $user->head_url = $params['head_url'];
+        }
+        $res = $user->save();
         if (!$res) {
             return ajax_return(ResultCode::E_DB_ERROR, '操作失败!');
         }
         if (isset($params['description'])) {
             $user->meta('description', $params['description']);
-        }
+        }   
 
         //返回数据
         $UserModel = new UserModel();
-        $data = $UserModel->where('id', $uid)->field('id,nickname,head_url')->find();
+        $data = $UserModel->where('id', $uid)->field('id,nickname,mobile,email,qq,weixin,head_url')->find();
         $roleIds = UserRoleModel::where(['uid' => $uid])->column('role_id');
 
         $RoleModel = new RoleModel();
