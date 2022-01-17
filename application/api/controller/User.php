@@ -139,15 +139,12 @@ class User extends Base
             return ajax_return(ResultCode::E_DATA_NOT_FOUND, '用户不存在!');
         }
 
-        $user->account = $params['account'];
-        $user->email = $params['email'];
-        $user->mobile = $params['mobile'];
-        $user->nickname = $params['nickname'];
-        $res = $user->save();
+        $UserLogic = new UserLogic();
+        $res = $UserLogic->updateUser($uid, $params);
         if (!$res) {
             return ajax_return(ResultCode::ACTION_SUCCESS, '操作失败!');
         }
-
+        
         //修改对应角色
         if (!empty($params['roleIds'])) {
             $UserRoleModel = new UserRoleModel();
