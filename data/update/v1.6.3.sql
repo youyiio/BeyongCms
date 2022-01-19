@@ -16,6 +16,8 @@ ADD COLUMN `update_by` varchar(255) NULL AFTER `create_by`,
 ADD COLUMN `create_time` datetime(0) NULL AFTER `update_by`,
 ADD COLUMN `update_time` datetime(0) NULL AFTER `create_time`;
 
+update `sys_config` set name=remark;
+
 drop index uniq_config_name on sys_config;
 
 /*==============================================================*/

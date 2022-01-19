@@ -27,10 +27,10 @@ class System extends Base
 
             $ConfigModel = new ConfigModel();
             foreach ($data as $k => $v) {
-                if ($ConfigModel->where('name', $k)->select()) {
-                    $ConfigModel->where('name', $k)->setField('value', $v);
+                if ($ConfigModel->where('key', $k)->select()) {
+                    $ConfigModel->where('key', $k)->setField('value', $v);
                 } else {
-                    $ConfigModel->save(['name' => $k, 'value' => $v]);
+                    $ConfigModel->save(['key' => $k, 'value' => $v]);
                 }
             }
             cache('config', null);
@@ -39,7 +39,7 @@ class System extends Base
 
         //获取标签组
         $ConfigModel = new ConfigModel();
-        $tabMeta = $ConfigModel->where('name', 'tab_meta')->value('value');
+        $tabMeta = $ConfigModel->where('key', 'tab_meta')->value('value');
         $tabs = json_decode($tabMeta, true);
         $this->assign('tabs', $tabs);
 
@@ -61,10 +61,10 @@ class System extends Base
 
             $ConfigModel = new ConfigModel();
             foreach ($data as $k => $v) {
-                if ($ConfigModel->where('name', $k)->select()) {
-                    $ConfigModel->where('name', $k)->setField('value', $v);
+                if ($ConfigModel->where('key', $k)->select()) {
+                    $ConfigModel->where('key', $k)->setField('value', $v);
                 } else {
-                    $ConfigModel->save(['name' => $k, 'value' => $v]);
+                    $ConfigModel->save(['key' => $k, 'value' => $v]);
                 }
             }
             cache('config', null);
