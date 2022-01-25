@@ -275,3 +275,52 @@ truncate `sys_role_menu`;
 # delete from `sys_role_menu` where role_id = 1;
 
 INSERT INTO `sys_role_menu`(role_id,menu_id) SELECT 1, id FROM `sys_menu`;
+
+
+
+
+
+
+drop table if exists sys_action_log;
+
+/*==============================================================*/
+/* Table: sys_action_log                                        */
+/*==============================================================*/
+create table sys_action_log
+(
+   id                   bigint not null auto_increment,
+   action               varchar(64) not null comment '操作类型',
+   username             varchar(255) comment '用户名',
+   module               varchar(255) comment '模块',
+   component            varchar(255) comment '组件',
+   ip                   varchar(64),
+   action_time          bigint,
+   params               text,
+   user_agent           text comment '用户代理',
+   response             text,
+   response_time        bigint,
+   remark               varchar(256),
+   create_time          datetime not null,
+   primary key (id)
+)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci;
+
+alter table sys_action_log comment '日志表';
+
+/*==============================================================*/
+/* Index: idx_action_log_create_time                            */
+/*==============================================================*/
+create index idx_action_log_create_time on sys_action_log
+(
+   create_time
+);
+
+/*==============================================================*/
+/* Index: idx_action_log_action_username                        */
+/*==============================================================*/
+create index idx_action_log_action_username on sys_action_log
+(
+   action,
+   username
+);

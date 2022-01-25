@@ -37,7 +37,7 @@ class Article extends Base
             array_push($childCateIds, $categoryId);
 
             //$ArticleModel = ArticleModel::has('CategoryArticle', [['category_id','in',$childCateIds]]);
-            $fields = 'ArticleModel.id,title,thumb_image_id,post_time,update_time,create_time,is_top,status,read_count,sort,ad_id';
+            $fields = 'ArticleModel.id,title,thumb_image_id,post_time,update_time,create_time,is_top,status,read_count,sort';
             $ArticleModel = ArticleModel::hasWhere('CategoryArticle', [['category_id','in',$childCateIds]], $fields)->group([]); //hack:group用于清理hasmany默认加group key
         }
 
