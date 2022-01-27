@@ -68,7 +68,7 @@ drop table if exists cms_feedback;
 
 drop table if exists cms_link;
 
-#drop index idx_action_log_uid_action on sys_action_log;
+#drop index idx_action_log_action_username on sys_action_log;
 
 #drop index idx_action_log_create_time on sys_action_log;
 
@@ -566,19 +566,24 @@ alter table cms_link comment '链接表';
 create table sys_action_log
 (
    id                   bigint not null auto_increment,
-   uid                  int,
-   action               varchar(64) not null,
-   module               varchar(16),
-   ip                   varchar(64) not null,
+   action               varchar(64) not null comment '操作类型',
+   username             varchar(255) comment '用户名',
+   module               varchar(255) comment '模块',
+   component            varchar(255) comment '组件',
+   ip                   varchar(64),
+   action_time          bigint,
+   params               text,
+   user_agent           text comment '用户代理',
+   response             text,
+   response_time        bigint,
    remark               varchar(256),
-   data                 varchar(128),
    create_time          datetime not null,
    primary key (id)
 )
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
-alter table sys_action_log comment '操作日志表';
+alter table sys_action_log comment '日志表';
 
 /*==============================================================*/
 /* Index: idx_action_log_create_time                            */
@@ -589,12 +594,12 @@ create index idx_action_log_create_time on sys_action_log
 );
 
 /*==============================================================*/
-/* Index: idx_action_log_uid_action                             */
+/* Index: idx_action_log_action_username                        */
 /*==============================================================*/
-create index idx_action_log_uid_action on sys_action_log
+create index idx_action_log_action_username on sys_action_log
 (
-   uid,
-   action
+   action,
+   username
 );
 
 /*==============================================================*/

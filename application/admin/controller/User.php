@@ -60,7 +60,7 @@ class User extends Base
         $this->assign('list', $list);
         $this->assign('pages', $list->render());
 
-        return view();
+        return $this->fetch('index');
     }
 
     //新增用户
@@ -198,7 +198,7 @@ class User extends Base
 
         //操作日志
         $ActionLogModel = new ActionLogModel();
-        $actionLogList = $ActionLogModel->where('uid', $uid)->order('id desc')->limit(10)->select();
+        $actionLogList = $ActionLogModel->where('username', $uid)->order('id desc')->limit(10)->select();
         $this->assign('actionLogList', $actionLogList);
 
         return $this->fetch('viewUser');
