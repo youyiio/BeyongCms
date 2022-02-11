@@ -20,14 +20,14 @@ class System extends Base
 
         if (request()->isAjax()) {
             $data = input('param.');
-            unset($data['s']); //路由地址参数不做处理；
 
+            unset($data['s']); //路由地址参数不做处理；
             $ConfigModel = new ConfigModel();
             foreach ($data as $k => $v) {
-                if ($ConfigModel->where('key', $k)->select()) {
-                    $ConfigModel->where('key', $k)->setField('value', $v);
+                if ($ConfigModel->where('name', $k)->select()) {
+                    $ConfigModel->where('name', $k)->setField('value', $v);
                 } else {
-                    $ConfigModel->save(['key' => $k, 'value' => $v]);
+                    $ConfigModel->save(['name' => $k, 'value' => $v]);
                 }
             }
             cache('config', null);
@@ -58,10 +58,10 @@ class System extends Base
 
             $ConfigModel = new ConfigModel();
             foreach ($data as $k => $v) {
-                if ($ConfigModel->where('key', $k)->select()) {
-                    $ConfigModel->where('key', $k)->setField('value', $v);
+                if ($ConfigModel->where('name', $k)->select()) {
+                    $ConfigModel->where('name', $k)->setField('value', $v);
                 } else {
-                    $ConfigModel->save(['key' => $k, 'value' => $v]);
+                    $ConfigModel->save(['name' => $k, 'value' => $v]);
                 }
             }
             cache('config', null);
