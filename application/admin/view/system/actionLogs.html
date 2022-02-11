@@ -73,13 +73,13 @@
                             {foreach name="list" item="vo"}
                             <tr>
                                 <!-- <td><input type="checkbox" class="ajax-check" id="{$vo.id}"></td> -->
-                                <td>{$vo.id}</td>
-                                <td><a href="{:url('admin/User/viewUser',['uid'=>$vo.uid])}">{$vo.user.nickname|default=""}</a></td>
+                                <td>{$vo.username}</td>
+                                <td><a href="{:url('admin/User/viewUser',['uid'=>$vo.username])}">{$vo.user.nickname|default=""}</a></td>
                                 <td>{$vo.action_text}</td>
                                 <td>{$vo.module}</td>
                                 <td>{$vo.ip} [{$vo.ip|ip_to_address=###,'province,city'}]</td>
                                 <td>{$vo.remark}</td>
-                                <td>{$vo.data}</td>
+                                <td>{$vo.user_agent}</td>
                                 <td>{$vo.create_time}</td>
                             </tr>
                             {/foreach}

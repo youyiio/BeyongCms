@@ -40,7 +40,7 @@ class System extends Base
         $tabs = json_decode($tabMeta, true);
         $this->assign('tabs', $tabs);
 
-        $configs = $ConfigModel->where('tab', '=', $tab)->order('sort asc')->select();
+        $configs = $ConfigModel->where('group', '=', $tab)->order('sort asc')->select();
         $this->assign('configs', $configs);
 
         return $this->fetch('index');
@@ -76,7 +76,7 @@ class System extends Base
         ];
         $this->assign('tabs', $tabs);
 
-        $configs = $ConfigModel->where('tab', '=', $tab)->order('sort asc')->select();
+        $configs = $ConfigModel->where('group', '=', $tab)->order('sort asc')->select();
         $this->assign('configs', $configs);
 
         return $this->fetch('notification');
@@ -294,7 +294,7 @@ class System extends Base
             ];
         }
 
-        $fields = 'id, uid, action, module, ip, remark, data, create_time';
+        $fields = 'id, username, action, module, ip, remark, user_agent, create_time';
         $pageConfig = [
             'type' => '\\app\\common\\paginator\\BootstrapTable',
             'query' => input('param.')
