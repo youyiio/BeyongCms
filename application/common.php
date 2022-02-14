@@ -371,7 +371,7 @@ function obj_to_array(&$object) {
 function get_config($key = '', $default = null)
 {
     $config = Cache::get('config');
-    if (empty($config) || empty(Cache::get('config_sentinel')) || config('app_debug')) {
+    if (empty(Cache::get('config_sentinel')) || empty($config) || config('app_debug')) {
         $ConfigModel = new \app\common\model\ConfigModel();
         $config = $ConfigModel->column('value', 'key');
 
