@@ -45,8 +45,7 @@ class Base extends Controller
         //权限验证
         if (config('cms.auth_on') == 'on') {
             $node = request()->module().'/'.request()->controller().'/'.request()->action();
-
-            $auth = \think\auth\Auth::instance();
+            $auth = new Auth();
             if (!$auth->check($node, $uid)) {
                 $this->error('没有访问权限', 'javascript:void(0);');
             }
