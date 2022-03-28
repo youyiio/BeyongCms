@@ -16,13 +16,12 @@ class RolePermission {
     {
     }
 
-    public function checkPermission($uid, $permission) 
+    public function checkPermission($uid, $permission, $module) 
     {
-        $permissions = Cache::get("permission" . CACHE_SEPARATOR . $uid, null);
+        $permissions = Cache::get("permission" . CACHE_SEPARATOR . $module . $uid, null);
         if ($permissions === null) {
-            $permissions = $this->getPermissionList($uid);
-
-            Cache::set("permission" . CACHE_SEPARATOR . $uid, $permissions, 3600);
+            $permissions = $this->getPermissionList($uid, $module);
+            Cache::set("permission" . CACHE_SEPARATOR . $module . $uid, $permissions, 3600);
         }
 
         if (!array_key_exists($permission, $permissions)) {
@@ -33,7 +32,7 @@ class RolePermission {
     }
 
     //查询权限列表
-    public function getPermissionList($uid) 
+    public function getPermissionList($uid, $module) 
     {
         
         $roleIds = UserRoleModel::where(['uid'=> $uid])->column('role_id');
@@ -42,14 +41,18 @@ class RolePermission {
         $menuIds = $RolemenuModel->where('role_id', 'in', $roleIds)->column('menu_id');
 
         $where[] = [
-            ['belongs_to', '=', 'api'],
+            ['belongs_to', '=', "$module"],
             ['id', 'in', $menuIds]
         ];
         $MenuModel = new MenuModel();
         //$fields = 'id,pid,title,name,component,path,icon,type,is_menu,permission,status,sort,belongs_to';
         $fields = 'id';
 
-        $permissions = $MenuModel->where($where)->field($fields)->column($fields, "lower(permission)");
+        $lower = 'permission';
+        if ($module == 'admin') {
+            $lower = 'path';
+        }
+        $permissions = $MenuModel->where($where)->field($fields)->column($fields, "lower($lower)");
 
         return $permissions;
     }

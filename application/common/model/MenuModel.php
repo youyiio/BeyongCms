@@ -1,6 +1,7 @@
 <?php
 namespace app\common\model;
 
+use app\api\library\RolePermission;
 use think\facade\Env;
 use think\facade\Cache;
 
@@ -58,7 +59,7 @@ class MenuModel extends BaseModel
      *
      * @param string $type tree获取树形结构 level获取层级结构
      * @param string $order 排序规则列名
-     * @param string $name 值对应的列名
+     * @param string $path 值对应的列名
      * @param string $fieldPK 主键列名
      * @param string $filedPid 父节点的列名
      * @param string $belongsTo 归属标识
@@ -67,7 +68,7 @@ class MenuModel extends BaseModel
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    public function getTreeDataBelongsTo($type='tree', $order='sort', $name='name', $fieldPK='id', $filedPid='pid', $belongsTo='')
+    public function getTreeDataBelongsTo($type='tree', $order='sort', $path='path', $fieldPK='id', $filedPid='pid', $belongsTo='')
     {
         $where = [
             'belongs_to' => $belongsTo
@@ -82,11 +83,11 @@ class MenuModel extends BaseModel
         // 获取树形或者结构数据
         $tree = new \beyong\commons\data\Tree();
         if ($type == 'tree') {//供给如下拉菜单使用
-            $data = $tree::tree($data, $name, $fieldPK, $filedPid);
+            $data = $tree::tree($data, $path, $fieldPK, $filedPid);
         } else if ($type == "level") {//给左测菜单使用
             $data = $tree::channelLevel($data,0,'&nbsp;', $fieldPK);
 
-            $auth = new \think\auth\Auth();
+            $auth = new RolePermission();
             //清理不显示的菜单
             foreach ($data as $k => $v) {
                 //是否菜单
@@ -95,8 +96,9 @@ class MenuModel extends BaseModel
                     unset($data['_data']);
                     continue;
                 }
+             
                 //是否有权限
-                if (!$auth->check($v['name'], session('uid'),1,'')) {
+                if (!$auth->checkPermission(session('uid'), strtolower($v['path']), 'admin')) {
                     unset($data[$k]);
                     unset($data['_data']);
                     continue;
@@ -108,7 +110,7 @@ class MenuModel extends BaseModel
                         unset($data[$k]['_data'][$m]['_data']);
                         continue;
                     }
-                    if (!$auth->check($n['name'], session('uid'),1,'')) {
+                    if (!$auth->checkPermission(session('uid'), strtolower($v['path']), 'admin')) {
                         unset($data[$k]['_data'][$m]);
                         unset($data[$k]['_data'][$m]['_data']);
                         continue;
@@ -119,7 +121,7 @@ class MenuModel extends BaseModel
                             unset($data[$k]['_data'][$m]['_data'][$o]['_data']);
                             continue;
                         }
-                        if (!$auth->check($p['name'], session('uid'),1,'')) {
+                        if (!$auth->checkPermission(session('uid'), strtolower($v['path']), 'admin')) {
                             unset($data[$k]['_data'][$m]['_data'][$o]);
                             unset($data[$k]['_data'][$m]['_data'][$o]['_data']);
                             continue;
