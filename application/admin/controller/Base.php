@@ -69,7 +69,7 @@ class Base extends Controller
             $menus = Cache::get($uid . '_menu');
         } else {
             $MenuModel = new MenuModel();
-            $menus = $MenuModel->getTreeDataBelongsTo('level', 'sort, id', 'name', 'id', 'pid', 'admin');
+            $menus = $MenuModel->getTreeDataBelongsTo('level', 'sort, id', 'path', 'id', 'pid', 'admin');
             Cache::set($uid . '_menu', $menus);
         }
         $this->assign('menus', $menus);

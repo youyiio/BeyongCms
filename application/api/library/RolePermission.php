@@ -41,7 +41,7 @@ class RolePermission {
         $menuIds = $RolemenuModel->where('role_id', 'in', $roleIds)->column('menu_id');
 
         $where[] = [
-            ['belongs_to', '=', "$module"],
+            ['belongs_to', '=', $module],
             ['id', 'in', $menuIds]
         ];
         $MenuModel = new MenuModel();
