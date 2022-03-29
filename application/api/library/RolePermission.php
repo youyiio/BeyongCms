@@ -16,6 +16,10 @@ class RolePermission {
     {
     }
 
+    /**
+     * @param string $module 要验证权限的模块
+     * @param string $name 要验证权限的列名
+     */
     public function checkPermission($uid, $permission, $module='api', $name='permission') 
     {
         $permissions = Cache::get("permission" . CACHE_SEPARATOR . $module . $uid, null);
@@ -49,7 +53,7 @@ class RolePermission {
         $fields = 'id';
 
         $permissions = $MenuModel->where($where)->field($fields)->column($fields, "lower($name)");
-        
+
         return $permissions;
     }
 }
