@@ -16,11 +16,11 @@ class RolePermission {
     {
     }
 
-    public function checkPermission($uid, $permission, $module) 
+    public function checkPermission($uid, $permission, $module='api', $name='permission') 
     {
         $permissions = Cache::get("permission" . CACHE_SEPARATOR . $module . $uid, null);
         if ($permissions === null) {
-            $permissions = $this->getPermissionList($uid, $module);
+            $permissions = $this->getPermissionList($uid, $module, $name);
             Cache::set("permission" . CACHE_SEPARATOR . $module . $uid, $permissions, 3600);
         }
 
@@ -32,7 +32,7 @@ class RolePermission {
     }
 
     //查询权限列表
-    public function getPermissionList($uid, $module) 
+    public function getPermissionList($uid, $module, $name) 
     {
         
         $roleIds = UserRoleModel::where(['uid'=> $uid])->column('role_id');
@@ -48,12 +48,8 @@ class RolePermission {
         //$fields = 'id,pid,title,name,component,path,icon,type,is_menu,permission,status,sort,belongs_to';
         $fields = 'id';
 
-        $lower = 'permission';
-        if ($module == 'admin') {
-            $lower = 'path';
-        }
-        $permissions = $MenuModel->where($where)->field($fields)->column($fields, "lower($lower)");
-
+        $permissions = $MenuModel->where($where)->field($fields)->column($fields, "lower($name)");
+        
         return $permissions;
     }
 }

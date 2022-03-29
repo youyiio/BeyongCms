@@ -16,15 +16,15 @@ class Menu extends Base
         $size = $params['size'];
 
         $filters = $params['filters'];
-        $keyword = $filters['keyword']?? '';
-        $pid = $filters['pid']?? 0;
-        $depth = $filters['depth']?? 1;
+        $keyword = $filters['keyword'] ?? '';
+        $pid = $filters['pid'] ?? 0;
+        $depth = $filters['depth'] ?? 1;
 
-        $where = [];
+        $where[] = ['belongs_to', '=', 'api'];
         if (!empty($keyword)) {
             $where[] = ['title', 'like', '%' . $keyword . '%'];
         }
-
+    
         $MenuModel = new MenuModel();
         $list = $MenuModel->where($where)->order('id asc')->select()->toArray();
      

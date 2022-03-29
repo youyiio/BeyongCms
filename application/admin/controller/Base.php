@@ -50,7 +50,7 @@ class Base extends Controller
             $permission = strtolower($permission);
             $rolePermission = new RolePermission();
             $module = request()->module();
-            if (!$rolePermission->checkPermission($uid, $permission, $module)) {
+            if (!$rolePermission->checkPermission($uid, $permission, $module, 'path')) {
                 $this->error('没有访问权限', 'javascript:void(0);');
             }
         }
