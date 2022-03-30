@@ -24,7 +24,7 @@
 
                     <p>昵称: {$user.nickname|default="未命名"}</p>
                     <p>邮箱: <a href="mailto:{$user.email}">{$user.email}</a></p>
-                    <p>用户分组: {foreach $user.groups as $g}<span class="label label-primary">{$g.title}</span>{/foreach}</p>
+                    <p>用户分组: {foreach $user.roles as $g}<span class="label label-primary">{$g.title}</span>{/foreach}</p>
                     <p>手机号: <a href="tel:{$user.mobile}">{$user.mobile|default=""}</a> </p>
 
                     <p>注册时间: {$user.register_time}</p>

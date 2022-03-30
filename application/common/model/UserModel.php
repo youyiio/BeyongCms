@@ -58,18 +58,6 @@ class UserModel extends BaseModel
         return $this->hasMany('userRoleModel', 'uid', 'role_id');
     }
     
-    //关联表：用户组
-    public function groups()
-    {
-        return $this->belongsToMany('AuthGroupModel', config('database.prefix'). 'sys_auth_group_access','group_id','uid');
-    }
-
-    //关联表：用户组中间表
-    public function groupAccess()
-    {
-        return $this->hasMany('AuthGroupAccessModel','uid','id');
-    }
-
     //自身扩展字段
     public function ext($key, $value='')
     {
