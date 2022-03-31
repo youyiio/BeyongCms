@@ -162,13 +162,14 @@
             formData.append("thumbHeight", $element.data('thumbHeight'));
         },
         success: function(file,response) {
+            console.log(response);
             var $element = $(this.element);
             var thumbWidth = $element.data('thumbWidth');
             var thumbHeight = $element.data('thumbHeight');
             if (response.code) {
                 //将图片id填入input
                 var imageId = response.data.id;
-                var imageUrl = ""+response.data.image_url;
+                var imageUrl = ""+response.data.file_url;
                 $('#' + $element.data('inputName')).val(imageId);
                 var displayHtml = '<img src="'+imageUrl+'" style="border:1px solid #ccc;width:_thumbWidth_px;height:_thumbHeight_px;max-width:100%">';
                 displayHtml = displayHtml.replace('_thumbWidth_', thumbWidth);

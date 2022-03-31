@@ -398,10 +398,10 @@ function get_config($key = '', $default = null)
 function get_image($id)
 {
     if (is_array($id)) {
-        $ImageModel = new \app\common\model\ImageModel();
-        return $ImageModel->where('id', 'in', $id)->select();
+        $FileModel = new \app\common\model\FileModel();
+        return $FileModel->where('id', 'in', $id)->select();
     } else {
-        return \app\common\model\ImageModel::get($id);
+        return \app\common\model\FileModel::get($id);
     }
 }
 
