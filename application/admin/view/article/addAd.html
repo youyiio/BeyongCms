@@ -146,7 +146,7 @@
             if (response.code == 1) {
                 //将图片id填入input
                 var imageId = response.data.id;
-                var imageUrl = "" + response.data.image_url;
+                var imageUrl = "" + response.data.file_url;
                 $('#' + $element.data('inputName')).val(imageId);
                 var displayHtml = '<img src="'+imageUrl+'" style="border:1px solid #ccc;width:_thumbWidth_px;height:_thumbHeight_px;max-width:100%">';
                 if (thumbWidth == 0) {
@@ -190,7 +190,7 @@
     //设定upcropper的函数，变量名固定不变
     var upcropper = {
         successCallback: function (res) {
-            var url = res.data.image_url;
+            var url = res.data.file_url;
             $(".dz-message > img").attr("src", url);
 
             setTimeout(function () {

@@ -209,7 +209,7 @@
     //设定upcropper的函数，变量名固定不变
     var upcropper = {
         successCallback: function (res) {
-            var url = res.data.image_url;
+            var url = res.data.file_url;
             $(".dz-message > img").attr("src", url);
 
             setTimeout(function () {

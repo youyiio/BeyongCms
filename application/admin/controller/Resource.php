@@ -17,7 +17,8 @@ class Resource extends Base
     //文档列表
     public function documents()
     {
-        $map = [];
+        
+        $map[] = ['ext', 'in', ['doc','docx','ppt','pptx','txt','avi','pdf','mp3','zip','mp4','xlsx']];
         $key = input('param.key');
         if ($key) {
             $map[] = ['remark', 'like', "%$key%"];
@@ -26,11 +27,7 @@ class Resource extends Base
         $FileModel = new FileModel();
         $files = $FileModel->where($map)->paginate(21);
         $pages = $files->render();
-        foreach ($files as $value) {
-             $file_name = $value['file_name'];
-             $value['type'] = substr($file_name,strpos($file_name,'.')+1);
-        }
-
+      
         $this->assign('files', $files);
         $this->assign('pages', $pages);
 
@@ -85,7 +82,7 @@ class Resource extends Base
     //图片列表
     public function images()
     {
-        $map = [];
+        $map[] = ['ext', 'in', ['jpg','gif','png','jpeg','webp','bmp']];
         $key = input('param.key');
         if ($key) {
             $map[] = ['remark', 'like', "%$key%"];
