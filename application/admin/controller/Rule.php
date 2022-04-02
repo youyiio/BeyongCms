@@ -234,11 +234,14 @@ class Rule extends Base
         // 获取用户组数据
         $RoleModel = new RoleModel();
         $roleData = $RoleModel->where('id', $id)->find();
-        $roleData['rules'] = RoleMenuModel::where('role_id', $id)->column('menu_id');
+        $roleData['rules'] = MenuModel::hasWhere('roleMenus', [['role_id', '=', $id]])->where('belongs_to', '=', 'admin')->column('sys_menu.id');
 
         // 获取规则数据
         $MenuModel = new MenuModel();
-        $ruleData = $MenuModel->getTreeData('level', 'id', 'path');
+        $menu = $MenuModel->where('belongs_to','admin')->select();
+        $tree = new \beyong\commons\data\Tree();
+        $ruleData = $tree::channelLevel($menu, 0, '&nbsp;', 'id');
+        
         // 分组信息
         $roles = $RoleModel->field('id, title')->select();
         $assign = [
