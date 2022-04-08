@@ -426,7 +426,7 @@ class Rule extends Base
             $UserRoleModel = new UserRoleModel();
             $UserRoleModel->where(['uid'=>$uid])->delete();
             $group = [];
-            foreach ($data['role_ids'] as $k => $v) {
+            foreach ($data['group_ids'] as $k => $v) {
                 $group[] = [
                     'uid'=>$uid,
                     'role_id'=>$v
@@ -435,13 +435,13 @@ class Rule extends Base
             $UserRoleModel->insertAll($group);
             Cache::tag('menu')->rm($uid);
 
-            $userModel = new UserModel;
+            $userModel = new UserModel();
             if (empty($data['password'])) {
                 unset($data['password']);
             } else {
-                $data['password'] = encrypt_password($data['password'], get_config('password_key'));
+                $user = UserModel::get($uid);
+                $data['password'] = encrypt_password($data['password'], $user['salt']);
             }
-
             $result = $userModel->editUser($uid, $data);
             if ($result) {
                 // 操作成功

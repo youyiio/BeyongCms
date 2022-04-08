@@ -12,6 +12,8 @@ use beyong\echarts\options\XAxis;
 use think\facade\Cache;
 use app\common\model\MessageModel;
 use app\common\logic\MessageLogic;
+use app\common\model\RoleModel;
+use app\common\model\UserRoleModel;
 
 /**
 * 用户管理控制器
@@ -45,10 +47,10 @@ class User extends Base
         }
 
         $UserModel = new UserModel();
-        $list = $UserModel->where($map)->order('id desc')->with('groups')->paginate(10, false, ['query'=>input('param.')]);
+        $list = $UserModel->where($map)->order('id desc')->with('roles')->paginate(10, false, ['query'=>input('param.')]);
         if (request()->param('status')) {
             $status = input('param.status');
-            $list = $UserModel->where($map)->where('status',$status)->order('id desc')->with('groups')->paginate(10,false,['query'=>input('param.')]);
+            $list = $UserModel->where($map)->where('status',$status)->order('id desc')->with('roles')->paginate(10,false,['query'=>input('param.')]);
         }
 
         $userTotal = $UserModel->count('id');
@@ -84,11 +86,11 @@ class User extends Base
                     foreach ($data['group_ids'] as $k => $v) {
                         $group[] = [
                             'uid' => $user->id,
-                            'group_id' => $v
+                            'role_id' => $v
                         ];
                     }
-                    $AuthGroupAccessModel = new AuthGroupAccessModel();
-                    $AuthGroupAccessModel->insertAll($group);
+                    $UserRoleModel = new UserRoleModel();
+                    $UserRoleModel->insertAll($group);
                 }
                 $this->success('成功新增用户',url('User/index'));
             } else {
@@ -96,9 +98,9 @@ class User extends Base
             }
         }
 
-        $AuthGroupModel = new AuthGroupModel();
-        $groups = $AuthGroupModel->where('status', 1)->field('id,title')->select();
-        $this->assign('groups',$groups);
+        $RoleModel = new RoleModel();
+        $roles = $RoleModel->where('status', 1)->field('id,title')->select();
+        $this->assign('groups', $roles);
 
         return $this->fetch('addUser');
     }
@@ -119,17 +121,17 @@ class User extends Base
             }
 
             // 修改权限
-            $AuthGroupAccessModel = new AuthGroupAccessModel();
-            $AuthGroupAccessModel->where(['uid'=>$uid])->delete();
+            $UserRoleModel = new UserRoleModel();
+            $UserRoleModel->where(['uid'=>$uid])->delete();
             if (!empty($data['group_ids'])) {
                 $group = [];
                 foreach ($data['group_ids'] as $k => $v) {
                     $group[] = [
                         'uid'=>$uid,
-                        'group_id'=>$v
+                        'role_id'=>$v
                     ];
                 }
-                $AuthGroupAccessModel->insertAll($group);
+                $UserRoleModel->insertAll($group);
             }
             Cache::tag('menu')->rm($uid); //删除用户菜单配置缓存
 
@@ -151,13 +153,13 @@ class User extends Base
         $user = UserModel::get($uid);
         $this->assign('user', $user);
 
-        $AuthGroupAccessModel = new AuthGroupAccessModel();
-        $userGroups = $AuthGroupAccessModel->where('uid', $uid)->column('group_id');
+        $UserRoleModel = new UserRoleModel();
+        $userGroups = $UserRoleModel->where('uid', $uid)->column('role_id');
         $this->assign('userGroups', $userGroups);
 
-        $AuthGroupModel = new AuthGroupModel();
-        $groups = $AuthGroupModel->where('status',1)->field('id,title')->select();
-        $this->assign('groups', $groups);
+        $RoleModel = new RoleModel();
+        $roles = $RoleModel->where('status',1)->field('id,title')->select();
+        $this->assign('groups', $roles);
 
         return $this->fetch('editUser');
     }
@@ -186,7 +188,7 @@ class User extends Base
             $this->error('参数错误');
         }
 
-        $userModel = new UserModel;
+        $userModel = new UserModel();
         $user = $userModel::get($uid);
         $this->assign('user', $user);
 
