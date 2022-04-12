@@ -46,7 +46,7 @@ class Config extends Base
         $group = $params['group'] ?? '';
 
         if (empty($key) && empty($group)) {
-            return ajax_return(ResultCode::E_PARAM_ERROR, '参数错误');
+            return ajax_return(ResultCode::E_PARAM_EMPTY, '参数为空');
         }
 
         $where = [];

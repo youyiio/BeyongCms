@@ -101,6 +101,7 @@ Route::group('api', function () {
     Route::rule("config/create", 'api/Config/create', 'post');
     Route::rule("config/edit", 'api/Config/edit', 'post');
     Route::rule("config/:id", 'api/Config/delete', 'delete');
+    Route::rule("config/query", 'api/Config/query', 'post');
 
     Route::rule("log/list", 'api/Log/list', 'get|post');
 
