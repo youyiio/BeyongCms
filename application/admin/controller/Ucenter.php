@@ -8,7 +8,7 @@ use app\common\model\UserModel;
 /**
 * 个人中心控制器
 */
-class Person extends Base
+class Ucenter extends Base
 {
 
     //个人首页
