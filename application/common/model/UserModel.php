@@ -148,7 +148,17 @@ class UserModel extends BaseModel
 
         $tempPassword = encrypt_password($password, $user['salt']);
         if ($tempPassword !== $user['password']) {
-            throw new ModelException(ResultCode::E_USER_PASSWORD_INCORRECT, '密码不正确');
+            //补充旧密码加密格式问题
+            $tempOldPassword = encrypt_password_low($password, $user['salt']);
+            if ($tempOldPassword !== $user['password']) {
+                throw new ModelException(ResultCode::E_USER_PASSWORD_INCORRECT, '密码不正确');
+            }
+            //更新为新密码加密
+            $data = [];
+            $data['password'] = $tempPassword;
+            $this->where('id', $user['id'])->update($data);
+
+            //throw new ModelException(ResultCode::E_USER_PASSWORD_INCORRECT, '密码不正确');
         }
 
         return $user;

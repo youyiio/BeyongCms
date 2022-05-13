@@ -240,6 +240,48 @@ function encrypt_password($rawPasswd, $key = '')
         $key = get_config('password_key', '');
     }
 
+    $shaStr = hash("sha256", $passwd . "{" . $key . "}");
+    return strtolower(md5($shaStr));
+}
+
+/**
+ * sha256+md5加密密码, 安全度高
+ * @param 原始密码 $rawPasswd
+ * @param 加密key $key
+ * @return boolean|string
+ */
+function encrypt_password_advanced($rawPasswd, $key = '')
+{
+    if (empty($rawPasswd)) {
+        return false;
+    }
+
+    $passwd = strtolower((string)$rawPasswd);
+    if (empty($key)) {
+        $key = get_config('password_key', '');
+    }
+
+    $shaStr = hash("sha256", $passwd . "{" . $key . "}");
+    return strtolower(md5($shaStr));
+}
+
+/**
+ * sha1+md5加密密码，安全度低
+ * @param 原始密码 $rawPasswd
+ * @param 加密key $key
+ * @return boolean|string
+ */
+function encrypt_password_low($rawPasswd, $key = '')
+{
+    if (empty($rawPasswd)) {
+        return false;
+    }
+
+    $passwd = strtolower((string)$rawPasswd);
+    if (empty($key)) {
+        $key = get_config('password_key', '');
+    }
+
     return strtolower(md5(sha1($passwd) . $key));
 }
 

@@ -2,7 +2,7 @@ SET FOREIGN_KEY_CHECKS=0;
 
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     2022-04-13 11:42:13                          */
+/* Created on:     2022-05-13 11:17:18                          */
 /*==============================================================*/
 
 
@@ -686,14 +686,18 @@ create index idx_sys_config_key on sys_config
 create table sys_file
 (
    id                   int not null auto_increment,
-   file_url             varchar(256) not null,
-   file_path            varchar(256) not null default '0' comment 'file_ulr所在目录',
-   file_name            varchar(128) not null,
-   file_size            int not null,
-   oss_image_url        varchar(512),
-   ext                  text,
-   remark               varchar(512),
-   create_time          datetime not null,
+   file_url             varchar(256) not null comment '文件url',
+   file_path            varchar(256) not null comment '文件路径: file_url所在目录',
+   name                 varchar(128) not null comment '名称',
+   real_name            varchar(128) comment '原始名称',
+   size                 int comment '大小',
+   ext                  varchar(16) comment '后缀',
+   bucket               varchar(64) comment 'oss桶',
+   oss_url              varchar(512) comment 'ossurl',
+   thumb_image_url      varchar(256) comment '缩略图',
+   remark               varchar(512) comment '备注',
+   create_by            varchar(255) comment '创建者',
+   create_time          datetime not null comment '创建时间',
    primary key (id)
 )
 ENGINE = InnoDB
@@ -886,25 +890,25 @@ alter table sys_template_msg comment '模板消息表';
 create table sys_user
 (
    id                   int not null auto_increment,
-   mobile               varchar(24) not null,
-   email                varchar(32) not null,
-   account              varchar(32) not null,
-   password             varchar(64) not null,
-   status               tinyint not null comment '-1.删除;1.申请;2.激活;3.冻结;',
-   nickname             varchar(64),
-   sex                  tinyint default 1 comment '1.男;2.女;3.未知;',
-   head_url             varchar(128),
-   qq                   varchar(16),
-   weixin               varchar(64),
-   device_id            varchar(64),
+   mobile               varchar(24) not null comment '手机号',
+   email                varchar(32) not null comment '邮箱',
+   account              varchar(32) not null comment '帐号',
+   password             varchar(64) not null comment '密码',
+   status               tinyint not null comment '状态:-1.删除;1.申请;2.激活;3.冻结;',
+   nickname             varchar(64) comment '昵称',
+   sex                  tinyint default 1 comment '性别:1.男;2.女;3.未知;',
+   head_url             varchar(128) comment '头像url',
+   dept_id              int comment '部门id',
+   qq                   varchar(16) comment 'qq号',
+   weixin               varchar(64) comment '微信号',
    referee              varchar(64) comment '介绍人',
-   register_time        datetime not null,
-   register_ip          varchar(64),
-   from_referee         varchar(256),
-   entrance_url         varchar(256),
-   ext                  text,
-   last_login_time      datetime,
-   last_login_ip        varchar(64),
+   salt                 varchar(128) comment '盐串',
+   register_time        datetime not null comment '注册时间',
+   register_ip          varchar(64) comment '注册ip',
+   from_referee         varchar(256) comment '来源',
+   entrance_url         varchar(256) comment '首访页',
+   last_login_time      datetime comment '最后登录时间',
+   last_login_ip        varchar(64) comment '最后登录ip',
    primary key (id)
 )
 ENGINE = InnoDB
@@ -986,6 +990,7 @@ create unique index uniq_user_role_uid_role_id on sys_user_role
    uid,
    role_id
 );
+
 
 
 
