@@ -1002,7 +1002,7 @@ truncate table sys_config;
 INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('网站名称', 'base', 'site_name', 'BeyongCms内容管理系统', '网站名称', 'string', 1);
 INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('域名', 'base', 'domain_name', 'www.beyongx.com', '域名', 'string', 2);
 INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('备案号', 'base', 'icp', '闽ICP备xxxxxxxx号-1', '备案号', 'string', 3);
-INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('加密密钥', 'base', 'password_key', 'lGfFSc17z8Q15P5kU0guNqq906DHNbA3', '加密密钥', 'string', 4);
+#INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('加密密钥', 'base', 'password_key', 'lGfFSc17z8Q15P5kU0guNqq906DHNbA3', '加密密钥', 'string', 4);
 INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('主题名称', 'base', 'theme_package_name', 'classic', '主题名称', 'string', 5);
 INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('统计代码', 'base', 'stat_code', '<script>\r\nvar _hmt = _hmt || [];\r\n(function() {\r\n  var hm = document.createElement(\"script\");\r\n  hm.src = \"https://hm.baidu.com/hm.js?3d0c1af3caa383b0cd59822f1e7a751b\";\r\n  var s = document.getElementsByTagName(\"script\")[0]; \r\n  s.parentNode.insertBefore(hm, s);\r\n})();\r\n</script>\r\n<!-- 以下为自动提交代码 -->\r\n<script>\r\n(function(){\r\n    var bp = document.createElement(\"script\");\r\n    var curProtocol = window.location.protocol.split(\":\")[0];\r\n    if (curProtocol === \"https\") {\r\n        bp.src = \"https://zz.bdstatic.com/linksubmit/push.js\";\r\n    }\r\n    else {\r\n        bp.src = \"http://push.zhanzhang.baidu.com/push.js\";\r\n    }\r\n    var s = document.getElementsByTagName(\"script\")[0];\r\n    s.parentNode.insertBefore(bp, s);\r\n})();\r\n</script>\r\n', '统计代码', 'text', 6);
 
@@ -1062,12 +1062,24 @@ truncate sys_user;
 
 #默认密码为 888888
 INSERT INTO
-    `sys_user`(`id`,`mobile`,`email`,`account`,`password`,`status`,`nickname`,`sex`,`head_url`,`device_id`,`register_time`,`last_login_time`,`last_login_ip`)
+    `sys_user`(`id`,`mobile`,`email`,`account`,`password`,`status`,`nickname`,`sex`,`head_url`,`salt`,`register_time`,`last_login_time`,`last_login_ip`)
 VALUES
-    (1,'18888888888','admin@admin.com','admin','f6bc5c8794afdae1dd41edb7939020e2',2,'超级管理员',1,null,null,'2015-01-01 00:00:00','2017-05-12 15:55:52','110.84.32.49');
+    (1,'18888888888','admin@admin.com','admin','f6bc5c8794afdae1dd41edb7939020e2',2,'超级管理员',1,null,'lGfFSc17z8Q15P5kU0guNqq906DHNbA3','2015-01-01 00:00:00','2017-05-12 15:55:52','110.84.32.49');
+
+truncate `sys_user_role`;
+
+INSERT INTO `sys_user_role`(uid,role_id) VALUES(1, 1);
 
 /* ================================================================================================*/
 /* =========================================数据初始脚本：角色权限表===============================*/
+# 角色初始化
+truncate table `sys_role`;
+
+INSERT INTO `sys_role` (`id`,`name`,`title`,`status`,`remark`) VALUES (1, 'admin', '超级管理员', 1, '');
+INSERT INTO `sys_role` (`id`,`name`,`title`,`status`,`remark`) VALUES (2, 'manager', '普通管理员', 1, '');
+INSERT INTO `sys_role` (`id`,`name`,`title`,`status`,`remark`) VALUES (3, 'editor', '网站编辑', 1, '');
+INSERT INTO `sys_role` (`id`,`name`,`title`,`status`,`remark`) VALUES (4, 'user', '普通用户', 1, '');
+
 # 菜单初始化
 truncate table sys_menu;
 

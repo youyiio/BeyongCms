@@ -86,7 +86,7 @@ class InstallLogic extends Model
                 \PDO::ATTR_EMULATE_PREPARES  => true,
             ];
             $dbConnect = Db::connect($db);
-            $checkTable = $db['prefix'] . 'user';
+            $checkTable = 'sys_user';
             $exist = $dbConnect->query("show tables like '$checkTable'");
             if ($exist) {
                 $this->error = '数据库已经安装过，请确认数据库已经清空表';

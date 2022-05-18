@@ -187,14 +187,14 @@ function build_password_key()
 function update_config($dbConnect, $prefix, $site)
 {
     //增加更新的password_key
-    $site['password_key'] = build_password_key();
-    session('site', $site);
-    \think\facade\Log::debug($site);
-    foreach ($site as $k => $v) {
-        \think\facade\Log::debug('config: ' . $k . '=' . $v);
-        $sql = "UPDATE sys_config SET value = '". $v . "' WHERE name = '". $k ."'";
-        $dbConnect->execute($sql);
-    }
+    // $site['password_key'] = build_password_key();
+    // session('site', $site);
+    // \think\facade\Log::debug($site);
+    // foreach ($site as $k => $v) {
+    //     \think\facade\Log::debug('config: ' . $k . '=' . $v);
+    //     $sql = "UPDATE sys_config SET value = '". $v . "' WHERE name = '". $k ."'";
+    //     $dbConnect->execute($sql);
+    // }
 
     return true;
 }
@@ -212,14 +212,14 @@ function update_config($dbConnect, $prefix, $site)
  */
 function update_admin($dbConnect, $prefix, $admin)
 {
-    $site = session('site');
-    $passwordKey = $site['password_key'];
+    $passwordKey = build_password_key();;
     $password = encrypt_password($admin['password'], $passwordKey);
     $time = date_time();
 
     $email = $admin['email'];
     $username = $admin['username'];
-    $sql = "UPDATE sys_user SET email = '". $email . "',password = '". $password . "',account='" . $username . "' WHERE email = 'admin@admin.com'";
+    $salt = $passwordKey;
+    $sql = "UPDATE sys_user SET email = '". $email . "',password = '". $password . "',account='" . $username . "',salt='" . $salt . "' WHERE email = 'admin@admin.com'";
 
     //执行sql
     return $dbConnect->execute($sql);
