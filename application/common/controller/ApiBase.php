@@ -52,10 +52,11 @@ trait ApiBase
             $module = request()->module();
             $module = $module == 'api' ? 'api' : 'admin';
             if (!$rolePermission->checkPermission($uid, $permission, $module, 'path')) {
-                $this->error(
-                    '没有访问权限',
-                    'javascript:void(0);'
-                );
+                $response = json_encode([
+                    'code'  => ResultCode::E_ACCESS_LIMIT,
+                    'message' => "$permission 没有访问权限"
+                ]);
+                exit($response);
             }
         }
     }
