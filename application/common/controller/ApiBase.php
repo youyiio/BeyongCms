@@ -1,6 +1,7 @@
 <?php
 namespace app\api\controller;
 
+use app\api\library\RolePermission;
 use app\common\library\ResultCode;
 use think\facade\Request;
 
@@ -45,14 +46,16 @@ trait ApiBase
         //Api权限验证      
         if (config('jwt.jwt_auth_on') !== 'off') {  
             $uid = $user_info->uid;
-            $node = request()->module().'/'.request()->controller().'/'.request()->action();
-            $auth = \think\auth\Auth::instance();
-            if (!$auth->check($node, $uid)) {
-                $response = json_encode([
-                    'code'  => ResultCode::E_ACCESS_NOT_AUTH,
-                    'message' => "$node 没有访问权限"
-                ]);
-                exit($response);
+            $permission = request()->module() . '/' . request()->controller() . '/' . request()->action();
+            $permission = strtolower($permission);
+            $rolePermission = new RolePermission();
+            $module = request()->module();
+            $module = $module == 'api' ? 'api' : 'admin';
+            if (!$rolePermission->checkPermission($uid, $permission, $module, 'path')) {
+                $this->error(
+                    '没有访问权限',
+                    'javascript:void(0);'
+                );
             }
         }
     }
