@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by VSCode.
  * User: cattong
@@ -12,7 +13,7 @@ use think\Model;
 
 class ImageModel extends Model
 {
-    protected $name = 'sys_image';
+    protected $name = 'sys_file';
     protected $pk = 'id';
 
     protected $type = [
@@ -27,7 +28,7 @@ class ImageModel extends Model
             $fullImageUrl = url_add_domain($data['file_url']);
             $fullImageUrl = str_replace('\\', '/', $fullImageUrl);
         } else {
-            $fullImageUrl = $data['oss_image_url'];
+            $fullImageUrl = $data['oss_url'];
         }
 
         return $fullImageUrl;
@@ -40,7 +41,7 @@ class ImageModel extends Model
             $fullThumbImageUrl = url_add_domain($data['thumb_image_url']);
             $fullThumbImageUrl = str_replace('\\', '/', $fullThumbImageUrl);
         } else {
-            $fullThumbImageUrl = $data['oss_image_url'];
+            $fullThumbImageUrl = $data['oss_url'];
         }
 
         return $fullThumbImageUrl;
@@ -64,7 +65,7 @@ class ImageModel extends Model
         }
 
         $ImageModel = new ImageModel();
-        $data = $ImageModel->where([['image_id','in', $imageIds]])->select();
+        $data = $ImageModel->where([['id', 'in', $imageIds]])->select();
         if (empty($data)) {
             return [];
         }
@@ -72,13 +73,12 @@ class ImageModel extends Model
         foreach ($data as $v) {
             $res[] = [
                 'id'           => $v->id,
-                'image_url'       => $v->image_url,
-                'thumb_image_url'   => $v->thumb_image_url,
-                'full_thumb_image_url' => $v->full_thumb_image_url,
+                'thumb_image_url'    => $v->thumb_image_url,
+                'image_url'       => $v->file_url,
+                'full_image_url'   => url_add_domain($v->file_path),
                 'remark' => $v->remark,
             ];
         }
         return $res;
     }
-
 }
