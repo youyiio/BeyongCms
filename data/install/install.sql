@@ -1001,8 +1001,8 @@ truncate table sys_config;
 
 INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('网站名称', 'base', 'site_name', 'BeyongCms内容管理系统', '网站名称', 'string', 1);
 INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('域名', 'base', 'domain_name', 'www.beyongx.com', '域名', 'string', 2);
-INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('备案号', 'base', 'icp', '闽ICP备xxxxxxxx号-1', '备案号', 'string', 3);
-#INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('加密密钥', 'base', 'password_key', 'lGfFSc17z8Q15P5kU0guNqq906DHNbA3', '加密密钥', 'string', 4);
+INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('网址协议', 'base', 'protocol', 'http://', '网址协议', 'string', 3);
+INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('备案号', 'base', 'icp', '闽ICP备xxxxxxxx号-1', '备案号', 'string', 4);
 INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('主题名称', 'base', 'theme_package_name', 'classic', '主题名称', 'string', 5);
 INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('统计代码', 'base', 'stat_code', '<script>\r\nvar _hmt = _hmt || [];\r\n(function() {\r\n  var hm = document.createElement(\"script\");\r\n  hm.src = \"https://hm.baidu.com/hm.js?3d0c1af3caa383b0cd59822f1e7a751b\";\r\n  var s = document.getElementsByTagName(\"script\")[0]; \r\n  s.parentNode.insertBefore(hm, s);\r\n})();\r\n</script>\r\n<!-- 以下为自动提交代码 -->\r\n<script>\r\n(function(){\r\n    var bp = document.createElement(\"script\");\r\n    var curProtocol = window.location.protocol.split(\":\")[0];\r\n    if (curProtocol === \"https\") {\r\n        bp.src = \"https://zz.bdstatic.com/linksubmit/push.js\";\r\n    }\r\n    else {\r\n        bp.src = \"http://push.zhanzhang.baidu.com/push.js\";\r\n    }\r\n    var s = document.getElementsByTagName(\"script\")[0];\r\n    s.parentNode.insertBefore(bp, s);\r\n})();\r\n</script>\r\n', '统计代码', 'text', 6);
 
