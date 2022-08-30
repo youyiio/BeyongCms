@@ -3,13 +3,13 @@ drop table sys_auth_group;
 drop table sys_auth_access;
 drop table sys_auth_rule;
 
-ALTER TABLE `sys_user` ,
+ALTER TABLE `sys_user`
 ADD COLUMN `salt` varchar(128) NULL COMMENT '盐串' AFTER `referee`;
 
 #image file 迁移
 
 ALTER TABLE sys_file RENAME sys_file_old;
-ALTER TABLE sys_image RENAME sys_file_old;
+ALTER TABLE sys_image RENAME sys_image_old;
 
 drop table if exists sys_file;
 
@@ -39,7 +39,7 @@ DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci;
 alter table sys_file comment '文件表';
 
 insert into sys_file(id,file_url,file_path,name,real_name,size,ext,bucket,oss_url,thumb_image_url,remark,create_by,create_time)
-select id,file_url,file_path,file_name,file_name,file_size,ext,null,oss_image_url,null,remark,null,create_time from sys_file_old;
+select id,file_url,file_path,file_name,file_name,file_size,ext,null,null,null,remark,null,create_time from sys_file_old;
 
 insert into sys_file(id,file_url,file_path,name,real_name,size,ext,bucket,oss_url,thumb_image_url,remark,create_by,create_time)
 select id,image_url,'',image_name,image_name,image_size,ext,null,oss_image_url,thumb_image_url,remark,null,create_time from sys_image_old;
