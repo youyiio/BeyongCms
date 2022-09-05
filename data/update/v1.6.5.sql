@@ -1,6 +1,6 @@
 
 drop table sys_auth_group;
-drop table sys_auth_access;
+drop table sys_auth_group_access;
 drop table sys_auth_rule;
 
 ALTER TABLE `sys_user`
