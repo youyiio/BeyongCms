@@ -1,5 +1,5 @@
 <?php
-namespace app\api\controller;
+namespace app\common\controller;
 
 use app\api\library\RolePermission;
 use app\common\library\ResultCode;
