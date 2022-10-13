@@ -39,12 +39,12 @@ class User extends Validate
 
     protected function checkEmail($value, $rule, $data)
     {
-        $user = UserModel::get($data['uid']);
-        if ($value && $user['email'] != $value) {
-            if ($user->findByEmail($value)) {
-                return  '邮箱已存在';
-            }
+        $UserModel = new UserModel();
+        $temp = $UserModel->where('email', $value)->find();
+        if (isset($temp['id']) && $temp['id'] != $data['uid']) {
+            return  '邮箱已被占用';
         }
+
         return true;
     }
 
@@ -55,7 +55,7 @@ class User extends Validate
         'nickname.unique'  => '用户名已存在',
         'email.email'      => '邮箱格式错误',
         'email.unique'     => '邮箱已注册',
-        'email.checkEmail' => '邮箱已存在',
+        'email.checkEmail' => '邮箱已被占用',
         'password.require' => '密码必填',
         'password.min'     => '密码最少6个字符',
         'password.max'     => '密码最多16个字符',
