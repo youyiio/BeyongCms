@@ -896,7 +896,7 @@ function sign_params($params, $secret_key, $sign_type = 'MD5')
     $sign_type = strtoupper($sign_type);
     if ($sign_type == 'MD5') {
         $paramString = $paramString . $secret_key;
-        //Log::log($paramString);
+        //Log::info("sign params:" . $paramString);
         $resultSign = md5($paramString);
     } else if ($sign_type == 'RSA') {
         //此时 $secret_key为公钥或私钥，当前暂时只支持md5, 暂未实现
