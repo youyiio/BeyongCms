@@ -294,7 +294,7 @@ class System extends Base
             ];
         }
 
-        $fields = 'id, username, action, module, ip, remark, user_agent, create_time';
+        $fields = 'id, username, action, module, component, ip, user_agent, response, remark, create_time';
         $pageConfig = [
             'type' => '\\app\\common\\paginator\\BootstrapTable',
             'query' => input('param.')
