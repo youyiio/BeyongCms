@@ -219,7 +219,7 @@ function update_admin($dbConnect, $prefix, $admin)
     $email = $admin['email'];
     $username = $admin['username'];
     $salt = $passwordKey;
-    $sql = "UPDATE sys_user SET email = '". $email . "',password = '". $password . "',account='" . $username . "',salt='" . $salt . "' WHERE email = 'admin@admin.com'";
+    $sql = "UPDATE sys_user SET email = '". $email . "',password = '". $password . "',account='" . $username . "',salt='" . $salt . "' WHERE email = 'admin@beyongcms.com'";
 
     //执行sql
     return $dbConnect->execute($sql);

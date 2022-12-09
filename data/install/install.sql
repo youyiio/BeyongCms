@@ -1064,7 +1064,7 @@ truncate sys_user;
 INSERT INTO
     `sys_user`(`id`,`mobile`,`email`,`account`,`password`,`status`,`nickname`,`sex`,`head_url`,`salt`,`register_time`,`last_login_time`,`last_login_ip`)
 VALUES
-    (1,'18888888888','admin@admin.com','admin','f6bc5c8794afdae1dd41edb7939020e2',2,'超级管理员',1,null,'lGfFSc17z8Q15P5kU0guNqq906DHNbA3','2015-01-01 00:00:00','2017-05-12 15:55:52','110.84.32.49');
+    (1,'18888888888','admin@beyongcms.com','admin','f6bc5c8794afdae1dd41edb7939020e2',2,'超级管理员',1,null,'lGfFSc17z8Q15P5kU0guNqq906DHNbA3','2015-01-01 00:00:00','2017-05-12 15:55:52','110.84.32.49');
 
 truncate `sys_user_role`;
 
