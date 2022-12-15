@@ -16,3 +16,5 @@ To
     'cmsdba'@'%';
 
 
+#修改密码
+ALTER USER 'cmsdba'@'%' IDENTIFIED WITH mysql_native_password BY 'new_password_xxx' PASSWORD EXPIRE NEVER;
