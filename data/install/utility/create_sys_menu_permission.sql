@@ -176,11 +176,9 @@ INSERT INTO `sys_menu`(pid,title,name,component,path,icon,type,is_menu,permissio
 (114, '删除友链', '', null, '', null, 2, 0, "link:delete", 1, 0, 'api')
 ;
 
-
-/********************* 新增api扩展菜单**********************/
 # 外链菜单 提供id生成值，避免与固定值冲突
-INSERT INTO `sys_menu`(id,pid,title,name,component,path,icon,type,is_menu,permission,status,sort,belongs_to) VALUES 
-(1000,0, '官网链接', '', null, 'https://www.beyongx.com', null, 0, 1, "", 1, 999, 'api')
+INSERT INTO `sys_menu`(pid,title,name,component,path,icon,type,is_menu,permission,status,sort,belongs_to) VALUES 
+(0, '官网链接', '', null, 'https://www.beyongx.com', null, 0, 1, "", 1, 999, 'api')
 ;
 # 扩展菜单
 INSERT INTO `sys_menu`(pid,title,name,component,path,icon,type,is_menu,permission,status,sort,belongs_to) VALUES 
@@ -412,93 +410,7 @@ INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) 
 #(s2ndmaxid, '三级操作2', 'admin/NewMenu/action2', '', 1, 0, 1, 1,'admin')
 #;
 
-INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (20, '高级面板', 'admin/Index/dashboard01', '', 1, 1, 1, 1,'admin');
-select max(id) from sys_menu into s2ndmaxid;
-INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (s2ndmaxid, '统计处理', 'admin/Index/handle', '', 1, 0, 1, 1,'admin');
 
-#任务管理
-INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (0, '任务管理', 'seo/admin.Task', 'fa-bar-chart-o', 1, 1, 13, 1,'admin');
-select max(id) from sys_menu into f1stmaxid;
-INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (f1stmaxid, '任务列表', 'seo/admin.Task/index', '', 1, 1, 1, 1,'admin');
-select max(id) from sys_menu into s2ndmaxid;
-INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES 
-(s2ndmaxid, '任务查看', 'seo/admin.Task/viewTask', '', 1, 0, 1, 1, 'admin'),
-(s2ndmaxid, '任务编辑', 'seo/admin.Task/editTask', '', 1, 0, 1, 1,'admin'),
-(s2ndmaxid, '任务增改操作', 'seo/admin.Task/addTaskHandle', '', 1, 0, 1, 1,'admin'),
-(s2ndmaxid, '任务状态设置', 'seo/admin.Task/setStatus', '', 1, 0, 1, 1,'admin'),
-(s2ndmaxid, '任务操作', 'seo/admin.Task/handle', '', 1, 0, 1, 1,'admin')
-;
-
-INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (f1stmaxid, '新增任务', 'seo/admin.Task/addTask', '', 1, 1, 1, 1,'admin');
-INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (f1stmaxid, '任务分类', 'seo/admin.Task/taskTypeList', '', 1, 1, 1, 1,'admin');
-INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (f1stmaxid, '点击统计', 'seo/admin.Task/taskLogCount', '', 1, 1, 1, 1,'admin');
-INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (f1stmaxid, '任务日志', 'seo/admin.Task/taskLogList', '', 1, 1, 1, 1,'admin');
-select max(id) from sys_menu into s2ndmaxid;
-INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES 
-(s2ndmaxid, '日志信息', 'seo/admin.Task/taskLogInfo', '', 1, 0, 1, 1,'admin')
-;
-
-#充值管理
-INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (0, '充值管理', 'seo/admin.Recharge', 'fa-rmb', 1, 1, 13, 1, 'admin');
-select max(id) from sys_menu into f1stmaxid;
-INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (f1stmaxid, '产品列表', 'seo/admin.Recharge/productList', '', 1, 1, 1, 1, 'admin');
-select max(id) from sys_menu into s2ndmaxid;
-INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES 
-(s2ndmaxid, '产品上下架', 'seo/admin.Recharge/showProduct', '', 1, 0, 1, 1, 'admin'),
-(s2ndmaxid, '产品删除', 'seo/admin.Recharge/delectProduct', '', 1, 0, 1, 1, 'admin')
-;
-
-INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (f1stmaxid, '新增产品', 'seo/admin.Recharge/addProduct', '', 1, 1, 1, 1, 'admin');
-INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (f1stmaxid, '充值记录', 'seo/admin.Recharge/orderList', '', 1, 1, 1, 1, 'admin');
-INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (f1stmaxid, '积分代充', 'seo/admin.Recharge/index', '', 1, 1, 1, 1, 'admin');
-
-INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (f1stmaxid, '代充记录', 'seo/admin.Recharge/rechargeList', '', 1, 1, 1, 1, 'admin');
-select max(id) from sys_menu into s2ndmaxid;
-INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES 
-(s2ndmaxid, '代充处理', 'seo/admin.Recharge/rechargeHandle', '', 1, 0, 1, 1, 'admin'),
-(s2ndmaxid, '撤销充值', 'seo/admin.Recharge/rechargeUndo', '', 1, 0, 1, 1, 'admin')
-;
-
-#市场管理
-INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (0, '市场管理', 'seo/admin.Market', 'fa-shopping-cart', 1, 1, 13, 1, 'admin');
-select max(id) from sys_menu into f1stmaxid;
-INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (f1stmaxid, '积分转赠', 'seo/admin.Market/givePointsList', '', 1, 1, 1, 1, 'admin');
-
-#话题管理
-INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (0, '话题管理', 'seo/admin.Topic', 'fa-question-circle', 1, 1, 13, 1, 'admin');
-select max(id) from sys_menu into f1stmaxid;
-INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (f1stmaxid, '话题列表', 'seo/admin.Topic/index', '', 1, 1, 1, 1, 'admin');
-select max(id) from sys_menu into s2ndmaxid;
-INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES 
-(s2ndmaxid, '话题查看', 'seo/admin.Topic/view', '', 1, 0, 1, 1, 'admin'),
-(s2ndmaxid, '话题编辑', 'seo/admin.Topic/edit', '', 1, 0, 1, 1, 'admin'),
-(s2ndmaxid, '话题数据操作', 'seo/admin.Topic/handle', '', 1, 0, 1, 1, 'admin')
-;
-
-INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (f1stmaxid, '新增话题', 'seo/admin.Topic/add', '', 1, 1, 1, 1, 'admin');
-
-#提现管理
-INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (0, '提现管理', 'seo/admin.Withdraw', 'fa-calculator', 1, 1, 13, 1, 'admin');
-select max(id) from sys_menu into f1stmaxid;
-INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (f1stmaxid, '提现列表', 'seo/admin.Withdraw/index', '', 1, 1, 1, 1, 'admin');
-select max(id) from sys_menu into s2ndmaxid;
-INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES 
-(s2ndmaxid, '审核通过', 'seo/admin.Withdraw/auditPass', '', 1, 0, 1, 1, 'admin'),
-(s2ndmaxid, '审核拒绝', 'seo/admin.Withdraw/auditReject', '', 1, 0, 1, 1, 'admin'),
-(s2ndmaxid, '财务转账', 'seo/admin.Withdraw/transferSuccess', '', 1, 0, 1, 1, 'admin')
-;
-
-INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (f1stmaxid, '提现配置', 'seo/admin.Withdraw/setConfig', '', 1, 1, 1, 1, 'admin');
-
-#桌面端管理
-INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (0, '桌面端管理', 'seo/admin.Desktop', 'fa-desktop', 1, 1, 13, 1, 'admin');
-select max(id) from sys_menu into f1stmaxid;
-INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (f1stmaxid, '挂机版本', 'seo/admin.Desktop/index', '', 1, 1, 1, 1, 'admin');
-select max(id) from sys_menu into s2ndmaxid;
-INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES 
-(s2ndmaxid, '添加编辑版本', 'seo/admin.Desktop/addVersion', '', 1, 0, 1, 1, 'admin'),
-(s2ndmaxid, '删除版本', 'seo/admin.Desktop/deleteVersion', '', 1, 0, 1, 1, 'admin')
-;
 
 /*=============================给角色授权=============================*/
 truncate `sys_role_menu`;
