@@ -59,6 +59,8 @@ INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES
 
 INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('文章缩略图大小配置', 'article', 'article_thumb_image', '{\"width\":280,\"height\":280,\"thumb_width\":140,\"thumb_height\":140}', '文章缩略图大小配置', 'string', 0);
 INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('文章审核', 'article', 'article_audit_switch', 'true', '文章审核', 'bool', 1);
+INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('文章评论', 'article', 'article_comment_switch', 'false', '是否允许文章评论', 'bool', 2);
+INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('文章评论审核', 'article', 'article_comment_audit_switch', 'true', '文章评论审核', 'bool', 3);
 INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('水印开关', 'article', 'article_water', '1', '水印开关(0:无水印,1:水印文字,2:水印图片)', 'number', 2);
 INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('水印文本', 'article', 'article_water_text', '', '水印文本', 'string', 3);
 INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('上传图片质量', 'article', 'image_upload_quality', '80', '上传图片质量', 'string', 4);
