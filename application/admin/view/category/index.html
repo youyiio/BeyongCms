@@ -18,7 +18,7 @@
                         <i class="fa fa-wrench"></i>
                     </a>
                     <ul class="dropdown-menu dropdown-user">
-                        <li><a href="{:url('Article/addCategory')}">新增分类</a></li>
+                        <li><a href="{:url('Category/addCategory')}">新增分类</a></li>
                     </ul>
                     <a class="close-link">
                         <i class="fa fa-times"></i>
@@ -26,8 +26,8 @@
                 </div>
             </div>
             <div class="ibox-content" style="padding:10px">
-                <a href="{:url('Article/addCategory')}" class="btn btn-primary">新增分类</a>
-                <form action="{:url('Article/orderCategory')}" class="ajax-form" method="post">
+                <a href="{:url('Category/addCategory')}" class="btn btn-primary">新增分类</a>
+                <form action="{:url('Category/orderCategory')}" class="ajax-form" method="post">
                     <div class="table-responsive">
                         <table class="table table-striped table-bordered table-hover table-condensed">
                             <tr>
@@ -50,9 +50,9 @@
                                 <td>{$vo.remark}</td>
                                 <td><input type="checkbox" name="status[]" value="{$vo.id}" class="ajax-switch" {if $vo.status == \app\common\model\cms\CategoryModel::STATUS_ONLINE}checked="checked"{/if} ></td>
                                 <td>
-                                    <a href="{:url('Article/addCategory',['pid'=>$vo['id']])}" class="btn btn-xs btn-info" data-toggle="tooltip" data-placement="top" title="新增子类"><i class="icon-remove"></i> 新增子类 </a>
-                                    <a href="{:url('Article/editCategory',['id'=>$vo['id']])}" class="btn btn-xs btn-warning" data-toggle="tooltip" data-placement="top" title="修改"><i class="icon-pencil"></i> 修改</a>
-                                    <button type="button" class="btn btn-xs btn-danger ajax-btn" data-action="{:url('Article/deleteCategory',['id'=>$vo['id']])}" data-toggle="tooltip" data-placement="top" title="删除"><i class="icon-remove"></i> 删除</button>
+                                    <a href="{:url('Category/addCategory',['pid'=>$vo['id']])}" class="btn btn-xs btn-info" data-toggle="tooltip" data-placement="top" title="新增子类"><i class="icon-remove"></i> 新增子类 </a>
+                                    <a href="{:url('Category/editCategory',['id'=>$vo['id']])}" class="btn btn-xs btn-warning" data-toggle="tooltip" data-placement="top" title="修改"><i class="icon-pencil"></i> 修改</a>
+                                    <button type="button" class="btn btn-xs btn-danger ajax-btn" data-action="{:url('Category/deleteCategory',['id'=>$vo['id']])}" data-toggle="tooltip" data-placement="top" title="删除"><i class="icon-remove"></i> 删除</button>
                                 </td>
                             </tr>
                             {/foreach}

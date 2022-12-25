@@ -251,9 +251,9 @@ INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_t
 INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (252, 25, '插件管理', 'admin/Addon/index', '', 1, 1, 1, 1,'admin');
 
 INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (261, 26, '文章管理', 'admin/Article/index', '', 1, 1, 1, 1,'admin');
-INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (262, 26, '评论管理', 'admin/Article/commentList', '', 1, 1, 1, 1,'admin');
-INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (263, 26, '文章分类', 'admin/Article/categoryList', '', 1, 1, 1, 1,'admin');
-INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (264, 26, '广告管理', 'admin/Article/adList', '', 1, 1, 1, 1,'admin');
+INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (262, 26, '评论管理', 'admin/Comment/index', '', 1, 1, 1, 1,'admin');
+INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (263, 26, '文章分类', 'admin/Category/index', '', 1, 1, 1, 1,'admin');
+INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (264, 26, '广告管理', 'admin/Ad/index', '', 1, 1, 1, 1,'admin');
 
 INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (271, 27, '客服消息', 'admin/Feedback/index', '', 1, 1, 1, 1,'admin');
 
@@ -361,18 +361,18 @@ INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) 
 ;
 
 INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES 
-(262, '审核评论', 'admin/Article/auditComment', '', 1, 0, 1, 1,'admin'),
-(262, '回发评论', 'admin/Article/postComment', '', 1, 0, 1, 1,'admin'),
-(262, '删除评论', 'admin/Article/deleteComment', '', 1, 0, 1, 1,'admin'),
-(262, '查看评论', 'admin/Article/viewComments', '', 1, 0, 1, 1,'admin'),
-(263, '新增分类', 'admin/Article/addCategory', '', 1, 0, 1, 1,'admin'),
-(263, '编辑分类', 'admin/Article/editCategory', '', 1, 0, 1, 1,'admin'),
-(263, '排序分类', 'admin/Article/orderCategory', '', 1, 0, 1, 1,'admin'),
-(263, '删除分类', 'admin/Article/deleteCategory', '', 1, 0, 1, 1,'admin'),
-(264, '新增广告', 'admin/Article/addAd', '', 1, 0, 1, 1,'admin'),
-(264, '编辑广告', 'admin/Article/editAd', '', 1, 0, 1, 1,'admin'),
-(264, '广告排序', 'admin/Article/orderAd', '', 1, 0, 1, 1,'admin'),
-(264, '删除广告', 'admin/Article/deleteAd', '', 1, 0, 1, 1,'admin')
+(262, '审核评论', 'admin/Comment/auditComment', '', 1, 0, 1, 1,'admin'),
+(262, '回发评论', 'admin/Comment/postComment', '', 1, 0, 1, 1,'admin'),
+(262, '删除评论', 'admin/Comment/deleteComment', '', 1, 0, 1, 1,'admin'),
+(262, '查看评论', 'admin/Comment/viewComments', '', 1, 0, 1, 1,'admin'),
+(263, '新增分类', 'admin/Category/addCategory', '', 1, 0, 1, 1,'admin'),
+(263, '编辑分类', 'admin/Category/editCategory', '', 1, 0, 1, 1,'admin'),
+(263, '排序分类', 'admin/Category/orderCategory', '', 1, 0, 1, 1,'admin'),
+(263, '删除分类', 'admin/Category/deleteCategory', '', 1, 0, 1, 1,'admin'),
+(264, '新增广告', 'admin/Ad/addAd', '', 1, 0, 1, 1,'admin'),
+(264, '编辑广告', 'admin/Ad/editAd', '', 1, 0, 1, 1,'admin'),
+(264, '广告排序', 'admin/Ad/orderAd', '', 1, 0, 1, 1,'admin'),
+(264, '删除广告', 'admin/Ad/deleteAd', '', 1, 0, 1, 1,'admin')
 ;
 
 

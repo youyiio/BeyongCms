@@ -30,8 +30,8 @@
                 <div class="row">
                     <div class="col-lg-4 col-md-12">
                         <div data-toggle="buttons" class="btn-group">
-                            <label class="ladda-button btn btn-sm btn-primary ajax-batch-set" data-style="zoom-in" data-title="提示" data-text="确认要审核通过吗？" data-action="{:url('Article/auditComment')}"> <i class="fa fa-check"></i> 审核 </label>
-                            <label class="ladda-button btn btn-sm btn-danger ajax-batch-set-prompt" data-style="zoom-in" data-title="提示" data-text="确认要批量删除评论吗？" data-action="{:url('Article/deleteComment')}"> <i class="fa fa-trash"></i> 删除 </label>
+                            <label class="ladda-button btn btn-sm btn-primary ajax-batch-set" data-style="zoom-in" data-title="提示" data-text="确认要审核通过吗？" data-action="{:url('Comment/auditComment')}"> <i class="fa fa-check"></i> 审核 </label>
+                            <label class="ladda-button btn btn-sm btn-danger ajax-batch-set-prompt" data-style="zoom-in" data-title="提示" data-text="确认要批量删除评论吗？" data-action="{:url('Comment/deleteComment')}"> <i class="fa fa-trash"></i> 删除 </label>
                         </div>
                     </div>
                     <div class="col-lg-8 col-md-12 text-right">
@@ -101,7 +101,7 @@
                                         <i class="fa fa-comment"></i>
                                         回复
                                     </button>
-                                    <button class="btn btn-xs btn-danger ajax-btn-warning" data-action="{:url('Article/deleteComment',['id'=>$vo['id']])}" data-title="提示" data-text="您确认要删除评论吗"><i class="fa fa-remove"></i> 删除</button>
+                                    <button class="btn btn-xs btn-danger ajax-btn-warning" data-action="{:url('Comment/deleteComment',['id'=>$vo['id']])}" data-title="提示" data-text="您确认要删除评论吗"><i class="fa fa-remove"></i> 删除</button>
                                 </td>
                             </tr>
                             {/foreach}
