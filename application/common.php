@@ -769,6 +769,20 @@ function friendly_date($sTime, $type = 'normal', $alt = 'false')
     }
 }
 
+/**
+ * 友好的文件大小显示
+ * @param $size 大小，单位字节
+ * @return string
+ */
+function friendly_size($size) {
+    $units = [' B', ' KB', ' MB', ' GB', ' TB'];
+    for ($i = 0; $size >= 1024 && $i < 4; $i++) {
+        $size /= 1024;
+    }
+
+    return round($size, 2) . $units[$i];
+}
+
 //菜单激活状态判断
 function menu_select($mca = '')
 {
