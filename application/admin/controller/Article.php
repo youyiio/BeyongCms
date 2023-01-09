@@ -123,7 +123,7 @@ class Article extends Base
 
         //分类列表
         $CategoryModel = new CategoryModel();
-        $categoryList = $CategoryModel->getTreeData('tree','sort,id', 'title');
+        $categoryList = $CategoryModel->getTreeData('tree', 'sort,id', 'title');
         $this->assign('categoryList', $categoryList);
 
         return $this->fetch('article/addArticle');

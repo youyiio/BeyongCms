@@ -119,6 +119,14 @@
         $('input[name=status]').val("{:\\app\\common\\model\\cms\\ArticleModel::STATUS_PUBLISHED}");
     });
 
+    $('#keywords').tagsInput({
+        'height': '48px',
+        'width': '100%',
+        'interactive': true,
+        'defaultText': '{empty name="$article.keywords"}关键词{/empty}',
+        'delimiter': [','],
+    });
+
     $('#tags').tagsInput({
         'height': '48px',
         'width': '100%',

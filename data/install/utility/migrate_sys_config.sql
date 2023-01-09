@@ -61,10 +61,10 @@ INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES
 INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('文章审核', 'article', 'article_audit_switch', 'true', '文章审核', 'bool', 1);
 INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('文章评论', 'article', 'article_comment_switch', 'false', '是否允许文章评论', 'bool', 2);
 INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('文章评论审核', 'article', 'article_comment_audit_switch', 'true', '文章评论审核', 'bool', 3);
-INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('水印开关', 'article', 'article_water', '1', '水印开关(0:无水印,1:水印文字,2:水印图片)', 'number', 2);
-INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('水印文本', 'article', 'article_water_text', '', '水印文本', 'string', 3);
-INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('上传图片质量', 'article', 'image_upload_quality', '80', '上传图片质量', 'string', 4);
-INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('上传图片宽高', 'article', 'image_upload_max_limit', '680', '上传图片宽高最大值(单位px,0为不限制)', 'string', 5);
+INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('水印开关', 'article', 'article_water', '1', '水印开关(0:无水印,1:水印文字,2:水印图片)', 'number', 4);
+INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('水印文本', 'article', 'article_water_text', '', '水印文本', 'string', 5);
+INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('上传图片质量', 'article', 'image_upload_quality', '80', '上传图片质量', 'string', 6);
+INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('上传图片宽高', 'article', 'image_upload_max_limit', '680', '上传图片宽高最大值(单位px,0为不限制)', 'string', 7);
 INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('联系地址', 'contact', 'address', '厦门市思明区软件园二期望海路000号000室', '联系地址', 'string', 1);
 INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('邮编', 'contact', 'zip_code', '361008', '邮编', 'string', 2);
 INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('传真', 'contact', 'fax', '0592-1234567', '传真', 'string', 3);
