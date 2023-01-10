@@ -21,7 +21,7 @@ class Sitemap extends Base
 
     private $config = [
         "domain" => '',
-        "xml_file" => "_sitemap-index", //不带后缀
+        "xml_file" => "_sitemap", //不带后缀
     ];
 
     //网站地图，生成sitemap.xml, 500url分一个文件;避免sitemap.xml过大
@@ -30,7 +30,7 @@ class Sitemap extends Base
         header("Content-type:text/xml;charset=utf-8");
 
         $xmlFileName = Env::get('root_path') . 'public' . DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . $this->config['xml_file'];
-        if (file_exists($xmlFileName . LibSitemap::SITEMAP_EXT)) {
+        if (file_exists($xmlFileName . LibSitemap::SITEMAP_SEPERATOR . LibSitemap::INDEX_SUFFIX . LibSitemap::SITEMAP_EXT)) {
             if (!empty($id) && file_exists($xmlFileName . LibSitemap::SITEMAP_SEPERATOR . $id . LibSitemap::SITEMAP_EXT)) {
                 echo file_get_contents($xmlFileName . LibSitemap::SITEMAP_SEPERATOR . $id . LibSitemap::SITEMAP_EXT);
                 exit;
@@ -103,7 +103,7 @@ class Sitemap extends Base
 
         //cache('sitemap' . CACHE_SEPARATOR . 'generated', true, 3600);
 
-        if (file_exists($xmlFileName . LibSitemap::SITEMAP_EXT)) {
+        if (file_exists($xmlFileName . LibSitemap::SITEMAP_SEPERATOR . LibSitemap::INDEX_SUFFIX . LibSitemap::SITEMAP_EXT)) {
             if (!empty($id) && file_exists($xmlFileName . LibSitemap::SITEMAP_SEPERATOR . $id . LibSitemap::SITEMAP_EXT)) {
                 echo file_get_contents($xmlFileName . LibSitemap::SITEMAP_SEPERATOR . $id . LibSitemap::SITEMAP_EXT);
             } else if (file_exists($xmlFileName . LibSitemap::SITEMAP_SEPERATOR . LibSitemap::INDEX_SUFFIX . LibSitemap::SITEMAP_EXT)) {

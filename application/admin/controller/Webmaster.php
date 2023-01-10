@@ -19,7 +19,7 @@ class Webmaster extends Base
 {
     private $config = [
         "domain" => '',
-        "xml_file" => "_sitemap-index", //不带后缀
+        "xml_file" => "_sitemap", //不带后缀
     ];
 
     public function index()
@@ -46,7 +46,7 @@ class Webmaster extends Base
     public function sitemap($pageSize, $maxPage)
     {
         $xmlFileName = Env::get('root_path') . 'public' . DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . $this->config['xml_file'];
-        if (file_exists($xmlFileName . LibSitemap::SITEMAP_EXT)) {
+        if (file_exists($xmlFileName . LibSitemap::SITEMAP_SEPERATOR . LibSitemap::INDEX_SUFFIX . LibSitemap::SITEMAP_EXT)) {
             unlink($xmlFileName . LibSitemap::SITEMAP_EXT);
         }
 
