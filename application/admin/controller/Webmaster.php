@@ -46,8 +46,11 @@ class Webmaster extends Base
     public function sitemap($pageSize, $maxPage)
     {
         $xmlFileName = Env::get('root_path') . 'public' . DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . $this->config['xml_file'];
+        //清除旧的文件
         if (file_exists($xmlFileName . LibSitemap::SITEMAP_SEPERATOR . LibSitemap::INDEX_SUFFIX . LibSitemap::SITEMAP_EXT)) {
-            unlink($xmlFileName . LibSitemap::SITEMAP_EXT);
+            foreach(glob($xmlFileName . "*") as $file) {
+                unlink($file);
+            }
         }
 
         // 计算生成时间

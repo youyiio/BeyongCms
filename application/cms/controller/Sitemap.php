@@ -40,10 +40,6 @@ class Sitemap extends Base
             }
         }
 
-        // if (file_exists($xmlFileName . LibSitemap::SITEMAP_EXT)) {
-        //     unlink($xmlFileName . LibSitemap::SITEMAP_EXT);
-        // }
-
         // 计算生成时间
         $costTimeStart = $this->getMillisecond();
 
@@ -98,10 +94,8 @@ class Sitemap extends Base
 
         // 计算生成的时间
         $costTime = $this->getMillisecond() - $costTimeStart;
-        $costTime= sprintf('%01.6f', $costTime);
-        Log::info("生成sitemap.xml 用时 : $costTime (s)");
-
-        //cache('sitemap' . CACHE_SEPARATOR . 'generated', true, 3600);
+        $costTime= sprintf('%01.1f', $costTime);
+        Log::info("生成sitemap.xml 用时 : $costTime (ms)");
 
         if (file_exists($xmlFileName . LibSitemap::SITEMAP_SEPERATOR . LibSitemap::INDEX_SUFFIX . LibSitemap::SITEMAP_EXT)) {
             if (!empty($id) && file_exists($xmlFileName . LibSitemap::SITEMAP_SEPERATOR . $id . LibSitemap::SITEMAP_EXT)) {
