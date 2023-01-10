@@ -937,6 +937,74 @@ function http_build_query_ext($query_data)
 }
 
 /**
+ * 简易http get请求
+ *
+ * @param [type] $url
+ * @return void
+ */
+function http_get($url)
+{
+    $header = [
+        'User-Agent: Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.146 Safari/537.36'
+    ];
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1 );
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    // 执行
+    $content = curl_exec($ch);
+    if ($content == false) {
+        Log::error(curl_error($ch));
+        return false;
+    }
+    // 关闭
+    curl_close($ch);
+
+    //输出结果
+    return $content;
+}
+
+/**
+ * 简易http post请求
+ *
+ * @param [type] $url
+ * @param array $requestData
+ * @return void
+ */
+function http_post($url, $requestData=array())
+{
+    $header = [
+        'User-Agent: Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.146 Safari/537.36'
+    ];
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1 );
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+
+    if (is_array($requestData)) {
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($requestData));
+    } else {
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $requestData);
+    }
+
+    // 执行
+    $content = curl_exec($ch);
+    if ($content == false) {
+        Log::error(curl_error($ch));
+        return false;
+    }
+    // 关闭
+    curl_close($ch);
+
+    //输出结果
+    return $content;
+}
+
+/**
  * 去除文本中，存在跨域攻击的脚本
  * @param $html
  * @param $isEscape, 是否做 htmlspecialchars

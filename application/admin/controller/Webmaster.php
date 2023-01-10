@@ -30,14 +30,33 @@ class Webmaster extends Base
     //站长设置
     public function baidu()
     {
-        $zhanzhang_site = input("post.zhanzhang_site", '');
-        $zhanzhang_token = input("post.zhanzhang_token", '');
+        $tab = input('param.tab', 'setting');
+        if ($tab == 'setting') {
+            $zhanzhang_site = input("post.zhanzhang_site", '');
+            $zhanzhang_token = input("post.zhanzhang_token", '');
+    
+            $ConfigModel = new ConfigModel();
+            $ConfigModel->where('key', 'zhanzhang_site')->setField('value', $zhanzhang_site);
+            $ConfigModel->where('key', 'zhanzhang_token')->setField('value', $zhanzhang_token);
+    
+            cache('config', null);
+        } else if ($tab == 'push-urls') {
+            $zhanzhang_site = get_config('zhanzhang_site', '');
+            $zhanzhang_token = get_config('zhanzhang_token', '');
+            if (empty($zhanzhang_site) || empty($zhanzhang_token)) {
+                $this->error("zhanzhang_site 或 zhanzhang_token  未配置！！！");
+            }
 
-        $ConfigModel = new ConfigModel();
-        $ConfigModel->where('key', 'zhanzhang_site')->setField('value', $zhanzhang_site);
-        $ConfigModel->where('key', 'zhanzhang_token')->setField('value', $zhanzhang_token);
+            $urls = input("post.urls", '');
+            if (empty($urls)) {
+                $this->error("urls地址不能为空!");
+            }
 
-        cache('config', null);
+            $api = "http://data.zz.baidu.com/urls?site=$zhanzhang_site&token=$zhanzhang_token";
+            $output = http_post($api, explode("\n", $urls));
+            //dump($output);
+            Log::info($output);
+        }        
 
         $this->success('操作成功');
     }
