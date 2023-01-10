@@ -246,6 +246,7 @@ INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_t
 INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (242, 24, '友情链接', 'admin/System/links', '', 1, 1, 1, 1,'admin');
 INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (243, 24, '清理缓存', 'admin/System/clearCache', '', 1, 1, 1, 1,'admin');
 INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (244, 24, '日志审计', 'admin/System/actionLogs', '', 1, 1, 1, 1,'admin');
+INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (245, 24, '站长工具', 'admin/Webmaster/index', '', 1, 1, 1, 1,'admin');
 
 INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (251, 25, '主题管理', 'admin/Theme/index', '', 1, 1, 1, 1,'admin');
 INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (252, 25, '插件管理', 'admin/Addon/index', '', 1, 1, 1, 1,'admin');
@@ -326,6 +327,12 @@ INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) 
 (242, '修改友链', 'admin/System/editLinks', '', 1, 0, 1, 1,'admin'),
 (242, '排序友链', 'admin/System/orderLinks', '', 1, 0, 1, 1,'admin'),
 (242, '删除友链', 'admin/System/deleteLinks', '', 1, 0, 1, 1,'admin')
+;
+
+INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES 
+(245, '站长工具', 'admin/Webmaster/index', '', 1, 0, 1, 1,'admin'),
+(245, '百度站长', 'admin/Webmaster/baidu', '', 1, 0, 1, 1,'admin'),
+(245, '生成站点地图', 'admin/Webmaster/sitemap', '', 1, 0, 1, 1,'admin')
 ;
 
 INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES 

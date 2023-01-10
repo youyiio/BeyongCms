@@ -3,8 +3,6 @@ namespace app\admin\controller;
 
 use app\common\model\ActionLogModel;
 use app\common\model\cms\ArticleModel;
-use app\common\model\AuthGroupAccessModel;
-use app\common\model\AuthGroupModel;
 use app\common\model\UserModel;
 use beyong\echarts\charts\Bar;
 use beyong\echarts\Option;

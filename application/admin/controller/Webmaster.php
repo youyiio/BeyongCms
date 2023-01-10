@@ -1,11 +1,5 @@
 <?php
-/**
- * Created by VSCode.
- * User: cattong
- * Date: 2018-12-03
- * Time: 16:15
- */
-namespace app\cms\controller;
+namespace app\admin\controller;
 
 use think\facade\Env;
 use think\facade\Log;
@@ -13,39 +7,51 @@ use think\facade\Log;
 use app\frontend\controller\Base;
 use app\common\model\cms\ArticleModel;
 use app\common\model\cms\CategoryModel;
+use app\common\model\ConfigModel;
 
 use app\common\library\LibSitemap;
 
-class Sitemap extends Base
+/**
+ * 站长工具
+ * Webmaster class
+ */
+class Webmaster extends Base
 {
-
     private $config = [
         "domain" => '',
         "xml_file" => "_sitemap-index", //不带后缀
     ];
 
-    //网站地图，生成sitemap.xml, 500url分一个文件;避免sitemap.xml过大
-    public function xml($id='')
+    public function index()
     {
-        header("Content-type:text/xml;charset=utf-8");
+        return $this->fetch('webmaster/index');
+    }
 
+    //站长设置
+    public function baidu()
+    {
+        $zhanzhang_site = input("post.zhanzhang_site", '');
+        $zhanzhang_token = input("post.zhanzhang_token", '');
+
+        $ConfigModel = new ConfigModel();
+        $ConfigModel->where('key', 'zhanzhang_site')->setField('value', $zhanzhang_site);
+        $ConfigModel->where('key', 'zhanzhang_token')->setField('value', $zhanzhang_token);
+
+        cache('config', null);
+
+        $this->success('操作成功');
+    }
+
+    //sitemap xml生成工具
+    public function sitemap($pageSize, $maxPage)
+    {
         $xmlFileName = Env::get('root_path') . 'public' . DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . $this->config['xml_file'];
         if (file_exists($xmlFileName . LibSitemap::SITEMAP_EXT)) {
-            if (!empty($id) && file_exists($xmlFileName . LibSitemap::SITEMAP_SEPERATOR . $id . LibSitemap::SITEMAP_EXT)) {
-                echo file_get_contents($xmlFileName . LibSitemap::SITEMAP_SEPERATOR . $id . LibSitemap::SITEMAP_EXT);
-                exit;
-            } else if (file_exists($xmlFileName . LibSitemap::SITEMAP_SEPERATOR . LibSitemap::INDEX_SUFFIX . LibSitemap::SITEMAP_EXT)) {
-                echo file_get_contents($xmlFileName . LibSitemap::SITEMAP_SEPERATOR . LibSitemap::INDEX_SUFFIX . LibSitemap::SITEMAP_EXT);
-                exit;
-            }
+            unlink($xmlFileName . LibSitemap::SITEMAP_EXT);
         }
 
-        // if (file_exists($xmlFileName . LibSitemap::SITEMAP_EXT)) {
-        //     unlink($xmlFileName . LibSitemap::SITEMAP_EXT);
-        // }
-
         // 计算生成时间
-        $costTimeStart = $this->getMillisecond();
+        $costTimeStart = millisecond();
 
         $sitemap = new LibSitemap($this->config['domain'] ? $this->config['domain'] : config('url_domain_root'));
         $sitemap->setXmlFile($xmlFileName);	 // 设置xml文件（可选）
@@ -86,7 +92,7 @@ class Sitemap extends Base
         //sitemap_xml_hook 函数来实现hook sitemap，提供外部的url项目写入
         //外部建议，把sitemap_xml_hook函数定义在common_business.php中
         if (function_exists('sitemap_xml_hook')) {
-            sitemap_xml_hook($sitemap);
+            sitemap_xml_hook($sitemap, $pageSize, $maxPage);
         }
 
         $sitemap->endSitemap();
@@ -97,39 +103,9 @@ class Sitemap extends Base
         $sitemap->createSitemapIndex($sitemapLoc);
 
         // 计算生成的时间
-        $costTime = $this->getMillisecond() - $costTimeStart;
-        $costTime= sprintf('%01.6f', $costTime);
-        Log::info("生成sitemap.xml 用时 : $costTime (s)");
+        $costTime = millisecond() - $costTimeStart;
+        $costTime= sprintf('%01.2f', $costTime);
 
-        //cache('sitemap' . CACHE_SEPARATOR . 'generated', true, 3600);
-
-        if (file_exists($xmlFileName . LibSitemap::SITEMAP_EXT)) {
-            if (!empty($id) && file_exists($xmlFileName . LibSitemap::SITEMAP_SEPERATOR . $id . LibSitemap::SITEMAP_EXT)) {
-                echo file_get_contents($xmlFileName . LibSitemap::SITEMAP_SEPERATOR . $id . LibSitemap::SITEMAP_EXT);
-            } else if (file_exists($xmlFileName . LibSitemap::SITEMAP_SEPERATOR . LibSitemap::INDEX_SUFFIX . LibSitemap::SITEMAP_EXT)) {
-                echo file_get_contents($xmlFileName . LibSitemap::SITEMAP_SEPERATOR . LibSitemap::INDEX_SUFFIX . LibSitemap::SITEMAP_EXT);
-            } else {
-                echo 'xml file is not exist!';
-            }
-            exit;
-        }
-        exit;
+        $this->success("生成sitemap成功，用时 : $costTime (ms)");
     }
-
-    //网站地图，html页面
-    public function html()
-    {
-        $templateFile = Env::get('app_path') . 'cms' . DIRECTORY_SEPARATOR . 'view' . DIRECTORY_SEPARATOR . 'sitemap' . DIRECTORY_SEPARATOR . 'sitemap.html';
-        $content = file_get_contents($templateFile);
-        return $this->display($content);
-    }
-
-    //  获取毫秒的时间戳
-    private function getMillisecond()
-    {
-        $time = explode(" ", microtime());
-        return $time[1] + $time[0];
-    }
-
-
 }
