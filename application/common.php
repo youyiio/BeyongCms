@@ -940,7 +940,7 @@ function http_build_query_ext($query_data)
  * 简易http get请求
  *
  * @param [type] $url
- * @return void
+ * @return string|bool
  */
 function http_get($url)
 {
@@ -971,7 +971,7 @@ function http_get($url)
  *
  * @param [type] $url
  * @param array $requestData
- * @return void
+ * @return string|bool
  */
 function http_post($url, $requestData=array())
 {

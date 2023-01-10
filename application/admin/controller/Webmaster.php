@@ -40,6 +40,8 @@ class Webmaster extends Base
             $ConfigModel->where('key', 'zhanzhang_token')->setField('value', $zhanzhang_token);
     
             cache('config', null);
+
+            $this->success('操作成功');
         } else if ($tab == 'push-urls') {
             $zhanzhang_site = get_config('zhanzhang_site', '');
             $zhanzhang_token = get_config('zhanzhang_token', '');
@@ -53,12 +55,21 @@ class Webmaster extends Base
             }
 
             $api = "http://data.zz.baidu.com/urls?site=$zhanzhang_site&token=$zhanzhang_token";
-            $output = http_post($api, explode("\n", $urls));
+            $output = http_post($api, $urls);
             //dump($output);
             Log::info($output);
+
+            $res = json_decode($output, true);
+            Log::info($res);
+            if (isset($res['error'])) {
+               $this->error($res['message']);
+            }
+            if (isset($res['success'])) {
+                $this->success("操作成功, 成功 {$res['success']} 个");
+            }
+            
         }        
 
-        $this->success('操作成功');
     }
 
     //sitemap xml生成工具
