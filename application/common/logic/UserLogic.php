@@ -175,8 +175,8 @@ class UserLogic extends Model
 
         //设置来源及入口url
         if (Cookie::has('from_referee') || Cookie::has('entrance_url')) {
-            $user->from_referee = Cookie::get('from_referee');
-            $user->entrance_url = Cookie::get('entrance_url');
+            $user->from_referee = sub_str(Cookie::get('from_referee'), 0, 250);
+            $user->entrance_url = sub_str(Cookie::get('entrance_url'), 0, 250);
         }
 
         $user->save();
