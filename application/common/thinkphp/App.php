@@ -61,6 +61,9 @@ class App extends \think\App
         if (is_file($this->rootPath . '.env')) {
             $this->env->load($this->rootPath . '.env');
         }
+        //读取版本
+        App::$BEYONG_CMS_VERSION = $this->env->get('beyong_cms_version', 'none');
+        
         //加载具体环境配置文件重载覆盖：.env.dev, .env.test, .env.prod
         $profile = $this->env->get("run.profile");
         if (!empty($profile)) {
@@ -68,9 +71,6 @@ class App extends \think\App
                 $this->env->load($this->rootPath . '.env.' . $profile);
             }
         }
-        
-        //读取版本
-        App::$BEYONG_CMS_VERSION = $this->env->get('beyong_cms_version', 'none');
 
         $this->namespace = $this->env->get('app_namespace', $this->namespace);
         $this->env->set('app_namespace', $this->namespace);
