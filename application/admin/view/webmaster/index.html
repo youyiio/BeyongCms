@@ -172,22 +172,23 @@
             total = data.data["total"];
             pageSize = data.data["pageSize"];
   
-            ajaxCount = Math.ceil(lastPage / 50);
+            step = 50;
+            ajaxCount = Math.ceil(lastPage / step);
   
             //定义变量
             let progressNum = 0;
             let startPage = 1;
             let loop = 1;
            
-            generateSitemapSplit(pageSize, startPage, startPage + 10 -1, function(data, start) {                
+            generateSitemapSplit(pageSize, startPage, startPage + step - 1, function(data, start) {                
                 if (data.code != 1) {
                     layer.msg(data.msg, function(){});
                     return false;
                 }
 
                 //每次加10%
-                progressNum += (i == ajaxCount) ? parseInt(100 / ajaxCount) + 100 % ajaxCount : parseInt(100 / ajaxCount);  
-                console.log(progressNum);        
+                progressNum += (loop == ajaxCount) ? parseInt(100 / ajaxCount) + 100 % ajaxCount : parseInt(100 / ajaxCount);  
+                        
                 //改变这个div  width属性值
                 $(progress).children(".progress-bar").attr("style", "width:" + progressNum + "%");
                 //显示 内容
@@ -202,7 +203,7 @@
 
                 if (loop <= ajaxCount) {
                     loop++;
-                    generateSitemapSplit(pageSize, start, start + 10 -1);
+                    generateSitemapSplit(pageSize, start, start + step -1);
                 }
                 
             });
