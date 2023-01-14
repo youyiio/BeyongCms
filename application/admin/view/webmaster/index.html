@@ -84,13 +84,13 @@
 
                             <div class="col-12">
 
-                                <form class="form-horizontal ajax-form" action="{:url('Webmaster/sitemap')}" method="post">
+                                <form class="form-horizontal" action="{:url('Webmaster/sitemap')}" method="post">
                                     
                                     <div class="form-group">
                                         <label class="col-lg-2 col-md-3 control-label">每页url数量(<50000)</label>
                                         <div class="col-lg-6 col-md-9">
-                                            <input type="text" name="pageSize" placeholder="" class="form-control" autocomplete="off" value="800">
-                                            <span class="help-block m-b-none">默认是800</span>
+                                            <input type="text" name="pageSize" placeholder="" class="form-control" autocomplete="off" value="2000">
+                                            <span class="help-block m-b-none">默认是2000</span>
                                         </div>
                                     </div>                                    
 
@@ -101,10 +101,20 @@
                                             <span class="help-block m-b-none">访问地址：{:get_config('protocol')}{:get_config('domain_name')}/sitemap.xml, 提交百度是为 {domain}/sitemap-{1...n}.xml </span>
                                         </div>
                                     </div> 
-                                    
+                                    <div id="progress" class="form-group hidden">
+                                        <label class="col-lg-2 col-md-3 control-label"></label>
+                                        <div class="col-lg-6 col-md-9">
+                                            <div class="progress">
+                                                <div class="progress-bar progress-bar-striped" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
+                                                  0%
+                                                </div>
+                                              </div>
+                                        </div>
+                                        
+                                    </div>
                                     <div class="form-group">
                                         <div class="col-lg-offset-2 col-lg-10">
-                                            <button class="btn btn-success" type="submit">生成站点地图</button>
+                                            <button onclick="downloadSitemapTxt(this)" class="btn btn-white" type="button">下载sitemap.txt</button> <button onclick="generateSitemap(this)" class="btn btn-success" type="button">生成站点地图</button>
                                         </div>
                                     </div>
                                     
@@ -126,28 +136,98 @@
 <!-- Switchery -->
 <script src="__PUBLIC__/static/inspinia/js/plugins/switchery/switchery.js"></script>
 <script>
-  function changeConfig(name, value) {
-      var url = "{:url(request()->controller() . '/index')}" + "?" + name + "=" + value;
+    function changeConfig(name, value) {
+        var url = "{:url(request()->controller() . '/index')}" + "?" + name + "=" + value;
+  
+        $.get(url, function(data) {
+            if (data.code) {
+                layer.msg(data.msg);
+            } else {
+                layer.msg(data.msg, function(){});
+            }
+        });
+    }
+  
+    function generateSitemap(btn) {
+        
+        $("#tab-sitemap form #progress").toggleClass("hidden");
+        
+        let progress = $("#tab-sitemap form #progress .progress")
+        $(progress).children(".progress-bar").toggleClass("active");
+  
+        pageSize = $("#tab-sitemap form input[name=pageSize]").val();
+        maxPage = $("#tab-sitemap form input[name=maxPage]").val();
+  
+        //禁用按钮
+        $(btn).prop('disabled',true).find('i').remove();
+        $(btn).prepend('<i class="fa fa-spinner fa-spin"></i>');
+  
+        $.post("{:url('Webmaster/sitemapInfo')}", {pageSize: pageSize, maxPage: maxPage}, function (data) {
+            if (data.code != 1) {
+                layer.msg(data.msg, function(){});
+                return false;
+            }
+                
+            lastPage = data.data["lastPage"];
+            total = data.data["total"];
+            pageSize = data.data["pageSize"];
+  
+            ajaxCount = Math.ceil(lastPage / 50);
+  
+            //定义变量
+            let progressNum = 0;
+            let startPage = 1;
+            for (i = 1; i <= ajaxCount; i++) {
+  
+              $.post("{:url('Webmaster/sitemap')}", 
+                {pageSize: pageSize, startPage: startPage, endPage: startPage + pageSize - 1}, function (data) {
+                  if (data.code != 1) {
+                      layer.msg(data.msg, function(){});
+                      return false;
+                  }
+  
+                  //每次加10%
+                  progressNum += (i == ajaxCount) ? parseInt(100 / ajaxCount) + 100 % ajaxCount : parseInt(100 / ajaxCount);  
+                  console.log(progressNum);        
+                  //改变这个div  width属性值
+                  $(progress).children(".progress-bar").attr("style", "width:" + progressNum + "%");
+                  //显示 内容
+                  $(progress).children(".progress-bar").html(progressNum + "%");
+                  //当是100时，重新赋值为0
+                  if (progressNum >= 100) {
+                      $(progress).children(".progress-bar").toggleClass("active");
+  
+                      $(btn).find('i').remove();
+                      $(btn).prepend('<i class="fa fa-check"></i>');
+                  } 
+              });
+  
+              
+            }
+            
+        });
+    }
+  
+    function downloadSitemapTxt(btn) {
+        pageSize = $("#tab-sitemap form input[name=pageSize]").val();
 
-      $.get(url, function(data) {
-          if (data.code) {
-              layer.msg(data.msg);
-          } else {
-              layer.msg(data.msg, function(){});
-          }
-      });
-  }
+        var a = document.createElement('a'); // 创建a标签
+        a.setAttribute('download', "sitemap.txt"); // download属性
+        a.setAttribute('href', "{:url('Webmaster/sitemapTxt')}?pageSize=" + pageSize); // href链接
+        a.click(); // 自执行点击事件
+        a.remove();
+    }
 
-  $(document).ready(function() {
-      var elems = document.querySelectorAll('.ajax-switch');
-      for (var i = 0; i < elems.length; i++) {
-          var checkbox = elems[i];
-          var switchery = new Switchery(checkbox, { color: '#1AB394' });
-          checkbox.onchange = function() {
-              changeConfig(this.name, this.checked);
-          }
-      }
-  })
+    $(document).ready(function() {
+        var elems = document.querySelectorAll('.ajax-switch');
+        for (var i = 0; i < elems.length; i++) {
+            var checkbox = elems[i];
+            var switchery = new Switchery(checkbox, { color: '#1AB394' });
+            checkbox.onchange = function() {
+                changeConfig(this.name, this.checked);
+            }
+        }
+    })
 
 </script>
 

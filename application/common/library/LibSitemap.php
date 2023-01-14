@@ -19,6 +19,7 @@ class LibSitemap
     private $isSchemaMore= true;					// 网站地图是否添加额外的schema
     private $currentItem = 0;						// 网站地图item个数（序号）
     private $currentSitemap = 1;					// 网站地图的个数（序号）
+    private $currentMaxItems = self::SITEMAP_ITEMS; // 网站地图item最多个数，默认等于self::SITEMAP_ITEMS
 
     const SCHEMA_XMLNS = 'http://www.sitemaps.org/schemas/sitemap/0.9';
     const SCHEMA_XMLNS_XSI = 'http://www.w3.org/2001/XMLSchema-instance';
@@ -147,12 +148,37 @@ class LibSitemap
     }
 
     /**
-     * 返回当前网站地图（默认50000个item则新建一个网站地图）
+     * 返回网站地图的item最多个数
+     * @return int
+     */
+    private function getCurrentMaxItems() {
+        return $this->currentMaxItems;
+    }
+
+    /**
+     * 设置网站地图的item最多个数
+     * @return void
+     */
+    public function setCurrentMaxItems($max) {
+        $this->currentMaxItems = $max;
+    }
+
+    /**
+     * 返回当前网站地图（默认currentMaxItems个item则新建一个网站地图）
      * @return int
      */
     private function getCurrentSitemap()
     {
         return $this->currentSitemap;
+    }
+
+    /**
+     * 设置当前网站地图 index
+     * @return int
+     */
+    public function setCurrentSitemap($index)
+    {
+        $this->currentSitemap = $index;
     }
 
     /**
@@ -215,7 +241,7 @@ class LibSitemap
             $this->startSitemap();
         }
 
-        if ($this->getCurrentItem() !== 0 && ($this->getCurrentItem() % self::SITEMAP_ITEMS) === 0) {
+        if ($this->getCurrentItem() !== 0 && ($this->getCurrentItem() % $this->getCurrentMaxItems()) === 0) {
             $this->endSitemap();
 
             $this->incCurrentSitemap();
@@ -267,6 +293,15 @@ class LibSitemap
         $this->getWriter()->endElement();
         $this->getWriter()->endDocument();
         $this->getWriter()->flush();
+    }
+
+    public function forceEndSitemap()
+    {
+        $this->endSitemap();
+
+        $this->incCurrentSitemap();
+
+        $this->startSitemap();
     }
 
     /**

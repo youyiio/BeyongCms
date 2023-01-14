@@ -332,7 +332,9 @@ INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) 
 INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES 
 (245, '站长工具', 'admin/Webmaster/index', '', 1, 0, 1, 1,'admin'),
 (245, '百度站长', 'admin/Webmaster/baidu', '', 1, 0, 1, 1,'admin'),
-(245, '生成站点地图', 'admin/Webmaster/sitemap', '', 1, 0, 1, 1,'admin')
+(245, '生成站点地图', 'admin/Webmaster/sitemap', '', 1, 0, 1, 1,'admin'),
+(245, '站点地图分割信息', 'admin/Webmaster/sitemapInfo', '', 1, 0, 1, 1,'admin'),
+(245, '站点地图txt下载', 'admin/Webmaster/sitemapTxt', '', 1, 0, 1, 1,'admin')
 ;
 
 INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES 
