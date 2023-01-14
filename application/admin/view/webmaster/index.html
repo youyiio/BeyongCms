@@ -177,33 +177,46 @@
             //定义变量
             let progressNum = 0;
             let startPage = 1;
-            for (i = 1; i <= ajaxCount; i++) {
-  
-              $.post("{:url('Webmaster/sitemap')}", 
-                {pageSize: pageSize, startPage: startPage, endPage: startPage + pageSize - 1}, function (data) {
-                  if (data.code != 1) {
-                      layer.msg(data.msg, function(){});
-                      return false;
-                  }
-  
-                  //每次加10%
-                  progressNum += (i == ajaxCount) ? parseInt(100 / ajaxCount) + 100 % ajaxCount : parseInt(100 / ajaxCount);  
-                  console.log(progressNum);        
-                  //改变这个div  width属性值
-                  $(progress).children(".progress-bar").attr("style", "width:" + progressNum + "%");
-                  //显示 内容
-                  $(progress).children(".progress-bar").html(progressNum + "%");
-                  //当是100时，重新赋值为0
-                  if (progressNum >= 100) {
-                      $(progress).children(".progress-bar").toggleClass("active");
-  
-                      $(btn).find('i').remove();
-                      $(btn).prepend('<i class="fa fa-check"></i>');
-                  } 
-              });
-  
+            let loop = 1;
+           
+            generateSitemapSplit(pageSize, startPage, startPage + 10 -1, function(data, start) {                
+                if (data.code != 1) {
+                    layer.msg(data.msg, function(){});
+                    return false;
+                }
+
+                //每次加10%
+                progressNum += (i == ajaxCount) ? parseInt(100 / ajaxCount) + 100 % ajaxCount : parseInt(100 / ajaxCount);  
+                console.log(progressNum);        
+                //改变这个div  width属性值
+                $(progress).children(".progress-bar").attr("style", "width:" + progressNum + "%");
+                //显示 内容
+                $(progress).children(".progress-bar").html(progressNum + "%");
+                //当是100时，重新赋值为0
+                if (progressNum >= 100) {
+                    $(progress).children(".progress-bar").toggleClass("active");
+
+                    $(btn).find('i').remove();
+                    $(btn).prepend('<i class="fa fa-check"></i>');
+                } 
+
+                if (loop <= ajaxCount) {
+                    loop++;
+                    generateSitemapSplit(pageSize, start, start + 10 -1);
+                }
+                
+            });
               
-            }
+            
+            
+        });
+    }
+
+    function generateSitemapSplit(pageSize, startPage, endPage, callback) {
+        $.post("{:url('Webmaster/sitemap')}", 
+            {pageSize: pageSize, startPage: startPage, endPage: endPage}, function (data) {
+            
+            callback(data, startPage);
             
         });
     }
