@@ -114,7 +114,7 @@
                                     </div>
                                     <div class="form-group">
                                         <div class="col-lg-offset-2 col-lg-10">
-                                            <button onclick="downloadSitemapTxt(this)" class="btn btn-white" type="button">下载sitemap.txt</button> <button onclick="generateSitemap(this)" class="btn btn-success" type="button">生成站点地图</button>
+                                            <button onclick="downloadSitemapTxt(this)" class="btn btn-white" type="button">下载sitemap.txt</button> <button id="btnGenerateSitemap" onclick="generateSitemap(this)" class="btn btn-success" type="button">生成站点地图</button>
                                         </div>
                                     </div>
                                     
@@ -155,8 +155,8 @@
         let progress = $("#tab-sitemap form #progress .progress")
         $(progress).children(".progress-bar").toggleClass("active");
   
-        pageSize = $("#tab-sitemap form input[name=pageSize]").val();
-        maxPage = $("#tab-sitemap form input[name=maxPage]").val();
+        let pageSize = $("#tab-sitemap form input[name=pageSize]").val();
+        let maxPage = $("#tab-sitemap form input[name=maxPage]").val();
   
         //禁用按钮
         $(btn).prop('disabled',true).find('i').remove();
@@ -167,57 +167,56 @@
                 layer.msg(data.msg, function(){});
                 return false;
             }
+
+            let sitemapInfo = data.data;
                 
-            lastPage = data.data["lastPage"];
-            total = data.data["total"];
-            pageSize = data.data["pageSize"];
-  
-            step = 50;
-            ajaxCount = Math.ceil(lastPage / step);
-  
-            //定义变量
-            let progressNum = 0;
-            let startPage = 1;
-            let loop = 1;
-           
-            generateSitemapSplit(pageSize, startPage, startPage + step - 1, function(data, start) {                
-                if (data.code != 1) {
-                    layer.msg(data.msg, function(){});
-                    return false;
-                }
+            let lastPage = sitemapInfo["lastPage"];
+            sitemapInfo["lastPage"] = lastPage > maxPage ? maxPage : lastPage;
 
-                //每次加10%
-                progressNum += (loop == ajaxCount) ? parseInt(100 / ajaxCount) + 100 % ajaxCount : parseInt(100 / ajaxCount);  
-                        
-                //改变这个div  width属性值
-                $(progress).children(".progress-bar").attr("style", "width:" + progressNum + "%");
-                //显示 内容
-                $(progress).children(".progress-bar").html(progressNum + "%");
-                //当是100时，重新赋值为0
-                if (progressNum >= 100) {
-                    $(progress).children(".progress-bar").toggleClass("active");
-
-                    $(btn).find('i').remove();
-                    $(btn).prepend('<i class="fa fa-check"></i>');
-                } 
-
-                if (loop <= ajaxCount) {
-                    loop++;
-                    generateSitemapSplit(pageSize, start, start + step -1);
-                }
-                
-            });
-              
-            
-            
+            generateSitemapSplit(sitemapInfo, 1, 20, loopCallback);
         });
     }
+ 
+    function loopCallback(sitemapInfo, startPage, step) {
+        let lastPage = sitemapInfo["lastPage"];
+        let total = sitemapInfo["total"];
+        let pageSize = sitemapInfo["pageSize"];
 
-    function generateSitemapSplit(pageSize, startPage, endPage, callback) {
+        //每次加10%
+        let progressNum = (startPage + step - 1) > lastPage ? 100 : Math.ceil((startPage + step - 1) / lastPage * 100);  
+                        
+        let progress = $("#tab-sitemap form #progress .progress");
+        //改变这个div  width属性值
+        $(progress).children(".progress-bar").attr("style", "width:" + progressNum + "%");
+        //显示 内容
+        $(progress).children(".progress-bar").html(progressNum + "%");
+        //当是100时，重新赋值为0
+        if (progressNum >= 100) {
+            $(progress).children(".progress-bar").toggleClass("active");
+
+            $("#btnGenerateSitemap").find('i').remove();
+            $("#btnGenerateSitemap").prepend('<i class="fa fa-check"></i>');
+        } 
+
+        if (startPage + step - 1 < lastPage) {
+            generateSitemapSplit(sitemapInfo, startPage + step - 1, step, loopCallback);
+        }
+    }
+
+    function generateSitemapSplit(sitemapInfo, startPage, step, callback) {
+        let lastPage = sitemapInfo["lastPage"];
+        let total = sitemapInfo["total"];
+        let pageSize = sitemapInfo["pageSize"];
+
         $.post("{:url('Webmaster/sitemap')}", 
-            {pageSize: pageSize, startPage: startPage, endPage: endPage}, function (data) {
+            {pageSize: pageSize, startPage: startPage, endPage: startPage + step - 1}, function (data) {
             
-            callback(data, startPage);
+            if (data.code != 1) {
+                layer.msg(data.msg, function(){});
+                return false;
+            }
+
+            callback(sitemapInfo, startPage, step);
             
         });
     }
