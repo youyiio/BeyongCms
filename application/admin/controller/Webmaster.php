@@ -86,10 +86,10 @@ class Webmaster extends Base
     public function sitemap($pageSize, $startPage=1, $endPage=50)
     {
         $xmlFileName = Env::get('root_path') . 'public' . DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . $this->config['xml_file'];
-        //清除旧的文件
+        //清除旧的文件(当前方案不清除)
         if (file_exists($xmlFileName . LibSitemap::SITEMAP_SEPERATOR . LibSitemap::INDEX_SUFFIX . LibSitemap::SITEMAP_EXT)) {
             foreach(glob($xmlFileName . "*") as $file) {
-                unlink($file);
+                //unlink($file);
             }
         }
 
@@ -190,7 +190,14 @@ class Webmaster extends Base
         $lastPage = $sitemapInfo['lastPage'];
         $hookLastPage = $sitemapInfo['hookLastPage'];
 
+        //统计生成的数量
+        $xmlFileName = Env::get('root_path') . 'public' . DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . $this->config['xml_file'];
+        $files = glob($xmlFileName . "-[0-9]*.xml");
+        $fileCount = count($files);
+        $lastPage = $fileCount < $lastPage ? $fileCount : $lastPage;
+
         $sitemapLoc = url('cms/Sitemap/xml', null, false, get_config('domain_name'));
+        $sitemapLoc = substr($sitemapLoc, 0, strlen($sitemapLoc) - 4);
         $urls = [];
         for ($i = 1; $i <= $lastPage; $i++) {
             $urls[] = $sitemapLoc . LibSitemap::SITEMAP_SEPERATOR . $i . LibSitemap::SITEMAP_EXT;
