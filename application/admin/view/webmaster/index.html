@@ -183,7 +183,7 @@
         let pageSize = sitemapInfo["pageSize"];
 
         //每次加10%
-        let progressNum = (startPage + step - 1) > lastPage ? 100 : Math.ceil((startPage + step - 1) / lastPage * 100);  
+        let progressNum = (startPage + step - 1) >= lastPage ? 100 : Math.ceil((startPage + step - 1) / lastPage * 100);  
                         
         let progress = $("#tab-sitemap form #progress .progress");
         //改变这个div  width属性值
@@ -199,7 +199,7 @@
         } 
 
         if (startPage + step - 1 < lastPage) {
-            generateSitemapSplit(sitemapInfo, startPage + step - 1, step, loopCallback);
+            generateSitemapSplit(sitemapInfo, startPage + step, step, loopCallback);
         }
     }
 
