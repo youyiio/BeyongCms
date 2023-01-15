@@ -144,7 +144,7 @@ class Webmaster extends Base
             $where = [
                 'status' => ArticleModel::STATUS_PUBLISHED
             ];
-            $resultSet = $ArticleModel->where($where)->order('sort desc, id desc')->page($currentPage - 1, $pageSize)->select();
+            $resultSet = $ArticleModel->where($where)->order('id asc')->page($currentPage - 1, $pageSize)->select();
             foreach ($resultSet as $article) {
                 $priority = LibSitemap::$PRIORITY[2];
                 $loc = url('cms/Article/viewArticle', ['aid' => $article->id], false, get_config('domain_name'));

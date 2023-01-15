@@ -72,7 +72,7 @@ class Sitemap extends Base
         $where = [
             'status' => ArticleModel::STATUS_PUBLISHED
         ];
-        $resultSet = $ArticleModel->where($where)->order('sort desc, id desc')->select();
+        $resultSet = $ArticleModel->where($where)->order('id asc')->select();
         foreach ($resultSet as $article) {
             $priority = LibSitemap::$PRIORITY[2];
             $loc = url('cms/Article/viewArticle', ['aid' => $article->id], false, get_config('domain_name'));
