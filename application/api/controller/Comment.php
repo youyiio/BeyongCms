@@ -2,13 +2,13 @@
 
 namespace app\api\controller;
 
-use app\admin\controller\Message;
 use app\api\controller\Base;
 use app\common\library\ResultCode;
 use app\common\model\cms\ArticleModel;
 use app\common\model\cms\CommentModel;
 use app\common\model\MessageModel;
 use app\common\model\UserModel;
+use think\facade\Session;
 
 class Comment extends Base
 {
@@ -102,7 +102,7 @@ class Comment extends Base
 
         $uid = $this->uid;
         if (empty($uid)) {
-            $author = session('visitor');
+            $author = Session::get('visitor', config('session.prefix'));
             $data['author'] = $author;
         } else {
             $user = UserModel::get($uid);

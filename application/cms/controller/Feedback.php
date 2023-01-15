@@ -11,6 +11,7 @@ namespace app\cms\controller;
 use app\frontend\controller\Base;
 use app\common\model\cms\FeedbackModel;
 use app\common\model\UserModel;
+use think\facade\Session;
 
 /**
  * 用户反馈表单
@@ -21,12 +22,12 @@ class Feedback extends Base
     {
         if (session('uid')) {
             $user = session('uid');
-        } else if (session('visitor')) {
-            $user = session('visitor');
+        } else if (Session::get('visitor', config('session.prefix'))) {
+            $user = Session::get('visitor', config('session.prefix'));
         } else {
             $visitor = '游客-'.ip2long(ip());
-            session('visitor', $visitor);
-            $user = session('visitor') ;
+            Session::set('visitor', $visitor, config('session.prefix'));
+            $user = Session::get('visitor', config('session.prefix'));
         }
 
         $FeedbackModel = new FeedbackModel();
@@ -59,7 +60,7 @@ class Feedback extends Base
         if (session('uid')) {
             $user = session('uid');
         } else {
-            $user = session('visitor');
+            $user = Session::get('visitor', config('session.prefix'));
         }
 
         $length = 8 ;
@@ -80,7 +81,7 @@ class Feedback extends Base
         if (session('uid')) {
             $user = session('uid');
         } else {
-            $user = session('visitor');
+            $user = Session::get('visitor', config('session.prefix'));
         }
         if(!request()->isPost()){
             $this->error('请求错误！');

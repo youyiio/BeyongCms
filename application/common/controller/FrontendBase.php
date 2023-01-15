@@ -4,7 +4,7 @@ namespace app\common\controller;
 use think\facade\Env;
 use think\facade\View;
 use think\facade\Config;
-
+use think\facade\Session;
 /**
  * Trait 前端页面 Base Controller 组件
  * 使用方法：use \app\common\controller\FrontendBase;
@@ -22,10 +22,10 @@ trait FrontendBase
     public function initialize()
     {
         parent::initialize();
-        if (!session('uid') && !session('visitor')) {
+        if (!session('uid') && !Session::get('visitor', config('session.prefix'))) {
             $ip = request()->ip(0, true);
             $visitor = '游客-' . ip_to_address($ip, 'province,city');
-            session('visitor', $visitor);
+            Session::set('visitor', $visitor, config('session.prefix'));            
         }
 
         $this->themeConfig();

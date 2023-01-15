@@ -13,6 +13,7 @@ use app\common\model\cms\ArticleModel;
 use app\common\model\cms\CommentModel;
 use app\common\model\MessageModel;
 use app\common\model\UserModel;
+use think\facade\Session;
 
 /**
  * Class Comment 评论
@@ -81,7 +82,7 @@ class Comment extends Base
                 $data['uid'] = $uid;
                 $data['author'] = $author;
             } else {
-                $author = session('visitor');
+                $author = Session::get('visitor', config('session.prefix'));
                 $data['author'] = $author;
             }
 
