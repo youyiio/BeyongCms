@@ -2,7 +2,6 @@
 namespace app\admin\controller;
 
 use app\api\library\RolePermission;
-use app\common\model\AuthRuleModel;
 use app\common\model\MenuModel;
 use think\Controller;
 use think\facade\Cache;

@@ -15,7 +15,8 @@ begin
 # 菜单初始化
 truncate table sys_menu;
 
-/*=============================api接口权限=============================*/
+/*===============================================api接口权限=======================================================*/
+/*================================================================================================================*/
 
 /**************************一级菜单******************************/
 INSERT INTO `sys_menu`(id,pid,title,name,component,path,icon,type,is_menu,permission,status,sort,belongs_to) VALUES (1, 0, '面板', 'Dashboard', 'dashboard/index', 'dashboard/index','el-icon-s-home', 1, 0, null, 1, 0, 'api');
@@ -198,18 +199,9 @@ INSERT INTO `sys_menu`(pid,title,name,component,path,icon,type,is_menu,permissio
 (f1stmaxid, '平级菜单', 'pingji', 'empty/index', 'pingji/index', null, 1, 1, "", 1, 1, 'api')
 ;
 
-/********************* 新增api扩展菜单或权限**********************/
-# project api
-#INSERT INTO `sys_menu`(pid,title,name,component,path,icon,type,is_menu,permission,status,sort,belongs_to) VALUES 
-#(0, 'project api', 'pcapi', 'Layout', 'pcapi', 'nested', 2, 0, "", 1, 999, 'api')
-#;
-#select max(id) from sys_menu into f1stmaxid;
-#INSERT INTO `sys_menu`(pid,title,name,component,path,icon,type,is_menu,permission,status,sort,belongs_to) VALUES 
-#(f1stmaxid, '版本检查', '', null, '', null, 2, 0, "proj:api.app:checkVersion", 1, 0, 'api'),
-#(f1stmaxid, 'ip查询', '', null, '', null, 2, 0, "proj:api.app:ip", 1, 0, 'api')
-#;
 
-/*=============================admin管理后台权限=============================*/
+/*==============================================admin管理后台权限==================================================*/
+/*================================================================================================================*/
 
 /**************************一级菜单******************************/
 INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (20, 0, '综合面板', 'admin/ShowNav/Index', 'fa-th-large', 1, 1, 1, 1,'admin');
@@ -405,6 +397,21 @@ INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) 
 (292, '采集测试', 'admin/Crawler/crawlTest', '', 1, 0, 1, 1,'admin'),
 (293, '数据清洗', 'admin/Crawler/cleanData', '', 1, 0, 1, 1,'admin')
 ;
+
+
+/*=========================api接口或admin管理后台权限扩展（避免与已有的固定id冲突)====================================*/
+/*================================================================================================================*/
+
+/********************* 新增api扩展菜单或权限**********************/
+# project api
+#INSERT INTO `sys_menu`(pid,title,name,component,path,icon,type,is_menu,permission,status,sort,belongs_to) VALUES 
+#(0, 'project api', 'pcapi', 'Layout', 'pcapi', 'nested', 2, 0, "", 1, 999, 'api')
+#;
+#select max(id) from sys_menu into f1stmaxid;
+#INSERT INTO `sys_menu`(pid,title,name,component,path,icon,type,is_menu,permission,status,sort,belongs_to) VALUES 
+#(f1stmaxid, '版本检查', '', null, '', null, 2, 0, "proj:api.app:checkVersion", 1, 0, 'api'),
+#(f1stmaxid, 'ip查询', '', null, '', null, 2, 0, "proj:api.app:ip", 1, 0, 'api')
+#;
 
 
 /********************* 新增admin扩展菜单或权限**********************/
