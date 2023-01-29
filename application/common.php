@@ -17,7 +17,7 @@ use think\facade\Log;
 
 //cms核心表前缀;
 define('CMS_PREFIX', 'cms_');
-if (\think\facade\Config::get('cache.type') == 'Redis')
+if (strtolower(\think\facade\Config::get('cache.type')) == 'redis')
     define('CACHE_SEPARATOR', ':');
 else
     define('CACHE_SEPARATOR', '_');

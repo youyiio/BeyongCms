@@ -18,7 +18,7 @@ use think\facade\Env;
 $global_config = require(Env::get('root_path') . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'session.php');
 return array_merge($global_config, [
     // SESSION 前缀
-    'prefix'         => 'admin_',
+    'prefix' => 'admin' . (strtolower($global_config['type'] == 'redis') ? ':' : '_'),
     // session有效期 0表示永久缓存,3600表示60*60一个小时
     'expire' => 3600,
 ]);

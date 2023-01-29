@@ -2,10 +2,11 @@
 namespace app\common\controller;
 
 use app\api\library\RolePermission;
-use app\common\model\AuthRuleModel;
 use app\common\model\MenuModel;
 use think\facade\Cache;
 use app\common\model\UserModel;
+use think\facade\Config;
+use think\facade\Env;
 use think\facade\Cookie;
 use think\facade\Session;
 
@@ -16,14 +17,23 @@ use think\facade\Session;
 trait AdminBase
 {
     //继承的模块可能不是admin模块下，Session/Cookie/Cache需要主动指定prefix
-    protected $prefix = "admin_";
+    //protected $prefix = "admin_";
+    protected $sessionConfig = [];
+    protected $cookieConfig = [];
+    protected $cacheConfig = []; //框架自动根据配置自动加prefix
 
     protected $uid;
 
     public function initialize()
-    {
-        //判断登陆session('uid')
-        $uid = Session::get('uid', $this->prefix);
+    {   
+        $adminPath = Env::get('app_path') . DIRECTORY_SEPARATOR . 'admin';
+        $sessionConfig = require($adminPath . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'session.php');
+        $cookieConfig = require($adminPath . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'cookie.php');
+        $cacheConfig = require($adminPath . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'cache.php');
+        Config::load($adminPath . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'cache.php', 'cache');
+
+        //判断登陆session的uid
+        $uid = Session::get('uid', $sessionConfig['prefix']);
         if (!$uid) {
             if (request()->isAjax()) {
                 $this->error('请重新登陆', url('admin/Sign/login'));
@@ -33,7 +43,7 @@ trait AdminBase
         $this->uid = $uid;
 
         //实现用户单个端登录，方法: 通过判断cookie和服务器cache的login_hash值
-        // $localLoginHash = Cookie::get($uid . CACHE_SEPARATOR . 'login_hash', $this->prefix);
+        // $localLoginHash = Cookie::get($uid . CACHE_SEPARATOR . 'login_hash', $cookieConfig['prefix']);
         // $cacheLoginHash = Cache::get($uid . CACHE_SEPARATOR . 'login_hash');
         // if ($localLoginHash != $cacheLoginHash) {
         //     if (request()->isAjax()) {
@@ -44,9 +54,9 @@ trait AdminBase
         // }
 
         //用户有请求操作时，session时间重置
-        $expire = config('session.expire');//缓存期限
-        Session::set('uid', $uid, $this->prefix);
-        Cookie::set('uid', $uid, ["expire" => $expire, "prefix" => $this->prefix]);
+        $expire = $sessionConfig['expire'];//缓存期限
+        Session::set('uid', $uid, $sessionConfig['prefix']);
+        Cookie::set('uid', $uid, ["expire" => $expire, "prefix" => $cookieConfig['prefix']]);
 
         //权限验证
         if (config('cms.auth_on') == 'on') {

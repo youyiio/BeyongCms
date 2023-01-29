@@ -18,7 +18,7 @@ use think\facade\Env;
 $global_config = require(Env::get('root_path') . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'cache.php');
 return [
     // 缓存前缀
-    'prefix' => 'admin_',
+    'prefix' => 'admin' . (strtolower($global_config['type']) == 'redis' ? ':' : '_'),
     // 缓存有效期 0表示永久缓存,3600表示60*60一个小时
     'expire' => 3600,
 ];
