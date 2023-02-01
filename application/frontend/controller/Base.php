@@ -16,7 +16,7 @@ class Base extends Controller
     public function initialize()
     {
         parent::initialize();
-        if (!session('uid') && !Session::get('visitor', config('session.prefix'))) {
+        if (!session('uid') && !Session::has('visitor', config('session.prefix'))) {
             $ip = request()->ip(0, true);
             $visitor = '游客-' . ip_to_address($ip, 'province,city');
             Session::set('visitor', $visitor, config('session.prefix'));
