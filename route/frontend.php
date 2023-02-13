@@ -16,7 +16,8 @@ return [
     'partner' => ['frontend/Index/partner', ['method'=>'get']],
     'about' => ['frontend/Index/about', ['method'=>'get']],
     'contact' => ['frontend/Index/contact', ['method'=>'get']],
-    'index/:name' => ['frontend/Index/__extPage', ['method'=>'get']], //可动态扩充页面
+    'index/:name' => ['frontend/Index/__extPage', ['method'=>'get']], //可动态扩充页面,deprecated
+    'page/:name' => ['frontend/Index/page', ['method'=>'get']], //可动态扩充页面
 
     //用户操作
     'sign/index' => ['frontend/Sign/index', ['method'=>'get,post']],

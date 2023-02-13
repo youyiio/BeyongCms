@@ -60,11 +60,22 @@ class Index extends Base
     }
 
     /**
+     * deprecated
      * 支持index/*, 动态扩展
      * @param $name
      * @return mixed|\think\response\View
      */
     public function __extPage($name)
+    {
+        return $this->page($name);
+    }
+
+    /**
+     * 支持路由: /page/{name}, 动态扩展
+     * @param $name
+     * @return mixed|\think\response\View
+     */
+    public function page($name)
     {
         //动态方法调用
         if (method_exists($this, $name)) {

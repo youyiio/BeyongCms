@@ -8,11 +8,10 @@ sleep=3
 tries=2
 timeout=600
 
-pid=`cat start_queue.pid`
-echo "kill queue:work pid: $pid"
-kill -9 $pid
+echo "kill queue:work : $queue"
+ps -aux|grep $queue|grep -v 'start-queue'|grep -v 'grep'|cut -c 9-15|xargs kill -9
 
 echo "start $queue"
-nohup php think queue:listen --queue $queue --delay $delay --memory $memory --sleep $sleep --tries $tries --timeout $timeout 2>&1 & echo $! > start_queue.pid
+nohup php think queue:listen --queue $queue --delay $delay --memory $memory --sleep $sleep --tries $tries --timeout $timeout 2>&1
 
 ps -aux | grep $queue
