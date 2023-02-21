@@ -114,6 +114,16 @@ return [
     // 异常页面的模板文件
     'exception_tmpl'         => Env::get('app_path') . 'common/thinkphp/tpl/think_exception.tpl',
 
+    //状态异常模板，关闭debug时生效
+    'http_exception_template'  => [
+        // 定义404错误的重定向页面地址
+        404 => Env::get('app_path') . 'common/thinkphp/tpl/404.tpl',
+        // 还可以定义其它的http status
+        401 => Env::get('app_path') . 'common/thinkphp/tpl/401.tpl',
+        403 => Env::get('app_path') . 'common/thinkphp/tpl/404.tpl',
+        500 => Env::get('app_path') . 'common/thinkphp/tpl/500.tpl',
+    ],
+
     // 错误显示信息,非调试模式有效
     'error_message'          => '页面错误，小B正在赶来...请稍后再试～',
     // 显示错误信息
