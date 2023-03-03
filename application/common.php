@@ -939,13 +939,14 @@ function http_build_query_ext($query_data)
 /**
  * 简易http get请求
  *
- * @param [type] $url
- * @return string|bool
+ * @param string $url
+ * @param bool $responseDataSimple true时，直接返回content; 否则返回{content|http_status|error}
+ * @return string|bool|array
  */
-function http_get($url)
+function http_get($url, $responseDataSimple=true)
 {
     $header = [
-        'User-Agent: Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.146 Safari/537.36'
+        'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36'
     ];
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
@@ -953,30 +954,44 @@ function http_get($url)
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1 );
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+
     // 执行
     $content = curl_exec($ch);
+    $httpStatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $error = null;
     if ($content == false) {
-        Log::error(curl_error($ch));
-        return false;
+        $error = curl_error($ch);
+        Log::error("http post: " . $url . " error: \n" . $error);
     }
     // 关闭
     curl_close($ch);
 
+    $responseData = [
+        "content" => $content,
+        'http_status' => $httpStatus,
+        'error' => $error
+    ];
+
     //输出结果
-    return $content;
+    if ($responseDataSimple) {
+        return $content;
+    }
+   
+    return $responseData;
 }
 
 /**
  * 简易http post请求
  *
  * @param [type] $url
- * @param array $requestData
- * @return string|bool
+ * @param array $requestData 请求参数
+ * @param bool $responseDataSimple true时，直接返回content; 否则返回{content|http_status|error}
+ * @return string|bool|array
  */
-function http_post($url, $requestData=array())
+function http_post($url, $requestData=[], $responseDataSimple=true)
 {
     $header = [
-        'User-Agent: Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.146 Safari/537.36'
+        'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36'
     ];
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
@@ -993,15 +1008,27 @@ function http_post($url, $requestData=array())
 
     // 执行
     $content = curl_exec($ch);
+    $httpStatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $error = null;
     if ($content == false) {
-        Log::error(curl_error($ch));
-        return false;
+        $error = curl_error($ch);
+        Log::error("http post: " . $url . " error: \n" . $error);
     }
     // 关闭
     curl_close($ch);
 
+    $responseData = [
+        "content" => $content,
+        'http_status' => $httpStatus,
+        'error' => $error
+    ];
+
     //输出结果
-    return $content;
+    if ($responseDataSimple) {
+        return $content;
+    }
+   
+    return $responseData;
 }
 
 /**
