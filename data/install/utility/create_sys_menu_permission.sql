@@ -56,7 +56,8 @@ INSERT INTO `sys_menu`(pid,title,name,component,path,icon,type,is_menu,permissio
 (2, '查询岗位字典', '', null, '', null, 2, 0, "job:dict", 1, 0, 'api'),
 (2, '筛选用户列表', '', null, '', null, 2, 0, "user:quickSelect", 1, 0, 'api'),
 (2, '图片上传', '', null, '', null, 2, 0, "image:upload", 1, 0, 'api'),
-(2, '文件上传', '', null, '', null, 2, 0, "file:upload", 1, 0, 'api')
+(2, '文件上传', '', null, '', null, 2, 0, "file:upload", 1, 0, 'api'),
+(2, '地区查询', '', null, '', null, 2, 0, "dataquery:areas", 1, 0, 'api')
 ;
 
 INSERT INTO `sys_menu`(pid,title,name,component,path,icon,type,is_menu,permission,status,sort,belongs_to) VALUES 
