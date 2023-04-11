@@ -102,23 +102,6 @@ class BaseModel extends Model
     }
 
     /**
-     * 修改数据
-     * @param   array   $map  where语句数组形式
-     * @param   array   $data 数据 [k=>v]
-     * @return  boolean  操作是否成功
-     * @throws \Exception
-     */
-    protected function editData($map, $data)
-    {
-        // 去除键值首位空格
-        foreach ($data as $k => $v) {
-            $data[$k] = trim($v);
-        }
-        $result = $this->where($map)->setField($data);
-        return $result;
-    }
-
-    /**
      * 数据排序,更新排序字段
      * @param  array $data   数据源
      * @param  string $pk    主键
@@ -212,11 +195,4 @@ class BaseModel extends Model
         return $this->execute($sql);
     }
 
-    //清空表
-    public function truncate()
-    {
-        $table = $this->getTable(); //获取表名
-        $sql   = 'truncate table ' . $table . ';';
-        return $this->execute($sql);
-    }
 }

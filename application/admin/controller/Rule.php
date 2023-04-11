@@ -64,8 +64,14 @@ class Rule extends Base
         $map = [
             'id' => $data['id']
         ];
+
         $MenuModel = new MenuModel();
-        $result = $MenuModel->editData($map, $data);
+        // 去除键值首位空格
+        foreach ($data as $k => $v) {
+            $data[$k] = trim($v);
+        }
+        
+        $result = $MenuModel->where($map)->setField($data);
         if ($result) {
             $this->success('修改成功', url('Rule/index'));
         } else {
@@ -166,12 +172,17 @@ class Rule extends Base
     public function editGroup()
     {
         $data = input('post.');
-        $map=[
-            'id'=>$data['id']
+        $map = [
+            'id' => $data['id']
         ];
 
         $RoleModel = new RoleModel();
-        $result = $RoleModel->editData($map,$data);
+        // 去除键值首位空格
+        foreach ($data as $k => $v) {
+            $data[$k] = trim($v);
+        }
+
+        $result = $RoleModel->where($map)->setField($data);
         if ($result) {
             $this->success('修改成功',url('Rule/group'));
         }else{
