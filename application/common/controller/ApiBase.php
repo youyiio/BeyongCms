@@ -18,7 +18,7 @@ trait ApiBase
     public function initialize() 
     {
         $url = $this->request->url(); //strlow($url);
-        if (in_array($url, config('jwt.jwt_action_excludes'))) {
+        if (config('jwt.jwt_auth_on') == 'off' || in_array($url, config('jwt.jwt_action_excludes'))) {
             return true;
         }
 

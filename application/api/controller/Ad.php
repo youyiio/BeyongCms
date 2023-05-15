@@ -37,9 +37,13 @@ class Ad extends Base
         }
 
         $slotId = $adSlot->id;
-        $results = AdModel::has('adServings', ['slot_id' => $slotId])->order('sort asc')->limit($limit)->select();
+        $results = AdModel::has('adServings', ['slot_id' => $slotId])->with('image')->order('sort asc')->limit($limit)->select();
+        foreach($results as $ad) {
+            $ad->image['full_image_url'] = $ad->image->fullImageUrl;
+        }
 
-        return ajax_success($results);
+        $results = $results->toArray();
+        return ajax_success(parse_fields($results, 1));
     }
 
     //查询广告列表
