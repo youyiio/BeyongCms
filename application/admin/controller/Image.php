@@ -19,6 +19,8 @@ class Image extends Base
      * */
     public function upcrop()
     {
+        ini_set ("memory_limit", "-1");
+        
         $imageId = request()->param('imageId/d', 0);
         
         //id不存在时，图片上传
