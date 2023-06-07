@@ -3,11 +3,7 @@
 namespace app\api\controller;
 
 use app\common\library\ResultCode;
-use app\common\logic\UserLogic;
-use app\common\model\DeptModel;
-use app\common\model\JobModel;
 use app\common\model\MenuModel;
-use app\common\model\RoleMenuModel;
 use app\common\model\RoleModel;
 use app\common\model\UserModel;
 use app\common\model\UserRoleModel;
@@ -88,7 +84,7 @@ class Ucenter extends Base
         }
         if (isset($params['description'])) {
             $user->meta('description', $params['description']);
-        }   
+        }
 
         //返回数据
         $UserModel = new UserModel();
