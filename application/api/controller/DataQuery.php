@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by VSCode.
  * User: cattong
@@ -10,7 +11,6 @@ namespace app\api\controller;
 
 use app\common\library\ResultCode;
 use app\common\model\RegionModel;
-use think\Log;
 
 class DataQuery extends Base
 {
@@ -25,7 +25,7 @@ class DataQuery extends Base
             if ($list) {
                 return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!', $list);
             }
-            
+
             if ($drilldown == 2) {
                 $list = $RegionModel->where('pid', '=', $pid)->select();
                 foreach ($list as $key => $value) {
@@ -40,11 +40,10 @@ class DataQuery extends Base
             $where[] = ['pid', '=', $pid];
             $list  = $RegionModel->where($where)->select();
         }
-    
+
         $list = parse_fields($list, 1);
 
         return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!', $list);
-
     }
 
     //获取树状结构
