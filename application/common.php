@@ -951,7 +951,7 @@ function http_build_query_ext($query_data)
  * @param bool $responseDataSimple true时，直接返回content; 否则返回{content|http_status|error}
  * @return string|bool|array
  */
-function http_get($url, $requestParam, $responseDataSimple = true)
+function http_get($url, $requestParam = "", $responseDataSimple = true)
 {
     $header = [
         'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36'
