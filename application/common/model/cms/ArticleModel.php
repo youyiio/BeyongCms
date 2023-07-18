@@ -24,6 +24,11 @@ class ArticleModel extends BaseModel
 
     protected $pk = 'id';
 
+    // 设置json类型字段
+    protected $json = ['source'];
+    // 设置JSON数据返回数组
+    protected $jsonAssoc = true;
+    
     protected $auto = ['update_time'];
     protected $insert = ['status','create_time','sort'=>0,'uid'];
     protected $update = ['update_time'];
@@ -327,5 +332,3 @@ class ArticleModel extends BaseModel
         }
     }
 }
-
-?>
