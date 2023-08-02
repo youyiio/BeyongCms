@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by VSCode.
  * User: Administrator
@@ -17,8 +18,7 @@ class FileModel extends Model
     protected $pk = 'id';
 
     protected $type = [
-        'id'    => 'integer',
-        'create_time' => 'datetime',
+        'id'    => 'integer'
     ];
 
     public function getFullFileUrlAttr($value, $data)
@@ -89,11 +89,11 @@ class FileModel extends Model
                 'file_url'     => $v->file_url,
                 'thumb_image_url'    => $v->thumb_image_url,
                 'image_url'       => $v->file_url,
-                'full_image_url'   => url_add_domain($v->file_path),
+                'full_image_url'   => url_add_domain($v->file_url),
                 'remark' => $v->remark,
             ];
         }
+
         return $res;
     }
-    
 }
