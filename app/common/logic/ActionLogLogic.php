@@ -12,7 +12,7 @@ namespace app\common\logic;
 use app\common\model\ActionLogModel;
 use think\Model;
 
-class ActionLogLogic extends Model
+class ActionLogLogic
 {
     //增加日志，data为传递的参数
     public function addLog($userId, $action, $remark, $params=[])
@@ -24,7 +24,7 @@ class ActionLogLogic extends Model
         $data = [
             'username' => $userId,
             'action' => $action,
-            'module' => request()->module(),
+            'module' => substr(request()->root(), 1),
             'ip' => request()->ip(0, true),
             'params' => substr(json_encode($params), 0, 128),
             'user_agent' => request()->header("user-agent"),
@@ -33,13 +33,13 @@ class ActionLogLogic extends Model
         ];
 
         $ActionLogModel = new ActionLogModel();
-        $result = $ActionLogModel->isUpdate(false)->save($data);
+        $result = $ActionLogModel->save($data);
 
         return $result;
     }
 
     //客户端请求日志
-    public function addRequestLog($action, $username, $params=[], $response)
+    public function addRequestLog($action, $username, $params=[], $response='')
     {
         if (isset($params['password'])) {
             unset($params['password']);
@@ -48,7 +48,7 @@ class ActionLogLogic extends Model
         $data = [
             'username' => $username,
             'action' => $action,
-            'module' => request()->module(),
+            'module' => app()->getName(),
             'component' => request()->url(),
             'ip' => request()->ip(0, true),
             'params' => substr(json_encode($params), 0, 128),
@@ -65,7 +65,7 @@ class ActionLogLogic extends Model
     }
 
     //调用其他服务或第三方接口结果日志
-    public function addInvokeLog($action, $module, $component, $params=[], $response, $actionTime, $responseTime)
+    public function addInvokeLog($action, $module, $component, array $params, $response, $actionTime, $responseTime)
     {
         if (isset($params['password'])) {
             unset($params['password']);

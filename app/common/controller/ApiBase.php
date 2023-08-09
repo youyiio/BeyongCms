@@ -1,4 +1,5 @@
 <?php
+
 namespace app\common\controller;
 
 use app\api\library\RolePermission;
@@ -16,7 +17,7 @@ trait ApiBase
     // 用户信息
     protected $user_info;
 
-    public function initialize() 
+    public function initialize()
     {
         $url = strtolower(Request::url());
         if (in_array($url, config('jwt.jwt_action_excludes'))) {
@@ -61,7 +62,7 @@ trait ApiBase
         $this->user_info = $user_info;
 
         //Api权限验证      
-        if (config('jwt.jwt_auth_on') !== 'off') {  
+        if (config('jwt.jwt_auth_on') !== 'off') {
             $uid = $user_info->uid;
             $permission = request()->module() . '/' . request()->controller() . '/' . request()->action();
             $permission = strtolower($permission);

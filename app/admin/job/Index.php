@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by VSCode.
  * User: cattong
@@ -8,13 +9,13 @@
 
 namespace app\admin\job;
 
-use think\console\command\Help;
 use think\facade\Log;
 use think\helper\Time;
 use think\queue\Job;
 
 use app\common\model\cms\ArticleModel;
 use app\common\model\cms\ArticleMetaModel;
+use Jenssegers\Date\Date;
 
 /**
  * 搜索引擎收录业务逻辑及job入口
@@ -35,10 +36,10 @@ class Index
         }
 
         if ($range == 'today') {
-            $today = Time::today();
+            $today = [Date::today(), new Date('now')];
             $range = [
-                date_time($today[0], 'Y-m-d'),
-                date_time($today[1], 'Y-m-d')
+                $today[0]->format('Y-m-d'),
+                $today[1]->format('Y-m-d')
             ];
             self::withRange($range);
         }

@@ -1,23 +1,10 @@
 #!/usr/bin/env php
 <?php
-// +----------------------------------------------------------------------
-// | ThinkPHP [ WE CAN DO IT JUST THINK ]
-// +----------------------------------------------------------------------
-// | Copyright (c) 2006-2016 http://thinkphp.cn All rights reserved.
-// +----------------------------------------------------------------------
-// | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
-// +----------------------------------------------------------------------
-// | Author: yunwuxin <448901948@qq.com>
-// +----------------------------------------------------------------------
-
 namespace think;
 
+// 命令行入口文件
 // 加载基础文件
-require __DIR__ . '/thinkphp/base.php';
+require __DIR__ . '/vendor/autoload.php';
 
-Loader::addNamespace('app', __DIR__ . '/application/');
-
-// 执行应用
-Container::getInstance()->bindTo('app', new \app\common\thinkphp\App(__DIR__ . '/application/'));
-Container::get('app')->initialize();
-Console::init();
+// 应用初始化
+(new App())->console->run();

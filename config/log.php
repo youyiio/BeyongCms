@@ -19,9 +19,9 @@ return [
     'channels'     => [
         'file' => [
             // 日志记录方式
-            'type'           => 'app\\common\\thinkphp\\log\\driver\\File',
+            'type'           => 'File',
             // 日志保存目录
-            'path'           => \think\facade\Env::get('runtime_path') . 'log' . DIRECTORY_SEPARATOR . 'system' . DIRECTORY_SEPARATOR,
+            'path'           => runtime_path() . 'log' . DIRECTORY_SEPARATOR . 'system' . DIRECTORY_SEPARATOR,
             // 单文件日志写入
             'single'         => false,
             // 独立日志级别

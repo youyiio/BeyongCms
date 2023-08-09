@@ -17,7 +17,7 @@ return [
     'type'  => 'app\\common\\thinkphp\\log\\driver\\File',
     'file_size'   => 5242880,  //文件大小，1048576 为1M, 2097152为2M, 5242880为5M
     // 日志保存目录
-    'path'  => \think\facade\Env::get('runtime_path') . 'log' . DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR,
+    'path'  => runtime_path() . 'log' . DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR,
     // 日志记录级别
     'level' => ['error', 'notice', 'info', 'log', 'debug'],
     //独立日志

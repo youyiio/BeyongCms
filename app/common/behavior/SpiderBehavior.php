@@ -15,7 +15,7 @@ use app\common\logic\ActionLogLogic;
 
 class SpiderBehavior
 {
-    public function run()
+    public function handle($event)
     {
         $userAgent = Request::header('user-agent');
         $params = $_REQUEST;

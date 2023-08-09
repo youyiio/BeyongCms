@@ -1,18 +1,18 @@
 <?php
+
 namespace app\admin\controller;
 
 use app\api\library\RolePermission;
-use app\common\model\AuthRuleModel;
+use app\common\controller\BaseController;
 use app\common\model\MenuModel;
-use think\Controller;
 use think\facade\Cache;
 use think\helper\Time;
 use app\common\model\UserModel;
 
 /**
-* 基础控制器
-*/
-class Base extends Controller
+ * 基础控制器
+ */
+class Base extends BaseController
 {
     protected $uid;
 
@@ -40,13 +40,13 @@ class Base extends Controller
         }
 
         //用户有请求操作时，session时间重置
-        $expire = config('session.expire');//缓存期限
+        $expire = config('session.expire'); //缓存期限
         session('uid', $uid);
         cookie('uid', $uid, $expire);
 
         //权限验证
         if (config('cms.auth_on') == 'on') {
-            $permission = request()->module(). '/' . request()->controller() . '/' . request()->action();
+            $permission = request()->module() . '/' . request()->controller() . '/' . request()->action();
             $permission = strtolower($permission);
             $rolePermission = new RolePermission();
             $module = request()->module();
@@ -61,7 +61,7 @@ class Base extends Controller
 
         //昨日新增用户
         $UserModel = new UserModel();
-        $yesterdayNewUserCount = $UserModel->cache('yesterdayNewUserCount',time_left())->whereTime('register_time','between',Time::yesterday())->count();
+        $yesterdayNewUserCount = $UserModel->cache('yesterdayNewUserCount', time_left())->whereTime('register_time', 'between', Time::yesterday())->count();
         $this->assign('yesterdayNewUserCount', $yesterdayNewUserCount);
 
         //菜单数据,Cache::tag不支持redis
@@ -81,7 +81,7 @@ class Base extends Controller
         if ($this->request->isCli()) {
             $scheme = $this->request->header('scheme') ? $this->request->header('scheme') : $this->request->scheme();
             return $scheme . '://' . $this->request->header('x-original-host') . $this->request->server('REQUEST_URI');
-        } else {//cgi
+        } else { //cgi
             return $this->request->url(true);
         }
     }

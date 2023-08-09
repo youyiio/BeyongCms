@@ -72,7 +72,7 @@ class IP
         {
             self::$ip = new self();
 
-            self::$fp = fopen(\think\facade\Env::get('root_path') . 'data/assets/ipipnet/17monipdb.datx', 'rb');
+            self::$fp = fopen(root_path() . 'data/assets/ipipnet/17monipdb.datx', 'rb');
             if (self::$fp === FALSE)
             {
                 throw new Exception('Invalid 17monipdb.datx file!');
@@ -98,5 +98,3 @@ class IP
         }
     }
 }
-
-?>

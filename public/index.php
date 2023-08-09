@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2016 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2019 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -12,23 +12,13 @@
 // [ 应用入口文件 ]
 namespace think;
 
-// 加载基础文件
-require __DIR__ . '/../thinkphp/base.php';
+require __DIR__ . '/../vendor/autoload.php';
 
-//命名空间提前注册，项目部署到子目录时，避免 \app\common\thinkphp\App 报不存在
-Loader::addNamespace('app', __DIR__ . '/../application/');
+// 执行HTTP应用并响应
+$http = (new App())->http;
 
-Container::getInstance()->bindTo('app', new \app\common\thinkphp\App(__DIR__ . '/../application/'));
+$response = $http->run();
 
-// 如果install/install.lock文件不存在，走安装引导程序
-if (!file_exists(__DIR__ . '/../data/install.lock')) {
-    // 绑定安装模块
-    Container::get('app')->bind('install/index')->run()->send();
-    exit;
-}
+$response->send();
 
-// 支持事先使用静态方法设置Request对象和Config对象
-
-
-// 执行应用并响应
-Container::get('app')->run()->send();
+$http->end($response);

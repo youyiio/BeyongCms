@@ -1,4 +1,5 @@
 <?php
+
 namespace app\cms\controller;
 
 use app\frontend\controller\Base;
@@ -6,7 +7,7 @@ use app\common\model\cms\ArticleMetaModel;
 use app\common\model\cms\ArticleModel;
 use app\common\model\cms\CategoryModel;
 use app\common\model\cms\CommentModel;
-use think\helper\Time;
+use Jenssegers\Date\Date;
 
 /**
  * 文章
@@ -36,7 +37,7 @@ class Article extends Base
      * @return \think\response\View
      * @throws \think\Exception
      * */
-    public function articleList($cid=0, $cname='', $csubname='')
+    public function articleList($cid = 0, $cname = '', $csubname = '')
     {
         if (!empty($cname) && !empty($csubname)) {
             return $this->articleSublist($cname, $csubname);
@@ -73,7 +74,7 @@ class Article extends Base
      * @return \think\response\View
      * @throws \think\Exception
      * */
-    private function articleSublist($cname='', $csubname='')
+    private function articleSublist($cname = '', $csubname = '')
     {
         if (empty($cname) || empty($csubname)) {
             $this->error('参数错误');
@@ -113,7 +114,7 @@ class Article extends Base
      * @return \think\response\View
      * @throws \think\Exception
      */
-    public function viewArticle($aid=0, $cid=0, $cname='', $page=1)
+    public function viewArticle($aid = 0, $cid = 0, $cname = '', $page = 1)
     {
         if (empty($aid)) {
             $this->error('参数错误');
@@ -129,19 +130,19 @@ class Article extends Base
         //阅读量+1(一个ip一天只能添加1的浏览量),但阅读记录保持入库
         $id = $article['id'];
         $ip = \think\facade\Request::ip(0, true);
-        $today = Time::today();
+        $today = [Date::today(), new Date('now')];
         $where = [
             ['article_id', '=', $id],
             ['meta_key', '=', 'read_ip'],
             ['meta_value', '=', $ip],
-            ['create_time', '>=', date_time($today[0])],
-            ['create_time', '<', date_time($today[1])]
+            ['create_time', '>=', date_time($today[0]->unix())],
+            ['create_time', '<', date_time($today[1]->unix())]
         ];
 
         $ArticleMetaModel = new ArticleMetaModel();
         $meta = $ArticleMetaModel->where($where)->find();
         if (!$meta) {
-            $ArticleModel->where('id', $aid)->setInc('read_count');
+            $ArticleModel->where('id', $aid)->inc('read_count');
         }
 
         $data = [
@@ -169,7 +170,7 @@ class Article extends Base
 
         //评论
         $CommentModel = new CommentModel();
-        $list = $CommentModel->where(['article_id' => $aid, 'status' => CommentModel::STATUS_PUBLISHED])->order('create_time desc')->paginate(6,false, ['query'=>input('param.')]);
+        $list = $CommentModel->where(['article_id' => $aid, 'status' => CommentModel::STATUS_PUBLISHED])->order('create_time desc')->paginate(6, false, ['query' => input('param.')]);
         $page = $list->render();
         $this->assign('comments', $list);
         $this->assign('page', $page);
@@ -183,7 +184,7 @@ class Article extends Base
      * @return mixed
      * @throws \think\exception\DbException
      */
-    public function tag($tag='')
+    public function tag($tag = '')
     {
         if (empty($tag)) {
             $this->error('标签不能为空');
@@ -204,13 +205,11 @@ class Article extends Base
         ];
 
         $ArticleModel = new ArticleModel();
-        $list = $ArticleModel->alias('article')->leftJoin('cms_article_meta meta', 'article.id = meta.article_id')->where($where)->field($fields)->order($orders)->paginate($listRow,false, $pageConfig);
+        $list = $ArticleModel->alias('article')->leftJoin('cms_article_meta meta', 'article.id = meta.article_id')->where($where)->field($fields)->order($orders)->paginate($listRow, false, $pageConfig);
 
         $this->assign('list', $list);
         $this->assign('tag', $tag);
 
         return $this->fetch('tag');
     }
-
-
 }

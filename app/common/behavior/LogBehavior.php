@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by VSCode.
  * User: cattong
@@ -14,7 +15,7 @@ use think\facade\Log;
 class LogBehavior
 {
 
-    public function run()
+    public function handle($event)
     {
         $baseUrl = Request::baseUrl();
         $ip = Request::ip(0, true);
@@ -25,6 +26,7 @@ class LogBehavior
         if (isset($params['password'])) {
             $params['password'] = '********';
         }
-        Log::info( $datetime . 'ip=' . $ip . '|path=' . $baseUrl . '|params=' . json_encode($params));
+
+        Log::info($datetime . 'ip=' . $ip . '|path=' . $baseUrl . '|params=' . json_encode($params));
     }
 }

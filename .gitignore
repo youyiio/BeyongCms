@@ -3,10 +3,11 @@
 composer.lock
 *.log
 .svn
+.vscode
 
 # php & thinkphp
 vendor/*
-thinkphp
+/thinkphp
 
 # my project
 .env

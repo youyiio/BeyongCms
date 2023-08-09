@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by VSCode.
  * User: cattong
@@ -26,7 +27,7 @@ class Comment extends Base
      * @return \think\response\View
      * @throws \think\Exception
      */
-    public function index($aid=0)
+    public function index($aid = 0)
     {
         $ArticleModel = new ArticleModel();
         $article = $ArticleModel->find($aid);
@@ -46,9 +47,9 @@ class Comment extends Base
      * @return \think\response\View
      * @throws \think\Exception
      */
-    public function create($aid=0)
+    public function create($aid = 0)
     {
-        if (get_config('article_comment_switch') === 'false'){
+        if (get_config('article_comment_switch') === 'false') {
             $this->error('评论失败:评论功能已关闭');
         }
 
@@ -68,7 +69,7 @@ class Comment extends Base
             $content = remove_xss($content);
 
             $data = [];
-            if (get_config('comment_audit_switch') === 'true'){
+            if (get_config('comment_audit_switch') === 'true') {
                 $data['status'] = CommentModel::STATUS_PUBLISHING;
             } else {
                 $data['status'] = CommentModel::STATUS_PUBLISHED;
@@ -109,14 +110,14 @@ class Comment extends Base
                 $this->error('评论发表失败！');
             } else {
                 //增加评论数量;
-                $ArticleModel->where('id', $aid)->setInc('comment_count');
+                $ArticleModel->where('id', $aid)->inc('comment_count');
 
                 //发送评论消息;
                 $msgTitle = '新评论消息';
                 $msgContent = $author . '评论了文章 “' . $article['title'] . '”';
                 send_message(0, 1, $msgTitle, $msgContent, MessageModel::TYPE_COMMENT);
 
-                $this->success('评论添加成功', url('cms/Article/viewArticle', ['aid'=>$aid]));
+                $this->success('评论添加成功', url('cms/Article/viewArticle', ['aid' => $aid]));
             }
         }
 

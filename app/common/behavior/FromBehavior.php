@@ -6,7 +6,7 @@ use think\facade\Cookie;
 
 class FromBehavior
 {
-    public function run()
+    public function handle($event)
     {
         //首次访问 cookie记录来源
         if (!Cookie::has('from_referee') && !Cookie::has('entrance_url')) {

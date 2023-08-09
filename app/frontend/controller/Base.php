@@ -1,15 +1,17 @@
 <?php
+
 namespace app\frontend\controller;
 
-use think\Controller;
+use app\common\controller\BaseController;
+use think\facade\View;
 
-class Base extends Controller
+class Base extends BaseController
 {
 
     //空操作：系统在找不到指定的操作方法的时候，会定位到空操作
     public function _empty()
     {
-        return $this->fetch('public/404');
+        return View::fetch('public/404');
     }
 
     public function initialize()
@@ -21,5 +23,4 @@ class Base extends Controller
             session('visitor', $visitor);
         }
     }
-
 }

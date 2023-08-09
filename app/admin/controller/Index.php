@@ -1,4 +1,5 @@
 <?php
+
 namespace app\admin\controller;
 
 use app\common\model\MessageModel;
@@ -12,10 +13,11 @@ use beyong\echarts\options\YAxis;
 use beyong\echarts\Option;
 use beyong\echarts\charts\Line;
 use beyong\echarts\options\XAxis;
+use Jenssegers\Date\Date;
 
 /**
-* 首页控制器
-*/
+ * 首页控制器
+ */
 class Index extends Base
 {
 
@@ -33,11 +35,11 @@ class Index extends Base
             'PHP运行版本' => PHP_VERSION,
             'ThinkPHP版本' => App::VERSION,
             '上传附件限制' => ini_get('upload_max_filesize'),
-            '执行时间限制' => ini_get('max_execution_time').'秒',
+            '执行时间限制' => ini_get('max_execution_time') . '秒',
             '服务器时间' => date("Y年n月j日 H:i:s"),
-            '北京时间' => gmdate("Y年n月j日 H:i:s", time() + 8*3600),
+            '北京时间' => gmdate("Y年n月j日 H:i:s", time() + 8 * 3600),
             '服务器域名/IP' => $this->request->server('SERVER_NAME'),
-            '剩余空间' => round((disk_free_space(".") / (1024*1024)), 2).'M'
+            '剩余空间' => round((disk_free_space(".") / (1024 * 1024)), 2) . 'M'
         );
         $this->assign('info', $info);
 
@@ -47,17 +49,17 @@ class Index extends Base
     public function dashboard()
     {
 
-        list($todayBeginTime, $todayEndTime) = Time::today();
-        list($curWeekBeginTime, $curWeekEndTime) = Time::week();
-        list($curMonthBeginTime, $curMonthEndTime) = Time::month();
+        list($todayBeginTime, $todayEndTime) = [Date::today(), Date::now()];
+        list($curWeekBeginTime, $curWeekEndTime) = [new Date("Monday this week"), new Date("Monday next week")];
+        list($curMonthBeginTime, $curMonthEndTime) = [new Date('first day of'), new Date('last date of')];
 
-        list($yesterdayBeginTime, $yesterdayEndTime) = Time::yesterday();
-        list($lastWeekBeginTime, $lastWeekEndTime) = Time::lastWeek();
-        list($lastMonthBeginTime, $lastMonthEndTime) = Time::lastMonth();
+        list($yesterdayBeginTime, $yesterdayEndTime) = [Date::yesterday(), Date::today()];
+        list($lastWeekBeginTime, $lastWeekEndTime) = [new Date('Monday last week'), new Date('Monday this week')];
+        list($lastMonthBeginTime, $lastMonthEndTime) = [new Date('last month'), new Date('this month')];
 
         $where = [];
-        $where[] = ['create_time','between', [date_time($todayBeginTime), date_time($todayEndTime)]];
-        $yesterdayWhere[] = ['create_time','between', [date_time($yesterdayBeginTime), date_time($yesterdayEndTime)]];
+        $where[] = ['create_time', 'between', [date_time($todayBeginTime->unix()), date_time($todayEndTime->unix())]];
+        $yesterdayWhere[] = ['create_time', 'between', [date_time($yesterdayBeginTime->unix()), date_time($yesterdayEndTime->unix())]];
 
         $ArticleModel = new ArticleModel();
         $todayCount = $ArticleModel->where($where)->count();
@@ -69,11 +71,11 @@ class Index extends Base
         }
 
         unset($where);
-        $where[] = ['create_time','between', [date_time($curWeekBeginTime), date_time($curWeekEndTime)]];
-        $lastWeekWhere[] = ['create_time','between', [date_time($lastWeekBeginTime), date_time($lastWeekEndTime)]];
+        $where[] = ['create_time', 'between', [date_time($curWeekBeginTime->unix()), date_time($curWeekEndTime->unix())]];
+        $lastWeekWhere[] = ['create_time', 'between', [date_time($lastWeekBeginTime->unix()), date_time($lastWeekEndTime->unix())]];
         $curWeekCount = $ArticleModel->where($where)->count();
         $lastWeekCount = $ArticleModel->where($lastWeekWhere)->count();
-        if ($lastWeekCount === 0) {//除数不能为0
+        if ($lastWeekCount === 0) { //除数不能为0
             $weekPercent = $curWeekCount * 100;
         } else {
             $weekPercent = (($curWeekCount - $lastWeekCount) / $lastWeekCount) * 100;
@@ -84,7 +86,7 @@ class Index extends Base
         $lastMonthWhere[] = ['create_time', 'between', [date_time($lastMonthBeginTime), date_time($lastMonthEndTime)]];
         $curMonthCount = $ArticleModel->where($where)->count();
         $lastMonthCount = $ArticleModel->where($lastMonthWhere)->count();
-        if ($lastMonthCount === 0) {//除数不能为0
+        if ($lastMonthCount === 0) { //除数不能为0
             $monthPercent = $curMonthCount * 100;
         } else {
             $monthPercent = (($curMonthCount - $lastMonthCount) / $lastMonthCount) * 100;
@@ -128,16 +130,16 @@ class Index extends Base
             $where[] = ['register_time', 'between', [date_time($beginTime), date_time($endTime)]];
             $inquiryCount = $UserModel->where($where)->count();
 
-            array_push($xAxisData, $hour.'时');
+            array_push($xAxisData, $hour . '时');
             array_push($yAxisData, $inquiryCount);
         }
 
         $xAxis = new XAxis();
         $xAxis->data = $xAxisData;
-    
+
         $option = new Option();
         $option->xAxis($xAxis);
-    
+
         $chart = new Line();
         $chart["data"] = $yAxisData;
 
@@ -157,20 +159,20 @@ class Index extends Base
             $endTime = mktime(23, 59, 59, date('m'), $day, date('Y'));
 
             unset($where);
-            $where[] = ['status','>=', UserModel::STATUS_APPLY];
-            $where[] = ['register_time','between', [date_time($beginTime), date_time($endTime)]];
+            $where[] = ['status', '>=', UserModel::STATUS_APPLY];
+            $where[] = ['register_time', 'between', [date_time($beginTime), date_time($endTime)]];
             $inquiryCount = $UserModel->where($where)->count();
 
-            array_push($xAxisData, $day.'日');
+            array_push($xAxisData, $day . '日');
             array_push($yAxisData, $inquiryCount);
         }
 
         $xAxis = new XAxis();
         $xAxis->data = $xAxisData;
-    
+
         $option = new Option();
         $option->xAxis($xAxis);
-    
+
         $chart = new Line();
         $chart["data"] = $yAxisData;
 
@@ -187,23 +189,23 @@ class Index extends Base
         $UserModel = new UserModel();
         for ($month = 1; $month <= 12; $month++) {
             $beginTime = mktime(0, 0, 0, $month, 1, date('Y'));
-            $endTime = mktime(23, 59, 59, $month, date("t",strtotime(date('Y') ."-$month")), date('Y'));
+            $endTime = mktime(23, 59, 59, $month, date("t", strtotime(date('Y') . "-$month")), date('Y'));
 
             unset($where);
-            $where[] = ['status','>=', UserModel::STATUS_APPLY];
-            $where[] = ['register_time','between', [date_time($beginTime), date_time($endTime)]];
+            $where[] = ['status', '>=', UserModel::STATUS_APPLY];
+            $where[] = ['register_time', 'between', [date_time($beginTime), date_time($endTime)]];
             $inquiryCount = $UserModel->where($where)->count();
 
-            array_push($xAxisData, $month.'月');
+            array_push($xAxisData, $month . '月');
             array_push($yAxisData, $inquiryCount);
         }
 
         $xAxis = new XAxis();
         $xAxis->data = $xAxisData;
-    
+
         $option = new Option();
         $option->xAxis($xAxis);
-    
+
         $chart = new Line();
         $chart["data"] = $yAxisData;
 
@@ -211,5 +213,4 @@ class Index extends Base
 
         $this->success('ok', '', $option);
     }
-
 }

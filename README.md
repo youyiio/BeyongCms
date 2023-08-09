@@ -8,7 +8,7 @@ BeyongCms系统基于ThinkPHP6.0框架的轻量级内容管理系统，适用于
 支持PC和移动场景，满足企业建站系统、后台管理框架、App后台开发、微信小程序开发、小程序开发框架、小程序API、小程序开发等实际二次开发场景。
 其主要特性包括：
 
- + 基于PHP最流行的ThinkPHP5.1框架，web端采用jquery+bootstrap框架
+ + 基于PHP最流行的ThinkPHP6.0+框架，web端采用jquery+bootstrap框架
  + 用户系统，邮箱、手机注册|登录支持
  + 文章系统，文章栏目管理、评论审核管理
  + 灵活的角色权限控制，RBAC管理
@@ -127,14 +127,6 @@ Linux下
 >sh start_queue.sh
 >sh start_timer.bat
 
-### Swoole模式的启动方式
-
-Window下
->start_swoole.bat
-
-Linux下
->start_swoole.sh 
-
 
 系统的目录结构如下：
 
@@ -173,8 +165,6 @@ POROJECT_NAME  WEB部署目录（或者子目录）
 ├─check_env.sh          Linux权限检测及调整脚本
 ├─start_queue.bat       Window消息队列启动脚本
 ├─start_queue.sh        Linux消息队列启动脚本
-├─start_swoole.bat      Window Swoole启动脚本(使用了swoole官方的cygwin)
-├─start_swoole.sh       Linux swoole启动脚本
 ├─start_timer.bat       Window定时启动脚本（增加执行计划）
 ├─start_timer.sh        Linux定时启动脚本（添加crontab）
 ~~~

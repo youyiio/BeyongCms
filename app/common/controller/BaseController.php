@@ -1,17 +1,21 @@
 <?php
-declare (strict_types = 1);
 
-namespace app;
+declare(strict_types=1);
+
+namespace app\common\controller;
 
 use think\App;
 use think\exception\ValidateException;
 use think\Validate;
+use think\facade\View;
 
 /**
  * 控制器基础类
  */
 abstract class BaseController
 {
+    use \liliuwei\think\Jump;
+
     /**
      * Request实例
      * @var \think\Request
@@ -52,7 +56,8 @@ abstract class BaseController
 
     // 初始化
     protected function initialize()
-    {}
+    {
+    }
 
     /**
      * 验证数据
@@ -91,4 +96,13 @@ abstract class BaseController
         return $v->failException(true)->check($data);
     }
 
+    protected function fetch(string $template = '', array $vars = [])
+    {
+        return View::fetch($template, $vars);
+    }
+
+    protected function assign($name, $value = '')
+    {
+        View::assign($name, $value);
+    }
 }

@@ -11,6 +11,7 @@
 
 // 应用公共文件
 
+use Jenssegers\Date\Date;
 use think\facade\Cache;
 use think\facade\Env;
 use think\facade\Log;
@@ -25,16 +26,16 @@ else
 function ip()
 {
     //strcasecmp 比较两个字符，不区分大小写。返回0，>0，<0。
-    if(getenv('HTTP_CLIENT_IP') && strcasecmp(getenv('HTTP_CLIENT_IP'), 'unknown')) {
+    if (getenv('HTTP_CLIENT_IP') && strcasecmp(getenv('HTTP_CLIENT_IP'), 'unknown')) {
         $ip = getenv('HTTP_CLIENT_IP');
-    } elseif(getenv('HTTP_X_FORWARDED_FOR') && strcasecmp(getenv('HTTP_X_FORWARDED_FOR'), 'unknown')) {
+    } elseif (getenv('HTTP_X_FORWARDED_FOR') && strcasecmp(getenv('HTTP_X_FORWARDED_FOR'), 'unknown')) {
         $ip = getenv('HTTP_X_FORWARDED_FOR');
-    } elseif(getenv('REMOTE_ADDR') && strcasecmp(getenv('REMOTE_ADDR'), 'unknown')) {
+    } elseif (getenv('REMOTE_ADDR') && strcasecmp(getenv('REMOTE_ADDR'), 'unknown')) {
         $ip = getenv('REMOTE_ADDR');
-    } elseif(isset($_SERVER['REMOTE_ADDR']) && $_SERVER['REMOTE_ADDR'] && strcasecmp($_SERVER['REMOTE_ADDR'], 'unknown')) {
+    } elseif (isset($_SERVER['REMOTE_ADDR']) && $_SERVER['REMOTE_ADDR'] && strcasecmp($_SERVER['REMOTE_ADDR'], 'unknown')) {
         $ip = $_SERVER['REMOTE_ADDR'];
     }
-    $res =  preg_match('/[\d\.]{7,15}/', $ip, $matches) ? $matches [0] : '';
+    $res =  preg_match('/[\d\.]{7,15}/', $ip, $matches) ? $matches[0] : '';
     return $res;
     //dump(phpinfo());//所有PHP配置信息
 }
@@ -69,7 +70,7 @@ function ip_to_address($ip, $fields = '')
         return '';
     }
 
-    include_once Env::get('root_path') . 'extend/' . 'ipipnet/IP4datx.class.php';
+    include_once root_path() . 'extend/' . 'ipipnet/IP4datx.class.php';
 
     if (is_numeric($ip) || count(explode('.', $ip)) == 0) {
         $ip = long2ip($ip);
@@ -112,24 +113,24 @@ function ip_to_address($ip, $fields = '')
 //获取当前完整的url路径
 function get_cur_url()
 {
-//    $url = 'http://';
-//    if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') {
-//        $url = 'https://';
-//    }
-//
-//    if ($_SERVER['SERVER_PORT'] != '80') {
-//        $url .= $_SERVER['SERVER_NAME'] . ':' . $_SERVER['SERVER_PORT'] . $_SERVER['REQUEST_URI'];
-//    } else {
-//        $url .= $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
-//    }
-//
-//    return $url;
+    //    $url = 'http://';
+    //    if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') {
+    //        $url = 'https://';
+    //    }
+    //
+    //    if ($_SERVER['SERVER_PORT'] != '80') {
+    //        $url .= $_SERVER['SERVER_NAME'] . ':' . $_SERVER['SERVER_PORT'] . $_SERVER['REQUEST_URI'];
+    //    } else {
+    //        $url .= $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
+    //    }
+    //
+    //    return $url;
 
     $request = request();
     if ($request->isCli()) {
         $scheme = $request->header('scheme') ? $request->header('scheme') : $request->scheme();
         return $scheme . '://' . $request->header('x-original-host') . $request->server('REQUEST_URI');
-    } else {//cgi
+    } else { //cgi
         return $request->url(true);
     }
 }
@@ -148,7 +149,7 @@ function x_zip($path, $zipFile)
     $zip->open($zipFile, ZIPARCHIVE::CREATE);
 
     $path = preg_replace('/\/\//', '/', $path);
-    $base_dir = strpos($path, DIRECTORY_SEPARATOR) == strlen($path) - 1 ? $path: $path . DIRECTORY_SEPARATOR; //基目录
+    $base_dir = strpos($path, DIRECTORY_SEPARATOR) == strlen($path) - 1 ? $path : $path . DIRECTORY_SEPARATOR; //基目录
 
     if (is_file($path)) {
         $localName = str_replace($base_dir, '', $path);
@@ -158,7 +159,8 @@ function x_zip($path, $zipFile)
         return $zipFile;
     }
 
-    function addFileToZip($path, &$zip, &$base_dir) {
+    function addFileToZip($path, &$zip, &$base_dir)
+    {
         $handle = opendir($path);
         while (false !== ($file = readdir($handle))) {
             if ($file == '.' || $file == '..') {
@@ -166,7 +168,7 @@ function x_zip($path, $zipFile)
             }
 
             $targetFile = $path . DIRECTORY_SEPARATOR . $file;
-            if (is_file($targetFile)) {//条目是文件
+            if (is_file($targetFile)) { //条目是文件
                 $localName = str_replace($base_dir, '', $targetFile);
                 //var_dump($localName);var_dump($targetFile);
                 $zip->addFile($targetFile, $localName);
@@ -204,7 +206,7 @@ function x_unzip($zipFile, $unzipPath = '.')
 }
 
 //日志输出，用于第三方库统一日志输出，如extend或vendor内的库输出
-function file_log($message, $level='debug')
+function file_log($message, $level = 'debug')
 {
     Log::log($level, $message);
 }
@@ -295,13 +297,17 @@ function encrypt_password_low($rawPasswd, $key = '')
 function parse_name($name, $style = 0, $isField = false)
 {
     if ($style) {
-        $newName = ucfirst(preg_replace_callback("/_([a-zA-Z])/", function ($r) {return strtoupper($r[1]);}, $name));
+        $newName = ucfirst(preg_replace_callback("/_([a-zA-Z])/", function ($r) {
+            return strtoupper($r[1]);
+        }, $name));
         if ($isField) {
             $newName = lcfirst($newName);
         }
         return $newName;
     } else {
-        return strtolower(trim(preg_replace_callback("/[A-Z]/", function ($r) {return "_" . $r[0];}, $name), "_"));
+        return strtolower(trim(preg_replace_callback("/[A-Z]/", function ($r) {
+            return "_" . $r[0];
+        }, $name), "_"));
     }
 }
 
@@ -399,8 +405,9 @@ function date_time($time = '', $format = 'Y-m-d H:i:s')
  * @param $object
  * @return array
  */
-function obj_to_array(&$object) {
-    $arr = json_decode(json_encode( $object),true);
+function obj_to_array(&$object)
+{
+    $arr = json_decode(json_encode($object), true);
     return  $arr;
 }
 
@@ -415,12 +422,17 @@ function get_config($key = '', $default = null)
     $config = Cache::get('config');
     if (empty(Cache::get('config_sentinel')) || empty($config) || config('app_debug')) {
         $ConfigModel = new \app\common\model\ConfigModel();
-        $config = $ConfigModel->column('value', 'key');
+        try {
+            $config = $ConfigModel->column('value', 'key');
+        } catch (\Exception $e) {
+            dump($e->getTraceAsString());
+        }
+
 
         Cache::set('config', $config, -1); //永不过期，通过config_sentinel过期来更新
         Cache::set('config_sentinel', '1', 5 * 60); //config的哨兵
     }
-    
+
     if (empty($key)) {
         return $config;
     } else {
@@ -468,7 +480,7 @@ function get_file($id)
  * @param string $module 模块，默认是cms
  * @return array
  */
-function get_theme_config($module='cms')
+function get_theme_config($module = 'cms')
 {
     $prefix = $module == 'cms' ? '' : $module . '_';
 
@@ -483,7 +495,7 @@ function get_theme_config($module='cms')
     }
 
     //当前主题的存放路径
-    $themePath = Env::get('root_path')  . 'public' . DIRECTORY_SEPARATOR . 'theme' . DIRECTORY_SEPARATOR . $packageName . DIRECTORY_SEPARATOR;
+    $themePath = root_path()  . 'public' . DIRECTORY_SEPARATOR . 'theme' . DIRECTORY_SEPARATOR . $packageName . DIRECTORY_SEPARATOR;
     if (!file_exists($themePath)) {
         die('主题路径不存在：' . $themePath);
     }
@@ -651,35 +663,35 @@ function time_left($start = '', $end = '', $resType = 'int')
 }
 
 //获取当天时间限制
-function get_day_limit($date = null,$type = 'int')
+function get_day_limit($date = null, $type = 'int')
 {
     if (!$date) {
         $date = date('Y-m-d');
     }
     $timeStart = strtotime($date);
-    $timeEnd = $timeStart + 3600*24 -1;
+    $timeEnd = $timeStart + 3600 * 24 - 1;
     if ($type == 'date') {
-        $timeStart = date('Y-m-d H:i:s',$timeStart);
-        $timeEnd = date('Y-m-d H:i:s',$timeEnd);
+        $timeStart = date('Y-m-d H:i:s', $timeStart);
+        $timeEnd = date('Y-m-d H:i:s', $timeEnd);
     }
 
     $dayLimit = [
         'timeStart' => $timeStart,
         'timeEnd' => $timeEnd,
-        'map' => ['between',[$timeStart,$timeEnd]]
+        'map' => ['between', [$timeStart, $timeEnd]]
     ];
     return $dayLimit;
 }
 
 //获取当月时间限制
-function get_month_limit($date = null,$type = 'int')
+function get_month_limit($date = null, $type = 'int')
 {
     if (!$date) {
         $date = date('Y-m-1');
     }
     $time = strtotime($date);
-    $timeStart = date('Y-m-1',$time);
-    $timeEnd = date('Y-m-t 23:59:59',$time);
+    $timeStart = date('Y-m-1', $time);
+    $timeEnd = date('Y-m-t 23:59:59', $time);
     if ($type == 'int') {
         $timeStart = strtotime($timeStart);
         $timeEnd = strtotime($timeEnd);
@@ -688,7 +700,7 @@ function get_month_limit($date = null,$type = 'int')
     $monthLimit = [
         'timeStart' => $timeStart,
         'timeEnd' => $timeEnd,
-        'map' => ['between',[$timeStart,$timeEnd]]
+        'map' => ['between', [$timeStart, $timeEnd]]
     ];
     return $monthLimit;
 }
@@ -830,7 +842,7 @@ function url_add_domain($url = '')
 }
 
 //从url中获取域名, $root_domain=true时返回根域名
-function url_get_domain($url = '', $root_domain=false, &$details=[])
+function url_get_domain($url = '', $root_domain = false, &$details = [])
 {
     $tokens = explode('/', $url);
     $protocol = str_replace(':', '', $tokens[0]);
@@ -847,7 +859,7 @@ function url_get_domain($url = '', $root_domain=false, &$details=[])
     $domainTokens = explode('.', $domain);
     if (count($domainTokens) == 2) {
         $details['root_domain'] = $domain;
-    } else if (count($domainTokens) > 2){
+    } else if (count($domainTokens) > 2) {
         $details['root_domain'] = $domainTokens[count($domainTokens) - 2] . '.' . $domainTokens[count($domainTokens) - 1];
     }
 
@@ -928,9 +940,10 @@ function http_build_query_ext($query_data)
  * @param $isEscape, 是否做 htmlspecialchars
  * @return mixed|string
  */
-function remove_xss($html, $isEscape=false)
+function remove_xss($html, $isEscape = false)
 {
-    $html = htmlspecialchars_decode($html);Log::info($html);
+    $html = htmlspecialchars_decode($html);
+    Log::info($html);
     preg_match_all("/\<([^\<]+)\>/is", $html, $ms);
 
     $searches[]  = '<';
@@ -949,7 +962,8 @@ function remove_xss($html, $isEscape=false)
             $value = str_replace('_uch_tmp_str_', '&amp;', $value);
 
             $value    = str_replace(array('\\', '/*'), array('.', '/.'), $value);
-            $skipKeys = array('onabort', 'onactivate', 'onafterprint', 'onafterupdate', 'onbeforeactivate', 'onbeforecopy', 'onbeforecut', 'onbeforedeactivate',
+            $skipKeys = array(
+                'onabort', 'onactivate', 'onafterprint', 'onafterupdate', 'onbeforeactivate', 'onbeforecopy', 'onbeforecut', 'onbeforedeactivate',
                 'onbeforeeditfocus', 'onbeforepaste', 'onbeforeprint', 'onbeforeunload', 'onbeforeupdate', 'onblur', 'onbounce', 'oncellchange', 'onchange',
                 'onclick', 'oncontextmenu', 'oncontrolselect', 'oncopy', 'oncut', 'ondataavailable', 'ondatasetchanged', 'ondatasetcomplete', 'ondblclick',
                 'ondeactivate', 'ondrag', 'ondragend', 'ondragenter', 'ondragleave', 'ondragover', 'ondragstart', 'ondrop', 'onerror', 'onerrorupdate',
@@ -957,7 +971,8 @@ function remove_xss($html, $isEscape=false)
                 'onload', 'onlosecapture', 'onmousedown', 'onmouseenter', 'onmouseleave', 'onmousemove', 'onmouseout', 'onmouseover', 'onmouseup', 'onmousewheel',
                 'onmove', 'onmoveend', 'onmovestart', 'onpaste', 'onpropertychange', 'onreadystatechange', 'onreset', 'onresize', 'onresizeend', 'onresizestart',
                 'onrowenter', 'onrowexit', 'onrowsdelete', 'onrowsinserted', 'onscroll', 'onselect', 'onselectionchange', 'onselectstart', 'onstart', 'onstop',
-                'onsubmit', 'onunload', 'javascript', 'script', 'eval', 'behaviour', 'expression');
+                'onsubmit', 'onunload', 'javascript', 'script', 'eval', 'behaviour', 'expression'
+            );
             $skipStr = implode('|', $skipKeys);
             $value   = preg_replace(array("/($skipStr)/i"), '.', $value);
             if (!preg_match("/^[\/|\s]?($allowTags)(\s+|$)/is", $value)) {
@@ -981,8 +996,8 @@ function user_count($type = null)
 {
     switch ($type) {
         case 'new':
-            $today = \think\helper\Time::today();
-            $map[] = ['register_time','between', [date_time($today[0]), date_time($today[1])]];
+            $today = [Date::today(), new Date('now')];
+            $map[] = ['register_time', 'between', [date_time($today[0]->unix()), date_time($today[1]->unix())]];
             break;
         case 'vip':
             $map['isvip'] = 1;
@@ -1001,7 +1016,7 @@ function user_count($type = null)
 }
 
 //发送系统消息、发送站内信、信息反馈等
-function send_message($from, $to, $title, $content='', $type=1)
+function send_message($from, $to, $title, $content = '', $type = 1)
 {
     $data['type'] = $type;
     $data['title'] = $title;
@@ -1016,7 +1031,7 @@ function send_message($from, $to, $title, $content='', $type=1)
 }
 
 //消息数量
-function message_count($type=0, $status=0, $fromUid=0, $toUid=0)
+function message_count($type = 0, $status = 0, $fromUid = 0, $toUid = 0)
 {
     $where = [];
     if (!empty($type)) {

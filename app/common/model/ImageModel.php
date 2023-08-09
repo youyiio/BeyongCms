@@ -75,7 +75,7 @@ class ImageModel extends Model
                 'id'           => $v->id,
                 'thumb_image_url'    => $v->thumb_image_url,
                 'image_url'       => $v->file_url,
-                'full_image_url'   => url_add_domain($v->file_path),
+                'full_image_url'   => url_add_domain($v->file_url),
                 'remark' => $v->remark,
             ];
         }

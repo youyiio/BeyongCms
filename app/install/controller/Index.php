@@ -1,14 +1,16 @@
 <?php
+
 namespace app\install\controller;
 
-use think\Controller;
+use app\common\controller\BaseController;
 use think\facade\Env;
 
 use app\install\logic\InstallLogic;
+
 /**
  * 安装控制器
  */
-class Index extends Controller
+class Index extends BaseController
 {
 
     public function initialize()
@@ -110,5 +112,4 @@ class Index extends Controller
 
         return $this->fetch('step2');
     }
-
 }
