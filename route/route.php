@@ -12,14 +12,11 @@
 use think\facade\Route;
 
 
-return [
-    '__pattern__' => [
-        'id' => '\d+',
-        'uid' => '\d+',
-        'aid' => '\d+',
-        'cid' => '\d+',
-        'cname' => '\w+',
-        'csubname' => '\w+'
-    ],
-
-];
+Route::pattern([
+    'id' => '\d+',
+    'uid' => '\d+',
+    'aid' => '\d+',
+    'cid' => '\d+',
+    'cname' => '\w+',
+    'csubname' => '\w+'
+]);

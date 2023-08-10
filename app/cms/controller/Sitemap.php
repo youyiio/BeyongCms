@@ -1,10 +1,12 @@
 <?php
+
 /**
  * Created by VSCode.
  * User: cattong
  * Date: 2018-12-03
  * Time: 16:15
  */
+
 namespace app\cms\controller;
 
 use think\facade\Env;
@@ -24,11 +26,11 @@ class Sitemap extends Base
     ];
 
     //网站地图，生成sitemap.xml, 500url分一个文件;避免sitemap.xml过大
-    public function xml($id='')
+    public function xml($id = '')
     {
         header("Content-type:text/xml;charset=utf-8");
 
-        $xmlFileName = Env::get('root_path') . 'public' . DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . $this->config['xml_file'];
+        $xmlFileName = root_path() . 'public' . DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . $this->config['xml_file'];
         if (cache('sitemap' . CACHE_SEPARATOR . 'generated')) {
             if (!empty($id) && file_exists($xmlFileName . LibSitemap::SITEMAP_SEPERATOR . $id . LibSitemap::SITEMAP_EXT)) {
                 echo file_get_contents($xmlFileName . LibSitemap::SITEMAP_SEPERATOR . $id . LibSitemap::SITEMAP_EXT);
@@ -47,16 +49,16 @@ class Sitemap extends Base
         $costTimeStart = $this->getMillisecond();
 
         $sitemap = new LibSitemap($this->config['domain'] ? $this->config['domain'] : config('url_domain_root'));
-        $sitemap->setXmlFile($xmlFileName);	 // 设置xml文件（可选）
+        $sitemap->setXmlFile($xmlFileName);     // 设置xml文件（可选）
         $sitemap->setDomain($this->config['domain'] ? $this->config['domain'] : config('url_domain_root')); // 设置自定义的根域名（可选）
-        $sitemap->setIsSchemeMore(true);	// 设置是否写入额外的Schema头信息（可选）
+        $sitemap->setIsSchemeMore(true);    // 设置是否写入额外的Schema头信息（可选）
 
 
         //生成index 首页
-        $sitemap->addItem(url('frontend/Index/index',null, false, get_config('domain_name')), 1, "hourly", date_time());
-        $sitemap->addItem(url('frontend/Index/about',null, false, get_config('domain_name')), 1, "monthly", date_time());
-        $sitemap->addItem(url('frontend/Index/contact',null, false, get_config('domain_name')), 1, "monthly", date_time());
-        $sitemap->addItem(url('frontend/Index/about',null, false, get_config('domain_name')), 1, "monthly", date_time());
+        $sitemap->addItem(url('frontend/Index/index', null, false, get_config('domain_name')), 1, "hourly", date_time());
+        $sitemap->addItem(url('frontend/Index/about', null, false, get_config('domain_name')), 1, "monthly", date_time());
+        $sitemap->addItem(url('frontend/Index/contact', null, false, get_config('domain_name')), 1, "monthly", date_time());
+        $sitemap->addItem(url('frontend/Index/about', null, false, get_config('domain_name')), 1, "monthly", date_time());
 
         //生成栏目item
         $CategoryModel = new CategoryModel();
@@ -97,7 +99,7 @@ class Sitemap extends Base
 
         // 计算生成的时间
         $costTime = $this->getMillisecond() - $costTimeStart;
-        $costTime= sprintf('%01.6f', $costTime);
+        $costTime = sprintf('%01.6f', $costTime);
         Log::info("生成sitemap.xml 用时 : $costTime (s)");
 
         cache('sitemap' . CACHE_SEPARATOR . 'generated', true, 3600);
@@ -118,7 +120,7 @@ class Sitemap extends Base
     //网站地图，html页面
     public function html()
     {
-        $templateFile = Env::get('app_path') . 'cms' . DIRECTORY_SEPARATOR . 'view' . DIRECTORY_SEPARATOR . 'sitemap' . DIRECTORY_SEPARATOR . 'sitemap.html';
+        $templateFile = app_path() . 'cms' . DIRECTORY_SEPARATOR . 'view' . DIRECTORY_SEPARATOR . 'sitemap' . DIRECTORY_SEPARATOR . 'sitemap.html';
         $content = file_get_contents($templateFile);
         return $this->display($content);
     }
@@ -129,8 +131,6 @@ class Sitemap extends Base
         $time = explode(" ", microtime());
         return $time[1] + $time[0];
     }
-
-
 }
 
 
@@ -144,13 +144,13 @@ class Sitemap extends Base
 class LibSitemap
 {
 
-    private $writer;		// XMLWriter对象
-    private $domain = "http://www.beyongcms.com";			// 网站地图根域名
-    private $xmlFile = "sitemap";					// 网站地图xml文件（不含后缀.xml）
-    private $currXmlFileFullPath = "";				// 网站地图xml文件当前全路径
-    private $isSchemaMore= true;					// 网站地图是否添加额外的schema
-    private $currentItem = 0;						// 网站地图item个数（序号）
-    private $currentSitemap = 1;					// 网站地图的个数（序号）
+    private $writer;        // XMLWriter对象
+    private $domain = "http://www.beyongcms.com";            // 网站地图根域名
+    private $xmlFile = "sitemap";                    // 网站地图xml文件（不含后缀.xml）
+    private $currXmlFileFullPath = "";                // 网站地图xml文件当前全路径
+    private $isSchemaMore = true;                    // 网站地图是否添加额外的schema
+    private $currentItem = 0;                        // 网站地图item个数（序号）
+    private $currentSitemap = 1;                    // 网站地图的个数（序号）
 
     const SCHEMA_XMLNS = 'http://www.sitemaps.org/schemas/sitemap/0.9';
     const SCHEMA_XMLNS_XSI = 'http://www.w3.org/2001/XMLSchema-instance';
@@ -195,8 +195,8 @@ class LibSitemap
      */
     public function setDomain($domain)
     {
-        if(substr($domain, -1) == "/") {
-            $domain = substr($domain, 0, strlen($domain)-1);
+        if (substr($domain, -1) == "/") {
+            $domain = substr($domain, 0, strlen($domain) - 1);
         }
         $this->domain = $domain;
         return $this;
@@ -290,22 +290,25 @@ class LibSitemap
     /**
      * 设置网站地图个数加1
      */
-    private function incCurrentSitemap() {
+    private function incCurrentSitemap()
+    {
         $this->currentSitemap = $this->currentSitemap + 1;
     }
 
     private function getXMLFileFullPath()
     {
-        $xmlfileFullPath = $this->getXmlFile() . self::SITEMAP_SEPERATOR . $this->getCurrentSitemap() . self::SITEMAP_EXT;	// 第n个网站地图xml文件名 + -n + 后缀.xml
-        $this->setCurrXmlFileFullPath($xmlfileFullPath);		// 保存当前xml文件全路径
+        $xmlfileFullPath = $this->getXmlFile() . self::SITEMAP_SEPERATOR . $this->getCurrentSitemap() . self::SITEMAP_EXT;    // 第n个网站地图xml文件名 + -n + 后缀.xml
+        $this->setCurrXmlFileFullPath($xmlfileFullPath);        // 保存当前xml文件全路径
         return $xmlfileFullPath;
     }
 
-    public function getCurrXmlFileFullPath() {
+    public function getCurrXmlFileFullPath()
+    {
         return $this->currXmlFileFullPath;
     }
 
-    private function setCurrXmlFileFullPath($currXmlFileFullPath) {
+    private function setCurrXmlFileFullPath($currXmlFileFullPath)
+    {
         $this->currXmlFileFullPath = $currXmlFileFullPath;
     }
 
@@ -315,7 +318,7 @@ class LibSitemap
     private function startSitemap()
     {
         $this->setWriter(new XMLWriter());
-        $this->getWriter()->openURI($this->getXMLFileFullPath());	// 获取xml文件全路径
+        $this->getWriter()->openURI($this->getXMLFileFullPath());    // 获取xml文件全路径
 
         $this->getWriter()->setIndentString("\t");
         $this->getWriter()->setIndent(true);
@@ -325,7 +328,7 @@ class LibSitemap
         $this->getWriter()->writePi('xml-stylesheet', 'type="text/xsl" href="' . $xsltFilePath . '"');
 
         $this->getWriter()->startElement('urlset');
-        if($this->isSchemaMore) {
+        if ($this->isSchemaMore) {
             $this->getWriter()->writeAttribute('xmlns:xsi', self::SCHEMA_XMLNS_XSI);
             $this->getWriter()->writeAttribute('xsi:schemaLocation', self::SCHEMA_XSI_SCHEMALOCATION);
         }
@@ -357,13 +360,13 @@ class LibSitemap
         $this->incCurrentItem();
         $this->getWriter()->startElement('url');
         $newLoc = strpos($loc, 'http') === 0 ? $loc : $this->getDomain() . $loc;
-        $this->getWriter()->writeElement('loc', $newLoc);			// 必选
-        $this->getWriter()->writeElement('priority', $priority);					// 必选
+        $this->getWriter()->writeElement('loc', $newLoc);            // 必选
+        $this->getWriter()->writeElement('priority', $priority);                    // 必选
         if ($changefreq) {
-            $this->getWriter()->writeElement('changefreq', $changefreq);			// 可选
+            $this->getWriter()->writeElement('changefreq', $changefreq);            // 可选
         }
         if ($lastmod) {
-            $this->getWriter()->writeElement('lastmod', $this->getLastModifiedDate($lastmod));	// 可选
+            $this->getWriter()->writeElement('lastmod', $this->getLastModifiedDate($lastmod));    // 可选
         }
         $this->getWriter()->endElement();
 
@@ -375,13 +378,13 @@ class LibSitemap
      * @param $date 日期
      * @return string
      */
-    private function getLastModifiedDate($date=null)
+    private function getLastModifiedDate($date = null)
     {
-        if(null == $date) {
+        if (null == $date) {
             $date = time();
         }
         if (ctype_digit($date)) {
-            return date('c', $date);	// Y-m-d
+            return date('c', $date);    // Y-m-d
         } else {
             $date = strtotime($date);
             return date('c', $date);
@@ -430,5 +433,4 @@ class LibSitemap
         $indexWriter->endElement();
         $indexWriter->endDocument();
     }
-
 }

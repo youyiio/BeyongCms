@@ -1,4 +1,5 @@
 <?php
+
 namespace app\common\controller;
 
 use app\common\model\FileModel;
@@ -14,7 +15,7 @@ trait Image
 {
     public function upload()
     {
-        
+
         $tmpFile = request()->file('Filedata');
         if (empty($tmpFile)) $tmpFile = request()->file('file');
         if (empty($tmpFile)) {
@@ -30,7 +31,7 @@ trait Image
         $tbWidth = request()->param('thumbWidth/d', 0);
         $tbHeight = request()->param('thumbHeight/d', 0);
 
-        $path = Env::get('root_path') . 'public' . DIRECTORY_SEPARATOR . 'upload';
+        $path = root_path() . 'public' . DIRECTORY_SEPARATOR . 'upload';
 
         $check = $this->validate(
             ['file' => $tmpFile],
@@ -47,8 +48,8 @@ trait Image
 
         list($width, $height, $type) = getimagesize($tmpFile->getRealPath()); //获得图片宽高类型
         if ($imgWidth > 0 && $imgHeight > 0) {
-            if (!($width >= $imgWidth-10 && $width <= $imgWidth+10 && $height >= $imgHeight-10 && $height <= $imgHeight+10)) {
-                $this->error('图片尺寸不符合要求:'.$imgWidth.'*'.$imgHeight);
+            if (!($width >= $imgWidth - 10 && $width <= $imgWidth + 10 && $height >= $imgHeight - 10 && $height <= $imgHeight + 10)) {
+                $this->error('图片尺寸不符合要求:' . $imgWidth . '*' . $imgHeight);
             }
         }
 
@@ -70,7 +71,7 @@ trait Image
         $extension = image_type_to_extension($type, false); //png格式时，quality不影响值；jpg|jpeg有效果
         if ($imgWidth > 0 && $imgHeight > 0) {
             //缩放至指定的宽高
-            $image->thumb($imgWidth, $imgHeight, \think\Image::THUMB_FIXED);//固定尺寸缩放
+            $image->thumb($imgWidth, $imgHeight, \think\Image::THUMB_FIXED); //固定尺寸缩放
             $image->save($imgUrl, $extension, $quality, true);
         }
 
@@ -81,13 +82,13 @@ trait Image
             $tbImgUrl = $file->getPath() . DIRECTORY_SEPARATOR . 'tb_' . $file->getFilename();
 
             //缩放至指定的宽高
-            $image->thumb($tbWidth, $tbHeight, \think\Image::THUMB_FIXED);//固定尺寸缩放
+            $image->thumb($tbWidth, $tbHeight, \think\Image::THUMB_FIXED); //固定尺寸缩放
 
             $image->save($tbImgUrl, $extension, $quality, true);
 
             $data = [
                 'file_url' => DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . dirname($saveName) . DIRECTORY_SEPARATOR . $file->getFilename(),
-                'file_path' => Env::get('root_path') . 'public',
+                'file_path' => root_path() . 'public',
                 'size' => $fileSize,
                 'ext' => strtolower($file->getExtension()),
                 'name' => $file->getFilename(),
@@ -100,7 +101,7 @@ trait Image
         } else {
             $data = [
                 'file_url' => DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . dirname($saveName) . DIRECTORY_SEPARATOR . $file->getFilename(),
-                'file_path' => Env::get('root_path') . 'public',
+                'file_path' => root_path() . 'public',
                 'size' => $fileSize,
                 'ext' => strtolower($file->getExtension()),
                 'name' => $file->getFilename(),
@@ -131,5 +132,4 @@ trait Image
         //$this->success('图片上传成功',null, $data);
         $this->result($data, 1, '图片上传成功', 'json');
     }
-
 }

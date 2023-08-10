@@ -27,7 +27,7 @@ class Index extends BaseController
      */
     public function checkInstall()
     {
-        $installLockFile = Env::get('root_path') . 'data' . DIRECTORY_SEPARATOR . 'install.lock';
+        $installLockFile = root_path() . 'data' . DIRECTORY_SEPARATOR . 'install.lock';
         if (file_exists($installLockFile)) {
             $this->error('已经成功安装，请勿重复安装!', '/');
         }

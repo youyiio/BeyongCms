@@ -1,7 +1,9 @@
 <?php
+
 /**
-* 百度编辑器控制器
-*/
+ * 百度编辑器控制器
+ */
+
 namespace app\admin\controller;
 
 use think\facade\Env;
@@ -32,8 +34,8 @@ class BaiduUeditor extends Base
             $this->waterText = get_config('domain_name');
         }
 
-        $this->rootPath = Env::get('root_path') . 'public';
-        $this->savePath = DIRECTORY_SEPARATOR . 'upload'. DIRECTORY_SEPARATOR . $this->uid;
+        $this->rootPath = root_path() . 'public';
+        $this->savePath = DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . $this->uid;
 
         // 水印位置, 9为右下角
         $this->waterPosition = 9;
@@ -51,7 +53,7 @@ class BaiduUeditor extends Base
                 $result =  json_encode($CONFIG);
                 break;
 
-            /* 上传图片 */
+                /* 上传图片 */
             case 'uploadimage':
                 $config = array(
                     "pathFormat" => $CONFIG['imagePathFormat'],
@@ -59,10 +61,10 @@ class BaiduUeditor extends Base
                     "allowFiles" => $CONFIG['imageAllowFiles']
                 );
                 $fieldName = $CONFIG['imageFieldName'];
-                $result=$this->upFile($config, $fieldName);
+                $result = $this->upFile($config, $fieldName);
                 break;
 
-            /* 上传涂鸦 */
+                /* 上传涂鸦 */
             case 'uploadscrawl':
                 $config = array(
                     "pathFormat" => $CONFIG['scrawlPathFormat'],
@@ -72,10 +74,10 @@ class BaiduUeditor extends Base
                 );
                 $fieldName = $CONFIG['scrawlFieldName'];
                 $base64 = "base64";
-                $result=$this->upBase64($config,$fieldName);
+                $result = $this->upBase64($config, $fieldName);
                 break;
 
-            /* 上传视频 */
+                /* 上传视频 */
             case 'uploadvideo':
                 $config = array(
                     "pathFormat" => $CONFIG['videoPathFormat'],
@@ -83,46 +85,46 @@ class BaiduUeditor extends Base
                     "allowFiles" => $CONFIG['videoAllowFiles']
                 );
                 $fieldName = $CONFIG['videoFieldName'];
-                $result=$this->upFile($config, $fieldName);
+                $result = $this->upFile($config, $fieldName);
                 break;
 
-            /* 上传文件 */
+                /* 上传文件 */
             case 'uploadfile':
-               // default:
+                // default:
                 $config = array(
                     "pathFormat" => $CONFIG['filePathFormat'],
                     "maxSize" => $CONFIG['fileMaxSize'],
                     "allowFiles" => $CONFIG['fileAllowFiles']
                 );
                 $fieldName = $CONFIG['fileFieldName'];
-                $result=$this->upFile($config, $fieldName);
+                $result = $this->upFile($config, $fieldName);
                 break;
 
-            /* 列出图片 */
+                /* 列出图片 */
             case 'listimage':
                 $allowFiles = $CONFIG['imageManagerAllowFiles'];
                 $listSize = $CONFIG['imageManagerListSize'];
                 $path = $CONFIG['imageManagerListPath'];
-                $get=$_GET;
-                $result =$this->file_list($allowFiles, $listSize, $get);
-                        break;
+                $get = $_GET;
+                $result = $this->file_list($allowFiles, $listSize, $get);
+                break;
                 /* 列出文件 */
             case 'listfile':
                 $allowFiles = $CONFIG['fileManagerAllowFiles'];
                 $listSize = $CONFIG['fileManagerListSize'];
                 $path = $CONFIG['fileManagerListPath'];
-                $get=$_GET;
-                $result =$this->file_list($allowFiles, $listSize, $get);
+                $get = $_GET;
+                $result = $this->file_list($allowFiles, $listSize, $get);
                 break;
 
-            /* 抓取远程文件 */
+                /* 抓取远程文件 */
             case 'catchimage':
                 $config = array(
                     "pathFormat" => $CONFIG['catcherPathFormat'],
                     "maxSize" => $CONFIG['catcherMaxSize'],
                     "allowFiles" => $CONFIG['catcherAllowFiles'],
                     "oriName" => "remote.png"
-               );
+                );
                 $fieldName = $CONFIG['catcherFieldName'];
 
                 /* 抓取远程图片 */
@@ -135,7 +137,7 @@ class BaiduUeditor extends Base
                 }
                 foreach ($source as $imgUrl) {
                     $remoteResult = $this->saveRemote($config, $imgUrl);
-                    $info = json_decode($remoteResult,true);
+                    $info = json_decode($remoteResult, true);
                     if ($info && isset($info["url"])) {
                         array_push($list, array(
                             "state" => $info["state"],
@@ -153,16 +155,16 @@ class BaiduUeditor extends Base
                     }
                 }
 
-                $result= json_encode(array(
-                    'state'=> count($list) ? 'SUCCESS':'ERROR',
-                    'list'=> $list,
+                $result = json_encode(array(
+                    'state' => count($list) ? 'SUCCESS' : 'ERROR',
+                    'list' => $list,
                     'fail_list' => $failList
                 ));
                 break;
 
             default:
                 $result = json_encode(array(
-                    'state'=> '请求地址出错'
+                    'state' => '请求地址出错'
                 ));
                 break;
         }
@@ -179,7 +181,6 @@ class BaiduUeditor extends Base
         } else {
             echo $result;
         }
-
     }
     /**
      * 上传文件的主处理方法
@@ -196,10 +197,10 @@ class BaiduUeditor extends Base
         $dirname = $this->rootPath . $this->savePath;
         $tmpFile = request()->file('upfile');
 
-        $file = $tmpFile->move($dirname);//tp方法会自动加上日期date('Ymd');$info->getSaveName()为date('Ymd')/name.ext;
+        $file = $tmpFile->move($dirname); //tp方法会自动加上日期date('Ymd');$info->getSaveName()为date('Ymd')/name.ext;
         $savePath = $this->savePath;
         if ($file) {
-            $fname = $dirname . DIRECTORY_SEPARATOR.$file->getSaveName();
+            $fname = $dirname . DIRECTORY_SEPARATOR . $file->getSaveName();
             $imagearr = explode(',', 'jpg,gif,png,jpeg,bmp,ttf,tif');
             $ext = $file->getExtension();
             $quality = get_config('image_upload_quality', 80); //获取图片清晰度设置，默认是80
@@ -210,11 +211,11 @@ class BaiduUeditor extends Base
 
                 $image = Image::open($fname);
                 if ($maxLimit > 0) {
-                    $image->thumb($maxLimit, $maxLimit, $this->thumb);//设置缩略图模式，按宽最大680或高最大680压缩
+                    $image->thumb($maxLimit, $maxLimit, $this->thumb); //设置缩略图模式，按宽最大680或高最大680压缩
                 }
                 if ($this->water == 1) {
                     $font = Env::get('VENDOR_PATH') . '/topthink/think-captcha/assets/zhttfs/1.ttf';
-                    $image->text($this->waterText, $font,10,'#FFCC66', $this->waterPosition, [-8,-8])->save($fname, $ext, $quality);
+                    $image->text($this->waterText, $font, 10, '#FFCC66', $this->waterPosition, [-8, -8])->save($fname, $ext, $quality);
                 } else if ($this->water == 2) {
                     $image->water($this->waterImage)->save($fname, $ext, $quality);
                 } else {
@@ -224,7 +225,7 @@ class BaiduUeditor extends Base
 
             $data = array(
                 'state' => 'SUCCESS',
-                'url' => config('view_replace_str.__PUBLIC__') . str_replace(DIRECTORY_SEPARATOR, '/', $savePath.$file->getSaveName()),
+                'url' => config('view_replace_str.__PUBLIC__') . str_replace(DIRECTORY_SEPARATOR, '/', $savePath . $file->getSaveName()),
                 'title' => $file->getFileName(),
                 'original' => $file->getInfo('name'),
                 'type' => '.' . $ext,
@@ -248,7 +249,7 @@ class BaiduUeditor extends Base
         $base64Data = $_POST[$fieldName];
         $img = base64_decode($base64Data);
 
-        $savePath = $this->savePath .date('Ymd').DIRECTORY_SEPARATOR;
+        $savePath = $this->savePath . date('Ymd') . DIRECTORY_SEPARATOR;
         $dirname = $this->rootPath . $savePath;
         $file['filesize'] = strlen($img);
         $file['oriName'] = $config['oriName'];
@@ -259,8 +260,8 @@ class BaiduUeditor extends Base
 
         //检查文件大小是否超出限制
         if ($file['filesize'] >= ($config["maxSize"])) {
-            $data=array(
-                'state'=>'文件大小超出网站限制',
+            $data = array(
+                'state' => '文件大小超出网站限制',
             );
             return json_encode($data);
         }
@@ -268,12 +269,12 @@ class BaiduUeditor extends Base
         //创建目录失败
         if (!file_exists($dirname) && !mkdir($dirname, 0777, true)) {
             $data = array(
-                'state'=>'目录创建失败',
+                'state' => '目录创建失败',
             );
             return json_encode($data);
         } else if (!is_writeable($dirname)) {
-             $data = array(
-                'state'=>'目录没有写权限',
+            $data = array(
+                'state' => '目录没有写权限',
             );
             return json_encode($data);
         }
@@ -281,12 +282,12 @@ class BaiduUeditor extends Base
         //移动文件
         if (!(file_put_contents($fullName, $img) && file_exists($fullName))) { //移动失败
             $data = array(
-                'state'=>'写入文件内容错误',
+                'state' => '写入文件内容错误',
             );
         } else { //移动成功
-            $data=array(
+            $data = array(
                 'state' => 'SUCCESS',
-                'url' => config('view_replace_str.__PUBLIC__') . str_replace(DIRECTORY_SEPARATOR, '/', $savePath.$file['name']),
+                'url' => config('view_replace_str.__PUBLIC__') . str_replace(DIRECTORY_SEPARATOR, '/', $savePath . $file['name']),
                 'title' => $file['name'],
                 'original' => $file['oriName'],
                 'type' => $file['ext'],
@@ -307,10 +308,10 @@ class BaiduUeditor extends Base
 
         //http开头验证
         if (strpos($imgUrl, "http") !== 0) {
-             $data = array(
-                 'state' => '链接不是http|https链接',
-             );
-             return json_encode($data);
+            $data = array(
+                'state' => '链接不是http|https链接',
+            );
+            return json_encode($data);
         }
 
         //设置get_headers/readfile 远程通信的配置
@@ -329,19 +330,19 @@ class BaiduUeditor extends Base
         //获取请求头并检测死链
         $heads = get_headers($imgUrl, true);
         if (!(stristr($heads[0], "200") && stristr($heads[0], "OK"))) {
-             $data = array(
+            $data = array(
                 'state' => '链接不可用',
             );
-             return json_encode($data);
+            return json_encode($data);
         }
         //格式验证(扩展名验证和Content-Type验证)
-        $fileType = strtolower(strrchr(strrchr($imgUrl,'/'), '.'));
+        $fileType = strtolower(strrchr(strrchr($imgUrl, '/'), '.'));
         //img链接后缀可能为空,Content-Type须为image
         if ((!empty($fileType) && !in_array($fileType, $config['allowFiles'])) || stristr($heads['Content-Type'], "image") === -1) {
-            $data=array(
-                'state'=>'链接contentType不正确',
+            $data = array(
+                'state' => '链接contentType不正确',
             );
-             return json_encode($data);
+            return json_encode($data);
         }
 
         //解析出域名作为http_referer
@@ -372,9 +373,9 @@ class BaiduUeditor extends Base
         //$m为文件名
         preg_match("/[\/]([^\/]*)[\.]?[^\.\/]*$/", $imgUrl, $m);
 
-        $savePath = $this->savePath .date('Ymd') . DIRECTORY_SEPARATOR;
+        $savePath = $this->savePath . date('Ymd') . DIRECTORY_SEPARATOR;
         $dirname = $this->rootPath . $savePath;
-        $file['oriName'] = $m ? $m[1]:"";
+        $file['oriName'] = $m ? $m[1] : "";
         $file['filesize'] = strlen($img);
         $file['ext'] = strtolower(strrchr($config['oriName'], '.'));
         $file['name'] = uniqid() . $file['ext'];
@@ -411,7 +412,7 @@ class BaiduUeditor extends Base
         } else { //移动成功
             $data = array(
                 'state' => 'SUCCESS',
-                'url' => config('view_replace_str.__PUBLIC__') . str_replace(DIRECTORY_SEPARATOR, '/', $savePath.$file['name']),
+                'url' => config('view_replace_str.__PUBLIC__') . str_replace(DIRECTORY_SEPARATOR, '/', $savePath . $file['name']),
                 'title' => $file['name'],
                 'original' => $file['oriName'],
                 'type' => $file['ext'],
@@ -427,7 +428,7 @@ class BaiduUeditor extends Base
      */
     private function file_list($allowFiles, $listSize, $get)
     {
-        $dirname = $this->rootPath . $this->savePath ;
+        $dirname = $this->rootPath . $this->savePath;
         if ($this->uid != 'admin') {
             $dirname .= $this->uid . '/';
         }
@@ -441,7 +442,7 @@ class BaiduUeditor extends Base
 
         /* 获取文件列表 */
         // $path = $_SERVER['DOCUMENT_ROOT'] . (substr($path, 0, 1) == "/" ? "":"/") . $path;
-        $path=$dirname;
+        $path = $dirname;
         $files = $this->getfiles($path, $allowFiles);
         if (!count($files)) {
             return json_encode(array(
@@ -454,7 +455,7 @@ class BaiduUeditor extends Base
 
         /* 获取指定范围的列表 */
         $len = count($files);
-        for ($i = min($end, $len) - 1, $list = array(); $i < $len && $i >= 0 && $i >= $start; $i--){
+        for ($i = min($end, $len) - 1, $list = array(); $i < $len && $i >= 0 && $i >= $start; $i--) {
             $list[] = $files[$i];
         }
         //倒序
@@ -488,17 +489,17 @@ class BaiduUeditor extends Base
             $path .= '/';
         }
 
-        $handle = opendir( $path);
+        $handle = opendir($path);
         while (false !== ($file = readdir($handle))) {
-            if ( $file != '.' && $file != '..' ) {
+            if ($file != '.' && $file != '..') {
                 $path2 = $path . $file;
-                if ( is_dir( $path2)) {
-                    $this->getfiles( $path2 ,$allowFiles,  $files );
+                if (is_dir($path2)) {
+                    $this->getfiles($path2, $allowFiles,  $files);
                 } else {
-                    if (preg_match("/\.(".$allowFiles.")$/i", $file)) {
+                    if (preg_match("/\.(" . $allowFiles . ")$/i", $file)) {
                         $files[] = array(
-                            'url'=>  preg_replace('/(.*)upload/i',config('view_replace_str.__PUBLIC__').'/upload',$path2),
-                            'mtime'=> filemtime($path2)
+                            'url' =>  preg_replace('/(.*)upload/i', config('view_replace_str.__PUBLIC__') . '/upload', $path2),
+                            'mtime' => filemtime($path2)
                         );
                     }
                 }
@@ -543,5 +544,4 @@ class BaiduUeditor extends Base
         }
         return $data;
     }
-
 }

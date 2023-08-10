@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by VSCode.
  * User: cattong
@@ -188,10 +189,10 @@ class Crawler
         }
 
         Log::info('采集文章Job结束###');
-//        if (count($articles) <= 0) {
-//            $job->delete();
-//            return;
-//        }
+        //        if (count($articles) <= 0) {
+        //            $job->delete();
+        //            return;
+        //        }
 
         //文章入库，存入文章表中;
         foreach ($articles as $vo) {
@@ -285,7 +286,7 @@ class Crawler
     }
 
     //抓取文章内容，返回数组
-    public static function crawlArticle($url, $encoding, $articleTitle, $articleDescription, $articleKeywords, $articleContent, $articleAuthor, $articleImage='')
+    public static function crawlArticle($url, $encoding, $articleTitle, $articleDescription, $articleKeywords, $articleContent, $articleAuthor, $articleImage = '')
     {
         //采集urls中的文章网址
         $ql = QueryList::getInstance();
@@ -338,17 +339,17 @@ class Crawler
 
         //抓取图片
         $doc = \phpQuery::newDocumentHTML($article['content']);
-        $imgs = pq($doc)->find( 'img');
+        $imgs = pq($doc)->find('img');
         if (count($imgs) > 0) {
             foreach ($imgs as $img) {
-                $src = pq($img)->attr( 'src');
+                $src = pq($img)->attr('src');
                 $src = self::getFullUrl($url, $src);
                 $saveResult = json_decode(self::saveRemoteImage($src), true);
                 Log::info('保存远程图片:');
                 Log::info($saveResult);
                 if ($saveResult['state'] === 'SUCCESS') {
                     $localSrc = $saveResult['url'];
-                    pq($img)->attr( 'src', $localSrc);
+                    pq($img)->attr('src', $localSrc);
                 }
             }
             $article['content'] = $doc->htmlOuter();
@@ -368,7 +369,7 @@ class Crawler
         if (preg_match('/^[a-zA-Z]+:\/\/(\w+(-\w+)*)(\.(\w+(-\w+)*))*(\?\s*)?$/', $html)) {
             $text = file_get_contents($html);
         }
-        $encoding = preg_match("/<meta.+?charset=[^\w]?([-\w]+)/i", $text,$matches) ? strtolower($matches[1]) : "";
+        $encoding = preg_match("/<meta.+?charset=[^\w]?([-\w]+)/i", $text, $matches) ? strtolower($matches[1]) : "";
         return $encoding;
     }
 
@@ -417,8 +418,8 @@ class Crawler
             "oriName" => "remote.png"
         );
 
-        $rootPath = Env::get('root_path') . 'public';
-        $savePath = DIRECTORY_SEPARATOR . 'upload'. DIRECTORY_SEPARATOR;
+        $rootPath = root_path() . 'public';
+        $savePath = DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR;
 
 
         $imgUrl = htmlspecialchars($imgUrl);
@@ -454,11 +455,11 @@ class Crawler
             return json_encode($data);
         }
         //格式验证(扩展名验证和Content-Type验证)
-        $fileType = strtolower(strrchr(strrchr($imgUrl,'/'), '.'));
+        $fileType = strtolower(strrchr(strrchr($imgUrl, '/'), '.'));
         //img链接后缀可能为空,Content-Type须为image
         if ((!empty($fileType) && !in_array($fileType, $config['allowFiles'])) || stristr($heads['Content-Type'], "image") === -1) {
             $data = array(
-                'state'=>'链接contentType不正确',
+                'state' => '链接contentType不正确',
             );
             return json_encode($data);
         }
@@ -493,7 +494,7 @@ class Crawler
 
         $savePath = $savePath . date('Ymd') . DIRECTORY_SEPARATOR;
         $dirname = $rootPath . $savePath;
-        $file['oriName'] = $m ? $m[1]:"";
+        $file['oriName'] = $m ? $m[1] : "";
         $file['filesize'] = strlen($img);
         $file['ext'] = strtolower(strrchr($config['oriName'], '.'));
         $file['name'] = uniqid() . $file['ext'];
@@ -509,8 +510,10 @@ class Crawler
         }
 
         //创建目录失败
-        if (!file_exists($dirname) &&
-            !(mkdir($dirname, 0777, true) && chown($dirname, Env::get('run.user'))) ) {
+        if (
+            !file_exists($dirname) &&
+            !(mkdir($dirname, 0777, true) && chown($dirname, Env::get('run.user')))
+        ) {
             $data = array(
                 'state' => '目录创建失败',
             );
@@ -531,7 +534,7 @@ class Crawler
         } else { //移动成功
             $data = array(
                 'state' => 'SUCCESS',
-                'url' => config('view_replace_str.__PUBLIC__') . str_replace(DIRECTORY_SEPARATOR, '/', $savePath.$file['name']),
+                'url' => config('view_replace_str.__PUBLIC__') . str_replace(DIRECTORY_SEPARATOR, '/', $savePath . $file['name']),
                 'title' => $file['name'],
                 'original' => $file['oriName'],
                 'type' => $file['ext'],

@@ -1,4 +1,5 @@
 <?php
+
 namespace app\admin\controller;
 
 use app\common\model\FileModel;
@@ -20,7 +21,7 @@ class Image extends Base
     public function upcrop()
     {
         $imageId = request()->param('imageId/d', 0);
-        
+
         //id不存在时，图片上传
         if (empty($imageId)) {
             $tmpFile = request()->file('file');
@@ -36,12 +37,12 @@ class Image extends Base
             $tbWidth = request()->param('thumbWidth/d', 0);
             $tbHeight = request()->param('thumbHeight/d', 0);
 
-            $path = Env::get('root_path') . 'public' . DIRECTORY_SEPARATOR . 'upload';
+            $path = root_path() . 'public' . DIRECTORY_SEPARATOR . 'upload';
 
             //表单验证
             $check = $this->validate(
                 ['file' => $tmpFile],
-                ['file'=>'require|image|fileSize:4097152'],
+                ['file' => 'require|image|fileSize:4097152'],
                 [
                     'file.require' => '请上传图片',
                     'file.image' => '不是图片文件',
@@ -59,12 +60,12 @@ class Image extends Base
                 $this->error($tmpFile->getError());
             }
             list($width, $height, $type) = getimagesize($file->getRealPath()); //获得图片宽高类型
-            
+
             $saveName = $file->getSaveName();
 
             $data = [
                 'file_url' => DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . dirname($saveName) . DIRECTORY_SEPARATOR . $file->getFilename(),
-                'file_path' => Env::get('root_path') . 'public',
+                'file_path' => root_path() . 'public',
                 'size' => $file->getSize(),
                 'ext' => strtolower($file->getExtension()),
                 'name' => $file->getFilename(),
@@ -90,7 +91,7 @@ class Image extends Base
 
             $data['id'] = $imageId;
             if ($imgWidth > 0 && $imgHeight > 0) {
-                if (!($width >= $imgWidth-10 && $width <= $imgWidth+10 && $height >= $imgHeight-10 && $height <= $imgHeight+10)) {
+                if (!($width >= $imgWidth - 10 && $width <= $imgWidth + 10 && $height >= $imgHeight - 10 && $height <= $imgHeight + 10)) {
                     $this->result($data, 1, 'image_need_crop', 'json');
                 }
             }
@@ -124,7 +125,7 @@ class Image extends Base
         $height = request()->param('height/d', 0); //源图截取的高
 
 
-        $path = Env::get('root_path') . 'public' . DIRECTORY_SEPARATOR;
+        $path = root_path() . 'public' . DIRECTORY_SEPARATOR;
         $realPath = $path . $FileModel->file_url;
         $file = new \SplFileInfo($realPath);
         $srcImage = \think\Image::open($file);
@@ -140,7 +141,7 @@ class Image extends Base
 
         $imgUrl = $file->getPath() . DIRECTORY_SEPARATOR . 'tb_crop_' . $file->getFilename();
         $quality = get_config('image_upload_quality', 80); //获取图片清晰度设置，默认是80
-        list(, , $type) = getimagesize($file->getRealPath());
+        list(,, $type) = getimagesize($file->getRealPath());
         $extension = image_type_to_extension($type, 0);
         $srcImage->save($imgUrl, $extension, $quality, true);
 
@@ -149,12 +150,11 @@ class Image extends Base
         $tbImgUrl = $file->getPath() . DIRECTORY_SEPARATOR . 'crop_' . $file->getFilename();
         $srcImage->save($tbImgUrl, $extension, $quality, true);
 
-        $FileModel->file_url = DIRECTORY_SEPARATOR.'upload'.DIRECTORY_SEPARATOR.date('Ymd').DIRECTORY_SEPARATOR.'crop_'.$file->getFilename();
-        $FileModel->thumb_image_url = DIRECTORY_SEPARATOR.'upload'.DIRECTORY_SEPARATOR.date('Ymd').DIRECTORY_SEPARATOR.'tb_crop_'.$file->getFilename();
+        $FileModel->file_url = DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . date('Ymd') . DIRECTORY_SEPARATOR . 'crop_' . $file->getFilename();
+        $FileModel->thumb_image_url = DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . date('Ymd') . DIRECTORY_SEPARATOR . 'tb_crop_' . $file->getFilename();
         $FileModel->save();
 
         $data = $FileModel;
         $this->result($data, 1, '图片裁剪成功', 'json');
     }
-
 }

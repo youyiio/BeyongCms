@@ -1,4 +1,5 @@
 <?php
+
 namespace app\common\controller;
 
 use app\common\model\FileModel;
@@ -18,7 +19,7 @@ trait File
      */
     public function upload()
     {
-   
+
         $tmpFile = request()->file('file');
         if (empty($tmpFile)) {
             $this->result(null, 0, '请选择上传文件', 'json');
@@ -43,8 +44,8 @@ trait File
         $rule['ext'] = $exts;
 
         //文件目录
-        $filePath = Env::get('root_path') . 'public';
-        $fileUrl = DIRECTORY_SEPARATOR . 'upload'. DIRECTORY_SEPARATOR . 'file';
+        $filePath = root_path() . 'public';
+        $fileUrl = DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . 'file';
         $path = $filePath . $fileUrl;
 
         //不能信任前端传进来的文件名, thinkphp默认使表单里的filename后缀
@@ -54,7 +55,7 @@ trait File
         }
 
         $saveName = $file->getSaveName(); //实际包含日期+名字：如20180724/erwrwiej...dfd.ext
-        $fileUrl = DIRECTORY_SEPARATOR . 'upload'. DIRECTORY_SEPARATOR . 'file' . DIRECTORY_SEPARATOR . $saveName;
+        $fileUrl = DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . 'file' . DIRECTORY_SEPARATOR . $saveName;
 
         $fileSize = $file->getSize();
         $ext = $file->getExtension();
@@ -95,11 +96,11 @@ trait File
         }
         $rule = [
             'ext' => 'zip,rar,exe',
-            'size' => 1024*1024*200, //200M
+            'size' => 1024 * 1024 * 200, //200M
         ];
 
-        $filePath = Env::get('root_path') . 'public';
-        $fileUrl = DIRECTORY_SEPARATOR . 'upload'. DIRECTORY_SEPARATOR . 'software';
+        $filePath = root_path() . 'public';
+        $fileUrl = DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . 'software';
         $path = $filePath . $fileUrl;
         $check = $file->validate($rule);
 
@@ -114,7 +115,7 @@ trait File
         $saveName = $version . DIRECTORY_SEPARATOR . $fileName; //文件命名
         $info = $file->move($path, $saveName);
         //$saveName = $info->getSaveName();
-        $fileUrl = DIRECTORY_SEPARATOR . 'upload'. DIRECTORY_SEPARATOR . 'software' . DIRECTORY_SEPARATOR . $saveName;
+        $fileUrl = DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . 'software' . DIRECTORY_SEPARATOR . $saveName;
 
         $fileSize = $info->getSize();
 
@@ -147,11 +148,11 @@ trait File
         }
         $rule = [
             'ext' => 'apk,ipa',
-            'size' => 1024*1024*200, //200M
+            'size' => 1024 * 1024 * 200, //200M
         ];
 
-        $filePath = Env::get('root_path') . 'public';
-        $fileUrl = DIRECTORY_SEPARATOR . 'upload'. DIRECTORY_SEPARATOR . 'app';
+        $filePath = root_path() . 'public';
+        $fileUrl = DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . 'app';
         $path = $filePath . $fileUrl;
         $check = $file->validate($rule);
 
@@ -167,7 +168,7 @@ trait File
         $saveName = $appId . DIRECTORY_SEPARATOR . $version . DIRECTORY_SEPARATOR . $fileName; //文件命名
         $info = $file->move($path, $saveName);
         //$saveName = $info->getSaveName();
-        $fileUrl = DIRECTORY_SEPARATOR . 'upload'. DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . $saveName;
+        $fileUrl = DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . $saveName;
 
         $fileSize = $info->getSize();
 

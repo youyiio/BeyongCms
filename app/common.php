@@ -1052,4 +1052,4 @@ function message_count($type = 0, $status = 0, $fromUid = 0, $toUid = 0)
     return $count;
 }
 
-include \think\facade\Env::get('app_path') . 'common_business.php';
+include __DIR__ . 'common_business.php';

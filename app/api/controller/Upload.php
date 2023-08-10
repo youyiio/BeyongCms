@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 namespace app\api\controller;
 
 use app\common\library\ResultCode;
@@ -51,11 +52,11 @@ class Upload extends Base
         }
 
         //保存目录
-        $filePath = Env::get('root_path') . 'public' . DIRECTORY_SEPARATOR . 'upload';
+        $filePath = root_path() . 'public' . DIRECTORY_SEPARATOR . 'upload';
         //文件验证&文件move操作
         $file = $tmpFile->validate(['ext' => 'jpg,gif,png,jpeg,bmp,ico,webp'])->move($filePath);
         if (!$file) {
-            return ajax_return(ResultCode::E_PARAM_VALIDATE_ERROR, '参数验证失败！',$tmpFile->getError());
+            return ajax_return(ResultCode::E_PARAM_VALIDATE_ERROR, '参数验证失败！', $tmpFile->getError());
         }
 
         $saveName = $file->getSaveName();
@@ -89,7 +90,7 @@ class Upload extends Base
             $image->save($tbImgUrl, $extension, $quality, true);
             $data['thumb_image_url'] =  DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . dirname($saveName) . DIRECTORY_SEPARATOR . 'tb_' . $file->getFilename();
             $data['thumb_image_size'] = $file->getSize();
-        } 
+        }
 
         if (get_config('oss_switch') === 'true') {
             if (!class_exists('\think\oss\OSSContext')) {
@@ -104,15 +105,15 @@ class Upload extends Base
 
         $ImageModel = new ImageModel();
         $imageId = $ImageModel->insertGetId($data);
-        
+
         //返回数据
         $fields = 'id,image_name,thumb_image_url,image_url,oss_image_url,thumb_image_size,image_size,remark,create_time';
         $return = $ImageModel->where('id', '=', $imageId)->field($fields)->find()->toArray();
-     
+
         $return['fullImageUrl'] = $ImageModel->getFullImageUrlAttr('', $return);
-        $return['fullThumbImageUrl'] = $ImageModel->getFullThumbImageUrlAttr('',$return);
+        $return['fullThumbImageUrl'] = $ImageModel->getFullThumbImageUrlAttr('', $return);
         $returnData = parse_fields($return, 1);
-     
+
         return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功', $returnData);
     }
 
@@ -143,8 +144,8 @@ class Upload extends Base
         $rule['ext'] = $exts;
 
         //文件目录
-        $filePath = Env::get('root_path') . 'public';
-        $fileUrl = DIRECTORY_SEPARATOR . 'upload'. DIRECTORY_SEPARATOR . 'file';
+        $filePath = root_path() . 'public';
+        $fileUrl = DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . 'file';
         $path = $filePath . $fileUrl;
 
         //不能信任前端传进来的文件名, thinkphp默认使表单里的filename后缀
@@ -157,10 +158,10 @@ class Upload extends Base
         $user = $this->user_info;
         $userInfo = UserModel::get($user->uid);
         $saveName = $file->getSaveName(); //实际包含日期+名字：如20180724/erwrwiej...dfd.ext
-        $fileUrl = DIRECTORY_SEPARATOR . 'upload'. DIRECTORY_SEPARATOR . 'file' . DIRECTORY_SEPARATOR . $saveName;
+        $fileUrl = DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . 'file' . DIRECTORY_SEPARATOR . $saveName;
         $data = [
             'file_url' => DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . $saveName,
-            'file_path' => Env::get('root_path') . 'public',
+            'file_path' => root_path() . 'public',
             'file_name' => $file->getinfo()['name'],
             'file_size' => $file->getSize(),
             'remark' => $remark,
@@ -172,11 +173,11 @@ class Upload extends Base
 
         $fields = 'id,file_url,file_path,file_name,file_size,remark,file_path,create_time';
         $return = $FileModel->where('id', '=', $fileId)->field($fields)->find()->toArray();
-     
+
         $return['fullFileUrl'] = $FileModel->getFullFileUrlAttr('', $return);
         unset($return['file_path']);
         $returnData = parse_fields($return, 1);
-     
+
         return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功', $returnData);
     }
 }

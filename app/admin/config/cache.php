@@ -15,7 +15,7 @@
 
 use think\facade\Env;
 
-$global_config = require(Env::get('root_path') . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'cache.php');
+$global_config = require(root_path() . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'cache.php');
 return [
     // 缓存前缀
     'prefix' => 'admin_',

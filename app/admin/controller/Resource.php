@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by VSCode.
  * User: Administrator
@@ -17,8 +18,8 @@ class Resource extends Base
     //文档列表
     public function documents()
     {
-        
-        $map[] = ['ext', 'in', ['doc','docx','ppt','pptx','txt','avi','pdf','mp3','zip','mp4','xlsx']];
+
+        $map[] = ['ext', 'in', ['doc', 'docx', 'ppt', 'pptx', 'txt', 'avi', 'pdf', 'mp3', 'zip', 'mp4', 'xlsx']];
         $key = input('param.key');
         if ($key) {
             $map[] = ['remark', 'like', "%$key%"];
@@ -27,7 +28,7 @@ class Resource extends Base
         $FileModel = new FileModel();
         $files = $FileModel->where($map)->paginate(21);
         $pages = $files->render();
-      
+
         $this->assign('files', $files);
         $this->assign('pages', $pages);
 
@@ -45,7 +46,7 @@ class Resource extends Base
                 $result = $FileModel->save(['remark' => $remark], ['id' => $fileId]);
 
                 if ($result) {
-                    $this->success('上传成功','documents');
+                    $this->success('上传成功', 'documents');
                 } else {
                     $this->error('上传失败');
                 }
@@ -64,7 +65,7 @@ class Resource extends Base
         }
 
         //删除文件
-        $filePath = $file['file_path'].$file['file_url'];
+        $filePath = $file['file_path'] . $file['file_url'];
         is_file($filePath) && unlink($filePath);
 
         //删除数据
@@ -76,13 +77,12 @@ class Resource extends Base
         }
 
         $this->success('成功删除');
-
     }
 
     //图片列表
     public function images()
     {
-        $map[] = ['ext', 'in', ['jpg','gif','png','jpeg','webp','bmp']];
+        $map[] = ['ext', 'in', ['jpg', 'gif', 'png', 'jpeg', 'webp', 'bmp']];
         $key = input('param.key');
         if ($key) {
             $map[] = ['remark', 'like', "%$key%"];
@@ -104,10 +104,10 @@ class Resource extends Base
 
             if ($imageId) {
                 $FileModel = new FileModel();
-                $result = $FileModel->save(['remark' =>$remark], ['id' =>$imageId]);
+                $result = $FileModel->save(['remark' => $remark], ['id' => $imageId]);
 
                 if ($result) {
-                    $this->success('上传成功','images');
+                    $this->success('上传成功', 'images');
                 } else {
                     $this->error('上传失败');
                 }
@@ -126,9 +126,9 @@ class Resource extends Base
             $this->error('图片不存在');
         }
         //删除图片
-        $imageUrl = Env::get('root_path').'public'.$image['file_url'];
+        $imageUrl = root_path() . 'public' . $image['file_url'];
         is_file($imageUrl) && unlink($imageUrl);
-        $tbImageUrl = Env::get('root_path').'public'.$image['thumb_image_url'];
+        $tbImageUrl = root_path() . 'public' . $image['thumb_image_url'];
         is_file($tbImageUrl) && unlink($tbImageUrl);
 
         //删除数据

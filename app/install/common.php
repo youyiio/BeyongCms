@@ -1,6 +1,6 @@
 <?php
 
-define('INSTALL_APP_PATH', \think\facade\Env::get('root_path') . 'public' . DIRECTORY_SEPARATOR);
+define('INSTALL_APP_PATH', root_path() . 'public' . DIRECTORY_SEPARATOR);
 
 /**
  * 系统环境检测
@@ -40,7 +40,7 @@ function check_env()
 
     //磁盘空间检测
     if (function_exists('disk_free_space')) {
-        $items['disk'][3] = floor(disk_free_space(INSTALL_APP_PATH) / (1024*1024)).'M';
+        $items['disk'][3] = floor(disk_free_space(INSTALL_APP_PATH) / (1024 * 1024)) . 'M';
     }
 
     return $items;
@@ -61,7 +61,7 @@ function check_dir_chmod()
     );
 
     foreach ($items as &$val) {
-        $item =	INSTALL_APP_PATH . $val[3];
+        $item =    INSTALL_APP_PATH . $val[3];
 
         if ('dir' == $val[0]) {
             if (!is_writable($item)) {
@@ -100,16 +100,16 @@ function check_dir_chmod()
 function check_func()
 {
     $items = array(
-        array('pdo','支持','check','类'),
-        array('pdo_mysql','支持','check','模块'),
+        array('pdo', '支持', 'check', '类'),
+        array('pdo_mysql', '支持', 'check', '模块'),
         //array('redis','支持','check','模块'),
-        array('openssl_sign','支持','check','函数'),
-        array('file_get_contents', '支持', 'check','函数'),
+        array('openssl_sign', '支持', 'check', '函数'),
+        array('file_get_contents', '支持', 'check', '函数'),
     );
 
     foreach ($items as &$val) {
-        if (('类' == $val[3] && !class_exists($val[0])) || ('模块'==$val[3] &&
-            !extension_loaded($val[0])) || ('函数'==$val[3] && !function_exists($val[0]))) {
+        if (('类' == $val[3] && !class_exists($val[0])) || ('模块' == $val[3] &&
+            !extension_loaded($val[0])) || ('函数' == $val[3] && !function_exists($val[0]))) {
             $val[1] = '不支持';
             $val[2] = 'times';
         }
@@ -134,7 +134,7 @@ function create_tables($dbConnect, $prefix = '')
     $result = true;
 
     //读取SQL文件
-    $sql = file_get_contents(\think\facade\Env::get('root_path') . 'data/install/install.sql');
+    $sql = file_get_contents(root_path() . 'data/install/install.sql');
     $sql = str_replace("\r", "\n", $sql);
     $sql = explode(";\n", $sql);
     //替换表前缀
@@ -219,7 +219,7 @@ function update_admin($dbConnect, $prefix, $admin)
     $email = $admin['email'];
     $username = $admin['username'];
     $salt = $passwordKey;
-    $sql = "UPDATE sys_user SET email = '". $email . "',password = '". $password . "',account='" . $username . "',salt='" . $salt . "' WHERE email = 'admin@admin.com'";
+    $sql = "UPDATE sys_user SET email = '" . $email . "',password = '" . $password . "',account='" . $username . "',salt='" . $salt . "' WHERE email = 'admin@admin.com'";
 
     //执行sql
     return $dbConnect->execute($sql);
@@ -236,7 +236,7 @@ function write_config_files($config)
 {
 
     //读取数据库配置内容
-    $tpl = file_get_contents(\think\facade\Env::get('root_path') . 'data/install/database.tpl');
+    $tpl = file_get_contents(root_path() . 'data/install/database.tpl');
 
     //替换配置项
     foreach ($config as $name => $value) {
@@ -247,10 +247,10 @@ function write_config_files($config)
         $tpl = str_replace("[{$name}]", $value, $tpl);
     }
 
-    $configPath = \think\facade\Env::get('root_path') . 'data/install/database.php';
+    $configPath = root_path() . 'data/install/database.php';
     if (file_put_contents($configPath, $tpl)) {
         // 写入安装锁定文件(只能在最后一步写入锁定文件，因为锁定文件写入后安装模块将无法访问)
-        file_put_contents(\think\facade\Env::get('root_path') . 'data/install.lock',  date_time());
+        file_put_contents(root_path() . 'data/install.lock',  date_time());
 
         return true;
     }
@@ -278,7 +278,6 @@ function delete_dir($dir)
                 @unlink($file);
             }
         }
-
     }
     return @rmdir($dir);
 }

@@ -17,7 +17,7 @@ class Theme extends Base
     public function index()
     {
         //主题存放路径
-        $themePath = Env::get('root_path')  . 'public' . DIRECTORY_SEPARATOR . 'theme' . DIRECTORY_SEPARATOR;
+        $themePath = root_path()  . 'public' . DIRECTORY_SEPARATOR . 'theme' . DIRECTORY_SEPARATOR;
         $files = scandir($themePath);
         $packageNames = [];
         foreach ($files as $filename) {
@@ -45,9 +45,9 @@ class Theme extends Base
             $themes[] = $theme;
         }
 
-//        $themePath = Env::get('root_path')  . 'public' . DIRECTORY_SEPARATOR . 'theme' . DIRECTORY_SEPARATOR;
-//        $zipFile = $themePath . 'classic.zip';
-//        x_zip($themePath . 'classic', $zipFile);
+        //        $themePath = root_path()  . 'public' . DIRECTORY_SEPARATOR . 'theme' . DIRECTORY_SEPARATOR;
+        //        $zipFile = $themePath . 'classic.zip';
+        //        x_zip($themePath . 'classic', $zipFile);
 
         $this->assign('themes', $themes);
 
@@ -79,7 +79,7 @@ class Theme extends Base
             $this->error('文件不存在！');
         }
 
-        $themePath = Env::get('root_path')  . 'public' . DIRECTORY_SEPARATOR . 'theme' . DIRECTORY_SEPARATOR;
+        $themePath = root_path()  . 'public' . DIRECTORY_SEPARATOR . 'theme' . DIRECTORY_SEPARATOR;
         $zipFile = $file['file_path'] . $file['file_url'];
         //dump($themePath);dump($zipFile);die('dd');
         x_unzip($zipFile, $themePath);
