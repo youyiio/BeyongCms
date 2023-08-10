@@ -794,7 +794,7 @@ function menu_select($mca = '')
             return 'active';
         }
     } else {
-        $str = request()->module() . '/' . request()->controller() . '/' . request()->action();
+        $str = app('http')->getName() . '/' . request()->controller() . '/' . request()->action();
         if ($str == $mca) {
             return 'active';
         }
@@ -1052,4 +1052,4 @@ function message_count($type = 0, $status = 0, $fromUid = 0, $toUid = 0)
     return $count;
 }
 
-include __DIR__ . 'common_business.php';
+include __DIR__ . DIRECTORY_SEPARATOR . 'common_business.php';

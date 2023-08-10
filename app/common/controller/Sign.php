@@ -3,10 +3,7 @@
 namespace app\common\controller;
 
 use think\facade\Cache;
-use think\Controller;
 use think\facade\Session;
-
-use think\captcha\Captcha;
 
 use app\common\model\ActionLogModel;
 use app\common\model\UserModel;
@@ -14,9 +11,12 @@ use app\common\model\UserModel;
 use app\common\logic\CodeLogic;
 use app\common\logic\UserLogic;
 use app\common\logic\ActionLogLogic;
-
+use app\common\validate\User;
 use beyong\commons\utils\StringUtils;
 use beyong\commons\utils\PregUtils;
+use think\captcha\facade\Captcha;
+use think\exception\ValidateException;
+use think\facade\Config;
 use think\facade\View;
 
 /**
@@ -36,11 +36,12 @@ class Sign extends BaseController
 
     public function initialize()
     {
-        $config = config('sign.');
-
-        $this->defaultConfig = array_merge($this->defaultConfig, $config);
-
-        $this->view->engine->layout(false);
+        $config = config('sign');
+        // $this->defaultConfig = array_merge($this->defaultConfig, $config);
+        // $viewPath = app_path() . DIRECTORY_SEPARATOR . 'view' . DIRECTORY_SEPARATOR;
+        // View::config(['view_path' => $viewPath]);
+        // View::engine()->layout(false);
+        // $this->view->engine->layout(false);
     }
 
     /**
@@ -58,42 +59,45 @@ class Sign extends BaseController
      */
     public function captcha()
     {
-        $captcha = new Captcha(config('captcha.'));
-        return $captcha->entry();
+        return Captcha::create();
     }
 
     //登录处理
     public function login()
     {
+
         if (!request()->isAjax()) {
             return View::fetch('login');
         }
 
-        $result = $this->validate(input('param.'), 'User.login');
-        if (true !== $result) {
-            $this->error($result);
+        try {
+            $this->validate(input('param.'), User::class . '.login');
+        } catch (ValidateException $e) {
+            // 验证失败 输出错误信息
+            $this->error($e->getError());
         }
 
         $username = input('param.username');
         $password = input("param.password");
 
         //登录次数判断
+
         $tryLoginCountMark = $username . '_try_login_count';
         $tryLoginCount = Cache::get($tryLoginCountMark);
+
         if ($tryLoginCount > 5) {
-            $this->error('登录错误超过5次,账号被临时冻结1天');
+            // $this->error('登录错误超过5次,账号被临时冻结1天');
         }
         if ($tryLoginCount >= 5) {
             Cache::set($tryLoginCountMark, $tryLoginCount + 1, strtotime(date('Y-m-d 23:59:59')) - time());
 
-            $this->error('登录错误超过5次,账号被临时冻结1天');
+            // $this->error('登录错误超过5次,账号被临时冻结1天');
         }
 
         //初始化登录错误次数
         Cache::remember($tryLoginCountMark, function () {
             return 0;
         }, strtotime(date('Y-m-d 23:59:59')) - time());
-
         try {
             $UserLogic = new UserLogic();
             $user = $UserLogic->login($username, $password, request()->ip(0, true));
@@ -107,7 +111,6 @@ class Sign extends BaseController
 
             throw $e;
         }
-
         //登录成功清除
         Cache::rm($tryLoginCountMark);
 

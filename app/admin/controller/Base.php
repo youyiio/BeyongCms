@@ -6,8 +6,9 @@ use app\api\library\RolePermission;
 use app\common\controller\BaseController;
 use app\common\model\MenuModel;
 use think\facade\Cache;
-use think\helper\Str;
+use think\helper\Time;
 use app\common\model\UserModel;
+use think\facade\Config;
 
 /**
  * 基础控制器
@@ -35,18 +36,18 @@ class Base extends BaseController
             if (request()->isAjax()) {
                 $this->error('请重新登陆', url(app('http')->getName() . '/Sign/index'));
             } else {
-                $this->redirect(app('http')->getName() . '/Sign/index');
+                $this->redirect(request()->module() . '/Sign/index', ['redirect' => urlencode($this->url())]);
             }
         }
 
         //用户有请求操作时，session时间重置
-        $expire = config('session.expire'); //缓存期限
+        $expire = Config::get('session.expire'); //缓存期限
         session('uid', $uid);
         cookie('uid', $uid, $expire);
 
         //权限验证
         if (config('cms.auth_on') == 'on') {
-            $permission = app('http')->getName() . '/' . request()->controller() . '/' . request()->action();
+            $permission = request()->module() . '/' . request()->controller() . '/' . request()->action();
             $permission = strtolower($permission);
             $rolePermission = new RolePermission();
             $module = app('http')->getName();
@@ -61,7 +62,7 @@ class Base extends BaseController
 
         //昨日新增用户
         $UserModel = new UserModel();
-        $yesterdayNewUserCount = $UserModel->cache('yesterdayNewUserCount', time_left())->whereTime('register_time', 'between', Str::yesterday())->count();
+        $yesterdayNewUserCount = $UserModel->cache('yesterdayNewUserCount', time_left())->whereTime('register_time', 'between', Time::yesterday())->count();
         $this->assign('yesterdayNewUserCount', $yesterdayNewUserCount);
 
         //菜单数据,Cache::tag不支持redis

@@ -36,7 +36,7 @@ class Rule extends Base
 
         //验证规则唯一性
         $rule = [
-            'path|权限规则' => 'require|unique:'. config('database.prefix') . 'sys_menu,path',
+            'path|权限规则' => 'require|unique:'.Config::getdatabase.prefix') . 'sys_menu,path',
         ];
         $check = $this->validate($data,$rule);
         if ($check !== true) {
