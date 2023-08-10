@@ -64,10 +64,10 @@ trait ApiBase
         //Api权限验证      
         if (config('jwt.jwt_auth_on') !== 'off') {
             $uid = $user_info->uid;
-            $permission = request()->module() . '/' . request()->controller() . '/' . request()->action();
+            $permission = app('http')->getName() . '/' . request()->controller() . '/' . request()->action();
             $permission = strtolower($permission);
             $rolePermission = new RolePermission();
-            $module = request()->module();
+            $module = app('http')->getName();
             //$module = $module == 'api' ? 'api' : 'admin';
             if (!$rolePermission->checkPermission($uid, $permission, $module, 'path')) {
                 $response = json_encode([

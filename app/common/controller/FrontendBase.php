@@ -35,7 +35,7 @@ trait FrontendBase
     private function themeConfig()
     {
         //读取当前主题详细信息
-        //$config = get_theme_config(request()->module());
+        //$config = get_theme_config(app('http')->getName());
         $config = get_theme_config('cms');
 
         /*根据配置和来访设备类型自动切换为电脑主题或手机主题。 start */

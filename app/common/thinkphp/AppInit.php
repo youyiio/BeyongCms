@@ -36,6 +36,10 @@ class AppInit
             //读取版本
             AppInit::$BEYONG_CMS_VERSION = $app->env->get('beyongcms_version', 'none');
         }
+
+        // if (is_file($app->getAppPath() . 'event.php')) {
+        //     $app->loadEvent(include $appPath . 'event.php');
+        // }
     }
 
     /**

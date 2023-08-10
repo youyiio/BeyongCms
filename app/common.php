@@ -794,7 +794,7 @@ function menu_select($mca = '')
             return 'active';
         }
     } else {
-        $str = request()->module() . '/' . request()->controller() . '/' . request()->action();
+        $str = app('http')->getName() . '/' . request()->controller() . '/' . request()->action();
         if ($str == $mca) {
             return 'active';
         }

@@ -22,9 +22,9 @@ class Base extends BaseController
         $uid = session('uid');
         if (!$uid) {
             if (request()->isAjax()) {
-                $this->error('请重新登陆', url(request()->module() . '/Sign/login'));
+                $this->error('请重新登陆', url(app('http')->getName() . '/Sign/login'));
             }
-            $this->redirect(request()->module() . '/Sign/index', ['redirect' => urlencode($this->url())]);
+            $this->redirect(app('http')->getName() . '/Sign/index', ['redirect' => urlencode($this->url())]);
         }
         $this->uid = $uid;
 
@@ -33,9 +33,9 @@ class Base extends BaseController
         $cacheLoginHash = cache($uid . CACHE_SEPARATOR . 'login_hash');
         if ($localLoginHash != $cacheLoginHash) {
             if (request()->isAjax()) {
-                $this->error('请重新登陆', url(request()->module() . '/Sign/index'));
+                $this->error('请重新登陆', url(app('http')->getName() . '/Sign/index'));
             } else {
-                $this->redirect(request()->module() . '/Sign/index', ['redirect' => urlencode($this->url())]);
+                $this->redirect(app('http')->getName() . '/Sign/index', ['redirect' => urlencode($this->url())]);
             }
         }
 
@@ -46,10 +46,10 @@ class Base extends BaseController
 
         //权限验证
         if (config('cms.auth_on') == 'on') {
-            $permission = request()->module() . '/' . request()->controller() . '/' . request()->action();
+            $permission = app('http')->getName() . '/' . request()->controller() . '/' . request()->action();
             $permission = strtolower($permission);
             $rolePermission = new RolePermission();
-            $module = request()->module();
+            $module = app('http')->getName();
             if (!$rolePermission->checkPermission($uid, $permission, $module, 'path')) {
                 $this->error('没有访问权限', 'javascript:void(0);');
             }

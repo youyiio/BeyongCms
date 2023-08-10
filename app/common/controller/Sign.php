@@ -1,4 +1,5 @@
 <?php
+
 namespace app\common\controller;
 
 use think\facade\Cache;
@@ -84,8 +85,8 @@ class Sign extends Controller
             $this->error('登录错误超过5次,账号被临时冻结1天');
         }
         if ($tryLoginCount >= 5) {
-            Cache::set($tryLoginCountMark, $tryLoginCount + 1, strtotime(date('Y-m-d 23:59:59'))-time());
-            
+            Cache::set($tryLoginCountMark, $tryLoginCount + 1, strtotime(date('Y-m-d 23:59:59')) - time());
+
             $this->error('登录错误超过5次,账号被临时冻结1天');
         }
 
@@ -97,12 +98,12 @@ class Sign extends Controller
         try {
             $UserLogic = new UserLogic();
             $user = $UserLogic->login($username, $password, request()->ip(0, true));
-            if (!$user) {                
+            if (!$user) {
                 Cache::inc($tryLoginCountMark);
 
                 $this->error($UserLogic->getError());
             }
-        } catch(\Exception $e) {            
+        } catch (\Exception $e) {
             Cache::inc($tryLoginCountMark);
 
             throw $e;
@@ -116,7 +117,7 @@ class Sign extends Controller
         $ActionLogLogic = new ActionLogLogic();
         $ActionLogLogic->addLog($uid, ActionLogModel::ACTION_LOGIN, '登录');
 
-        $expire = config('session.expire');//缓存期限
+        $expire = config('session.expire'); //缓存期限
         session('uid', $uid);
         cookie('uid', $uid, $expire);
 
@@ -152,7 +153,7 @@ class Sign extends Controller
         if (!$this->request->isAjax()) {
             return $this->fetch('register');
         }
-        
+
         $data = input('post.');
         $check = $this->validate($data, 'User.register');
         if ($check !== true) {
@@ -187,13 +188,13 @@ class Sign extends Controller
 
         //确认注册各字段
         $mobile = StringUtils::getRandNum(11);
-        $email = $mobile .'@' . StringUtils::getRandString(12) . '.com';
+        $email = $mobile . '@' . StringUtils::getRandString(12) . '.com';
         if (PregUtils::isMobile($username)) {
             $mobile = $username;
         } else if (PregUtils::isEmail($username)) {
             $email = $username;
         }
-        
+
         $nickname = isset($data['nickname']) ? $data['nickname'] : '用户' . substr($mobile, 5);
 
         $userLogic = new UserLogic();
@@ -201,7 +202,7 @@ class Sign extends Controller
         if (!$user) {
             $this->error($userLogic->getError());
         }
-        
+
         //消耗掉验证码
         $codeLogic->consumeCode(CodeLogic::TYPE_REGISTER, $username, $code);
 
@@ -228,7 +229,7 @@ class Sign extends Controller
         $this->afterRegister($user['id']);
 
         //注册成功，调整登录页面
-        $this->success("恭喜您，账号注册成功！", url(request()->module() . '/Sign/login'));
+        $this->success("恭喜您，账号注册成功！", url(app('http')->getName() . '/Sign/login'));
     }
 
     /**
@@ -238,7 +239,6 @@ class Sign extends Controller
      */
     protected function afterRegister($uid)
     {
-
     }
 
     /**
@@ -280,12 +280,12 @@ class Sign extends Controller
             if ($this->defaultConfig["register_code_type"] == "mobile") {
                 $res = $codeLogic->sendRegisterCodeByMobile($username);
             } else if ($this->defaultConfig["register_code_type"] == "email") {
-                $res = $codeLogic->sendRegisterCodeByEmail($username);                
+                $res = $codeLogic->sendRegisterCodeByEmail($username);
             }
             if ($res !== true) {
                 $this->error($codeLogic->getError());
             }
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             $this->error($e->getMessage());
         }
 
@@ -309,7 +309,7 @@ class Sign extends Controller
             $this->error('请求方式错误！');
         }
 
-        
+
         $username = input('post.username', '');
 
         $CodeLogic = new CodeLogic();
@@ -411,10 +411,10 @@ class Sign extends Controller
         $UserModel = new UserModel();
         $user = $UserModel->findByEmail($email);
         if (!$user) {
-            $this->error('邮箱不存在', url(request()->module() . '/Sign/register'));
+            $this->error('邮箱不存在', url(app('http')->getName() . '/Sign/register'));
         }
         if ($user['status'] == UserModel::STATUS_ACTIVED) {
-            $this->success('邮箱已激活过，无需重新激活！', url(request()->module() . '/Sign/login'));
+            $this->success('邮箱已激活过，无需重新激活！', url(app('http')->getName() . '/Sign/login'));
         }
 
         //激活用户
@@ -435,7 +435,6 @@ class Sign extends Controller
      */
     protected function afterMailActive($email)
     {
-
     }
 
     //登出处理
@@ -453,7 +452,7 @@ class Sign extends Controller
 
         //清除cookie
         cookie('uid', null);
-        cookie($uid . CACHE_SEPARATOR . 'login_hash',null);
+        cookie($uid . CACHE_SEPARATOR . 'login_hash', null);
 
         //清理相关缓存
         cache($uid . '_menu', null);
@@ -461,5 +460,4 @@ class Sign extends Controller
 
         $this->redirect($this->defaultConfig['logout_success_view']);
     }
-
 }

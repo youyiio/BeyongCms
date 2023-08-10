@@ -1,4 +1,5 @@
 <?php
+
 namespace app\common\controller;
 
 /**
@@ -40,7 +41,7 @@ trait AddonBase
         }
 
         //用户有请求操作时，session时间重置
-        $expire = config('session.expire');//缓存期限
+        $expire = config('session.expire'); //缓存期限
         session('uid', $uid);
         cookie('uid', $uid, $expire);
     }
@@ -53,7 +54,7 @@ trait AddonBase
         $uid = session('uid');
         //权限验证
         if (config('cms.auth_on') == 'on') {
-            $node = request()->module().'/'.request()->controller().'/'.request()->action();
+            $node = app('http')->getName() . '/' . request()->controller() . '/' . request()->action();
 
             $auth = \think\auth\Auth::instance();
             if (!$auth->check($node, $uid)) {

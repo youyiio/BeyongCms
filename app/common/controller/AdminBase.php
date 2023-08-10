@@ -1,4 +1,5 @@
 <?php
+
 namespace app\common\controller;
 
 use app\api\library\RolePermission;
@@ -44,16 +45,16 @@ trait AdminBase
         // }
 
         //用户有请求操作时，session时间重置
-        $expire = config('session.expire');//缓存期限
+        $expire = config('session.expire'); //缓存期限
         Session::set('uid', $uid, $this->prefix);
         Cookie::set('uid', $uid, ["expire" => $expire, "prefix" => $this->prefix]);
 
         //权限验证
         if (config('cms.auth_on') == 'on') {
-            $permission = request()->module() . '/' . request()->controller() . '/' . request()->action();
+            $permission = app('http')->getName() . '/' . request()->controller() . '/' . request()->action();
             $permission = strtolower($permission);
             $rolePermission = new RolePermission();
-            $module = request()->module();
+            $module = app('http')->getName();
             $module = $module == 'api' ? 'api' : 'admin';
             if (!$rolePermission->checkPermission($uid, $permission, $module, 'path')) {
                 $this->error(
@@ -69,17 +70,18 @@ trait AdminBase
         } else {
             $myself = UserModel::get($uid);
             Cache::set($uid . '_myself', $myself);
-        }        
+        }
         $this->assign('myself', $myself);
 
-     
+
         //菜单数据,Cache::tag不支持redis
         if (Cache::has($uid . '_menu')) {
             $menus = Cache::get($uid . '_menu');
         } else {
             $MenuModel = new MenuModel();
             $menus = $MenuModel->getTreeDataBelongsTo('level', 'sort, id', 'path', 'id', 'pid', 'admin');
-            Cache::set($uid . '_menu',
+            Cache::set(
+                $uid . '_menu',
                 $menus
             );
         }
@@ -92,7 +94,7 @@ trait AdminBase
         if ($this->request->isCli()) {
             $scheme = $this->request->header('scheme') ? $this->request->header('scheme') : $this->request->scheme();
             return $scheme . '://' . $this->request->header('x-original-host') . $this->request->server('REQUEST_URI');
-        } else {//cgi
+        } else { //cgi
             return $this->request->url(true);
         }
     }
