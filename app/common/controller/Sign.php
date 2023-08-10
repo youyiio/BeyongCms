@@ -1,4 +1,5 @@
 <?php
+
 namespace app\common\controller;
 
 use think\facade\Cache;
@@ -16,11 +17,12 @@ use app\common\logic\ActionLogLogic;
 
 use beyong\commons\utils\StringUtils;
 use beyong\commons\utils\PregUtils;
+use think\facade\View;
 
 /**
  * 登录/注册/帐号处理控制器
  */
-class Sign extends Controller
+class Sign extends BaseController
 {
     protected $defaultConfig = [
         'login_multi_client_support' => false, //支持单个用户多个端同时登录
@@ -34,8 +36,6 @@ class Sign extends Controller
 
     public function initialize()
     {
-        parent::initialize();
-
         $config = config('sign.');
 
         $this->defaultConfig = array_merge($this->defaultConfig, $config);
@@ -48,7 +48,7 @@ class Sign extends Controller
      */
     public function index()
     {
-        return $this->fetch('login');
+        return View::fetch('login');
     }
 
     /**
@@ -66,7 +66,7 @@ class Sign extends Controller
     public function login()
     {
         if (!request()->isAjax()) {
-            return $this->fetch('login');
+            return View::fetch('login');
         }
 
         $result = $this->validate(input('param.'), 'User.login');
@@ -84,8 +84,8 @@ class Sign extends Controller
             $this->error('登录错误超过5次,账号被临时冻结1天');
         }
         if ($tryLoginCount >= 5) {
-            Cache::set($tryLoginCountMark, $tryLoginCount + 1, strtotime(date('Y-m-d 23:59:59'))-time());
-            
+            Cache::set($tryLoginCountMark, $tryLoginCount + 1, strtotime(date('Y-m-d 23:59:59')) - time());
+
             $this->error('登录错误超过5次,账号被临时冻结1天');
         }
 
@@ -97,12 +97,12 @@ class Sign extends Controller
         try {
             $UserLogic = new UserLogic();
             $user = $UserLogic->login($username, $password, request()->ip(0, true));
-            if (!$user) {                
+            if (!$user) {
                 Cache::inc($tryLoginCountMark);
 
                 $this->error($UserLogic->getError());
             }
-        } catch(\Exception $e) {            
+        } catch (\Exception $e) {
             Cache::inc($tryLoginCountMark);
 
             throw $e;
@@ -116,7 +116,7 @@ class Sign extends Controller
         $ActionLogLogic = new ActionLogLogic();
         $ActionLogLogic->addLog($uid, ActionLogModel::ACTION_LOGIN, '登录');
 
-        $expire = config('session.expire');//缓存期限
+        $expire = config('session.expire'); //缓存期限
         session('uid', $uid);
         cookie('uid', $uid, $expire);
 
@@ -150,9 +150,9 @@ class Sign extends Controller
 
         //网页展示
         if (!$this->request->isAjax()) {
-            return $this->fetch('register');
+            return View::fetch('register');
         }
-        
+
         $data = input('post.');
         $check = $this->validate($data, 'User.register');
         if ($check !== true) {
@@ -187,13 +187,13 @@ class Sign extends Controller
 
         //确认注册各字段
         $mobile = StringUtils::getRandNum(11);
-        $email = $mobile .'@' . StringUtils::getRandString(12) . '.com';
+        $email = $mobile . '@' . StringUtils::getRandString(12) . '.com';
         if (PregUtils::isMobile($username)) {
             $mobile = $username;
         } else if (PregUtils::isEmail($username)) {
             $email = $username;
         }
-        
+
         $nickname = isset($data['nickname']) ? $data['nickname'] : '用户' . substr($mobile, 5);
 
         $userLogic = new UserLogic();
@@ -201,7 +201,7 @@ class Sign extends Controller
         if (!$user) {
             $this->error($userLogic->getError());
         }
-        
+
         //消耗掉验证码
         $codeLogic->consumeCode(CodeLogic::TYPE_REGISTER, $username, $code);
 
@@ -238,7 +238,6 @@ class Sign extends Controller
      */
     protected function afterRegister($uid)
     {
-
     }
 
     /**
@@ -280,12 +279,12 @@ class Sign extends Controller
             if ($this->defaultConfig["register_code_type"] == "mobile") {
                 $res = $codeLogic->sendRegisterCodeByMobile($username);
             } else if ($this->defaultConfig["register_code_type"] == "email") {
-                $res = $codeLogic->sendRegisterCodeByEmail($username);                
+                $res = $codeLogic->sendRegisterCodeByEmail($username);
             }
             if ($res !== true) {
                 $this->error($codeLogic->getError());
             }
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             $this->error($e->getMessage());
         }
 
@@ -309,7 +308,7 @@ class Sign extends Controller
             $this->error('请求方式错误！');
         }
 
-        
+
         $username = input('post.username', '');
 
         $CodeLogic = new CodeLogic();
@@ -390,7 +389,7 @@ class Sign extends Controller
         $this->assign('username', $username);
         $this->assign('code', $code);
 
-        return $this->fetch('reset');
+        return View::fetch('reset');
     }
 
     //邮件激活
@@ -425,7 +424,7 @@ class Sign extends Controller
         //邮件激活的后置操作
         $this->afterMailActive($email);
 
-        return $this->fetch('mailActive');
+        return View::fetch('mailActive');
     }
 
     /**
@@ -435,7 +434,6 @@ class Sign extends Controller
      */
     protected function afterMailActive($email)
     {
-
     }
 
     //登出处理
@@ -453,7 +451,7 @@ class Sign extends Controller
 
         //清除cookie
         cookie('uid', null);
-        cookie($uid . CACHE_SEPARATOR . 'login_hash',null);
+        cookie($uid . CACHE_SEPARATOR . 'login_hash', null);
 
         //清理相关缓存
         cache($uid . '_menu', null);
@@ -461,5 +459,4 @@ class Sign extends Controller
 
         $this->redirect($this->defaultConfig['logout_success_view']);
     }
-
 }
