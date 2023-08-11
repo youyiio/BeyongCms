@@ -9,6 +9,7 @@ use think\facade\Cache;
 use think\helper\Time;
 use app\common\model\UserModel;
 use think\facade\Config;
+use think\facade\View;
 
 /**
  * 基础控制器
@@ -36,7 +37,7 @@ class Base extends BaseController
             if (request()->isAjax()) {
                 $this->error('请重新登陆', url(app('http')->getName() . '/Sign/index'));
             } else {
-                $this->redirect(request()->module() . '/Sign/index', ['redirect' => urlencode($this->url())]);
+                $this->redirect(app('http')->getName() . '/Sign/index');
             }
         }
 
@@ -47,7 +48,7 @@ class Base extends BaseController
 
         //权限验证
         if (config('cms.auth_on') == 'on') {
-            $permission = request()->module() . '/' . request()->controller() . '/' . request()->action();
+            $permission = app('http')->getName() . '/' . request()->controller() . '/' . request()->action();
             $permission = strtolower($permission);
             $rolePermission = new RolePermission();
             $module = app('http')->getName();
@@ -57,12 +58,14 @@ class Base extends BaseController
         }
 
         //用户信息
-        $myself = UserModel::get($uid);
+        $myself = UserModel::find($uid);
         $this->assign('myself', $myself);
 
         //昨日新增用户
         $UserModel = new UserModel();
-        $yesterdayNewUserCount = $UserModel->cache('yesterdayNewUserCount', time_left())->whereTime('register_time', 'between', Time::yesterday())->count();
+        $beginYesterday = date("Y-m-d 00:00:00", strtotime("-1 day"));
+        $endYesterday = date("Y-m-d 23:59:59", strtotime("-1 day"));
+        $yesterdayNewUserCount = $UserModel->cache('yesterdayNewUserCount', time_left())->whereTime('register_time', 'between', [$beginYesterday, $endYesterday])->count();
         $this->assign('yesterdayNewUserCount', $yesterdayNewUserCount);
 
         //菜单数据,Cache::tag不支持redis
@@ -73,7 +76,7 @@ class Base extends BaseController
             $menus = $MenuModel->getTreeDataBelongsTo('level', 'sort, id', 'path', 'id', 'pid', 'admin');
             Cache::set($uid . '_menu', $menus);
         }
-        $this->assign('menus', $menus);
+        View::assign('menus', $menus);
     }
 
     //兼容swoole的request->url()处理

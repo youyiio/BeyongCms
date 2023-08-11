@@ -1,4 +1,5 @@
 <?php
+
 namespace app\admin\controller;
 
 use app\common\logic\UserLogic;
@@ -6,8 +7,8 @@ use app\common\model\cms\ArticleModel;
 use app\common\model\UserModel;
 
 /**
-* 个人中心控制器
-*/
+ * 个人中心控制器
+ */
 class Ucenter extends Base
 {
 
@@ -16,12 +17,12 @@ class Ucenter extends Base
     {
         //个人信息
         $uid = session('uid');
-        $user = UserModel::get($uid);
+        $user = UserModel::find($uid);
         $this->assign('user', $user);
 
         //个人文章
         $ArticleModel = new ArticleModel();
-        $articleList = $ArticleModel->where('uid', $uid)->where('status','>=',0)->order('update_time desc')->paginate(20, false);
+        $articleList = $ArticleModel->where('uid', $uid)->where('status', '>=', 0)->order('update_time desc')->paginate(20, false);
         $this->assign('articleList', $articleList);
 
         return $this->fetch('index');
@@ -46,7 +47,7 @@ class Ucenter extends Base
         }
 
 
-        $user = UserModel::get($uid);
+        $user = UserModel::find($uid);
         $this->assign('user', $user);
 
         return $this->fetch('profile');
@@ -72,7 +73,7 @@ class Ucenter extends Base
             $userLogic = new UserLogic();
             $result = $userLogic->modifyPassword($userId, $oldPassword, $password);
             if (!$result) {
-                $this->error("出错了!" );
+                $this->error("出错了!");
             }
 
             $this->success('成功修改密码', url('admin/Sign/logout'));
@@ -80,5 +81,4 @@ class Ucenter extends Base
 
         return $this->fetch('password');
     }
-
 }

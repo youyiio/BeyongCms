@@ -1,4 +1,5 @@
 <?php
+
 namespace app\admin\controller;
 
 use app\common\model\ActionLogModel;
@@ -16,14 +17,14 @@ use app\common\model\RoleModel;
 use app\common\model\UserRoleModel;
 
 /**
-* 用户管理控制器
-*/
+ * 用户管理控制器
+ */
 class User extends Base
 {
     //用户列表
     public function index()
     {
-        $map['status'] = ['egt',0];
+        $map['status'] = ['egt', 0];
         $type = input('param.type');
         $key = input('param.key');
         $map = [];
@@ -31,11 +32,11 @@ class User extends Base
             switch ($type) {
                 case 'mobile':
                     $key = trim($key);
-                    $map[] = ['mobile','like',"%$key%"];
+                    $map[] = ['mobile', 'like', "%$key%"];
                     break;
                 case 'email':
                     $key = trim($key);
-                    $map[] = ['email','like',"%$key%"];
+                    $map[] = ['email', 'like', "%$key%"];
                     break;
                 case 'uid':
                     $key = intval($key);
@@ -47,15 +48,15 @@ class User extends Base
         }
 
         $UserModel = new UserModel();
-        $list = $UserModel->where($map)->order('id desc')->with('roles')->paginate(10, false, ['query'=>input('param.')]);
+        $list = $UserModel->where($map)->order('id desc')->with('roles')->paginate(10, false, ['query' => input('param.')]);
         if (request()->param('status')) {
             $status = input('param.status');
-            $list = $UserModel->where($map)->where('status',$status)->order('id desc')->with('roles')->paginate(10,false,['query'=>input('param.')]);
+            $list = $UserModel->where($map)->where('status', $status)->order('id desc')->with('roles')->paginate(10, false, ['query' => input('param.')]);
         }
 
         $userTotal = $UserModel->count('id');
-        $freezeTotal = $UserModel->where('status','=',UserModel::STATUS_FREEZED)->count('id');
-        $activeTotal = $UserModel->where('status','=',UserModel::STATUS_ACTIVED)->count('id');
+        $freezeTotal = $UserModel->where('status', '=', UserModel::STATUS_FREEZED)->count('id');
+        $activeTotal = $UserModel->where('status', '=', UserModel::STATUS_ACTIVED)->count('id');
         $this->assign('userTotal', $userTotal);
         $this->assign('freezeTotal', $freezeTotal);
         $this->assign('activeTotal', $activeTotal);
@@ -92,7 +93,7 @@ class User extends Base
                     $UserRoleModel = new UserRoleModel();
                     $UserRoleModel->insertAll($group);
                 }
-                $this->success('成功新增用户',url('User/index'));
+                $this->success('成功新增用户', url('User/index'));
             } else {
                 $this->error($userModel->getError());
             }
@@ -122,13 +123,13 @@ class User extends Base
 
             // 修改权限
             $UserRoleModel = new UserRoleModel();
-            $UserRoleModel->where(['uid'=>$uid])->delete();
+            $UserRoleModel->where(['uid' => $uid])->delete();
             if (!empty($data['group_ids'])) {
                 $group = [];
                 foreach ($data['group_ids'] as $k => $v) {
                     $group[] = [
-                        'uid'=>$uid,
-                        'role_id'=>$v
+                        'uid' => $uid,
+                        'role_id' => $v
                     ];
                 }
                 $UserRoleModel->insertAll($group);
@@ -150,7 +151,7 @@ class User extends Base
             $this->error('参数错误');
         }
 
-        $user = UserModel::get($uid);
+        $user = UserModel::find($uid);
         $this->assign('user', $user);
 
         $UserRoleModel = new UserRoleModel();
@@ -158,7 +159,7 @@ class User extends Base
         $this->assign('userGroups', $userGroups);
 
         $RoleModel = new RoleModel();
-        $roles = $RoleModel->where('status',1)->field('id,title')->select();
+        $roles = $RoleModel->where('status', 1)->field('id,title')->select();
         $this->assign('groups', $roles);
 
         return $this->fetch('editUser');
@@ -167,7 +168,7 @@ class User extends Base
     //删除用户
     public function deleteUser()
     {
-        $uid = input('uid/d',0);
+        $uid = input('uid/d', 0);
         if ($uid == 0) {
             $this->error('参数错误');
         }
@@ -189,13 +190,13 @@ class User extends Base
         }
 
         $userModel = new UserModel();
-        $user = $userModel::get($uid);
+        $user = $userModel::find($uid);
         $this->assign('user', $user);
 
         //最新文章列表
         $ArticleModel = new ArticleModel();
         $field = 'id,title,description,author,thumb_image_id,post_time,read_count,comment_count,status,is_top';
-        $articleList = $ArticleModel->where('uid', $uid)->field($field)->order('id desc')->paginate(20, false, ['query'=>input('param.')]);
+        $articleList = $ArticleModel->where('uid', $uid)->field($field)->order('id desc')->paginate(20, false, ['query' => input('param.')]);
         $this->assign('articleList', $articleList);
 
         //操作日志
@@ -234,7 +235,7 @@ class User extends Base
             }
         }
 
-        $user = UserModel::get($uid);
+        $user = UserModel::find($uid);
         if (!$user) {
             $this->error('用户不存在');
         }
@@ -247,7 +248,7 @@ class User extends Base
     //冻结用户
     public function freeze()
     {
-        $uid = input('uid/d',0);
+        $uid = input('uid/d', 0);
         if ($uid == 0) {
             $this->error('参数uid错误');
         }
@@ -264,7 +265,7 @@ class User extends Base
     //激活用户
     public function active()
     {
-        $uid = input('uid/d',0);
+        $uid = input('uid/d', 0);
         if ($uid == 0) {
             $this->error('参数uid错误');
         }
@@ -287,11 +288,11 @@ class User extends Base
         }
 
         $where = [
-            ['register_time', 'between', [$timeStart,$timeEnd]]
+            ['register_time', 'between', [$timeStart, $timeEnd]]
         ];
 
         $UserModel = new UserModel();
-        $list = $UserModel->whereTime($where)->order('id desc')->paginate(20,false, ['query'=>input('param.')]);
+        $list = $UserModel->whereTime($where)->order('id desc')->paginate(20, false, ['query' => input('param.')]);
         $this->assign('list', $list);
         $this->assign('pages', $list->render());
 
@@ -304,7 +305,7 @@ class User extends Base
         $startTime = input('param.startTime');
         $endTime = input('param.endTime');
         if (!(isset($startTime) && isset($endTime))) {
-            $startTime  = date('Y-m-d',strtotime('-7 day'));
+            $startTime  = date('Y-m-d', strtotime('-7 day'));
             $endTime   = date('Y-m-d');
         }
 
@@ -317,7 +318,7 @@ class User extends Base
 
         $UserModel = new UserModel();
         $count = $UserModel->where($where)->count();
-        $list = $UserModel->where($where)->order('id desc')->paginate(20, false, ['query'=>input('param.')]);
+        $list = $UserModel->where($where)->order('id desc')->paginate(20, false, ['query' => input('param.')]);
 
         $startTimestamp = strtotime($startTime);
         $endTimestamp = strtotime($endTime);
@@ -342,13 +343,13 @@ class User extends Base
         $timeEnd = input('param.end');
 
         $UserModel = new UserModel();
-        for ($i = $timeStart ; $i <= $timeEnd; $i += (24*3600)) {
-            $day = date('m-d',$i);
-            $beginTime = mktime(0, 0, 0, date('m',$i), date('d',$i), date('Y',$i));
-            $endTime = mktime(23, 59, 59, date('m',$i), date('d',$i), date('Y',$i));
+        for ($i = $timeStart; $i <= $timeEnd; $i += (24 * 3600)) {
+            $day = date('m-d', $i);
+            $beginTime = mktime(0, 0, 0, date('m', $i), date('d', $i), date('Y', $i));
+            $endTime = mktime(23, 59, 59, date('m', $i), date('d', $i), date('Y', $i));
 
             unset($where);
-            $where[] = ['register_time','between', [date_time($beginTime), date_time($endTime)]];
+            $where[] = ['register_time', 'between', [date_time($beginTime), date_time($endTime)]];
             $inquiryCount = $UserModel->where($where)->count();
 
             array_push($xAxisData, $day);
@@ -357,10 +358,10 @@ class User extends Base
 
         $xAxis = new XAxis();
         $xAxis->data = $xAxisData;
-    
+
         $option = new Option();
         $option->xAxis($xAxis);
-    
+
         $chart = new Bar();
         $chart["data"] = $yAxisData;
 
@@ -390,14 +391,14 @@ class User extends Base
         $user->meta('is_vip', 1);
         $user->meta('vip_to_date', $vipToDate);
 
-       $this->success('操作成功');
+        $this->success('操作成功');
     }
 
     //给用户发送邮件
     public function sendMail()
     {
         $data = input('post.');
-        $check = $this->validate($data, ['uid'=>'require|gt:0','title'=>'require','content'=>'require']);
+        $check = $this->validate($data, ['uid' => 'require|gt:0', 'title' => 'require', 'content' => 'require']);
         if ($check !== true) {
             $this->error($check);
         }
@@ -419,7 +420,7 @@ class User extends Base
     //推送消息
     public function pushMessage()
     {
-        $check = $this->validate(input('post.'),['uid'=>'require|gt:0','title'=>'require','content'=>'require']);
+        $check = $this->validate(input('post.'), ['uid' => 'require|gt:0', 'title' => 'require', 'content' => 'require']);
         if ($check !== true) {
             $this->error($check);
         }
@@ -437,5 +438,4 @@ class User extends Base
             $this->error('消息推送失败');
         }
     }
-
 }

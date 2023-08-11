@@ -1,4 +1,5 @@
 <?php
+
 namespace app\admin\controller;
 
 use app\common\model\cms\ArticleMetaModel;
@@ -67,7 +68,7 @@ class Crawler extends Base
         if (empty($id)) {
             $this->error('参数错误');
         }
-        $crawler = CrawlerModel::get($id);
+        $crawler = CrawlerModel::find($id);
         if (!$crawler) {
             $this->error('采集规则不存在！');
         }
@@ -92,7 +93,7 @@ class Crawler extends Base
             }
         }
 
-        $crawler = CrawlerModel::get($id);
+        $crawler = CrawlerModel::find($id);
         $this->assign('crawler', $crawler);
 
         $CategoryModel = new CategoryModel();
@@ -159,7 +160,7 @@ class Crawler extends Base
     public function startCrawl()
     {
         $id = input('id/d', 0);
-        $crawler = CrawlerModel::get($id);
+        $crawler = CrawlerModel::find($id);
         if (!$crawler) {
             $this->error('采集规则不存在');
         }
@@ -187,7 +188,7 @@ class Crawler extends Base
     //删除采集规则
     public function deleteCrawler()
     {
-        $cid = input('id/d',0);
+        $cid = input('id/d', 0);
         if ($cid <= 0) {
             $this->error('参数错误');
         }
@@ -203,12 +204,12 @@ class Crawler extends Base
     //克隆采集规则
     public function cloneCrawler()
     {
-        $cid = input('id/d',0);
+        $cid = input('id/d', 0);
         if ($cid <= 0) {
             $this->error('参数错误');
         }
 
-        $crawler = CrawlerModel::get($cid);
+        $crawler = CrawlerModel::find($cid);
         if (empty($crawler)) {
             $this->error('采集规则不存在!');
         }
@@ -267,10 +268,9 @@ class Crawler extends Base
                         $data[$replaceField] = Db::raw("replace($replaceField, '$searchText', '$replaceText')");
                     }
 
-                    $ArticleModel->where('id', 'in', function($query) use ($crawlerId) {
+                    $ArticleModel->where('id', 'in', function ($query) use ($crawlerId) {
                         $query->table('cms_crawler_meta')->where('target_id', '=', $crawlerId)->field('article_id')->select();
                     })->cache('article_preprocess_replace_' . $replaceField)->update($data);
-
                 } else {
                     $articleIds = CrawlerMetaModel::where('target_id', '=', $crawlerId)->column('article_id');
                     $articles = ArticleModel::where('id', 'in', $articleIds)->select();
@@ -308,7 +308,6 @@ class Crawler extends Base
                     $ArticleModel->where('id', 'in', function ($query) use ($crawlerId) {
                         $query->table('cms_crawler_meta')->where('target_id', '=', $crawlerId)->field('article_id')->select();
                     })->cache('article_preprocess_regexp_replace_' . $replaceField)->update($data);
-
                 } else {
                     $articleIds = CrawlerMetaModel::where('target_id', '=', $crawlerId)->column('article_id');
                     $articles = ArticleModel::where('id', 'in', $articleIds)->select();
@@ -330,8 +329,6 @@ class Crawler extends Base
 
                 $this->success('数据正则替换成功！');
             }
-
-
         }
 
 
@@ -400,7 +397,7 @@ class Crawler extends Base
                     $count++;
                 }
 
-                $this->success('成功入库'. $count . '篇文章');
+                $this->success('成功入库' . $count . '篇文章');
             } else {
                 $ArticleModel = new ArticleModel();
                 $fields = ['a.id,a.title,a.status,a.create_time'];
@@ -416,14 +413,13 @@ class Crawler extends Base
                 ];
                 $articles = $ArticleModel->where($where)->alias('a')->join('cms_crawler_meta b', 'a.id=b.article_id')->field($fields)->select();
 
-                foreach ($articles as $key =>$article) {
+                foreach ($articles as $key => $article) {
                     $article->status = ArticleModel::STATUS_WAREHOUSED;
                     $article->save();
                 }
 
-                $this->success('成功入库'. count($articles) . '篇文章');
+                $this->success('成功入库' . count($articles) . '篇文章');
             }
-
         }
 
 
@@ -519,7 +515,6 @@ class Crawler extends Base
 
                         ArticleModel::update(['status' => ArticleModel::STATUS_DRAFT, 'id' => $aid], ['id' => $aid]);
                     }
-
                 }
             }
 
@@ -549,4 +544,3 @@ class Crawler extends Base
         return $this->fetch('postPlan');
     }
 }
-

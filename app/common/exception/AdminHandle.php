@@ -10,6 +10,7 @@
 namespace app\common\exception;
 
 use Throwable;
+use TypeError;
 use think\Response;
 
 use think\exception\Handle;
@@ -58,6 +59,11 @@ class AdminHandle extends Handle
 
         //数据库操作异常
         if ($e instanceof DbException || $e instanceof PDOException) {
+            $response = $this->getResponse($e->getMessage(), null);
+            return $response;
+        }
+
+        if ($e instanceof TypeError) {
             $response = $this->getResponse($e->getMessage(), null);
             return $response;
         }

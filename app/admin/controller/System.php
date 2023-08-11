@@ -1,4 +1,5 @@
 <?php
+
 namespace app\admin\controller;
 
 use app\common\model\ActionLogModel;
@@ -8,8 +9,8 @@ use think\facade\Cache;
 use think\facade\Env;
 
 /**
-* 系统设置控制器
-*/
+ * 系统设置控制器
+ */
 class System extends Base
 {
     //系统设置
@@ -96,13 +97,11 @@ class System extends Base
     //短信测试
     public function testSms()
     {
-
     }
 
     //公众号测试
     public function testMp()
     {
-
     }
 
 
@@ -117,8 +116,8 @@ class System extends Base
             }
 
             $dir = new \beyong\commons\io\Dir(Env::get('runtime_path'));
-            foreach($types as $k => $v) {
-                switch($v) {
+            foreach ($types as $k => $v) {
+                switch ($v) {
                     case 'temp':
                         is_dir(Env::get('runtime_path') . 'temp') && $dir->delDir(Env::get('runtime_path') . 'temp');
                         break;
@@ -155,7 +154,6 @@ class System extends Base
     public function ad()
     {
         if (request()->isAjax()) {
-
         }
 
         return view();
@@ -167,7 +165,7 @@ class System extends Base
         if (request()->isPost()) {
             $id = input('post.id', 0);
             $checked = input('post.checked', 'false');
-            $link = LinkModel::get($id);
+            $link = LinkModel::find($id);
             if (!$link) {
                 $this->error('友链不存在!');
             }
@@ -203,11 +201,11 @@ class System extends Base
         if (empty($data['end_time'])) {
             $data['end_time'] = null;
         }
-        
+
         $LinkModel = new LinkModel();
         $res = $LinkModel->allowField(true)->save($data);
         if ($res) {
-            cache('links',null);
+            cache('links', null);
             $this->success('添加成功');
         } else {
             $this->error('添加失败');
@@ -224,10 +222,10 @@ class System extends Base
         if (empty($data['end_time'])) {
             $data['end_time'] = null;
         }
-    
+
         $res = LinkModel::update($data);
         if ($res) {
-            cache('links',null);
+            cache('links', null);
             $this->success('修改成功');
         } else {
             $this->error('修改失败');
@@ -240,20 +238,20 @@ class System extends Base
         $data = input('post.');
         $LinkModel = new LinkModel();
         foreach ($data as $k => $v) {
-            $LinkModel->where('id',$k)->setField('sort',$v);
+            $LinkModel->where('id', $k)->setField('sort', $v);
         }
-        cache('links',null);
+        cache('links', null);
         $this->success('成功排序');
     }
 
     //删除友链
     public function deleteLinks()
     {
-        $id = input('param.id/d',0);
+        $id = input('param.id/d', 0);
         $LinkModel = new LinkModel();
         $res = $LinkModel->where('id', $id)->delete();
         if ($res) {
-            cache('links',null);
+            cache('links', null);
             $this->success('删除成功');
         } else {
             $this->error('删除失败');
@@ -266,12 +264,12 @@ class System extends Base
         $ActionLogModel = new ActionLogModel();
 
         $key = input('param.key');
-        $action = input('param.action','');
+        $action = input('param.action', '');
 
         $startTime = input('param.startTime');
         $endTime = input('param.endTime');
         if (!(isset($startTime) && isset($endTime))) {
-            $startTime  = date('Y-m-d',strtotime('-31 day'));
+            $startTime  = date('Y-m-d', strtotime('-31 day'));
             $endTime   = date('Y-m-d');
         }
 
@@ -287,7 +285,7 @@ class System extends Base
             $where = [
                 ['create_time', 'between', [$startDatetime, $endDatetime]],
             ];
-        } else if ($action == ''){
+        } else if ($action == '') {
             $where = [
                 ['remark', 'like', "%{$key}%"],
                 ['create_time', 'between', [$startDatetime, $endDatetime]],

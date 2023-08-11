@@ -37,7 +37,7 @@ class Sign extends BaseController
     public function initialize()
     {
         $config = config('sign');
-        // $this->defaultConfig = array_merge($this->defaultConfig, $config);
+        $this->defaultConfig = array_merge($this->defaultConfig, $config);
         // $viewPath = app_path() . DIRECTORY_SEPARATOR . 'view' . DIRECTORY_SEPARATOR;
         // View::config(['view_path' => $viewPath]);
         // View::engine()->layout(false);
@@ -98,6 +98,7 @@ class Sign extends BaseController
         Cache::remember($tryLoginCountMark, function () {
             return 0;
         }, strtotime(date('Y-m-d 23:59:59')) - time());
+
         try {
             $UserLogic = new UserLogic();
             $user = $UserLogic->login($username, $password, request()->ip(0, true));
@@ -108,11 +109,11 @@ class Sign extends BaseController
             }
         } catch (\Exception $e) {
             Cache::inc($tryLoginCountMark);
-
             throw $e;
         }
+
         //登录成功清除
-        Cache::rm($tryLoginCountMark);
+        Cache::delete($tryLoginCountMark);
 
         $uid = $user['id'];
         //登录日志
@@ -132,11 +133,11 @@ class Sign extends BaseController
         }
 
         cookie('username', $username, 3600 * 24 * 15);  //保存用户名在cookie
-
         $loginSuccessView = url($this->defaultConfig['login_success_view']);
         if (input('redirect')) {
             $loginSuccessView = urldecode(input('redirect'));
         }
+
         $this->success('登陆成功', $loginSuccessView);
     }
 

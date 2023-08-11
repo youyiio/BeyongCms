@@ -74,7 +74,7 @@ class Theme extends Base
     public function upload()
     {
         $fileId = input('fileId/d', 0);
-        $file = FileModel::get($fileId);
+        $file = FileModel::find($fileId);
         if (!$file) {
             $this->error('文件不存在！');
         }

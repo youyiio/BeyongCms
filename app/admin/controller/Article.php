@@ -1,4 +1,5 @@
 <?php
+
 namespace app\admin\controller;
 
 use app\common\model\cms\AdServingModel;
@@ -13,8 +14,8 @@ use app\common\model\cms\CategoryModel;
 use think\facade\Cookie;
 
 /**
-* 文章控制器
-*/
+ * 文章控制器
+ */
 class Article extends Base
 {
     //文章列表
@@ -38,11 +39,11 @@ class Article extends Base
 
             //$ArticleModel = ArticleModel::has('CategoryArticle', [['category_id','in',$childCateIds]]);
             $fields = 'ArticleModel.id,title,thumb_image_id,post_time,update_time,create_time,is_top,status,read_count,sort';
-            $ArticleModel = ArticleModel::hasWhere('CategoryArticle', [['category_id','in',$childCateIds]], $fields)->group([]); //hack:group用于清理hasmany默认加group key
+            $ArticleModel = ArticleModel::hasWhere('CategoryArticle', [['category_id', 'in', $childCateIds]], $fields)->group([]); //hack:group用于清理hasmany默认加group key
         }
 
         //文章状态
-        $status = input('param.status','');
+        $status = input('param.status', '');
         if ($status !== '') {
             $where[] = ['status', '=', $status];
         }
@@ -66,7 +67,7 @@ class Article extends Base
         ];
 
         $sortedFields = ['post_time' => '', 'create_time' => ''];
-        $field =input('field');
+        $field = input('field');
         $sort = input('sort');
         if ($field && $sort) {
             unset($orders['sort']);
@@ -126,7 +127,7 @@ class Article extends Base
 
         //分类列表
         $CategoryModel = new CategoryModel();
-        $categoryList = $CategoryModel->getTreeData('tree','sort,id', 'title');
+        $categoryList = $CategoryModel->getTreeData('tree', 'sort,id', 'title');
         $this->assign('categoryList', $categoryList);
 
         return $this->fetch('article/addArticle');
@@ -156,7 +157,7 @@ class Article extends Base
             }
         }
 
-        $article = ArticleModel::get($id);
+        $article = ArticleModel::find($id);
         if (empty($article)) {
             $this->error('文章不存在');
         }
@@ -172,7 +173,7 @@ class Article extends Base
 
         //分类列表
         $CategoryModel = new CategoryModel();
-        $categoryList = $CategoryModel->getTreeData('tree','sort,id', 'title');
+        $categoryList = $CategoryModel->getTreeData('tree', 'sort,id', 'title');
         $this->assign('categoryList', $categoryList);
 
         //记录上一级来源，方便回跳; 优先redirect参数传递
@@ -186,7 +187,7 @@ class Article extends Base
     //查看文章
     public function viewArticle($id)
     {
-        $article = ArticleModel::get(['id'=>$id]);
+        $article = ArticleModel::find($id);
         if (empty($article)) {
             $this->error('文章不存在');
         }
@@ -248,7 +249,7 @@ class Article extends Base
 
         $ids = [];
         if (is_int($id)) {
-            $article = ArticleModel::get(['id' => $id]);
+            $article = ArticleModel::find($id);
             if (empty($article)) {
                 $this->error('文章不存在');
             }
@@ -294,7 +295,7 @@ class Article extends Base
     //发布文章
     public function postArticle($id)
     {
-        $article = ArticleModel::get($id);
+        $article = ArticleModel::find($id);
         if (empty($article)) {
             $this->error('文章不存在');
         }
@@ -319,7 +320,7 @@ class Article extends Base
     //文章初审
     public function auditFirst($id = 0, $pass = 1)
     {
-        $article = ArticleModel::get(['id'=>$id]);
+        $article = ArticleModel::find($id);
         if (empty($article)) {
             $this->error('文章不存在');
         }
@@ -345,7 +346,7 @@ class Article extends Base
     //文章终审
     public function auditSecond($id = 0, $pass = 1)
     {
-        $article = ArticleModel::get(['id'=>$id]);
+        $article = ArticleModel::find($id);
         if (empty($article)) {
             $this->error('文章不存在');
         }
@@ -391,7 +392,7 @@ class Article extends Base
 
         //文章分类列表
         $CategoryModel = new CategoryModel();
-        $categorys = $CategoryModel->getTreeData('tree','sort,id', 'title');
+        $categorys = $CategoryModel->getTreeData('tree', 'sort,id', 'title');
         $this->assign('categorys', $categorys);
 
         return $this->fetch('batchCategory');
@@ -401,7 +402,7 @@ class Article extends Base
     public function setTop()
     {
         $aid = input('param.id/d');
-        $article = ArticleModel::get(['id' => $aid]);
+        $article = ArticleModel::find(['id' => $aid]);
         if (empty($article)) {
             $this->error('文章不存在!');
         }
@@ -420,7 +421,7 @@ class Article extends Base
     public function unsetTop()
     {
         $aid = input('param.id/d');
-        $article = ArticleModel::get(['id' => $aid]);
+        $article = ArticleModel::find(['id' => $aid]);
         if (empty($article)) {
             $this->error('文章不存在!');
         }
@@ -443,7 +444,7 @@ class Article extends Base
         $map = [];
         $key = input('param.key');
         if (!empty($key)) {
-            $map[] = ['content', 'like',"%{$key}%"];
+            $map[] = ['content', 'like', "%{$key}%"];
         }
 
         $startTime = input('param.startTime', '');
@@ -464,7 +465,7 @@ class Article extends Base
         $MessageModel = new MessageModel();
         $data['status'] = MessageModel::STATUS_READ;
         $data['read_time'] = date_time();
-        $data['is_readed'] = 1;//0未读，1已读
+        $data['is_readed'] = 1; //0未读，1已读
         $MessageModel->save($data, ['type' => MessageModel::TYPE_COMMENT]);
 
         $this->assign('startTime', $startTime);
@@ -475,9 +476,9 @@ class Article extends Base
     }
 
     //审核评论
-    public function auditComment($id=0, $pass=1)
+    public function auditComment($id = 0, $pass = 1)
     {
-        $com = CommentModel::get(['id'=>$id]);
+        $com = CommentModel::find($id);
         if (empty($com)) {
             $this->error('评论不存在');
         }
@@ -498,7 +499,6 @@ class Article extends Base
         } else {
             $this->error('操作失败');
         }
-
     }
 
     //回复评论
@@ -513,7 +513,7 @@ class Article extends Base
             if (session('uid')) {
                 $uid = session('uid');
 
-                $user = UserModel::get($uid);
+                $user = UserModel::find($uid);
                 $author = $user->nickname;
                 $data['uid'] = $uid;
                 $data['author'] = $author;
@@ -533,13 +533,13 @@ class Article extends Base
             if (!$result) {
                 $this->error('回复失败');
             } elseif (stripos($_SERVER["HTTP_REFERER"], 'viewComments')) {
-                $this->success('回复成功', url("Article/viewComments",['id' => $pid]));
+                $this->success('回复成功', url("Article/viewComments", ['id' => $pid]));
             } else {
                 $this->success('回复成功', url('Article/commentList'));
             }
         }
 
-         return $this->fetch('commentList');
+        return $this->fetch('commentList');
     }
 
     //删除评论
@@ -560,7 +560,7 @@ class Article extends Base
     //查看评论下的回复
     public  function viewComments($id)
     {
-        $comment = CommentModel::get(['id'=>$id]);
+        $comment = CommentModel::find($id);
 
         if (empty($comment)) {
             $this->error('评论不存在');
@@ -588,7 +588,7 @@ class Article extends Base
         if (request()->isPost()) {
             $id = input('post.id', 0);
             $checked = input('post.checked', 'false');
-            $category = CategoryModel::get($id);
+            $category = CategoryModel::find($id);
             if (!$category) {
                 $this->error('分类不存在!');
             }
@@ -608,7 +608,7 @@ class Article extends Base
         }
 
         $CategoryModel = new CategoryModel();
-        $list = $CategoryModel->getTreeData('tree','sort,id', 'title', 'id', 'pid');
+        $list = $CategoryModel->getTreeData('tree', 'sort,id', 'title', 'id', 'pid');
         $this->assign('list', $list);
 
         return $this->fetch('categoryList');
@@ -659,8 +659,8 @@ class Article extends Base
         $CategoryModel = new CategoryModel();
         $result = $CategoryModel->isUpdate(true)->saveAll($arr);
         if ($result) {
-            $this->success('排序成功',url('Article/categoryList'));
-        }else{
+            $this->success('排序成功', url('Article/categoryList'));
+        } else {
             $this->error('排序失败');
         }
     }
@@ -701,12 +701,12 @@ class Article extends Base
         }
         if (!empty($slotId)) {
             $AdServingModel = new AdServingModel();
-            $adIds = $AdServingModel->where('slot_id', $slotId)->field('distinct ad_id')->column('ad_id');//column变成一维数组
+            $adIds = $AdServingModel->where('slot_id', $slotId)->field('distinct ad_id')->column('ad_id'); //column变成一维数组
             $where[] = ['id', 'in', $adIds];
         }
 
         $AdModel = new AdModel();
-        $list = $AdModel->where($where)->order('sort asc,id desc')->paginate(10, false, ['query'=>input('param.')]);
+        $list = $AdModel->where($where)->order('sort asc,id desc')->paginate(10, false, ['query' => input('param.')]);
         $this->assign('list', $list);
         $this->assign('pages', $list->render());
 
@@ -769,7 +769,7 @@ class Article extends Base
                 'slot_ids' => ['require'],
                 //'image_id|专题图片' => 'require|number',
             ];
-            $check = $this->validate($data,$rule);
+            $check = $this->validate($data, $rule);
             if ($check !== true) {
                 $this->error($check);
             }
@@ -777,7 +777,7 @@ class Article extends Base
             $data['create_time'] = date_time();
             $id = $data['id'];
             $AdModel = new AdModel();
-            $rowsNum = $AdModel->isUpdate(true)->allowField(true)->save($data, ['id'=>$id]);
+            $rowsNum = $AdModel->isUpdate(true)->allowField(true)->save($data, ['id' => $id]);
 
             //更新中间表数据
             $AdModel->adSlots()->detach();
@@ -791,7 +791,7 @@ class Article extends Base
             }
         }
 
-        $ad = AdModel::get(['id' => $adId]);
+        $ad = AdModel::find(['id' => $adId]);
         if (empty($ad)) {
             $this->error('广告不存在');
         }
@@ -838,7 +838,7 @@ class Article extends Base
     //文章访问统计
     public function articleStat($id)
     {
-        $article = ArticleModel::get(['id' => $id]);
+        $article = ArticleModel::find($id);
         if (empty($article)) {
             $this->error('文章不存在');
         }
@@ -847,7 +847,7 @@ class Article extends Base
         $startTime = input('param.startTime');
         $endTime = input('param.endTime');
         if (!(isset($startTime) && isset($endTime))) {
-            $startTime  = date('Y-m-d',strtotime('-7 day'));
+            $startTime  = date('Y-m-d', strtotime('-7 day'));
             $endTime   = date('Y-m-d');
         }
 
@@ -877,20 +877,19 @@ class Article extends Base
         $this->assign('pages', $list->render());
 
         return $this->fetch('article/articleStat');
-
     }
 
     //文章访问统计图
     public function echartShow($id)
     {
-        $article = ArticleModel::get(['id' => $id]);
+        $article = ArticleModel::find($id);
         if (empty($article)) {
             $this->error('文章不存在');
         }
 
-        $option =[
-            'xAxis'=> ['data'=>[]],
-            'series'=> [['data'=>[]]],
+        $option = [
+            'xAxis' => ['data' => []],
+            'series' => [['data' => []]],
         ];
 
         $where = [];
@@ -898,13 +897,13 @@ class Article extends Base
         $endTime = input('param.end');
 
         $ArticleMetaModel = new ArticleMetaModel();
-        for ($i = $startTime ; $i <= $endTime; $i += (24*3600)) {
-            $day = date('m-d',$i);
-            $beginTime = mktime(0, 0, 0, date('m',$i), date('d',$i), date('Y',$i));
-            $endTime = mktime(23, 59, 59, date('m',$i), date('d',$i), date('Y',$i));
+        for ($i = $startTime; $i <= $endTime; $i += (24 * 3600)) {
+            $day = date('m-d', $i);
+            $beginTime = mktime(0, 0, 0, date('m', $i), date('d', $i), date('Y', $i));
+            $endTime = mktime(23, 59, 59, date('m', $i), date('d', $i), date('Y', $i));
 
             unset($where);
-            $where[] = ['update_time','between', [date_time($beginTime), date_time($endTime)]];
+            $where[] = ['update_time', 'between', [date_time($beginTime), date_time($endTime)]];
             $inquiryCount = $ArticleMetaModel->where(['article_id' => $id, 'meta_key' => 'read_ip'])->where($where)->count();
 
             array_push($option['xAxis']['data'], $day);

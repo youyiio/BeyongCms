@@ -14,6 +14,7 @@ use beyong\echarts\Option;
 use beyong\echarts\charts\Line;
 use beyong\echarts\options\XAxis;
 use Jenssegers\Date\Date;
+use think\facade\View;
 
 /**
  * 首页控制器
@@ -23,7 +24,7 @@ class Index extends Base
 
     public function index()
     {
-        return view();
+        return View::fetch('index');
     }
 
     public function welcome()

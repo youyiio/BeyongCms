@@ -1,4 +1,5 @@
 <?php
+
 namespace app\common\logic;
 
 use think\Model;
@@ -9,7 +10,7 @@ use app\common\model\api\TokenModel;
 use beyong\commons\utils\StringUtils;
 use think\facade\Cookie;
 
-class UserLogic extends Model
+class UserLogic
 {
 
     public function register($mobile, $password, $nickname = '', $email = '', $account = '', $status = UserModel::STATUS_ACTIVED)
@@ -17,7 +18,7 @@ class UserLogic extends Model
         $UserModel = new UserModel();
         $user = $UserModel->createUser($mobile, $password, $nickname, $email, $account, $status);
         if (!$user) {
-            $this->error = $UserModel->error;
+            throw new ModelException(ResultCode::E_USER_STATE_DELETED, $UserModel->error);
             return false;
         }
 
@@ -31,7 +32,7 @@ class UserLogic extends Model
      * @return Model
      * @throws ModelException
      */
-    public function login($account, $password, $ip='127.0.0.1')
+    public function login($account, $password, $ip = '127.0.0.1')
     {
         $UserModel = new UserModel();
         $user = $UserModel->checkUser($account, $password);
@@ -141,7 +142,7 @@ class UserLogic extends Model
             throw new ModelException(ResultCode::E_USER_MOBILE_HAS_EXIST, '手机号已经存在');
         }
         if (empty($email)) {
-            $email = $mobile .'@' . StringUtils::getRandString(6) . '.com';
+            $email = $mobile . '@' . StringUtils::getRandString(6) . '.com';
         } else if ($UserModel->findByEmail($email)) {
             throw new ModelException(ResultCode::E_USER_EMAIL_HAS_EXIST, '邮箱已经存在');
         }
@@ -199,5 +200,4 @@ class UserLogic extends Model
 
         return $res;
     }
-    
 }

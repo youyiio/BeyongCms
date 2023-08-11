@@ -439,7 +439,7 @@ class Rule extends Base
             if (empty($data['password'])) {
                 unset($data['password']);
             } else {
-                $user = UserModel::get($uid);
+                $user = UserModel::find($uid);
                 $data['password'] = encrypt_password($data['password'], $user['salt']);
             }
             $result = $userModel->editUser($uid, $data);
@@ -460,7 +460,7 @@ class Rule extends Base
 
         $id = input('param.id/d',0);
         // 获取用户数据
-        $user = UserModel::get($id);
+        $user = UserModel::find($id);
         $this->assign('user', $user);
 
         //用户所属分组
