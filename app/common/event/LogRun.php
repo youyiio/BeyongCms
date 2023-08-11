@@ -7,12 +7,15 @@
  * Time: 14:59
  */
 
-namespace app\common\behavior;
+namespace app\common\event;
 
 use think\facade\Request;
 use think\facade\Log;
 
-class LogBehavior
+/**
+ * 日志文件写入
+ */
+class LogRun
 {
 
     public function handle($event)

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by VSCode.
  * User: cattong
@@ -8,22 +9,22 @@
 
 namespace app\common\exception;
 
+use Throwable;
+use think\Response;
 
-use Exception;
-use think\exception\DbException;
 use think\exception\Handle;
 use think\exception\HttpException;
-use think\exception\PDOException;
 use think\exception\ValidateException;
+use think\db\exception\DbException;
+use think\db\exception\PDOException;
 use think\facade\Config;
 use think\facade\Log;
-use think\facade\Response;
+use think\facade\Route;
 use think\facade\View;
-use think\facade\Url;
 
 class FrontendHandle extends Handle
 {
-    public function render(Exception $e)
+    public function render($request, Throwable $e): Response
     {
         $data = [
             'file'    => $e->getFile(),
@@ -62,7 +63,7 @@ class FrontendHandle extends Handle
         }
 
         // 其他错误交给系统处理
-        return parent::render($e);
+        return parent::render($request, $e);
     }
 
     /**
@@ -85,8 +86,9 @@ class FrontendHandle extends Handle
         if (is_null($url)) {
             $url = request()->isAjax() ? '' : 'javascript:history.back(-1);';
         } elseif ('' !== $url) {
-            $url = (strpos($url, '://') || 0 === strpos($url, '/')) ? $url : Url::build($url);
+            $url = (strpos($url, '://') || 0 === strpos($url, '/')) ? $url : Route::buildUrl($url);
         }
+
         $result = [
             'code' => $code,
             'msg'  => $msg,
@@ -95,23 +97,14 @@ class FrontendHandle extends Handle
             'wait' => $wait,
         ];
 
-        $type = $this->getResponseType();
+        //获取当前的response 输出类型
+        $type = request()->type();
         if ('html' == strtolower($type)) {
             $result = View::fetch(Config::get('dispatch_error_tmpl'), $result);
         }
-        $response = Response::create($result, $type, 200, $header);
+
+        $response = Response::create($result, $type, 200)->header($header);
 
         return $response;
-    }
-
-    /**
-     * 获取当前的response 输出类型
-     * @access protected
-     * @return string
-     */
-    protected function getResponseType()
-    {
-        $isAjax = request()->isAjax();
-        return $isAjax ? Config::get('default_ajax_return') : Config::get('default_return_type');
     }
 }

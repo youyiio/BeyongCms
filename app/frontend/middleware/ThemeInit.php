@@ -7,7 +7,7 @@
  * Time: 15:18
  */
 
-namespace app\frontend\behavior;
+namespace app\frontend\middleware;
 
 use think\facade\Config;
 use think\facade\Env;
@@ -18,18 +18,11 @@ use think\facade\View;
  * Class ThemeBehavior
  * @package app\frontend\behavior
  */
-class ThemeBehavior
+class ThemeInit
 {
-    public function handle($event)
+    public function handle($request, \Closure $next)
     {
-        $baseUrl = request()->baseUrl();
-        //判断是否frontend或cms应用模块
-        if (!(strpos($baseUrl, '/frontend') === 0 || strpos($baseUrl, '/cms') === 0)) {
-            return;
-        }
-
         //读取当前主题详细信息
-        //$config = get_theme_config(app('http')->getName());
         $config = get_theme_config('cms');
 
         /*根据配置和来访设备类型自动切换为电脑主题或手机主题。 start */
@@ -57,5 +50,7 @@ class ThemeBehavior
         if (file_exists($paginateFile)) {
             Config::load($paginateFile, 'paginate');
         }
+
+        return $next($request);
     }
 }

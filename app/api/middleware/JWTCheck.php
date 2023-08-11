@@ -2,25 +2,26 @@
 
 namespace app\api\behavior;
 
+use think\facade\Log;
+use think\facade\Request;
+
 use Firebase\JWT\JWT;
-use think\exception\ValidateException;
 use app\api\library\RolePermission;
 use app\common\exception\JwtException;
-use think\facade\Request;
 use app\common\library\ResultCode;
-use think\facade\Log;
 
-class JWTBehavior
+
+class JWTCheck
 {
 
-    public function run()
+    public function handle($request, \Closure $next)
     {
         $url = strtolower(Request::url());
         $url = str_replace("/api", "", $url);
         if (in_array($url, config('jwt.jwt_action_excludes'))) {
             return true;
         }
-        
+
         $authorization = Request::header('authorization');
 
         if (!$authorization) {
@@ -39,7 +40,7 @@ class JWTBehavior
         } catch (\Throwable $e) {
             Log::error("jwt decode error:" . $e->getMessage());
         }
-        
+
         if (is_null($payload) || is_null($payload->data)) {
             throw new JwtException(ResultCode::E_TOKEN_EXPIRED, '登录已过期！', 'E_TOKEN_EXPIRED');
         }
@@ -58,6 +59,6 @@ class JWTBehavior
 
         //session('jwt_payload_data', $payload->data);
 
-        return true;
+        return $next($request);
     }
 }

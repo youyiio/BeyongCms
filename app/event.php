@@ -6,9 +6,7 @@ return [
     'listen'    => [
         'AppInit'  => ['app\common\thinkphp\AppInit'],
         'HttpRun'  => [
-            'app\common\behavior\LogBehavior',
-            //'app\\common\\behavior\\SpiderBehavior',
-            'app\frontend\behavior\ThemeBehavior',
+            'app\common\event\LogRun',
         ],
         'HttpEnd'  => [],
         'LogLevel' => [],

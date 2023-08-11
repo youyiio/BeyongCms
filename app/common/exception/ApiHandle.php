@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by VSCode.
  * User: cattong
@@ -8,11 +9,13 @@
 
 namespace app\common\exception;
 
-use Exception;
-use think\exception\DbException;
+use Throwable;
+use think\Response;
+
 use think\exception\Handle;
 use think\exception\HttpException;
-use think\exception\PDOException;
+use think\db\exception\DbException;
+use think\db\exception\PDOException;
 use think\exception\ValidateException;
 use think\facade\Log;
 
@@ -20,7 +23,7 @@ use app\common\library\ResultCode;
 
 class ApiHandle extends Handle
 {
-    public function render(Exception $e)
+    public function render($request, Throwable $e): Response
     {
         $data = [
             'file'    => $e->getFile(),
@@ -90,6 +93,4 @@ class ApiHandle extends Handle
 
         return json($data);
     }
-
-
 }

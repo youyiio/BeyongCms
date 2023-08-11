@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by VSCode.
  * User: cattong
@@ -6,16 +7,16 @@
  * Time: 10:38
  */
 
-namespace app\common\behavior;
+namespace app\common\middleware;
 
 use app\common\model\ActionLogModel;
 use think\facade\Request;
 
 use app\common\logic\ActionLogLogic;
 
-class SpiderBehavior
+class SpiderCheck
 {
-    public function handle($event)
+    public function handle($request, \Closure $next)
     {
         $userAgent = Request::header('user-agent');
         $params = $_REQUEST;
@@ -30,5 +31,7 @@ class SpiderBehavior
         //登录日志
         $actionLog = new ActionLogLogic();
         $actionLog->addLog(0, ActionLogModel::ACTION_ACCESS, $userAgent, $params);
+
+        return $next($request);
     }
 }
