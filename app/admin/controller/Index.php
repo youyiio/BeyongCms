@@ -49,10 +49,9 @@ class Index extends Base
 
     public function dashboard()
     {
-
         list($todayBeginTime, $todayEndTime) = [Date::today(), Date::now()];
         list($curWeekBeginTime, $curWeekEndTime) = [new Date("Monday this week"), new Date("Monday next week")];
-        list($curMonthBeginTime, $curMonthEndTime) = [new Date('first day of'), new Date('last date of')];
+        list($curMonthBeginTime, $curMonthEndTime) = [Date::now()->startOfMonth(), Date::now()->endOfMonth()];
 
         list($yesterdayBeginTime, $yesterdayEndTime) = [Date::yesterday(), Date::today()];
         list($lastWeekBeginTime, $lastWeekEndTime) = [new Date('Monday last week'), new Date('Monday this week')];
@@ -83,8 +82,8 @@ class Index extends Base
         }
 
         unset($where);
-        $where[] = ['create_time', 'between', [date_time($curMonthBeginTime), date_time($curMonthEndTime)]];
-        $lastMonthWhere[] = ['create_time', 'between', [date_time($lastMonthBeginTime), date_time($lastMonthEndTime)]];
+        $where[] = ['create_time', 'between', [$curMonthBeginTime, $curMonthEndTime]];
+        $lastMonthWhere[] = ['create_time', 'between', [$lastMonthBeginTime, $lastMonthEndTime]];
         $curMonthCount = $ArticleModel->where($where)->count();
         $lastMonthCount = $ArticleModel->where($lastMonthWhere)->count();
         if ($lastMonthCount === 0) { //除数不能为0
@@ -118,6 +117,7 @@ class Index extends Base
 
     public function today()
     {
+
         $where = [];
         $xAxisData = [];
         $yAxisData = [];

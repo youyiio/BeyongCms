@@ -26,7 +26,7 @@ class Base extends BaseController
             if (request()->isAjax()) {
                 $this->error('请重新登陆', app('http')->getName() . '/Sign/login');
             }
-            $this->redirect(app('http')->getName() . '/Sign/index');
+            redirect(app('http')->getName() . '/Sign/index');
         }
         $this->uid = $uid;
 
@@ -37,7 +37,7 @@ class Base extends BaseController
             if (request()->isAjax()) {
                 $this->error('请重新登陆', url(app('http')->getName() . '/Sign/index'));
             } else {
-                $this->redirect(app('http')->getName() . '/Sign/index');
+                redirect(app('http')->getName() . '/Sign/index');
             }
         }
 

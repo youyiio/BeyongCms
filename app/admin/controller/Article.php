@@ -85,6 +85,7 @@ class Article extends Base
         $list = $ArticleModel->where($where)->field($fields)->order($orders)->paginate($listRow, false, $pageConfig);
 
         $this->assign('list', $list);
+        $this->assign('ArticleModel', $ArticleModel);
         $this->assign('pages', $list->render());
         $this->assign('sortedFields', $sortedFields);
         $this->assign('startTime', $startTime);

@@ -5,16 +5,17 @@ declare(strict_types=1);
 namespace app\common\controller;
 
 use think\App;
+use think\exception\HttpResponseException;
 use think\exception\ValidateException;
 use think\Validate;
 use think\facade\View;
+use think\Response;
 
 /**
  * 控制器基础类
  */
 abstract class BaseController
 {
-    use \liliuwei\think\Jump;
 
     /**
      * Request实例
@@ -104,5 +105,54 @@ abstract class BaseController
     protected function assign($name, $value = '')
     {
         View::assign($name, $value);
+    }
+
+
+    /**
+     * 操作成功跳转的快捷方法
+     * @access protected
+     * @param  mixed $msg 提示信息
+     * @param  string $url 跳转的URL地址
+     * @param  mixed $data 返回的数据
+     * @param  integer $wait 跳转等待时间
+     * @param  array $header 发送的Header信息
+     * @return void
+     */
+    protected function success($msg = '', string $url = null, $data = '', int $wait = 3, array $header = [])
+    {
+        if (is_null($url) && isset($_SERVER["HTTP_REFERER"])) {
+            $url = $_SERVER["HTTP_REFERER"];
+        } elseif ($url) {
+            $url = (strpos($url, '://') || 0 === strpos($url, '/')) ? $url : (string)$this->app->route->buildUrl($url);
+        }
+
+        $result = [
+            'code' => 1,
+            'msg' => $msg,
+            'data' => $data,
+            'url' => $url,
+            'wait' => $wait,
+        ];
+
+        $type = $this->getResponseType();
+        // 把跳转模板的渲染下沉，这样在 response_send 行为里通过getData()获得的数据是一致性的格式
+        if ('html' == strtolower($type)) {
+            $type = 'view';
+            $response = Response::create($this->app->config->get('jump.dispatch_success_tmpl'), $type)->data($result)->header($header);
+        } else {
+            $response = Response::create($result, $type)->header($header);
+        }
+
+        throw new HttpResponseException($response);
+    }
+
+    /**
+     * 获取当前的response 输出类型
+     * @access protected
+     * @return string
+     */
+    protected function getResponseType()
+    {
+        return $this->request->isJson() || $this->request->isAjax() ? 'json' : 'html';
     }
 }
