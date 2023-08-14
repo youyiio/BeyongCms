@@ -67,7 +67,6 @@ trait File
 
         $file = $tmpFile->move($path);
         $fileInfo = $file->getFileInfo();
-        halt($fileInfo['filename']);
         $saveName = $fileInfo['filename']; //实际包含日期+名字：如20180724/erwrwiej...dfd.ext
         $fileUrl = DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . 'file' . DIRECTORY_SEPARATOR . $saveName;
 
