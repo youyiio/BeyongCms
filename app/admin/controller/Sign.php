@@ -1,4 +1,5 @@
 <?php
+
 namespace app\admin\controller;
 
 use app\common\logic\UserLogic;
@@ -10,13 +11,12 @@ use think\Controller;
 use think\facade\Session;
 
 /**
-* 登录控制器
-*/
+ * 登录控制器
+ */
 class Sign extends \app\common\controller\Sign
 {
     public function initialize()
     {
         parent::initialize();
     }
-
 }

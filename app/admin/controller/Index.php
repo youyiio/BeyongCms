@@ -117,7 +117,6 @@ class Index extends Base
 
     public function today()
     {
-
         $where = [];
         $xAxisData = [];
         $yAxisData = [];

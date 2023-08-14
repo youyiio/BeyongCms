@@ -18,6 +18,8 @@ use think\exception\HttpException;
 use think\exception\ValidateException;
 use think\db\exception\DbException;
 use think\db\exception\PDOException;
+use think\exception\ErrorException;
+use think\exception\HttpResponseException;
 use think\facade\Config;
 use think\facade\Log;
 use think\facade\Route;
@@ -68,6 +70,11 @@ class AdminHandle extends Handle
             return $response;
         }
 
+
+        if ($e instanceof ErrorException) {
+            $response = $this->getResponse($e->getMessage(), null);
+            return $response;
+        }
 
         // 其他错误交给系统处理
         return parent::render($request, $e);

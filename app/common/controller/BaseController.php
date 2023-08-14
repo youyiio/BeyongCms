@@ -7,6 +7,7 @@ namespace app\common\controller;
 use think\App;
 use think\exception\HttpResponseException;
 use think\exception\ValidateException;
+use think\facade\Config;
 use think\Validate;
 use think\facade\View;
 use think\Response;
@@ -122,29 +123,65 @@ abstract class BaseController
     {
         if (is_null($url) && isset($_SERVER["HTTP_REFERER"])) {
             $url = $_SERVER["HTTP_REFERER"];
-        } elseif ($url) {
-            $url = (strpos($url, '://') || 0 === strpos($url, '/')) ? $url : (string)$this->app->route->buildUrl($url);
+        } elseif ('' !== $url) {
+            $url = (strpos($url, '://') || 0 === strpos($url, '/')) ? $url : Container::get('url')->build($url);
         }
 
         $result = [
             'code' => 1,
-            'msg' => $msg,
+            'msg'  => $msg,
             'data' => $data,
-            'url' => $url,
+            'url'  => $url,
             'wait' => $wait,
         ];
 
         $type = $this->getResponseType();
         // 把跳转模板的渲染下沉，这样在 response_send 行为里通过getData()获得的数据是一致性的格式
         if ('html' == strtolower($type)) {
-            $type = 'view';
-            $response = Response::create($this->app->config->get('jump.dispatch_success_tmpl'), $type)->data($result)->header($header);
-        } else {
-            $response = Response::create($result, $type)->header($header);
+            $type = 'jump';
         }
+
+        $response = Response::create($result, $type)->header($header)->options(['jump_template' => $this->app['config']->get('dispatch_success_tmpl')]);
 
         throw new HttpResponseException($response);
     }
+
+    protected function error($msg = '', string $url = null, $data = '', int $wait = 3, array $header = [])
+    {
+        $type = $this->getResponseType();
+        if (is_null($url)) {
+            $url = $this->app['request']->isAjax() ? '' : 'javascript:history.back(-1);';
+        } elseif ('' !== $url) {
+            $url = (strpos($url, '://') || 0 === strpos($url, '/')) ? $url : $this->app['url']->build($url);
+        }
+
+        $result = [
+            'code' => 0,
+            'msg'  => $msg,
+            'data' => $data,
+            'url'  => $url,
+            'wait' => $wait,
+        ];
+
+        if ('html' == strtolower($type)) {
+            $type = 'jump';
+        }
+
+        $response = Response::create($result, $type)->header($header)->options(['jump_template' => $this->app['config']->get('dispatch_error_tmpl')]);
+
+        throw new HttpResponseException($response);
+    }
+
+    /**
+     * URL重定向
+     * @access protected
+     * @param  string $url 跳转的URL表达式
+     */
+    protected function redirect($url)
+    {
+        redirect((string) url($url))->send();
+    }
+
 
     /**
      * 获取当前的response 输出类型

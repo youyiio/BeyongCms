@@ -26,8 +26,9 @@ class Base extends BaseController
             if (request()->isAjax()) {
                 $this->error('请重新登陆', app('http')->getName() . '/Sign/login');
             }
-            redirect(app('http')->getName() . '/Sign/index');
+            $this->redirect(app('http')->getName() . '/Sign/index');
         }
+
         $this->uid = $uid;
 
         //实现用户单个端登录，方法: 通过判断cookie和服务器cache的login_hash值
