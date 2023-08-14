@@ -9,6 +9,7 @@
 
 namespace app\common\exception;
 
+use InvalidArgumentException;
 use Throwable;
 use TypeError;
 use think\Response;

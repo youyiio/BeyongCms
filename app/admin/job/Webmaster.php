@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by VSCode.
  * User: cattong
@@ -90,7 +91,7 @@ class Webmaster
 
     //*****************静态业务逻辑，供Job及command调用**********************
     //检测url是否收录收录验证
-    public static function baiduCheckIndex($url = '', $fine=true)
+    public static function baiduCheckIndex($url = '', $fine = true)
     {
         $count = 0;
         $spUrl = "https://www.baidu.com/s?wd=" . urlencode($url);
@@ -131,7 +132,7 @@ class Webmaster
     }
 
     //site指令：域名收录情况
-    public static function siteCmd($domain, $sp, $source='pc')
+    public static function siteCmd($domain, $sp, $source = 'pc')
     {
         if ($sp == 'bd') {
             return self::baiduSiteCmd($domain);
@@ -178,26 +179,26 @@ class Webmaster
         switch ($sp) {
             case 'bd':
                 $rules = [
-                    'target' => ['.f13 a:eq(0)','text'],
+                    'target' => ['.f13 a:eq(0)', 'text'],
                 ];
                 $range = '.result';
                 break;
             case 'mb':
                 $rules = [
-                    'title' => array('.c-title.c-gap-top-small','text'),
-                    'target' => ['span.c-showurl','text'],
+                    'title' => array('.c-title.c-gap-top-small', 'text'),
+                    'target' => ['span.c-showurl', 'text'],
                 ];
                 $range = '.result';
                 break;
             case 'so':
                 $rules = [
-                    'target' => ['.res-linkinfo cite','text'],
+                    'target' => ['.res-linkinfo cite', 'text'],
                 ];
                 $range = 'ul.result>li.res-list';
                 break;
             case 'sg':
                 $rules = [
-                    'target' => ['cite','text'],
+                    'target' => ['cite', 'text'],
                 ];
                 $range = '.results .fb';
                 break;
@@ -236,7 +237,7 @@ class Webmaster
                 if (preg_match("/$domainOrName/", $v['target'])) {
                     $res[] = [
                         'sort' => $k + 1,
-                        'target' => preg_replace('/(\s|\&nbsp\;|　|\xc2\xa0)$/','',$v['target']), //去除尾巴空格
+                        'target' => preg_replace('/(\s|\&nbsp\;|　|\xc2\xa0)$/', '', $v['target']), //去除尾巴空格
                     ];
                 }
             }
@@ -244,7 +245,7 @@ class Webmaster
             foreach ($pageList as $k => $v) {
                 $res[] = [
                     'sort' => $k + 1,
-                    'target' => preg_replace('/(\s|\&nbsp\;|　|\xc2\xa0)$/','',$v['target']), //去除尾巴空格
+                    'target' => preg_replace('/(\s|\&nbsp\;|　|\xc2\xa0)$/', '', $v['target']), //去除尾巴空格
                 ];
             }
         }
@@ -261,7 +262,7 @@ class Webmaster
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1 );
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
         // 执行
@@ -278,7 +279,7 @@ class Webmaster
     }
 
     //get访问
-    private static function httpPost($url, $requestData=array())
+    private static function httpPost($url, $requestData = array())
     {
         $header = [
             'User-Agent: Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.146 Safari/537.36'
@@ -286,7 +287,7 @@ class Webmaster
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1 );
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
 

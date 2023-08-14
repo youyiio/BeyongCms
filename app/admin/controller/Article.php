@@ -11,7 +11,9 @@ use app\common\model\MessageModel;
 use app\common\model\UserModel;
 use app\common\model\cms\ArticleModel;
 use app\common\model\cms\CategoryModel;
+use app\common\validate\Article as ValidateArticle;
 use think\facade\Cookie;
+use think\facade\Queue;
 
 /**
  * 文章控制器
@@ -106,9 +108,10 @@ class Article extends Base
             $data = input('post.');
             $data['content'] = remove_xss($data['content']);
 
-            $check = validate('Article')->scene('add')->check($data);
-            if ($check !== true) {
-                $this->error(validate('Article')->getError());
+            $validate = new ValidateArticle;
+            $result = $validate->scene('add')->check($data);
+            if (!$result) {
+                $this->error($validate->getError());
             }
 
             //审核开关关闭时
@@ -206,16 +209,17 @@ class Article extends Base
         $comments = $CommentModel->where($where)->order('id desc')->paginate(6, false, $pageConfig);
         $this->assign('comments', $comments);
         $this->assign('id', $id);
-
+        $ArticleModel = new ArticleModel();
+        $this->assign('ArticleModel', $ArticleModel);
         //检测索引
         $jobHandlerClass  = 'app\admin\job\Webmaster@checkIndex';
         $jobData = [
             'id' => $id,
-            'url' => url('cms/Article/viewArticle', ['aid' => $id], true, get_config('domain_name')),
+            'url' => (string)url('cms/Article/viewArticle', ['aid' => $id], true, get_config('domain_name')),
             'create_time' => date_time()
         ];
         $jobQueue = config('queue.default');
-        \think\Queue::push($jobHandlerClass, $jobData, $jobQueue);
+        Queue::later(10, $jobHandlerClass, $jobData, $jobQueue);
 
         return $this->fetch('article/viewArticle');
     }

@@ -35,7 +35,7 @@ class ArticleModel extends BaseModel
     }
 
     //AfterInsert事件后：计算文章相似度，article_a_id > article_b_id
-    public function onAfterInsert($article)
+    public static function onAfterInsert($article)
     {
         $id = $article->id;
 
@@ -195,7 +195,7 @@ class ArticleModel extends BaseModel
             $data['post_time'] = date_time();
         }
 
-        $res = $this->allowField(true)->isUpdate(false)->save($data);
+        $res = $this->allowField([])->save($data);
 
         if (!$res) {
             return false;
@@ -247,7 +247,7 @@ class ArticleModel extends BaseModel
     public function edit($data = [])
     {
         $data = $data ?: input('post.');
-        $art = self::get(['id' => $data['id']]);
+        $art = self::find(['id' => $data['id']]);
         if (empty($art)) {
             throw new ModelException(0, '文章不存在');
         }

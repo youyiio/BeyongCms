@@ -133,7 +133,9 @@ class Sign extends BaseController
         }
 
         cookie('username', $username, 3600 * 24 * 15);  //保存用户名在cookie
+
         $loginSuccessView = url($this->defaultConfig['login_success_view']);
+
         if (input('redirect')) {
             $loginSuccessView = urldecode(input('redirect'));
         }
