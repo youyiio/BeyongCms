@@ -30,6 +30,10 @@ class AdminHandle extends Handle
 {
     public function render($request, Throwable $e): Response
     {
+        if ($e instanceof HttpResponseException) {
+            return parent::render($request, $e);
+        }
+
         $data = [
             'file'    => $e->getFile(),
             'line'    => $e->getLine(),
@@ -72,10 +76,10 @@ class AdminHandle extends Handle
         }
 
 
-        if ($e instanceof ErrorException) {
-            $response = $this->getResponse($e->getMessage(), null);
-            return $response;
-        }
+        // if ($e instanceof ErrorException) {
+        //     $response = $this->getResponse($e->getMessage(), null);
+        //     return $response;
+        // }
 
         // 其他错误交给系统处理
         return parent::render($request, $e);

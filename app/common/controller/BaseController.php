@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace app\common\controller;
 
 use think\App;
+use think\Container;
 use think\exception\HttpResponseException;
 use think\exception\ValidateException;
 use think\facade\Config;
@@ -141,7 +142,7 @@ abstract class BaseController
             $type = 'jump';
         }
 
-        $response = Response::create($result, $type)->header($header)->options(['jump_template' => $this->app['config']->get('dispatch_success_tmpl')]);
+        $response = Response::create($result, $type)->header($header)->options(['jump_template' => config('dispatch_success_tmpl')]);
 
         throw new HttpResponseException($response);
     }
@@ -167,7 +168,7 @@ abstract class BaseController
             $type = 'jump';
         }
 
-        $response = Response::create($result, $type)->header($header)->options(['jump_template' => $this->app['config']->get('dispatch_error_tmpl')]);
+        $response = Response::create($result, $type)->header($header)->options(['jump_template' => config('dispatch_error_tmpl')]);
 
         throw new HttpResponseException($response);
     }

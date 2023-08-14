@@ -3,6 +3,7 @@
 namespace app\common\controller;
 
 use app\common\model\FileModel;
+use think\exception\ValidateException;
 use think\facade\Env;
 
 /**
@@ -25,9 +26,7 @@ trait File
             $this->result(null, 0, '请选择上传文件', 'json');
         }
 
-        $rule = [
-            'size' => 1024 * 1024 * 200, //200M
-        ];
+
 
         //通用文件后缀，加强安全;
         $common_file_exts = 'zip,rar,doc,docx,xls,xlsx,ppt,pptx,ppt,pptx,pdf,txt,exe,bat,sh,apk,ipa';
@@ -41,7 +40,10 @@ trait File
             $exts = array_diff($exts, ['php']);
             $exts = implode(',', $exts);
         }
-        $rule['ext'] = $exts;
+        $rule = [
+            'size' => 1024 * 1024 * 200, //200M
+            'ext' => $exts
+        ];
 
         //文件目录
         $filePath = root_path() . 'public';
@@ -49,12 +51,24 @@ trait File
         $path = $filePath . $fileUrl;
 
         //不能信任前端传进来的文件名, thinkphp默认使表单里的filename后缀
-        $file = $tmpFile->validate($rule)->move($path);;
-        if (!$file) {
-            $this->result(null, 0, $tmpFile->getError(), 'json');
+        $checkData = [
+            'size' => $tmpFile->getSize(),
+            'ext' => $tmpFile->getExtension()
+        ];
+
+        $validate = \think\facade\Validate::rule('file')->rule($rule);
+
+        try {
+            $validate->check($checkData);
+        } catch (ValidateException $e) {
+            // 验证失败 输出错误信息
+            $this->error($e->getError());
         }
 
-        $saveName = $file->getSaveName(); //实际包含日期+名字：如20180724/erwrwiej...dfd.ext
+        $file = $tmpFile->move($path);
+        $fileInfo = $file->getFileInfo();
+        halt($fileInfo['filename']);
+        $saveName = $fileInfo['filename']; //实际包含日期+名字：如20180724/erwrwiej...dfd.ext
         $fileUrl = DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . 'file' . DIRECTORY_SEPARATOR . $saveName;
 
         $fileSize = $file->getSize();
@@ -69,7 +83,7 @@ trait File
             'size' => $fileSize,
             'ext' => strtolower($ext),
             'name' => $fileName,
-            'real_name' => $file->getinfo()['name'],
+            'real_name' => $file->getFileInfo(),
             'create_by' => $this->uid,
             'create_time' => date_time()
         ];

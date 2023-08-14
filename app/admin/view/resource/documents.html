@@ -34,7 +34,7 @@
                         <form method="get" role="form" class="form-inline">
                             <div class="form-group">
                                 <input type="text" name="key" placeholder="备注词" class="form-control"
-                                       value="{$Think.get.key|default=''}">
+                                       value="{$Response.get.key|default=''}">
                             </div>
                             <button type="submit" class="btn btn-primary" style="margin-bottom: 0px">查找</button>
                         </form>
@@ -75,7 +75,7 @@
                                 <div class="file-name">
                                     <a href="{$file.file_url}">{$file.name}</a>
                                     <br/>
-                                    <small>{$file.remark}</small>
+                                    <small>{$file.remark|default=''}</small>
                                 </div>
 
                             </div>
