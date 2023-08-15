@@ -2,13 +2,15 @@
 
 namespace app\admin\controller;
 
+use app\admin\validate\Crawler as ValidateCrawler;
 use app\common\model\cms\ArticleMetaModel;
 use app\common\model\cms\ArticleModel;
 use app\common\model\cms\CrawlerMetaModel;
 use app\common\model\cms\CrawlerModel;
 use app\common\model\cms\CategoryModel;
-use think\Queue;
+use think\facade\Queue;
 use think\Db;
+use think\exception\ValidateException;
 
 /**
  采集控制器
@@ -26,6 +28,7 @@ class Crawler extends Base
 
         $this->assign('list', $list);
         $this->assign('page', $list->render());
+        $this->assign('CrawlerModel', $crawlerModel);
 
         return $this->fetch('index');
     }
@@ -73,27 +76,21 @@ class Crawler extends Base
             $this->error('采集规则不存在！');
         }
 
-        $CrawlerModel = new CrawlerModel();
-
         if (request()->isAjax()) {
             $data = input('post.');
             $data['is_timing'] = isset($data['is_timing']) && $data['is_timing'] == 'on' ? true : false;
             $data['is_paging'] = isset($data['is_paging']) && $data['is_paging'] == 'on' ? true : false;
 
-            $check = validate('Crawler')->scene('edit')->check($data);
-            if ($check !== true) {
-                $this->error(validate('Crawler')->getError());
+            try {
+                validate(ValidateCrawler::class)->scene('edit')->check($data);
+                $res = $crawler->save($data);
+            } catch (ValidateException $e) {
+                // 验证失败 输出错误信息
+                return dump($e->getError());
             }
-
-            $res = $CrawlerModel->allowField(true)->isUpdate(true)->save($data);
-            if ($res === true) {
-                $this->success('规则修改成功！', url('Crawler/index'));
-            } else {
-                $this->error('修改失败！');
-            }
+            $this->success('规则修改成功！', 'Crawler/index');
         }
 
-        $crawler = CrawlerModel::find($id);
         $this->assign('crawler', $crawler);
 
         $CategoryModel = new CategoryModel();
@@ -161,6 +158,7 @@ class Crawler extends Base
     {
         $id = input('id/d', 0);
         $crawler = CrawlerModel::find($id);
+
         if (!$crawler) {
             $this->error('采集规则不存在');
         }
@@ -176,7 +174,7 @@ class Crawler extends Base
         //任务归属的队列名称，如果为新队列，会自动创建
         $jobQueue = config('queue.default');
 
-        $isPushed = Queue::push($jobHandlerClass, $jobData, $jobQueue);
+        $isPushed = Queue::later(10, $jobHandlerClass, $jobData, $jobQueue);
         // database 驱动时，返回值为 1|false; redis 驱动时，返回值为 随机字符串|false
         if ($isPushed !== false) {
             $this->success('采集任务已经启动...');
@@ -358,6 +356,8 @@ class Crawler extends Base
         $articleList = $query->field($fields)->order('id desc')->paginate(20, false, $pageConfig);
         $this->assign('articleList', $articleList);
         $this->assign('pages', $articleList->render());
+        $this->assign('ArticleModel', $ArticleModel);
+
 
         return $this->fetch('preprocess');
     }
@@ -540,6 +540,7 @@ class Crawler extends Base
 
         $this->assign('articleList', $articleList);
         $this->assign('pages', $articleList->render());
+        $this->assign('ArticleModel', $ArticleModel);
 
         return $this->fetch('postPlan');
     }

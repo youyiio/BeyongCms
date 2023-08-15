@@ -32,7 +32,7 @@
                     <div class="col-lg-12 col-md-12 text-right">
                         <form method="get" role="form" class="form-inline">
                             <div class="form-group" style="margin-top: -5px">
-                                <input style="margin-top: 5px" type="text" name="key" placeholder="关键字" class="form-control m-b-xs" value="{$Think.get.key|default=''}">
+                                <input style="margin-top: 5px" type="text" name="key" placeholder="关键字" class="form-control m-b-xs" value="{$Response.get.key|default=''}">
                             </div>
                             <div class="form-group" >
                                 <select name="action" class="form-control m-b-xs" >
@@ -44,10 +44,10 @@
                                 </select>
                             </div>
                             <div class="form-group" style="margin-top: -5px;">
-                                <input type="text" autocomplete="off" class="form-datetime form-control" placeholder="起始日期" id="queryDate" name="startTime" value="{$Think.get.startTime |default=$startTime}">
+                                <input type="text" autocomplete="off" class="form-datetime form-control" placeholder="起始日期" id="queryDate" name="startTime" value="{$Response.get.startTime |default=$startTime}">
                             </div>
                             <div class="form-group" style="margin-top: -5px">
-                                <input type="text" autocomplete="off" class="form-datetime form-control" placeholder="终止日期" name="endTime" value="{$Think.get.endTime |default=$endTime}">
+                                <input type="text" autocomplete="off" class="form-datetime form-control" placeholder="终止日期" name="endTime" value="{$Response.get.endTime |default=$endTime}">
                             </div>
                             <button type="submit" class="btn btn-primary m-b-xs">查找</button>
                         </form>

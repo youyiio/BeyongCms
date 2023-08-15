@@ -35,7 +35,7 @@
                         <form method="get" role="form" class="form-inline">
                             <div class="form-group">
                                 <input type="text" name="key" placeholder="备注词" class="form-control"
-                                       value="{$Think.get.key|default=''}">
+                                       value="{$Response.get.key|default=''}">
                             </div>
                             <button type="submit" class="btn btn-primary" style="margin-bottom: 0px">查找</button>
                         </form>
@@ -59,7 +59,7 @@
                                     </a>
                                 </div>
                                 <div class="file-name">
-                                    {$image.remark}
+                                    {$image.remark|default=""}
                                     <br/>
                                     <small>上传时间:{$image.create_time}</small>
                                 </div>

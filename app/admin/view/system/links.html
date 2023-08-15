@@ -53,13 +53,13 @@
                                 </td>
                                 <td>{$vo.title}</td>
                                 <td>{$vo.url}</td>
-                                <td>{$vo.start_time}</td>
-                                <td>{$vo.end_time}</td>
+                                <td>{$vo.start_time|default=""}</td>
+                                <td>{$vo.end_time|default=""}</td>
                                 <td>
-                                    <input type="checkbox" name="status[]" value="{$vo.id}" class="ajax-switch" {if $vo.status == \app\common\model\cms\LinkModel::STATUS_ONLINE}checked="checked"{/if} >
+                                    <input type="checkbox" name="status[]" value="{$vo.id}" class="ajax-switch" {if $vo.status == $LinkModel->STATUS_ONLINE}checked="checked"{/if} >
                                 </td>
                                 <td>
-                                    <a href="javascript:;" data-id="{$vo['id']}" data-title="{$vo['title']}" data-url="{$vo['url']}" data-sort="{$vo['sort']}" data-start_time="{$vo['start_time']}" data-end_time="{$vo['end_time']}"onclick="edit(this)">修改</a> |
+                                    <a href="javascript:;" data-id="{$vo['id']}" data-title="{$vo['title']}" data-url="{$vo['url']}" data-sort="{$vo['sort']}" data-start_time="{$vo['start_time']|default=""}" data-end_time="{$vo['end_time']|default=""}"onclick="edit(this)">修改</a> |
                                     <a href="{:url('System/deleteLinks',['id'=>$vo['id']])}" class="ajax-a">删除</a>
                                 </td>
                             </tr>

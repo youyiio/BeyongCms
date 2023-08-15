@@ -50,11 +50,11 @@
                             <div class="form-group">
                                 <label class="col-lg-2 control-label">替换规则<span class="text text-danger">*</span>:</label>
                                 <div class="col-lg-5">
-                                    <input type="text" name="searchText" placeholder="请输入替换的文字，支持正则表达式/regular/Uixs" class="form-control" value="{$Think.get.searchText|default=''}" autocomplete="off">
+                                    <input type="text" name="searchText" placeholder="请输入替换的文字，支持正则表达式/regular/Uixs" class="form-control" value="{$Response.get.searchText|default=''}" autocomplete="off">
                                     <span class="help-block m-b-none"></span>
                                 </div>
                                 <div class="col-lg-5">
-                                    <input type="text" name="replaceText" placeholder="请输入替换后的文本" class="form-control" value="{$Think.get.replaceText|default=''}" autocomplete="off">
+                                    <input type="text" name="replaceText" placeholder="请输入替换后的文本" class="form-control" value="{$Response.get.replaceText|default=''}" autocomplete="off">
                                     <span class="help-block m-b-none"></span>
                                 </div>
                             </div>
@@ -97,7 +97,7 @@
                                 <td><a href="{:url('Article/viewArticle',['id'=>$vo['id']])}">{$vo.title}</a></td>
                                 <td>{$vo.crawlerMeta.crawler.title}</td>
                                 <td>{$vo.status_text}</td>
-                                <td>{if $vo.status == \app\common\model\cms\ArticleModel::STATUS_PUBLISHED}
+                                <td>{if $vo.status == $ArticleModel->STATUS_PUBLISHED}
                                     {$vo.post_time}
                                     {else /}
                                     {notempty name="$vo.timing"}{$vo.timing}<i class="fa fa-clock-o"></i>{/notempty}

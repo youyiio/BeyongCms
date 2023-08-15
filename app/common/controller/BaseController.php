@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace app\common\controller;
 
 use think\App;
+use think\app\Url;
 use think\Container;
 use think\exception\HttpResponseException;
 use think\exception\ValidateException;
 use think\facade\Config;
+use think\facade\Route;
 use think\Validate;
 use think\facade\View;
 use think\Response;
@@ -153,7 +155,7 @@ abstract class BaseController
         if (is_null($url)) {
             $url = $this->app['request']->isAjax() ? '' : 'javascript:history.back(-1);';
         } elseif ('' !== $url) {
-            $url = (strpos($url, '://') || 0 === strpos($url, '/')) ? $url : $this->app['url']->build($url);
+            $url = (strpos($url, '://') || 0 === strpos($url, '/')) ? $url : Route::build($url);
         }
 
         $result = [

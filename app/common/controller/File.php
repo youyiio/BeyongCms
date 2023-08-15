@@ -3,8 +3,6 @@
 namespace app\common\controller;
 
 use app\common\model\FileModel;
-use think\exception\ValidateException;
-use think\facade\Env;
 
 /**
  * 文件上传组件
@@ -26,12 +24,11 @@ trait File
             $this->result(null, 0, '请选择上传文件', 'json');
         }
 
-
-
         //通用文件后缀，加强安全;
         $common_file_exts = 'zip,rar,doc,docx,xls,xlsx,ppt,pptx,ppt,pptx,pdf,txt,exe,bat,sh,apk,ipa';
         $common_file_exts .= '.pg,gif,png,jpg,jpeg,webp,bmp';
         $exts = request()->param('exts', ''); //文件格式，中间用,分隔
+
         if (empty($exts)) {
             $exts = $common_file_exts;
         } else {
@@ -50,19 +47,12 @@ trait File
         $fileUrl = DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . 'file';
         $path = $filePath . $fileUrl;
 
-        //不能信任前端传进来的文件名, thinkphp默认使表单里的filename后缀
-        $checkData = [
-            'size' => $tmpFile->getSize(),
-            'ext' => $tmpFile->getExtension()
-        ];
-
-        $validate = \think\facade\Validate::rule('file')->rule($rule);
-
-        try {
-            $validate->check($checkData);
-        } catch (ValidateException $e) {
-            // 验证失败 输出错误信息
-            $this->error($e->getError());
+        //不能信任前端传进来的文件名, thinkphp默认使表单里的filename后
+        if ($tmpFile->getSize() > 200) {
+            $this->result('尺寸过大');
+        }
+        if (in_array($tmpFile->getExtension(), (array)$exts)) {
+            $this->result('文件类型不符合要求');
         }
 
         $file = $tmpFile->move($path);

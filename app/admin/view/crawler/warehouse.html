@@ -63,7 +63,7 @@
                                     {/volist}
                                 </td>
                                 <td><a href="{:url('Article/viewArticle',['id'=>$vo['id']])}">{$vo.title}</a></td>
-                                <td>{$vo.crawlerMeta.crawler.title}</td>
+                                <td>{$vo.crawlerMeta.crawler.title|default=""}</td>
                                 <td>{$vo.status_text}</td>
                                 <td>{$vo.create_time}</td>
                                 <td>

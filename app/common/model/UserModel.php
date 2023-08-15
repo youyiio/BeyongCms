@@ -1,4 +1,5 @@
 <?php
+
 namespace app\common\model;
 
 use think\facade\Cookie;
@@ -57,9 +58,9 @@ class UserModel extends BaseModel
     {
         return $this->hasMany('userRoleModel', 'uid', 'role_id');
     }
-    
+
     //自身扩展字段
-    public function ext($key, $value='')
+    public function ext($key, $value = '')
     {
         $ext = $this->ext;
         if (empty($ext)) {
@@ -69,7 +70,7 @@ class UserModel extends BaseModel
         }
 
         if ($value === '') {
-            return isset($exts[$key]) ? $exts[$key] : null ;
+            return isset($exts[$key]) ? $exts[$key] : null;
         } else if ($value === null) {
             unset($exts[$key]);
         } else {
@@ -88,7 +89,7 @@ class UserModel extends BaseModel
             throw new ModelException(ResultCode::E_USER_MOBILE_HAS_EXIST, '手机号已经存在');
         }
         if (empty($email)) {
-            $email = $mobile .'@' . StringUtils::getRandString(6) . '.com';
+            $email = $mobile . '@' . StringUtils::getRandString(6) . '.com';
         } else if ($this->findByEmail($email)) {
             throw new ModelException(ResultCode::E_USER_EMAIL_HAS_EXIST, '邮箱已经存在');
         }
@@ -172,7 +173,7 @@ class UserModel extends BaseModel
         return $this->where('id', $uid)->update($data);
     }
 
-    public function setProfile($userId, $nickname, $sex='', $headUrl='', $qq='', $weixin='')
+    public function setProfile($userId, $nickname, $sex = '', $headUrl = '', $qq = '', $weixin = '')
     {
         $data['id'] = $userId;
         $data['nickname'] = $nickname;
@@ -189,7 +190,7 @@ class UserModel extends BaseModel
             $data['weixin'] = $weixin;
         }
 
-        $result = $this->isUpdate(true)->save($data);
+        $result = $this->update($data);
         if ($result == false) {
             return false;
         }

@@ -1,0 +1,247 @@
+{extend name="public/base" /}
+{block name="title"}站长设置{/block}
+{block name="css"}
+<link href="__PUBLIC__/static/inspinia/css/plugins/switchery/switchery.css" rel="stylesheet">
+{/block}
+
+{block name="main"}
+<div class="wrapper wrapper-content">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="tabs-container">
+                <ul class="nav nav-tabs">                    
+                    <li class="active"><a href="#tab-setting" aria-expanded="true" data-toggle="tab">百度站长配置</a></li>
+                    <li class=""><a href="#tab-push-urls" aria-expanded="true" data-toggle="tab">推送urls</a>
+                    <li class=""><a href="#tab-sitemap" aria-expanded="true" data-toggle="tab">站点地图</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div id="tab-setting" class="tab-pane active">
+                        <div class="panel-body">
+
+                            <div class="col-12">
+
+                                <form class="form-horizontal ajax-form" action="{:url('Webmaster/baidu?tab=setting')}" method="post">
+                                    
+                                    <div class="form-group">
+                                        <label class="col-lg-2 col-md-3 control-label">站长域名</label>
+                                        <div class="col-lg-6 col-md-9">
+                                            <input type="text" name="zhanzhang_site" placeholder="" class="form-control" autocomplete="off" value="{if empty(get_config('zhanzhang_site'))}{:get_config('protocol')}{:get_config('domain_name')}{else/}{:get_config('zhanzhang_site')}{/if}">
+                                            <span class="help-block m-b-none">百度搜索资源平台：https://ziyuan.baidu.com/ 获取配置</span>
+                                        </div>
+                                    </div>                                    
+
+                                    <div class="form-group">
+                                        <label class="col-lg-2 col-md-3 control-label">站长token</label>
+                                        <div class="col-lg-6 col-md-9">
+                                            <input type="text" name="zhanzhang_token" placeholder="" class="form-control" autocomplete="off" value="{:get_config('zhanzhang_token')}">
+                                            <span class="help-block m-b-none">百度搜索资源平台：https://ziyuan.baidu.com/ 获取配置</span>
+                                        </div>
+                                    </div> 
+                                    
+                                    <div class="form-group">
+                                        <div class="col-lg-offset-2 col-lg-10">
+                                            <button class="btn btn-success" type="submit">提交</button>
+                                        </div>
+                                    </div>
+                                    
+                                </form>
+
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div id="tab-push-urls" class="tab-pane">
+                        <div class="panel-body">
+
+                            <div class="col-12">
+
+                                <form class="form-horizontal ajax-form" action="{:url('Webmaster/baidu?tab=push-urls')}" method="post">
+                                    
+                                    <div class="form-group">
+                                        <label class="col-lg-2 col-md-3 control-label">推送urls</label>
+                                        <div class="col-lg-6 col-md-9">
+                                            <textarea class="form-control" name="urls" rows="10" placeholder=""></textarea>
+                                            <span class="help-block m-b-none">每行一个url, 最多500个</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <div class="col-lg-offset-2 col-lg-10">
+                                            <button class="btn btn-success" type="submit">提交</button>
+                                        </div>
+                                    </div>
+                                    
+                                </form>
+
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div id="tab-sitemap" class="tab-pane">
+                        <div class="panel-body">
+
+                            <div class="col-12">
+
+                                <form class="form-horizontal" action="{:url('Webmaster/sitemap')}" method="post">
+                                    
+                                    <div class="form-group">
+                                        <label class="col-lg-2 col-md-3 control-label">每页url数量(<50000)</label>
+                                        <div class="col-lg-6 col-md-9">
+                                            <input type="text" name="pageSize" placeholder="" class="form-control" autocomplete="off" value="2000">
+                                            <span class="help-block m-b-none">默认是2000</span>
+                                        </div>
+                                    </div>                                    
+
+                                    <div class="form-group">
+                                        <label class="col-lg-2 col-md-3 control-label">sitemap文件最多个数</label>
+                                        <div class="col-lg-6 col-md-9">
+                                            <input type="text" name="maxPage" placeholder="" class="form-control" autocomplete="off" value="100">
+                                            <span class="help-block m-b-none">访问地址：{:get_config('protocol')}{:get_config('domain_name')}/sitemap.xml, 提交百度是为 {domain}/sitemap-{1...n}.xml </span>
+                                        </div>
+                                    </div> 
+                                    <div id="progress" class="form-group hidden">
+                                        <label class="col-lg-2 col-md-3 control-label"></label>
+                                        <div class="col-lg-6 col-md-9">
+                                            <div class="progress">
+                                                <div class="progress-bar progress-bar-striped" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
+                                                  0%
+                                                </div>
+                                              </div>
+                                        </div>
+                                        
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-lg-offset-2 col-lg-10">
+                                            <button onclick="downloadSitemapTxt(this)" class="btn btn-white" type="button">下载sitemap.txt</button> <button id="btnGenerateSitemap" onclick="generateSitemap(this)" class="btn btn-success" type="button">生成站点地图</button>
+                                        </div>
+                                    </div>
+                                    
+                                </form>
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
+
+{block name="js"}
+<!-- Switchery -->
+<script src="__PUBLIC__/static/inspinia/js/plugins/switchery/switchery.js"></script>
+<script>
+    function changeConfig(name, value) {
+        var url = "{:url(request()->controller() . '/index')}" + "?" + name + "=" + value;
+  
+        $.get(url, function(data) {
+            if (data.code) {
+                layer.msg(data.msg);
+            } else {
+                layer.msg(data.msg, function(){});
+            }
+        });
+    }
+  
+    function generateSitemap(btn) {
+        
+        $("#tab-sitemap form #progress").toggleClass("hidden");
+        
+        let progress = $("#tab-sitemap form #progress .progress")
+        $(progress).children(".progress-bar").toggleClass("active");
+  
+        let pageSize = $("#tab-sitemap form input[name=pageSize]").val();
+        let maxPage = $("#tab-sitemap form input[name=maxPage]").val();
+  
+        //禁用按钮
+        $(btn).prop('disabled',true).find('i').remove();
+        $(btn).prepend('<i class="fa fa-spinner fa-spin"></i>');
+  
+        $.post("{:url('Webmaster/sitemapInfo')}", {pageSize: pageSize, maxPage: maxPage}, function (data) {
+            if (data.code != 1) {
+                layer.msg(data.msg, function(){});
+                return false;
+            }
+
+            let sitemapInfo = data.data;
+                
+            let lastPage = sitemapInfo["lastPage"];
+            sitemapInfo["lastPage"] = lastPage > maxPage ? maxPage : lastPage;
+
+            generateSitemapSplit(sitemapInfo, 1, 10, loopCallback);
+        });
+    }
+ 
+    function loopCallback(sitemapInfo, startPage, step) {
+        let lastPage = sitemapInfo["lastPage"];
+        let total = sitemapInfo["total"];
+        let pageSize = sitemapInfo["pageSize"];
+
+        //每次加10%
+        let progressNum = (startPage + step - 1) >= lastPage ? 100 : Math.ceil((startPage + step - 1) / lastPage * 100);  
+                        
+        let progress = $("#tab-sitemap form #progress .progress");
+        //改变这个div  width属性值
+        $(progress).children(".progress-bar").attr("style", "width:" + progressNum + "%");
+        //显示 内容
+        $(progress).children(".progress-bar").html(progressNum + "%");
+        //当是100时，重新赋值为0
+        if (progressNum >= 100) {
+            $(progress).children(".progress-bar").toggleClass("active");
+
+            $("#btnGenerateSitemap").find('i').remove();
+            $("#btnGenerateSitemap").prepend('<i class="fa fa-check"></i>');
+        } 
+
+        if (startPage + step - 1 < lastPage) {
+            generateSitemapSplit(sitemapInfo, startPage + step, step, loopCallback);
+        }
+    }
+
+    function generateSitemapSplit(sitemapInfo, startPage, step, callback) {
+        let lastPage = sitemapInfo["lastPage"];
+        let total = sitemapInfo["total"];
+        let pageSize = sitemapInfo["pageSize"];
+
+        $.post("{:url('Webmaster/sitemap')}", 
+            {pageSize: pageSize, startPage: startPage, endPage: startPage + step - 1}, function (data) {
+            
+            if (data.code != 1) {
+                layer.msg(data.msg, function(){});
+                return false;
+            }
+
+            callback(sitemapInfo, startPage, step);
+            
+        });
+    }
+  
+    function downloadSitemapTxt(btn) {
+        pageSize = $("#tab-sitemap form input[name=pageSize]").val();
+
+        var a = document.createElement('a'); // 创建a标签
+        a.setAttribute('download', "sitemap.txt"); // download属性
+        a.setAttribute('href', "{:url('Webmaster/sitemapTxt')}?pageSize=" + pageSize); // href链接
+        a.click(); // 自执行点击事件
+        a.remove();
+    }
+
+    $(document).ready(function() {
+        var elems = document.querySelectorAll('.ajax-switch');
+        for (var i = 0; i < elems.length; i++) {
+            var checkbox = elems[i];
+            var switchery = new Switchery(checkbox, { color: '#1AB394' });
+            checkbox.onchange = function() {
+                changeConfig(this.name, this.checked);
+            }
+        }
+    })
+
+</script>
+
+{/block}

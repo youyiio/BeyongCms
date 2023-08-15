@@ -185,6 +185,7 @@ class System extends Base
         }
 
         $LinkModel = new LinkModel();
+        $this->assign('LinkModel', $LinkModel);
         $list = $LinkModel->order('sort')->select();
         $this->assign('list', $list);
 

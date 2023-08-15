@@ -59,13 +59,13 @@
                         <form method="get" role="form" class="form-inline">
                             <div class="form-group">
                                 <input type="text" name="key" placeholder="关键字" class="form-control"
-                                       value="{$Think.get.key|default=''}">
+                                       value="{$Response.get.key|default=''}">
                             </div>
                             <div class="form-group">
                                 <select name="type" class="form-control">
-                                    <option value="mobile" {notempty name="Think.get.type" }{eq name="Think.get.type" value="mobile" }selected{/eq}{/notempty}>手机号</option>
-                                    <option value="email" {notempty name="Think.get.type" }{eq name="Think.get.type" value="email" }selected{/eq}{/notempty}>邮箱</option>
-                                    <option value="uid" {notempty name="Think.get.type" }{eq name="Think.get.type" value="uid" }selected{/eq}{/notempty}>UID</option>
+                                    <option value="mobile" {notempty name="Response.get.type" }{eq name="Response.get.type" value="mobile" }selected{/eq}{/notempty}>手机号</option>
+                                    <option value="email" {notempty name="Response.get.type" }{eq name="Response.get.type" value="email" }selected{/eq}{/notempty}>邮箱</option>
+                                    <option value="uid" {notempty name="Response.get.type" }{eq name="Response.get.type" value="uid" }selected{/eq}{/notempty}>UID</option>
                                 </select>
                             </div>
                             <button type="submit" class="btn btn-primary" style="margin-bottom: 0px">查找</button>
@@ -109,7 +109,7 @@
                                     {/notempty}
                                 </td>
                                 <td>{$vo.register_time}</td>
-                                <td>{$vo.last_login_time}</td>
+                                <td>{$vo.last_login_time|default=""}</td>
                                 <td>{$vo.status_html|raw}</td>
                                 <td>
                                     <a href="{:url(app('http')->getName().'/User/viewUser',['uid'=>$vo['id']])}"

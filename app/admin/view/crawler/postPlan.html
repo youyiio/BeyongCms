@@ -47,7 +47,7 @@
                         <div class="form-group">
                             <label class="col-lg-2 control-label">执行周期数<span class="text text-danger">*</span>:</label>
                             <div class="col-lg-10">
-                                <input type="number" name="days" class="form-control" placeholder="计划执行周期" value="{$Think.get.days}">
+                                <input type="number" name="days" class="form-control" placeholder="计划执行周期" value="{$Request.get.days|default=''}">
                             </div>
                         </div>
                         <div class="form-group">
@@ -55,8 +55,8 @@
                             <div class="col-lg-10">
                                 <div class="input-group m-b">
                                     <span class="input-group-btn"><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#timeSetModal">小时数量分配</button> </span>
-                                    <input type="number" name="countPerDay" value="{$Think.get.countPerDay}" class="form-control" placeholder="每天发布文章数量" required>
-                                    <input type="hidden" name="hourCounts" id="hourCounts" value="{$Think.get.hourCounts}">
+                                    <input type="number" name="countPerDay" value="{$Request.get.countPerDay|default=''}" class="form-control" placeholder="每天发布文章数量" required>
+                                    <input type="hidden" name="hourCounts" id="hourCounts" value="{$Request.get.hourCounts|default=''}">
                                 </div>
                             </div>
                         </div>
@@ -98,7 +98,7 @@
                             <td>{$vo.crawlerMeta.crawler.title|default=""}</td>
                             <td>{$vo.title}</td>
                             <td>{$vo.status_text}</td>
-                            <td>{if $vo.status == \app\common\model\cms\ArticleModel::STATUS_PUBLISHED}
+                            <td>{if $vo.status == $ArticleModel->STATUS_PUBLISHED}
                                 {$vo.post_time}
                                 {else /}
                                 {notempty name="$vo.timing"}{$vo.timing}<i class="fa fa-clock-o"></i>{/notempty}
