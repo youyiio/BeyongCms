@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by VSCode.
  * User: cattong
@@ -15,7 +16,7 @@ use think\Model;
 class ActionLogLogic
 {
     //增加日志，data为传递的参数
-    public function addLog($userId, $action, $remark, $params=[])
+    public function addLog($userId, $action, $remark, $params = [])
     {
         if (isset($params['password'])) {
             unset($params['password']);
@@ -29,7 +30,7 @@ class ActionLogLogic
             'params' => substr(json_encode($params), 0, 128),
             'user_agent' => request()->header("user-agent"),
             'response' => 'success',
-            'remark' => $remark            
+            'remark' => $remark
         ];
 
         $ActionLogModel = new ActionLogModel();
@@ -39,7 +40,7 @@ class ActionLogLogic
     }
 
     //客户端请求日志
-    public function addRequestLog($action, $username, $params=[], $response='')
+    public function addRequestLog($action, $username, $params = [], $response = '')
     {
         if (isset($params['password'])) {
             unset($params['password']);
@@ -48,7 +49,7 @@ class ActionLogLogic
         $data = [
             'username' => $username,
             'action' => $action,
-            'module' => app()->getName(),
+            'module' => app('http')->getName(),
             'component' => request()->url(),
             'ip' => request()->ip(0, true),
             'params' => substr(json_encode($params), 0, 128),
@@ -59,7 +60,7 @@ class ActionLogLogic
         ];
 
         $ActionLogModel = new ActionLogModel();
-        $result = $ActionLogModel->isUpdate(false)->save($data);
+        $result = $ActionLogModel->save($data);
 
         return $result;
     }

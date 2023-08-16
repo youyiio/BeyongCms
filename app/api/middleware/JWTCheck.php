@@ -1,6 +1,6 @@
 <?php
 
-namespace app\api\behavior;
+namespace app\api\middleware;
 
 use think\facade\Log;
 use think\facade\Request;
@@ -19,7 +19,7 @@ class JWTCheck
         $url = strtolower(Request::url());
         $url = str_replace("/api", "", $url);
         if (in_array($url, config('jwt.jwt_action_excludes'))) {
-            return true;
+            return $next($request);
         }
 
         $authorization = Request::header('authorization');
@@ -48,6 +48,7 @@ class JWTCheck
         //Api权限验证
         if (config('jwt.jwt_auth_on') !== 'off') {
             $user_info = $payload->data;
+            $request->user_info = $user_info;
             $uid = $user_info->uid;
             $permission = request()->controller() . ':' . request()->action();
             $permission = strtolower($permission);
@@ -58,7 +59,6 @@ class JWTCheck
         }
 
         //session('jwt_payload_data', $payload->data);
-
         return $next($request);
     }
 }

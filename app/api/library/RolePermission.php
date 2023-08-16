@@ -1,4 +1,5 @@
 <?php
+
 namespace app\api\library;
 
 use app\common\model\UserRoleModel;
@@ -10,7 +11,8 @@ use think\facade\Cache;
  * RolePermission class
  * 角色权限检测类
  */
-class RolePermission {
+class RolePermission
+{
 
     public function __construct()
     {
@@ -20,7 +22,7 @@ class RolePermission {
      * @param string $module 要验证权限的模块
      * @param string $name 要验证权限的列名
      */
-    public function checkPermission($uid, $permission, $module='api', $name='permission') 
+    public function checkPermission($uid, $permission, $module = 'api', $name = 'permission')
     {
         $permissions = Cache::get("permission" . CACHE_SEPARATOR . $module . $uid, null);
         if ($permissions === null) {
@@ -36,10 +38,10 @@ class RolePermission {
     }
 
     //查询权限列表
-    public function getPermissionList($uid, $module, $name) 
+    public function getPermissionList($uid, $module, $name)
     {
-        
-        $roleIds = UserRoleModel::where(['uid'=> $uid])->column('role_id');
+
+        $roleIds = UserRoleModel::where(['uid' => $uid])->column('role_id');
 
         $RolemenuModel = new RoleMenuModel();
         $menuIds = $RolemenuModel->where('role_id', 'in', $roleIds)->column('menu_id');

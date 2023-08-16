@@ -1,4 +1,5 @@
 <?php
+
 namespace app\api\controller;
 
 use app\common\library\ResultCode;
@@ -34,18 +35,17 @@ class Sign extends Base
         $config = config('sign.');
 
         $this->defaultConfig = array_merge($this->defaultConfig, $config);
-
     }
-    
+
     // 注册
     public function register()
     {
-        if ($this->request->method() != 'POST') {
+        if (request()->method() != 'POST') {
             return ajax_error(ResultCode::SC_FORBIDDEN, '非法访问！请检查请求方式！');
         }
-        
+
         //请求的body数据
-        $params = $this->request->put();
+        $params = request()->put();
 
         $check = validate('Sign')->scene('register')->check($params);
         if ($check !== true) {
@@ -68,19 +68,19 @@ class Sign extends Base
                 return ajax_error(ResultCode::E_PARAM_VALIDATE_ERROR, $codeLogic->getError());
             }
         }
-       
+
         //消费验证码
         $codeLogic->consumeCode(CodeLogic::TYPE_RESET_PASSWORD, $username, $code);
 
         //确认注册各字段
         $mobile = StringUtils::getRandNum(11);
-        $email = $mobile .'@' . StringUtils::getRandString(6) . '.com';
+        $email = $mobile . '@' . StringUtils::getRandString(6) . '.com';
         if (PregUtils::isMobile($params['username'])) {
             $mobile = $params['username'];
         } else if (PregUtils::isEmail($params['username'])) {
             $email = $params['username'];
         }
-        
+
         $nickname = isset($params['nickname']) ? $params['nickname'] : '用户' . substr($mobile, 5);
 
         $UserLogic = new UserLogic();
@@ -99,12 +99,12 @@ class Sign extends Base
             'from_referee' => cookie('from_referee'),
             'entrance_url'     => cookie('entrance_url'),
         ];
-        $UserModel->where('id', $user['id'])->setField($profileData);
+        $UserModel->where('id', $user['id'])->update($profileData);
 
         //权限初始化
         $group[] = [
             'uid' => $user->id,
-            'role_id' => config('user_group_id')
+            'role_id' => config('app.user_group_id')
         ];
         $UserRoleModel = new UserRoleModel();
         $UserRoleModel->insertAll($group);
@@ -125,12 +125,12 @@ class Sign extends Base
     //登录
     public function login()
     {
-        if ($this->request->method() != 'POST') {
+        if (request()->method() != 'POST') {
             return ajax_error(ResultCode::SC_FORBIDDEN, '非法访问！请检查请求方式！');
         }
 
         //请求的body数据
-        $params = $this->request->put();
+        $params = request()->put();
 
         $check = validate('Sign')->scene('login')->check($params);
         if ($check !== true) {
@@ -141,12 +141,12 @@ class Sign extends Base
         $tryLoginCountMark = $params['username'] . '_try_login_count';
         $tryLoginCount = Cache::get($tryLoginCountMark);
         if ($tryLoginCount > 5) {
-           return ajax_error(ResultCode::E_USER_STATE_FREED, '登录错误超过5次,账号被临时冻结1天');
+            return ajax_error(ResultCode::E_USER_STATE_FREED, '登录错误超过5次,账号被临时冻结1天');
         }
         if ($tryLoginCount >= 5) {
-           Cache::set($tryLoginCountMark, $tryLoginCount + 1, strtotime(date('Y-m-d 23:59:59'))-time());
-           
-           return ajax_error(ResultCode::E_USER_STATE_FREED, '登录错误超过5次,账号被临时冻结1天');
+            Cache::set($tryLoginCountMark, $tryLoginCount + 1, strtotime(date('Y-m-d 23:59:59')) - time());
+
+            return ajax_error(ResultCode::E_USER_STATE_FREED, '登录错误超过5次,账号被临时冻结1天');
         }
 
         //初始化登录错误次数
@@ -157,19 +157,19 @@ class Sign extends Base
         try {
             $UserLogic = new UserLogic();
             $user = $UserLogic->login($params['username'], $params['password'], request()->ip(0, true));
-            if (!$user) {                
+            if (!$user) {
                 Cache::inc($tryLoginCountMark);
 
                 return ajax_error(ResultCode::E_UNKNOW_ERROR, $UserLogic->getError());
             }
-        } catch(\Exception $e) {            
+        } catch (\Exception $e) {
             Cache::inc($tryLoginCountMark);
 
             throw $e;
         }
 
         //登录成功清除
-        Cache::rm($tryLoginCountMark);     
+        Cache::delete($tryLoginCountMark);
 
         $uid = $user['id'];
         $ActionLogLogic = new ActionLogLogic();
@@ -180,7 +180,7 @@ class Sign extends Base
             'aud' => 'jwt_api', //接收该JWT的一方，可选
             'iat' => time(),  //签发时间
             'exp' => time() + config('jwt.jwt_expired_time'),  //过期时间
-//            'nbf' => time() + 60,  //该时间之前不接收处理该Token
+            //            'nbf' => time() + 60,  //该时间之前不接收处理该Token
             'sub' => 'domain',  //面向的用户
             'jti' => md5(uniqid('JWT') . time()),  //该Token唯一标识
             'data' => [
@@ -219,7 +219,7 @@ class Sign extends Base
 
         //清除cookie
         cookie('uid', null);
-        cookie($uid . CACHE_SEPARATOR . 'login_hash',null);
+        cookie($uid . CACHE_SEPARATOR . 'login_hash', null);
 
         //清理相关缓存
         cache($uid . '_menu', null);
@@ -233,7 +233,7 @@ class Sign extends Base
      */
     public function reset()
     {
-        if ($this->request->method() != 'POST') {
+        if (request()->method() != 'POST') {
             return ajax_error(ResultCode::SC_FORBIDDEN, '非法访问！请检查请求方式！');
         }
 
@@ -258,8 +258,11 @@ class Sign extends Base
         if (!$user) {
             return ajax_error(ResultCode::ACTION_FAILED, '用户不存在');
         }
-        
-        $check = $this->validate(input('post.'), 'User.resetPwd');
+
+        $check = validate('User')->scene('resetPwd')->check(input('post.'));
+        if ($check !== true) {
+            return ajax_error(ResultCode::E_PARAM_VALIDATE_ERROR, validate('Sign')->getError());
+        }
         if ($check !== true) {
             return ajax_error(ResultCode::E_PARAM_VALIDATE_ERROR, $check);
         }
@@ -282,7 +285,5 @@ class Sign extends Base
         } else {
             return ajax_error(ResultCode::ACTION_FAILED, '密码重置失败');
         }
-        
-
     }
 }

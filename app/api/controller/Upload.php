@@ -156,7 +156,7 @@ class Upload extends Base
         }
 
         $user = $this->user_info;
-        $userInfo = UserModel::get($user->uid);
+        $userInfo = UserModel::find($user->uid);
         $saveName = $file->getSaveName(); //实际包含日期+名字：如20180724/erwrwiej...dfd.ext
         $fileUrl = DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . 'file' . DIRECTORY_SEPARATOR . $saveName;
         $data = [

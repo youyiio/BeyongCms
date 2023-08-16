@@ -1,4 +1,5 @@
 <?php
+
 namespace app\api\validate;
 
 use app\common\model\UserModel;
@@ -6,25 +7,25 @@ use think\Validate;
 use beyong\commons\utils\PregUtils;
 
 /**
-* Sign验证规则
-*/
+ * Sign验证规则
+ */
 class Sign extends Validate
 {
 
     protected $rule = [
         'id'        => ['require', 'integer'],
-        'nickname'   => ['require','max'=> 32],
-        'username'   => ['require','checkUsername'],
+        'nickname'   => ['require', 'max' => 32],
+        'username'   => ['require', 'checkUsername'],
         'roleIds'    => ['array'],
-        'email'      => ['email','unique:' . 'sys_user,email'],
-        'password'   => ['require','min'=> 6, 'max'=> 16],
-        'repassword' => ['require','confirm:password'],
-        'code'       => ['require','regex'=>'/^[0-9]{6}$/'],
-        'sex'        => ['in'=> [0,1,2]],
+        'email'      => ['email', 'unique:' . 'sys_user,email'],
+        'password'   => ['require', 'min' => 6, 'max' => 16],
+        'repassword' => ['require', 'confirm:password'],
+        'code'       => ['require', 'regex' => '/^[0-9]{6}$/'],
+        'sex'        => ['in' => [0, 1, 2]],
         'born'       => ['date'],
-        'qq'         => ['regex'=>'/^[1-9][0-9]{5,}$/'],
-        'mobile'     => ['require','regex'=>'/^((13[0-9])|(14[5,7])|(15[0-3,5-9])|16[6]|(17[0,3,5-8])|(18[0-9])|19[89])\d{8}$/'],
-        'phone'      => ['regex'=>'/^(\d{3,4}-)?\d{7,8}$/'],
+        'qq'         => ['regex' => '/^[1-9][0-9]{5,}$/'],
+        'mobile'     => ['require', 'regex' => '/^((13[0-9])|(14[5,7])|(15[0-3,5-9])|16[6]|(17[0,3,5-8])|(18[0-9])|19[89])\d{8}$/'],
+        'phone'      => ['regex' => '/^(\d{3,4}-)?\d{7,8}$/'],
         'website'    => ['url'],
     ];
 
@@ -80,7 +81,7 @@ class Sign extends Validate
     ];
 
     protected $scene = [
-        'register' => ['username','nickname','password','repassword','code'],
-        'login' => ['username','password'],        
+        'register' => ['username', 'nickname', 'password', 'repassword', 'code'],
+        'login' => ['username', 'password'],
     ];
 }

@@ -45,13 +45,13 @@ class Ucenter extends Base
     {
         $userInfo = $this->user_info;
         $uid = $userInfo->uid;
-        $user = UserModel::get($uid);
+        $user = UserModel::find($uid);
 
         if (!$user) {
             ajax_return(ResultCode::E_DATA_NOT_FOUND, '用户不存在!');
         }
 
-        $params = $this->request->put();
+        $params = request()->put();
         $check = Validate('User')->scene('ucenterEdit')->check($params);
         if ($check !== true) {
             return ajax_error(ResultCode::E_PARAM_VALIDATE_ERROR, validate('User')->getError());
@@ -88,7 +88,7 @@ class Ucenter extends Base
         }
         if (isset($params['description'])) {
             $user->meta('description', $params['description']);
-        }   
+        }
 
         //返回数据
         $UserModel = new UserModel();
@@ -108,7 +108,7 @@ class Ucenter extends Base
     {
         $userInfo = $this->user_info;
         $uid = $userInfo->uid;
-        $user = UserModel::get($uid);
+        $user = UserModel::find($uid);
         if (!$user) {
             ajax_return(ResultCode::E_DATA_NOT_FOUND, '用户不存在!');
         }
@@ -129,7 +129,7 @@ class Ucenter extends Base
     //修改密码
     public function modifyPassword()
     {
-        $params = $this->request->put();
+        $params = request()->put();
         $validate = Validate::make([
             'oldPassword' => 'require',
             'password' => 'require|length:6,20|alphaDash'
@@ -140,7 +140,7 @@ class Ucenter extends Base
         }
         $uid = $this->user_info;
         $uid = $uid->uid;
-        $user = UserModel::get($uid);
+        $user = UserModel::find($uid);
 
         $oldPassword = $params['oldPassword'];
         $oldPassword = encrypt_password($oldPassword, $user['salt']);

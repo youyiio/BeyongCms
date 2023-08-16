@@ -36,7 +36,7 @@ class User extends Base
 
             return ajax_return(ResultCode::E_UNKNOW_ERROR, '未知错误!');
         }
-       
+
         $returnData = parse_fields($user->toArray(), 1);
 
         return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!', $returnData);
@@ -45,7 +45,7 @@ class User extends Base
     //获取用户列表
     public function list()
     {
-        $params = $this->request->put();
+        $params = request()->put();
 
         $page = $params['page'] ?? 1;
         $size = $params['size'] ?? 10;
@@ -64,13 +64,13 @@ class User extends Base
         }
         $fields = 'id,nickname,sex,mobile,email,head_url,qq,weixin,referee,register_time,register_ip,from_referee,entrance_url,last_login_time,last_login_ip';
         if (isset($filters['keyword'])) {
-            $where[] = ['id|mobile|email|nickname', 'like', '%'.$filters['keyword'].'%'];
+            $where[] = ['id|mobile|email|nickname', 'like', '%' . $filters['keyword'] . '%'];
         }
 
         $UserModel = new UserModel();
-        $list = $UserModel->where($where)->field($fields)->paginate($size, false, ['page' =>$page]);
+        $list = $UserModel->where($where)->field($fields)->paginate($size, false, ['page' => $page]);
 
-     
+
         $list = $list->toArray();
         //返回数据
         $returnData['current'] = $list['current_page'];
@@ -85,7 +85,7 @@ class User extends Base
     //新增用户
     public function create()
     {
-        $params = $this->request->put();
+        $params = request()->put();
 
         $check = Validate('User')->scene('create')->check($params);
         if ($check !== true) {
@@ -94,11 +94,11 @@ class User extends Base
 
         $UserLogic = new UserLogic();
         $uid = $UserLogic->createUser($params['mobile'], $params['password'], $params['nickname'], $params['email']);
-        
+
         if (!$uid) {
             return ajax_return(ResultCode::E_DATA_VALIDATE_ERROR, '操作失败!');
         }
-     
+
         if (!empty($params['roleIds'])) {
             $group = [];
             foreach ($params['roleIds'] as $k => $v) {
@@ -121,20 +121,20 @@ class User extends Base
 
         $returnData = parse_fields($user->toArray(), 1);
 
-        return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!', $returnData);  
+        return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!', $returnData);
     }
 
     //编辑用户
     public function edit()
     {
-        $params = $this->request->put();
+        $params = request()->put();
         $check = Validate('User')->scene('edit')->check($params);
         if ($check !== true) {
             return ajax_error(ResultCode::E_PARAM_VALIDATE_ERROR, validate('User')->getError());
         }
 
         $uid = $params['id'];
-        $user = UserModel::get($uid);
+        $user = UserModel::find($uid);
         if (!$user) {
             return ajax_return(ResultCode::E_DATA_NOT_FOUND, '用户不存在!');
         }
@@ -144,7 +144,7 @@ class User extends Base
         if (!$res) {
             return ajax_return(ResultCode::ACTION_SUCCESS, '操作失败!');
         }
-        
+
         //修改对应角色
         if (!empty($params['roleIds'])) {
             $UserRoleModel = new UserRoleModel();
@@ -174,7 +174,7 @@ class User extends Base
     //删除用户
     public function delete($id)
     {
-        $user = UserModel::get($id);
+        $user = UserModel::find($id);
         if (!$user) {
             return ajax_return(ResultCode::E_DATA_NOT_FOUND, '用户不存在!');
         }
@@ -191,10 +191,10 @@ class User extends Base
     //修改密码
     public function modifyPassword()
     {
-        $params = $this->request->put();
+        $params = request()->put();
 
 
-        $user = UserModel::get($params['id']);
+        $user = UserModel::find($params['id']);
         if (!$user) {
             return ajax_error(ResultCode::E_DATA_NOT_FOUND, '用户不存在!');
         }
@@ -219,7 +219,7 @@ class User extends Base
     //冻结用户
     public function freeze()
     {
-        $params = $this->request->put();
+        $params = request()->put();
 
         $uid = $params['id'];
         if ($uid == 0) {
@@ -231,7 +231,7 @@ class User extends Base
 
         if (!$res) {
             return ajax_return(ResultCode::E_DATA_VALIDATE_ERROR, '操作失败!');
-        } 
+        }
 
         return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!');
     }
@@ -239,7 +239,7 @@ class User extends Base
     //解冻用户
     public function unfreeze()
     {
-        $params = $this->request->put();
+        $params = request()->put();
 
         $uid = $params['id'];
         if ($uid == 0) {
@@ -251,7 +251,7 @@ class User extends Base
 
         if (!$res) {
             return ajax_return(ResultCode::E_DATA_VALIDATE_ERROR, '操作失败!');
-        } 
+        }
 
         return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!');
     }
@@ -259,7 +259,7 @@ class User extends Base
     //用户分配角色
     public function addRoles()
     {
-        $params = $this->request->put();
+        $params = request()->put();
 
         $check = Validate('User')->scene('addRoles')->check($params);
         if ($check !== true) {
@@ -293,7 +293,7 @@ class User extends Base
     //筛选用户
     public function quickSelect()
     {
-        $params = $this->request->put();
+        $params = request()->put();
 
         $page = $params['page'] ?? 1;
         $size = $params['size'] ?? 10;
@@ -301,7 +301,8 @@ class User extends Base
 
         $where = [];
         foreach ($filters as $key => $value) {
-            if ($value !== ''
+            if (
+                $value !== ''
             ) {
                 $where[] = [$key, 'like', '%' . $value . '%'];
             }

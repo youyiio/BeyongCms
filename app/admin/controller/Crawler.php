@@ -86,7 +86,7 @@ class Crawler extends Base
                 $res = $crawler->save($data);
             } catch (ValidateException $e) {
                 // 验证失败 输出错误信息
-                return dump($e->getError());
+                return ($e->getError());
             }
             $this->success('规则修改成功！', 'Crawler/index');
         }
@@ -135,14 +135,12 @@ class Crawler extends Base
         try {
             $endPage = $isPaging ? $startPage : $endPage; //测试抓取时，分页只抓取一页的urls
             $urls = \app\admin\job\Crawler::crawlUrls($url, $articleUrl, $isPaging, $startPage, $endPage, $pagingUrl);
-            //dump($urls);
             if (empty($urls)) {
                 $this->error('未采集到文章网址', 'javascript:void(0)');
             }
 
             $contentUrl = $urls[0];
             $result = \app\admin\job\Crawler::crawlArticle($contentUrl, $encoding, $articleTitle, $articleDescription, $articleKeywords, $articleContent, $articleAuthor, $articleImage);
-            //dump($result);
 
             $this->assign('article', $result);
         } catch (\Exception $e) {

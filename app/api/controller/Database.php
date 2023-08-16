@@ -1,17 +1,18 @@
 <?php
+
 namespace app\api\controller;
 
 use app\common\library\ResultCode;
-use think\Db;
+use think\facade\Db;
 
 class Database extends Base
 {
     public function tables()
     {
-        $params = $this->request->put();
-        $page = $params['page']?? 1;
-        $size = $params['size']?? 10;
-        $filters = $params['filters']?? '';
+        $params = request()->put();
+        $page = $params['page'] ?? 1;
+        $size = $params['size'] ?? 10;
+        $filters = $params['filters'] ?? '';
 
         $where = '';
         if (!empty($filters)) {
@@ -20,12 +21,12 @@ class Database extends Base
                 $where .= "and $key like '%$value%'";
             }
         }
-   
+
         $fields = 'TABLE_NAME,TABLE_TYPE,TABLE_SCHEMA,ENGINE,VERSION,ROW_FORMAT,TABLE_ROWS,DATA_LENGTH,INDEX_LENGTH,TABLE_COMMENT,AUTO_INCREMENT,CREATE_TIME,UPDATE_TIME';
         //获取所有的表
         $sql = "select $fields from information_schema.TABLES where TABLE_SCHEMA=(select database()) $where";
         $data = Db::query($sql);
-    
+
         //分页
         $total = count($data);  //总数
         $pages = ceil($total / $size); //总页数
@@ -55,7 +56,7 @@ class Database extends Base
 
             $targetKey = strtolower($key);
             $targetKey = parse_name($targetKey, 1, true);
-            
+
             if ($key === $targetKey) {
                 continue;
             }

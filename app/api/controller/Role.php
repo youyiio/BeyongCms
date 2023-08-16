@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 namespace app\api\controller;
 
 use app\common\library\ResultCode;
@@ -14,7 +15,7 @@ class Role extends Base
 {
     public function list()
     {
-        $params = $this->request->put();
+        $params = request()->put();
         $page = $params['page'];
         $size = $params['size'];
 
@@ -29,12 +30,11 @@ class Role extends Base
 
         $RoleModel = new RoleModel();
         $list = $RoleModel->where($where)->field($fields)->paginate($size, false, ['page' => $page]);
-    
+
         //查询角色权限
         $MenuModel = new MenuModel();
         foreach ($list as $key => $value) {
             $list[$key]['menuIds'] = $MenuModel::hasWhere('roleMenus', [['role_id', '=', $value['id']]])->where('belongs_to', '=', 'api')->column('sys_menu.id');
-          
         }
         $returnData = pagelist_to_hump($list);
 
@@ -44,7 +44,7 @@ class Role extends Base
     //新增角色
     public function create()
     {
-        $params = $this->request->put();
+        $params = request()->put();
 
         $validate = Validate::make([
             'name' => 'alphaDash',
@@ -55,7 +55,7 @@ class Role extends Base
         }
 
         $user = $this->user_info;
-        $userInfo = UserModel::get($user->uid);
+        $userInfo = UserModel::find($user->uid);
         $params['create_by'] = $userInfo['nickname'] ?? '';
         $params['update_by'] = $userInfo['nickname'] ?? '';
         $params['create_time'] = date_time();
@@ -76,11 +76,11 @@ class Role extends Base
     //编辑角色
     public function edit()
     {
-        $params = $this->request->put();
+        $params = request()->put();
 
         //验证参数
         $id = $params['id'];
-        $role = RoleModel::get($id);
+        $role = RoleModel::find($id);
         if (!$role) {
             return ajax_return(ResultCode::E_PARAM_ERROR, '角色不存在!');
         }
@@ -93,7 +93,7 @@ class Role extends Base
         }
 
         $user = $this->user_info;
-        $userInfo = UserModel::get($user->uid);
+        $userInfo = UserModel::find($user->uid);
 
         $params['update_by'] = $userInfo['nickname'] ?? '';
         $params['update_time'] = date_time();
@@ -110,7 +110,7 @@ class Role extends Base
     //删除角色
     public function delete($id)
     {
-        $Role = RoleModel::get($id);
+        $Role = RoleModel::find($id);
         if (!$Role) {
             return ajax_return(ResultCode::E_DATA_NOT_FOUND, '角色不存在!');
         }
@@ -127,7 +127,7 @@ class Role extends Base
     {
         $RoleMenuModel = new RoleMenuModel();
         $ids = $RoleMenuModel->where('role_id', $id)->column('menu_id');
-       
+
         $MenuModel = new MenuModel();
         $where = [
             ['id', 'in', $ids],
@@ -145,10 +145,10 @@ class Role extends Base
     //分配角色权限
     public function addMenus($id)
     {
-        $params = $this->request->put();
+        $params = request()->put();
         $menuIds = $params['menuIds'] ?? [];
 
-        $role = RoleModel::get($id);
+        $role = RoleModel::find($id);
         if (!$role) {
             return ajax_return(ResultCode::E_DATA_NOT_FOUND, '角色不存在!');
         }
@@ -173,7 +173,7 @@ class Role extends Base
     //查询角色用户列表
     public function users($id)
     {
-        $params = $this->request->put();
+        $params = request()->put();
         $page = $params['page'] ?? '1';
         $size = $params['size'] ?? '10';
         $filters = $params['filters'];

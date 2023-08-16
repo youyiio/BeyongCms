@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 namespace app\api\controller\app;
 
 use app\api\controller\Base;
@@ -17,17 +18,17 @@ class Article extends Base
     //查询文章列表
     public function timeLine()
     {
-        $params = $this->request->put();
-        $page = $params['page']?? 1;
-        $size = $params['size']?? 10;
-        $filters = $params['filters']?? '';
-        $cid = $filters['cid']?? 0;
-        $cname = $filters['cname']?? '';
-    
+        $params = request()->put();
+        $page = $params['page'] ?? 1;
+        $size = $params['size'] ?? 10;
+        $filters = $params['filters'] ?? '';
+        $cid = $filters['cid'] ?? 0;
+        $cname = $filters['cname'] ?? '';
+
         $ArticleModel = new ArticleModel();
         $fields = 'id,title,keywords,thumb_image_id,post_time,update_time,create_time,is_top,status,read_count,sort,author';
         if (empty($cid) && !empty($cname)) {
-            $category = CategoryModel::where(['name'=> $cname])->find();
+            $category = CategoryModel::where(['name' => $cname])->find();
             if (!empty($category)) {
                 $cid = $category['id'];
             } else {
@@ -38,14 +39,14 @@ class Article extends Base
         $where[] = ['status', '=', ArticleModel::STATUS_PUBLISHED];
         $order = 'sort desc,post_time desc';
         if ($cid) {
-            $childs = CategoryModel::getChild($cid);
+            $childs = CategoryModel::findChild($cid);
             $cids = $childs['ids'];
             $fields = 'cms_article.id,title,keywords,thumb_image_id,post_time,update_time,create_time,is_top,status,read_count,sort,author';
-            $list = ArticleModel::hasWhere('CategoryArticle', [['category_id','in',$cids]], $fields)->where($where)->order($order)->paginate($size,false,['page'=>$page]);
+            $list = ArticleModel::hasWhere('CategoryArticle', [['category_id', 'in', $cids]], $fields)->where($where)->order($order)->paginate($size, false, ['page' => $page]);
         } else {
-            $list = $ArticleModel->where($where)->field($fields)->order($order)->paginate($size, false, ['page'=>$page]);
+            $list = $ArticleModel->where($where)->field($fields)->order($order)->paginate($size, false, ['page' => $page]);
         }
-    
+
         //添加缩略图和分类
         $CategoryArticleModel = new CategoryArticleModel();
         foreach ($list as $art) {
@@ -68,17 +69,17 @@ class Article extends Base
     //查询最新文章
     public function latest()
     {
-        $params = $this->request->put();
-        $page = $params['page']?? 1;
-        $size = $params['size']?? 10;
-        $filters = $params['filters']?? '';
-        $cid = $filters['cid']?? 0;
-        $cname = $filters['cname']?? '';
-    
+        $params = request()->put();
+        $page = $params['page'] ?? 1;
+        $size = $params['size'] ?? 10;
+        $filters = $params['filters'] ?? '';
+        $cid = $filters['cid'] ?? 0;
+        $cname = $filters['cname'] ?? '';
+
         $ArticleModel = new ArticleModel();
         $fields = 'id,title,keywords,thumb_image_id,post_time,update_time,create_time,is_top,status,read_count,sort,author';
         if (empty($cid) && !empty($cname)) {
-            $category = CategoryModel::where(['name'=> $cname])->find();
+            $category = CategoryModel::where(['name' => $cname])->find();
             if (!empty($category)) {
                 $cid = $category['id'];
             } else {
@@ -89,14 +90,14 @@ class Article extends Base
         $where[] = ['status', '=', ArticleModel::STATUS_PUBLISHED];
         $order = 'post_time desc';
         if ($cid) {
-            $childs = CategoryModel::getChild($cid);
+            $childs = CategoryModel::findChild($cid);
             $cids = $childs['ids'];
             $fields = 'cms_article.id,title,keywords,thumb_image_id,post_time,update_time,create_time,is_top,status,read_count,sort,author';
-            $list = ArticleModel::hasWhere('CategoryArticle', [['category_id','in',$cids]], $fields)->where($where)->order($order)->paginate($size,false,['page'=>$page]);
+            $list = ArticleModel::hasWhere('CategoryArticle', [['category_id', 'in', $cids]], $fields)->where($where)->order($order)->paginate($size, false, ['page' => $page]);
         } else {
-            $list = $ArticleModel->where($where)->field($fields)->order($order)->paginate($size, false, ['page'=>$page]);
+            $list = $ArticleModel->where($where)->field($fields)->order($order)->paginate($size, false, ['page' => $page]);
         }
-        
+
         //添加缩略图和分类
         $CategoryArticleModel = new CategoryArticleModel();
         foreach ($list as $art) {
@@ -125,16 +126,16 @@ class Article extends Base
     //查询热门文章
     public function hottest()
     {
-        $params = $this->request->put();
-        $page = $params['page']?? 1;
-        $size = $params['size']?? 10;
-        $filters = $params['filters']?? '';
-        $cid = $filters['cid']?? 0;
-        $cname = $filters['cname']?? '';
-    
+        $params = request()->put();
+        $page = $params['page'] ?? 1;
+        $size = $params['size'] ?? 10;
+        $filters = $params['filters'] ?? '';
+        $cid = $filters['cid'] ?? 0;
+        $cname = $filters['cname'] ?? '';
+
         $ArticleModel = new ArticleModel();
         if (empty($cid) && !empty($cname)) {
-            $category = CategoryModel::where(['name'=> $cname])->find();
+            $category = CategoryModel::where(['name' => $cname])->find();
             if (!empty($category)) {
                 $cid = $category['id'];
             } else {
@@ -146,14 +147,14 @@ class Article extends Base
         $order = 'read_count desc';
         $fields = 'id,title,keywords,thumb_image_id,post_time,update_time,create_time,is_top,status,read_count,sort,author';
         if ($cid) {
-            $childs = CategoryModel::getChild($cid);
+            $childs = CategoryModel::findChild($cid);
             $cids = $childs['ids'];
             $fields = 'cms_article.id,title,keywords,thumb_image_id,post_time,update_time,create_time,is_top,status,read_count,sort,author';
-            $list = ArticleModel::hasWhere('CategoryArticle', [['category_id','in',$cids]],$fields)->where($where)->order($order)->paginate($size,false,['page'=>$page]);
+            $list = ArticleModel::hasWhere('CategoryArticle', [['category_id', 'in', $cids]], $fields)->where($where)->order($order)->paginate($size, false, ['page' => $page]);
         } else {
-            $list = $ArticleModel->where($where)->field($fields)->order($order)->paginate($size, false, ['page'=>$page]);
+            $list = $ArticleModel->where($where)->field($fields)->order($order)->paginate($size, false, ['page' => $page]);
         }
-   
+
         //添加缩略图和分类
         $CategoryArticleModel = new CategoryArticleModel();
         foreach ($list as $art) {
@@ -186,7 +187,7 @@ class Article extends Base
 
         $fields = 'id,title,keywords,description,content,read_count,thumb_image_id,comment_count,author,status,create_time,post_time,update_time';
         $art = $ArticleModel->where('id', $aid)->field($fields)->find();
-      
+
         if (!$art) {
             return ajax_error(ResultCode::E_DATA_NOT_FOUND, '文章不存在');
         }
@@ -212,7 +213,7 @@ class Article extends Base
         $metaImages = findMetaImages($art);
         //附加文件
         $metaFiles = findMetaFiles($art);
-      
+
         //返回数据
         $returnData = parse_fields($art->toArray(), 1);
         $returnData['tags'] = $tags;
@@ -227,26 +228,26 @@ class Article extends Base
     //查询文章评论
     public function comments($aid)
     {
-        $article = ArticleModel::get($aid);
+        $article = ArticleModel::find($aid);
         if (empty($article)) {
             return ajax_return(ResultCode::E_PARAM_ERROR, '文章不存在');
         }
 
-        $params = $this->request->put();
-        $page = $params['page']?: 1;
-        $size = $params['size']?: 5;
-        $filters = $params['filters']?? '';
-        $keyword = $filters['keyword']?? '';
+        $params = request()->put();
+        $page = $params['page'] ?: 1;
+        $size = $params['size'] ?: 5;
+        $filters = $params['filters'] ?? '';
+        $keyword = $filters['keyword'] ?? '';
 
         //查询评论
         $CommentModel = new CommentModel();
-        $where =[
-            ['content', 'like', '%'.$keyword.'%'],
+        $where = [
+            ['content', 'like', '%' . $keyword . '%'],
             ['article_id', '=', $aid],
             ['status', '=', CommentModel::STATUS_PUBLISHED]
         ];
-      
-        $list = $CommentModel->where($where)->paginate($size, false, ['page'=>$page]);
+
+        $list = $CommentModel->where($where)->paginate($size, false, ['page' => $page]);
 
         return ajax_return(ResultCode::ACTION_SUCCESS, '查询成功!', to_standard_pagelist($list));
     }
@@ -254,15 +255,15 @@ class Article extends Base
     //查询相关推荐
     public function related($aid)
     {
-        $params = $this->request->put();
-        $page = $params['page']?? 1;
-        $size = $params['size']?? 10;
-        $filters = $params['filters']?? '';
-        $cid = $filters['cid']?? 0;
-        $cname = $filters['cname']?? '';
+        $params = request()->put();
+        $page = $params['page'] ?? 1;
+        $size = $params['size'] ?? 10;
+        $filters = $params['filters'] ?? '';
+        $cid = $filters['cid'] ?? 0;
+        $cname = $filters['cname'] ?? '';
 
         if (empty($cid) && !empty($cname)) {
-            $category = CategoryModel::where(['name'=> $cname])->find();
+            $category = CategoryModel::where(['name' => $cname])->find();
             if (!empty($category)) {
                 $cid = $category['id'];
             } else {
@@ -291,12 +292,12 @@ class Article extends Base
         $fields = 'id,title,keywords,thumb_image_id,post_time,update_time,create_time,is_top,status,read_count,sort,author';
         $ArticleModel = new ArticleModel();
         if ($cid) {
-            $childs = CategoryModel::getChild($cid);
+            $childs = CategoryModel::findChild($cid);
             $cids = $childs['ids'];
             $fields = 'cms_article.id,title,keywords,thumb_image_id,post_time,update_time,create_time,is_top,status,read_count,sort,author';
-            $list = ArticleModel::hasWhere('CategoryArticle', [['category_id','in',$cids]],$fields)->where($where)->order($order)->paginate($size,false,['page'=>$page]);
+            $list = ArticleModel::hasWhere('CategoryArticle', [['category_id', 'in', $cids]], $fields)->where($where)->order($order)->paginate($size, false, ['page' => $page]);
         } else {
-            $list = $ArticleModel->where($where)->field($fields)->order($order)->paginate($size, false, ['page'=>$page]);
+            $list = $ArticleModel->where($where)->field($fields)->order($order)->paginate($size, false, ['page' => $page]);
         }
 
         //添加缩略图和分类
@@ -322,20 +323,19 @@ class Article extends Base
         $returnData['records'] = parse_fields($list['data'], 1);
 
         return ajax_return(ResultCode::ACTION_SUCCESS, '查询成功!', $returnData);
-
     }
 
     //查询分类列表
     public function categoryList()
     {
-        $params = $this->request->put();
+        $params = request()->put();
 
-        $page = $params['page']?? 1;
-        $size = $params['size']?? 10;
-        $filters = $params['filters']?? '';
-        $pid = $filters['pid']?? 0;
-        $depth = $filters['depth']?? 1;
-        $struct = $filters['struct']?? '';
+        $page = $params['page'] ?? 1;
+        $size = $params['size'] ?? 10;
+        $filters = $params['filters'] ?? '';
+        $pid = $filters['pid'] ?? 0;
+        $depth = $filters['depth'] ?? 1;
+        $struct = $filters['struct'] ?? '';
 
         $where = [];
         if (!empty($filters['startTime'])) {
@@ -344,7 +344,7 @@ class Article extends Base
         if (!empty($filters['endTime'])) {
             $where[] = ['create_time', '<=', $filters['endTime'] . '23:59:59'];
         }
-        
+
         $CategoryModel = new CategoryModel();
         $list = $CategoryModel->where($where)->select();
 
@@ -359,38 +359,38 @@ class Article extends Base
         $total = count($data);  //总数
         $pages = ceil($total / $size); //总页数
         $start = ($page - 1) * $size;
-        $records =  array_slice($data, $start, $size); 
+        $records =  array_slice($data, $start, $size);
         //返回数据
         $returnData['current'] = $page;
         $returnData['pages'] = $pages;
         $returnData['size'] = $size;
         $returnData['total'] = $total;
         $returnData['records'] = parse_fields($records, 1);
-        
+
         return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!', $returnData);
     }
 
     //查询友链列表
     public function linkList()
     {
-        $params = $this->request->put();
+        $params = request()->put();
 
         $page = $params['page'];
         $size = $params['size'];
-        $filters = $params['filters'] ?? []; 
+        $filters = $params['filters'] ?? [];
 
         $where = [];
         $fields = 'id,title,url,sort,status,start_time,end_time,create_time';
         if (isset($filters['keyword'])) {
-            $where[] = ['title', 'like', '%'.$filters['keyword'].'%'];
+            $where[] = ['title', 'like', '%' . $filters['keyword'] . '%'];
         }
         if (isset($filters['status']) && $filters['status'] !== '') {
             $where[] = ['status', '=', $filters['status']];
         }
 
         $LinkModel = new LinkModel();
-        
-        $list = $LinkModel->where($where)->field($fields)->paginate($size, false, ['page' =>$page])->toArray();
+
+        $list = $LinkModel->where($where)->field($fields)->paginate($size, false, ['page' => $page])->toArray();
 
         //返回数据
         $returnData['current'] = $list['current_page'];

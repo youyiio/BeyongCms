@@ -1,4 +1,5 @@
 <?php
+
 namespace app\api\controller;
 
 // 不需要认证的话继承Base
@@ -13,9 +14,9 @@ use think\Validate;
 class Ad extends Base
 {
     //查询轮播图
-    public function carousel() 
+    public function carousel()
     {
-        $params = $this->request->put();
+        $params = request()->put();
 
         //数据验证git
         $validate = new Validate();
@@ -37,22 +38,22 @@ class Ad extends Base
         }
 
         $slotId = $adSlot->id;
-        $results = AdModel::has('adServings', ['slot_id' => $slotId])->order('sort asc')->limit($limit)->select();
+        $results = AdModel::hasWhere('adServings', ['slot_id' => $slotId])->order('sort asc')->limit($limit)->select();
 
         return ajax_success($results);
     }
 
     //查询广告列表
-    public function list() 
+    public function list()
     {
-        $params = $this->request->put();
+        $params = request()->put();
 
 
-        $page = $params['page']?? 1;
-        $size = $params['size']?? 10;
+        $page = $params['page'] ?? 1;
+        $size = $params['size'] ?? 10;
         $filters = $params["filters"];
-        $keyword = $filters['keyword']?? '';
-        $soltIds = $filters['soltIds']?? '';
+        $keyword = $filters['keyword'] ?? '';
+        $soltIds = $filters['soltIds'] ?? '';
 
         $where = [];
         if (!empty($keyword)) {
@@ -60,12 +61,12 @@ class Ad extends Base
         }
         if (!empty($soltIds)) {
             $AdServingModel = new AdServingModel();
-            $adIds = $AdServingModel->where('slot_id', $soltIds)->field('distinct ad_id')->column('ad_id');//column变成一维数组
+            $adIds = $AdServingModel->where('slot_id', $soltIds)->field('distinct ad_id')->column('ad_id'); //column变成一维数组
             $where[] = ['id', 'in', $adIds];
         }
 
         $AdModel = new AdModel();
-        $list = $AdModel->where($where)->order('sort asc,id desc')->paginate($size, false, ['page'=>$page]);
+        $list = $AdModel->where($where)->order('sort asc,id desc')->paginate($size, false, ['page' => $page]);
 
         foreach ($list as $ad) {
             $ad['image'] = $this->findImage($ad);
@@ -87,23 +88,22 @@ class Ad extends Base
     {
         $adSlot = new AdSlotModel();
         $list = $adSlot->select();
-        
-        return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!', $list);
 
+        return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!', $list);
     }
 
     //新增广告
     public function create()
     {
-        $params = $this->request->put();
+        $params = request()->put();
 
         //数据验证
         $validate = new Validate();
         $validate->rule([
             'title' => 'require',
-            'url' => ['require','url'],
-            'slotIds' => ['require','array'],
-            'imageId' => ['require','integer']
+            'url' => ['require', 'url'],
+            'slotIds' => ['require', 'array'],
+            'imageId' => ['require', 'integer']
         ]);
 
         if (!$validate->check($params)) {
@@ -115,7 +115,7 @@ class Ad extends Base
         $soltIds = $params['slotIds'];
         //驼峰转为下划线
         $params = parse_fields($params);
-        $AdModel->isUpdate(false)->allowField(true)->save($params);
+        $AdModel->save($params);
 
         $adId = $AdModel->id;
         if (!$adId) {
@@ -127,18 +127,18 @@ class Ad extends Base
         $AdModel->adSlots()->attach($soltIds, $pivot);
 
         //返回数据
-        $ad = AdModel::get($adId);
+        $ad = AdModel::find($adId);
 
         $returnData = $ad;
         $returnData['image'] = $this->findImage($ad);
-        
+
         return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!', $returnData);
     }
 
     //编辑广告
     public function edit()
     {
-        $params = $this->request->put();
+        $params = request()->put();
 
         //数据验证
         $validate = new Validate();
@@ -146,8 +146,8 @@ class Ad extends Base
             'id' => 'require',
             'title' => 'require',
             'url' => 'require',
-            'slotIds' => ['require','array'],
-            'imageId' => ['require','integer']
+            'slotIds' => ['require', 'array'],
+            'imageId' => ['require', 'integer']
         ]);
 
         if (!$validate->check($params)) {
@@ -156,29 +156,34 @@ class Ad extends Base
 
         $params['create_time'] = date_time();
         $id = $params['id'];
+        $ad = AdModel::find($id);
+        if (!$ad) {
+            return ajax_return(ResultCode::E_PARAM_VALIDATE_ERROR, '广告不存在!');
+        }
         $AdModel = new AdModel();
-        $rowsNum = $AdModel->isUpdate(true)->allowField(true)->save($params, ['id'=>$id]);
+        $rowsNum = $AdModel->update($params, ['id' => $id]);
 
         //更新中间表数据
-        $AdModel->adSlots()->detach();
+
+        $ad->adSlots()->detach();
         $pivot = ['update_time' => date_time(), 'create_time' => date_time()];
-        $AdModel->adSlots()->attach($params['slotIds'], $pivot);
+        $ad->adSlots()->attach($params['slotIds'], $pivot);
 
         if ($rowsNum == false) {
             return ajax_return(ResultCode::E_DATA_VALIDATE_ERROR, '操作失败!');
-        } 
+        }
 
         //返回数据
-        $ad = AdModel::get($id);
+        $ad = AdModel::find($id);
         $returnData = $ad;
         $returnData['image'] = $this->findImage($ad);
-        
+
         return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!', $returnData);
     }
 
     public function delete($id)
     {
-        $ad = AdModel::get($id);
+        $ad = AdModel::find($id);
         if (!$ad) {
             ajax_return(ResultCode::E_DATA_NOT_FOUND, '广告不存在!');
         }
@@ -190,7 +195,7 @@ class Ad extends Base
 
         $AdServingModel = new AdServingModel();
         $AdServingModel->where('ad_id', $id)->delete();
-        
+
         return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!');
     }
 
@@ -202,22 +207,22 @@ class Ad extends Base
             return $Image;
         }
         $ImageModel = new ImageModel();
-        $Image = $ImageModel::get($ad['image_id']);
-    
+        $Image = $ImageModel::find($ad['image_id']);
+
         if (empty($Image)) {
             return $Image;
         }
 
         //完整路径
-        $Image['fullImageUrl'] = $ImageModel->getFullImageUrlAttr('',$Image);
-        $Image['FullThumbImageUrlAttr'] = $ImageModel->getFullThumbImageUrlAttr('',$Image);
+        $Image['fullImageUrl'] = $ImageModel->getFullImageUrlAttr('', $Image);
+        $Image['FullThumbImageUrlAttr'] = $ImageModel->getFullThumbImageUrlAttr('', $Image);
         unset($Image['remark']);
         unset($Image['image_size']);
         unset($Image['thumb_image_size']);
         unset($ad['image_id']);
 
         $Image = $Image->toArray();
-        $Image = parse_fields($Image,1);
+        $Image = parse_fields($Image, 1);
         return $Image;
     }
 }

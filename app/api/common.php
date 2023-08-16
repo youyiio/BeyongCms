@@ -6,32 +6,34 @@ use Firebase\JWT\JWT;
 use app\common\library\ResultCode;
 use app\common\model\ImageModel;
 
-class ApiCode {
+class ApiCode
+{
     const E_USER_LOGIN_ERROR = 10009; //登录方式不正确
 }
 
 // 向前端返回JSON数据
-function ajax_return($code, $message = 'success', $data = []) {
+function ajax_return($code, $message = 'success', $data = [])
+{
 
     return json([
         'code' => $code,
         'message' => $message,
         'data'  => $data
     ]);
-    
 }
 // 向前端返回JSON SUCCESS数据
-function ajax_success($data = []) {
+function ajax_success($data = [])
+{
 
     return json([
         'code' => ResultCode::ACTION_SUCCESS,
         'message' => 'success',
         'data'  => $data
     ]);
-    
 }
 // 向前端返回JSON ERROR数据
-function ajax_error($code, $message = 'fail', $error = '') {
+function ajax_error($code, $message = 'fail', $error = '')
+{
     return json([
         'code' => $code,
         'message' => $message,
@@ -67,7 +69,8 @@ function pagelist_to_hump($list)
 }
 
 // 设置JWT
-function setJWT($data) {
+function setJWT($data)
+{
     $jwt = new JWT();
 
     $token = array(
@@ -84,7 +87,8 @@ function setJWT($data) {
 }
 
 // 获取JWT内容
-function getJWT($token) {
+function getJWT($token)
+{
     $jwt = new JWT();
     $data = null;
     try {
@@ -104,7 +108,7 @@ function getTree($data, $pid = 0, $fieldPK = 'id', $fieldPid = 'pid', $depth = 1
     if (empty($data)) {
         return array();
     }
-    
+
     $arr = array();
     foreach ($data as $v) {
         if ($v[$fieldPid] == $pid) {
@@ -142,7 +146,7 @@ function getList($data, $pid = 0, $fieldPri = 'id', $fieldPid = 'pid', $level = 
         $id = $v[$fieldPri];
         if ($v[$fieldPid] == $pid) {
             $v['_level'] = $level;
-           
+
             array_push($arr, $v);
             $tmp = getList($data, $id, $fieldPri, $fieldPid, $level + 1);
             $arr = array_merge($arr, $tmp);
@@ -160,22 +164,22 @@ function findThumbImage($art)
     }
 
     $ImageModel = new ImageModel();
-    $thumbImage = $ImageModel::get($art['thumb_image_id']);
+    $thumbImage = $ImageModel::find($art['thumb_image_id']);
 
     if (empty($thumbImage)) {
-    return $thumbImage;
+        return $thumbImage;
     }
 
     //完整路径
-    $thumbImage['fullImageUrl'] = $ImageModel->getFullImageUrlAttr('',$thumbImage);
-    $thumbImage['FullThumbImageUrlAttr'] = $ImageModel->getFullThumbImageUrlAttr('',$thumbImage);
+    $thumbImage['fullImageUrl'] = $ImageModel->getFullImageUrlAttr('', $thumbImage);
+    $thumbImage['FullThumbImageUrlAttr'] = $ImageModel->getFullThumbImageUrlAttr('', $thumbImage);
     unset($thumbImage['remark']);
     unset($thumbImage['image_size']);
     unset($thumbImage['thumb_image_size']);
     unset($art['thumb_image_id']);
 
-    $thumbImage = parse_fields($thumbImage->toArray(),1);
-    
+    $thumbImage = parse_fields($thumbImage->toArray(), 1);
+
     return $thumbImage;
 }
 
@@ -185,8 +189,8 @@ function findMetaImages($art)
     $metaImages = get_image($art->metas('image'));
     foreach ($metaImages as $image) {
         //获取完整路径
-        $image['fullImageUrl'] = $image->getFullImageUrlAttr('',$image);
-        $image['FullThumbImageUrlAttr'] = $image->getFullThumbImageUrlAttr('',$image);
+        $image['fullImageUrl'] = $image->getFullImageUrlAttr('', $image);
+        $image['FullThumbImageUrlAttr'] = $image->getFullThumbImageUrlAttr('', $image);
         unset($image['remark']);
         unset($image['image_size']);
         unset($image['thumb_image_size']);
@@ -201,7 +205,7 @@ function findMetaFiles($art)
 {
     $metaFiles = get_file($art->metas('file'));
     foreach ($metaFiles as $file) {
-        $file['fullFileUrl'] = $file->getFullFileUrlAttr('',$file);
+        $file['fullFileUrl'] = $file->getFullFileUrlAttr('', $file);
         unset($file['remark']);
     }
     $metaFiles = parse_fields($metaFiles->toArray(), 1);

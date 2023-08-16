@@ -1,16 +1,17 @@
-<?php 
+<?php
+
 namespace app\api\controller;
 
 use app\common\library\ResultCode;
 use app\common\model\ActionLogModel;
 use app\common\model\UserModel;
 
-class Log extends Base 
+class Log extends Base
 {
     //日志列表
     public function list()
     {
-        $params = $this->request->put();
+        $params = request()->put();
 
         $page = $params['page'];
         $size = $params['size'];
@@ -20,9 +21,9 @@ class Log extends Base
         $startTime = $filters['startTime'] ?? '';
         $endTime = $filters['endTime'] ?? '';
         $username = $filters['username'] ?? '';
-       
+
         if (empty($startTime) && empty($endTime)) {
-            $startTime = date('Y-m-d',strtotime('-31 day'));
+            $startTime = date('Y-m-d', strtotime('-31 day'));
             $endTime = date('Y-m-d');
         }
 
@@ -39,11 +40,11 @@ class Log extends Base
 
         $fields = 'id,username,action,module,component,ip,action_time,response_time,params,user_agent,remark,create_time';
         $ActionLogModel = new ActionLogModel();
-        $list = $ActionLogModel->where($where)->field($fields)->order('id desc')->paginate($size, false, ['page'=>$page]);
-        
+        $list = $ActionLogModel->where($where)->field($fields)->order('id desc')->paginate($size, false, ['page' => $page]);
+
         //处理数据
         foreach ($list as $val) {
-            $user = UserModel::get($val['username']);
+            $user = UserModel::find($val['username']);
             $val['username'] = $user['nickname'];
             $val['address'] = ip_to_address($val['ip'], 'province,city');
         }
@@ -55,7 +56,7 @@ class Log extends Base
         $returnData['size'] = $list['per_page'];
         $returnData['total'] = $list['total'];
         $returnData['records'] = parse_fields($list['data'], 1);
-        
+
         return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功', $returnData);
     }
 }

@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 namespace app\api\controller;
 
 use app\common\library\ResultCode;
@@ -11,7 +12,7 @@ class Menu extends Base
 {
     public function list()
     {
-        $params = $this->request->put();
+        $params = request()->put();
         $page = $params['page'];
         $size = $params['size'];
 
@@ -24,16 +25,16 @@ class Menu extends Base
         if (!empty($keyword)) {
             $where[] = ['title', 'like', '%' . $keyword . '%'];
         }
-    
+
         $MenuModel = new MenuModel();
         $list = $MenuModel->where($where)->order('id asc')->select()->toArray();
-     
+
         // 获取树形或者list数据
         $data = getTree($list, $pid, 'id', 'pid', $depth);
         if (isset($filters['struct']) && $filters['struct'] === 'list') {
             $data = getList($list, $pid, 'id', 'pid', $depth);
-        } 
-        
+        }
+
         //分页
         $total = count($data);  //总数
         $pages = ceil($total / $size); //总页数
@@ -52,7 +53,7 @@ class Menu extends Base
     //新增菜单
     public function create()
     {
-        $params = $this->request->put();
+        $params = request()->put();
         $validate = Validate::make([
             'pid' => 'require|integer',
             'name' => 'unique:' . config('database.prefix') . 'sys_menu,name',
@@ -65,7 +66,7 @@ class Menu extends Base
         }
 
         $user = $this->user_info;
-        $userInfo = UserModel::get($user->uid);
+        $userInfo = UserModel::find($user->uid);
 
         $data = parse_fields($params);
         $data['create_time'] = date_time();
@@ -79,7 +80,7 @@ class Menu extends Base
             return ajax_return(ResultCode::ACTION_FAILED, '操作失败!');
         }
 
-        $menu = MenuModel::get($id);
+        $menu = MenuModel::find($id);
         $returnData = parse_fields($menu->toArray(), 1);
 
         return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!', $returnData);
@@ -88,7 +89,7 @@ class Menu extends Base
     //编辑菜单
     public function edit()
     {
-        $params = $this->request->put();
+        $params = request()->put();
         $validate = Validate::make([
             'id' => 'require',
             'name' => 'unique:' . config('database.prefix') . 'sys_menu,name',
@@ -99,7 +100,7 @@ class Menu extends Base
             return ajax_return(ResultCode::ACTION_FAILED, '操作失败!', $validate->getError());
         }
         $user = $this->user_info;
-        $userInfo = UserModel::get($user->uid);
+        $userInfo = UserModel::find($user->uid);
 
         $params = parse_fields($params);
         $params['update_time'] = date_time();
@@ -120,7 +121,7 @@ class Menu extends Base
     //删除菜单
     public function delete($id)
     {
-        $menu = MenuModel::get($id);
+        $menu = MenuModel::find($id);
         if (!$menu) {
             return ajax_return(ResultCode::E_DATA_NOT_FOUND, '菜单不存在!');
         }

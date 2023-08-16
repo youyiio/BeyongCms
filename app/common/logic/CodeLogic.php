@@ -1,10 +1,12 @@
 <?php
+
 /**
  * Created by VSCode.
  * User: cattong
  * Date: 2016/10/8
  * Time: 13:58
  */
+
 namespace app\common\logic;
 
 use think\Exception;
@@ -20,7 +22,7 @@ use app\common\library\ResultCode;
 /**
  * 验证码管理
  */
-class CodeLogic extends Model
+class CodeLogic
 {
 
     const STATUS_UNUSED = 1; //未使用
@@ -52,7 +54,7 @@ class CodeLogic extends Model
         $code = StringUtils::getRandString(12);
         // 缓存验证码
         Cache::set(self::TYPE_MAIL_ACTIVE . CACHE_SEPARATOR . $email, $code, 24 * 60 * 60);
-        
+
 
         $url = url($activeAction, ['code' => $code, 'email' => $email], false, true);
 
@@ -104,7 +106,7 @@ class CodeLogic extends Model
 
         // 缓存验证码
         Cache::set(self::TYPE_REGISTER . CACHE_SEPARATOR . $email, $code, 10 * 60);
-        
+
         return true;
     }
 
@@ -132,16 +134,16 @@ class CodeLogic extends Model
         \beyong\sms\Config::init($smsConfig);
 
         $client = \beyong\sms\SmsClient::instance();
-        
+
         //$sign、$template和$templateParams 服务商控制台获取
         $sign = $smsConfig['actions'][$action]['sign'];
         $template = $smsConfig['actions'][$action]['template'];
 
         $code = StringUtils::getRandNum(6);
         $templateParams = ['code' => $code];
-        
+
         $response = $client->to($mobile)->sign($sign)->template($template, $templateParams)->send();
-        if ($response !== true) {            
+        if ($response !== true) {
             throw new LogicException(ResultCode::E_THIRDPARTY_ERROR, $client->getError());
         }
 
@@ -161,20 +163,20 @@ class CodeLogic extends Model
         if (!isset($smsConfig["actions"][$action])) {
             throw new LogicException(ResultCode::E_DATA_ERROR, "短信action类型不支持或者未配置!");
         }
-        
+
         \beyong\sms\Config::init($smsConfig);
 
         $client = \beyong\sms\SmsClient::instance();
-        
+
         //$sign、$template和$templateParams 服务商控制台获取
         $sign = $smsConfig['actions'][$action]['sign'];
         $template = $smsConfig['actions'][$action]['template'];
 
         $code = StringUtils::getRandNum(6);
         $templateParams = ['code' => $code];
-        
+
         $response = $client->to($mobile)->sign($sign)->template($template, $templateParams)->send();
-        if ($response !== true) {            
+        if ($response !== true) {
             throw new LogicException(ResultCode::E_THIRDPARTY_ERROR, $client->getError());
         }
 
@@ -214,7 +216,7 @@ class CodeLogic extends Model
         // 缓存验证码
         Cache::set(self::TYPE_RESET_PASSWORD . CACHE_SEPARATOR . $email, $code, 24 * 60 * 60);
 
-        $url = '';//重置密码url
+        $url = ''; //重置密码url
         $subject = '重置密码';
         $message = get_config('email_reset_password');
         $data = [
@@ -249,20 +251,20 @@ class CodeLogic extends Model
         if (!isset($smsConfig["actions"][$action])) {
             throw new LogicException(ResultCode::E_DATA_ERROR, "短信action类型不支持或者未配置!");
         }
-        
+
         \beyong\sms\Config::init($smsConfig);
 
         $client = \beyong\sms\SmsClient::instance();
-        
+
         //$sign、$template和$templateParams 服务商控制台获取
         $sign = $smsConfig['actions'][$action]['sign'];
         $template = $smsConfig['actions'][$action]['template'];
 
         $code = StringUtils::getRandNum(6);
         $templateParams = ['code' => $code];
-        
+
         $response = $client->to($mobile)->sign($sign)->template($template, $templateParams)->send();
-        if ($response !== true) {            
+        if ($response !== true) {
             throw new LogicException(ResultCode::E_THIRDPARTY_ERROR, $client->getError());
         }
 
@@ -312,5 +314,4 @@ class CodeLogic extends Model
 
         return true;
     }
-
 }

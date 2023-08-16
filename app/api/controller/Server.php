@@ -36,7 +36,7 @@ class Server extends Base
                 "available" => "",
                 "used" => "",
                 "usageRate" => ""
-            ], 
+            ],
             "disk" => [
                 "total" => $use_status['disk']['total'],
                 "available" => $use_status['disk']['available'],
@@ -66,8 +66,8 @@ class Server extends Base
                 $min = floor($min - ($days * 60 * 24) - ($hours * 60));
 
                 $uptime = "";
-                if ($days !== 0) $uptime = $days."天";
-                if ($hours !== 0) $uptime .= $hours."小时";
+                if ($days !== 0) $uptime = $days . "天";
+                if ($hours !== 0) $uptime .= $hours . "小时";
                 $uptime .= $min . "分钟";
             }
         } else {
@@ -76,19 +76,19 @@ class Server extends Base
             } else {
                 $start_time = exec('systeminfo | find /i "Boot Time"');
             }
-            
+
             $uptime = $start_time;
         }
-     
+
         return $uptime;
     }
 
     function get_used_status()
     {
         //获取某一时刻系统cpu和内存使用情况
-        $fp = popen('top -b -n 1 | grep -E "^(top|Tasks|%Cpu|KiB Mem|KiB Swap)"',"r");
+        $fp = popen('top -b -n 1 | grep -E "^(top|Tasks|%Cpu|KiB Mem|KiB Swap)"', "r");
         $rs = "";
-        while(!feof($fp)){
+        while (!feof($fp)) {
             $rs .= fread($fp, 1024);
         }
         pclose($fp);
@@ -111,14 +111,14 @@ class Server extends Base
 
         //CPU占有量
         $cpu_usage = trim(trim($cpu_info[0], 'Cpu(s): '), '%us'); //百分比
-        
+
         //内存占有量
-        $mem_total = trim(trim($mem_info[0], 'Mem: '),'k total');
+        $mem_total = trim(trim($mem_info[0], 'Mem: '), 'k total');
         $mem_used = trim($mem_info[1], 'k used');
         $mem_usage = round(100 * intval($mem_used) / intval($mem_total), 2); //百分比
-        
-        /*硬盘使用率 begin*/        
-        $fp = popen('df -lh | grep -E "^(/)"',"r");
+
+        /*硬盘使用率 begin*/
+        $fp = popen('df -lh | grep -E "^(/)"', "r");
         $rs = fread($fp, 1024);
         pclose($fp);
         $rs = preg_replace("/\s{2,}/", ' ', $rs); //把多个空格换成 “_”

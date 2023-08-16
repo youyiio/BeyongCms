@@ -15,13 +15,13 @@ use app\common\model\UserRoleModel;
 
 class Sms extends Base
 {
-    public function sendCode() 
+    public function sendCode()
     {
-        if ($this->request->method() != 'POST') {
+        if (request()->method() != 'POST') {
             return ajax_error(ResultCode::SC_FORBIDDEN, '非法访问！请检查请求方式！');
         }
 
-        $params = $this->request->put();
+        $params = request()->put();
         $mobile = $params["mobile"];
         $action = isset($params["action"]) ? $params["action"] : "login";
         if (!PregUtils::isMobile($mobile)) {
@@ -34,7 +34,7 @@ class Sms extends Base
 
         // 防止短信被刷
         $mobileFrequency = Cache::get($mobile . "_send_code_frequency");
-        $ipFrequency = Cache::get($this->request->ip(0, true) . "_send_code_frequency");
+        $ipFrequency = Cache::get(request()->ip(0, true) . "_send_code_frequency");
         $frequencyLimited = !empty($mobileFrequency) || !empty($ipFrequency);
         if ($frequencyLimited) {
             return ajax_error(ResultCode::ACTION_FAILED, "您操作过于频繁，请稍候再试!");
@@ -43,26 +43,26 @@ class Sms extends Base
         //验证码发送
         try {
             $codeLogic = new CodeLogic();
-                 
+
             $codeLogic->sendCodeByMobile($mobile, $action);
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             return ajax_error(ResultCode::ACTION_FAILED, $e->getMessage());
         }
 
         //频率限制
         Cache::set($mobile . "_send_code_frequency", '60s', 60);
-        Cache::set($this->request->ip(0, true) . "_send_code_frequency", '20s', 20);
+        Cache::set(request()->ip(0, true) . "_send_code_frequency", '20s', 20);
 
-        return ajax_success(null);        
+        return ajax_success(null);
     }
 
     public function login()
     {
-        if ($this->request->method() != 'POST') {
+        if (request()->method() != 'POST') {
             return ajax_error(ResultCode::SC_FORBIDDEN, '非法访问！请检查请求方式！');
         }
 
-        $params = $this->request->put();
+        $params = request()->put();
 
         $mobile = $params["mobile"];
         $code = $params["code"];
@@ -77,12 +77,12 @@ class Sms extends Base
         $tryLoginCountMark = $mobile . '_try_login_count';
         $tryLoginCount = Cache::get($tryLoginCountMark);
         if ($tryLoginCount > 5) {
-           return ajax_error(ResultCode::E_USER_STATE_FREED, '登录错误超过5次,账号被临时冻结1天');
+            return ajax_error(ResultCode::E_USER_STATE_FREED, '登录错误超过5次,账号被临时冻结1天');
         }
         if ($tryLoginCount >= 5) {
-           Cache::set($tryLoginCountMark, $tryLoginCount + 1, strtotime(date('Y-m-d 23:59:59'))-time());
-           
-           return ajax_error(ResultCode::E_USER_STATE_FREED, '登录错误超过5次,账号被临时冻结1天');
+            Cache::set($tryLoginCountMark, $tryLoginCount + 1, strtotime(date('Y-m-d 23:59:59')) - time());
+
+            return ajax_error(ResultCode::E_USER_STATE_FREED, '登录错误超过5次,账号被临时冻结1天');
         }
 
         //初始化登录错误次数
@@ -116,7 +116,7 @@ class Sms extends Base
             'aud' => 'jwt_api', //接收该JWT的一方，可选
             'iat' => time(),  //签发时间
             'exp' => time() + config('jwt.jwt_expired_time'),  //过期时间
-//            'nbf' => time() + 60,  //该时间之前不接收处理该Token
+            //            'nbf' => time() + 60,  //该时间之前不接收处理该Token
             'sub' => 'domain',  //面向的用户
             'jti' => md5(uniqid('JWT') . time()),  //该Token唯一标识
             'data' => [

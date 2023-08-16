@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 namespace app\api\controller;
 
 use app\common\library\ResultCode;
@@ -8,26 +9,27 @@ use think\Validate;
 
 class Config extends Base
 {
+
     public function list()
     {
-        $params = $this->request->put();
-        $page = $params['page']?? '1';
-        $size = $params['size']?? '10';
+        $params = request()->put();
+        $page = $params['page'] ?? '1';
+        $size = $params['size'] ?? '10';
         $filters = $params['filters'];
 
         $where = [];
         if (!empty($filters['keyword'])) {
-            $where[] = ['name', 'like', '%'.$filters['keyword'].'%'];
+            $where[] = ['name', 'like', '%' . $filters['keyword'] . '%'];
         }
         if (!empty($filters['group'])) {
             $where[] = ['group', '=', $filters['group']];
         }
         if (!empty($filters['key'])) {
-            $where[] = ['key', 'like', '%'.$filters['key'].'%'];
+            $where[] = ['key', 'like', '%' . $filters['key'] . '%'];
         }
 
         $ConfigModel = new ConfigModel();
-        $list = $ConfigModel->where($where)->paginate($size, false, ['page'=>$page])->toArray();
+        $list = $ConfigModel->where($where)->paginate($size, false, ['page' => $page])->toArray();
 
         $returnData['current'] = $list['current_page'];
         $returnData['pages'] = $list['last_page'];
@@ -41,7 +43,7 @@ class Config extends Base
     //查询字典信息
     public function query()
     {
-        $params = $this->request->put();
+        $params = request()->put();
         $key = $params['key'] ?? '';
         $group = $params['group'] ?? '';
 
@@ -59,6 +61,7 @@ class Config extends Base
 
         $ConfigModel = new ConfigModel();
         $fields = 'id,name,group,key,value,value_type,status,sort,remark';
+
         $list = $ConfigModel->where($where)->field($fields)->select();
 
         $returnData = parse_fields($list->toArray(), 1);
@@ -71,7 +74,7 @@ class Config extends Base
         $ConfigModel = new ConfigModel();
         $list = $ConfigModel->where('group', '=', $name . '_status')->field('key,value')->select();
 
-        if (($list->isEmpty())) {
+        if ($list->isEmpty()) {
             return ajax_return(ResultCode::E_DATA_NOT_FOUND, '数据未找到');
         }
 
@@ -88,7 +91,7 @@ class Config extends Base
     //新增字典
     public function create()
     {
-        $params = $this->request->put();
+        $params = request()->put();
         $params = parse_fields($params);
         $validate = Validate::make([
             'name' => 'require',
@@ -103,7 +106,7 @@ class Config extends Base
         }
 
         $user = $this->user_info;
-        $userInfo = UserModel::get($user->uid);
+        $userInfo = UserModel::find($user->uid);
         $params['create_by'] = $userInfo['nickname'] ?? '';
         $params['create_time'] = date_time();
         $params['status'] = $params['status'] ?? ConfigModel::STATUS_ACTIVED;
@@ -113,7 +116,7 @@ class Config extends Base
             return ajax_return(ResultCode::E_DB_ERROR, '新增失败!');
         }
 
-        $list = ConfigModel::get($id);
+        $list = ConfigModel::find($id);
         $returnData = parse_fields($list->toArray(), 1);
 
         return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功', $returnData);
@@ -122,16 +125,16 @@ class Config extends Base
     //编辑字典
     public function edit()
     {
-        $params = $this->request->put();
+        $params = request()->put();
         $id = $params['id'];
 
-        $config = ConfigModel::get($id);
+        $config = ConfigModel::find($id);
         if (!$config) {
             return ajax_return(ResultCode::E_ACCESS_NOT_FOUND, '数据未找到!');
         }
 
         $params = parse_fields($params);
-        $res = $config->isUpdate(false)->allowField(true)->save($params, ['id'=>$id]);
+        $res = $config->isUpdate(false)->allowField(true)->save($params, ['id' => $id]);
 
         if (!$res) {
             return ajax_return(ResultCode::E_DB_ERROR, '操作失败!');
@@ -145,7 +148,7 @@ class Config extends Base
     //删除字典
     public function delete($id)
     {
-        $config = ConfigModel::get($id);
+        $config = ConfigModel::find($id);
         if (!$config) {
             return ajax_return(ResultCode::E_DATA_NOT_FOUND, '字典不存在!');
         }

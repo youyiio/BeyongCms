@@ -10,7 +10,7 @@ class Link extends Base
 {
     public function list()
     {
-        $params = $this->request->put();
+        $params = request()->put();
 
         $page = $params['page'] ?? 1;
         $size = $params['size'] ?? 10;
@@ -41,7 +41,7 @@ class Link extends Base
     //新增链接
     public function create()
     {
-        $params = $this->request->put();
+        $params = request()->put();
 
         $validate = Validate::make([
             'title' => 'require',
@@ -62,7 +62,7 @@ class Link extends Base
         }
         cache('links', null);
 
-        $list = LinkModel::get($id);
+        $list = LinkModel::find($id);
 
         $returnData = parse_fields($list->toArray(), 1);
 
@@ -72,9 +72,9 @@ class Link extends Base
     //编辑链接
     public function edit()
     {
-        $params = $this->request->put();
+        $params = request()->put();
 
-        $link = LinkModel::get($params['id']);
+        $link = LinkModel::find($params['id']);
         if (!$link) {
             return ajax_return(ResultCode::E_PARAM_ERROR, '友链不存在!');
         }
@@ -102,7 +102,7 @@ class Link extends Base
     //删除链接
     public function delete($id)
     {
-        $link = LinkModel::get($id);
+        $link = LinkModel::find($id);
         if (!$link) {
             return ajax_return(ResultCode::E_DATA_NOT_FOUND, '友链不存在!');
         }

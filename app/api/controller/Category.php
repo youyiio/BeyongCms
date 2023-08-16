@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 namespace app\api\controller;
 
 use app\common\library\ResultCode;
@@ -8,14 +9,14 @@ class Category extends Base
 {
     public function list()
     {
-        $params = $this->request->put();
+        $params = request()->put();
 
-        $page = $params['page']?? 1;
-        $size = $params['size']?? 10;
-        $filters = $params['filters']?: '';
-        $pid = $filters['pid']?? 0;
-        $depth = $filters['depth']?? 1;
-        $struct = $filters['struct']?? '';
+        $page = $params['page'] ?? 1;
+        $size = $params['size'] ?? 10;
+        $filters = $params['filters'] ?: '';
+        $pid = $filters['pid'] ?? 0;
+        $depth = $filters['depth'] ?? 1;
+        $struct = $filters['struct'] ?? '';
 
         $where = [];
         if (!empty($filters['startTime'])) {
@@ -24,10 +25,10 @@ class Category extends Base
         if (!empty($filters['endTime'])) {
             $where[] = ['create_time', '<=', $filters['endTime'] . '23:59:59'];
         }
-        
+
         $CategoryModel = new CategoryModel();
         $list = $CategoryModel->where($where)->select()->toArray();
-         
+
         // 获取树形或者list数据
         if ($struct === 'list') {
             $data = getList($list, $pid, 'id', 'pid');
@@ -46,15 +47,15 @@ class Category extends Base
         $returnData['size'] = $size;
         $returnData['total'] = $total;
         $returnData['records'] = parse_fields($records, 1);
-        
+
         return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!', $returnData);
     }
 
     //新增分类
     public function create()
     {
-        $params = $this->request->put();
-     
+        $params = request()->put();
+
         if (empty($params['name'])) {
             return ajax_return(ResultCode::E_DATA_NOT_FOUND, "参数错误!");
         }
@@ -74,9 +75,9 @@ class Category extends Base
         $categoryModel->allowField(true)->isUpdate(false)->save($params);
         if (!$categoryModel->id) {
             return ajax_return(ResultCode::ACTION_FAILED, "操作失败!");
-        } 
+        }
 
-        $data = CategoryModel::get($categoryModel->id);
+        $data = CategoryModel::find($categoryModel->id);
         $data = $data->toArray();
         $returnData = parse_fields($data, 1);
 
@@ -86,10 +87,10 @@ class Category extends Base
     //编辑分类
     public function edit()
     {
-        $params = $this->request->put();
+        $params = request()->put();
 
         $id = $params['id'];
-        $category = CategoryModel::get($id);
+        $category = CategoryModel::find($id);
         if (!$category) {
             return ajax_return(ResultCode::E_DATA_NOT_FOUND, '分类不存在!');
         }
@@ -105,7 +106,7 @@ class Category extends Base
             return ajax_return(ResultCode::ACTION_FAILED, "操作失败!");
         }
 
-        $data = CategoryModel::get($params['id']);
+        $data = CategoryModel::find($params['id']);
         $data = $data->toArray();
 
         $returnData = parse_fields($data, 1);
@@ -115,10 +116,10 @@ class Category extends Base
     //上线下线分类
     public function setStatus()
     {
-        $params = $this->request->put();
+        $params = request()->put();
 
         $id = $params['id'];
-        $category = CategoryModel::get($id);
+        $category = CategoryModel::find($id);
         if (!$category) {
             $this->error('分类不存在!');
         }
@@ -135,7 +136,7 @@ class Category extends Base
 
     public function delete($id)
     {
-        $category = CategoryModel::get($id);
+        $category = CategoryModel::find($id);
         if (!$category) {
             return ajax_return(ResultCode::E_DATA_NOT_FOUND, '分类不存在!');
         }

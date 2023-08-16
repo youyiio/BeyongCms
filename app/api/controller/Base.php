@@ -2,24 +2,28 @@
 
 namespace app\api\controller;
 
-use think\Controller;
+use app\api\middleware\JWTCheck;
 use app\common\library\ResultCode;
 use Firebase\JWT\JWT;
 use think\facade\Log;
-class Base extends Controller
-{
 
+class Base
+{
+    protected $middleware = [JWTCheck::class];
     // 用户信息，来自playload data
     protected $user_info;
 
-    public function miss() {
+    public function miss()
+    {
         return json([
             'code' => ResultCode::E_PARAM_ERROR,
-            'message'   => '访问接口不存在或参数错误']);
+            'message'   => '访问接口不存在或参数错误'
+        ]);
     }
 
-    public function initialize() {
-        $authorization = $this->request->header('authorization');
+    public function initialize()
+    {
+        $authorization = request()->header('authorization');
         if (!empty($authorization)) {
             $token = substr($authorization, 7);
             $payload = null;
@@ -37,5 +41,4 @@ class Base extends Controller
     {
         return ajax_error(ResultCode::SC_FORBIDDEN, '服务器拒绝请求或非法访问！');
     }
-
 }

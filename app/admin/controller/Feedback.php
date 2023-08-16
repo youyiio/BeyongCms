@@ -24,7 +24,7 @@ class Feedback extends Base
         //        $map[] = ['reply_feedback_id','exp','is null'];
         $FeedbackModel = new FeedbackModel();
         $list = $FeedbackModel->where($map)->whereNull('reply_client_id')->whereNull('reply_feedback_id')->order('status')->order('create_time desc')->select();
-        //        dump($GLOBALS);
+
         $senderArr = [];
         foreach ($list as $k => $value) {
             $sendClientId = $value['send_client_id'];
