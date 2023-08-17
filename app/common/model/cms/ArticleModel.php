@@ -7,6 +7,7 @@ use app\common\model\BaseModel;
 use think\facade\Log;
 use think\facade\Cache;
 use app\common\exception\ModelException;
+use think\facade\Queue;
 
 class ArticleModel extends BaseModel
 {
@@ -46,7 +47,7 @@ class ArticleModel extends BaseModel
         //任务归属的队列名称，如果为新队列，会自动创建
         $jobQueue = config('queue.default');
 
-        $isPushed = \think\Queue::push($jobHandlerClass, $jobData, $jobQueue);
+        $isPushed = Queue::push($jobHandlerClass, $jobData, $jobQueue);
         // database 驱动时，返回值为 1|false; redis 驱动时，返回值为 随机字符串|false
         if ($isPushed !== false) {
             Log::info('文章相似度LCS更新Job入列成功...');
@@ -63,19 +64,19 @@ class ArticleModel extends BaseModel
             $jobHandlerClass = 'app\admin\job\Webmaster@pushLinks';
             $jobData = ['id' => $id, 'url' => $articleUrl, 'create_time' => date_time()];
             $jobQueue = config('queue.default');
-            \think\Queue::push($jobHandlerClass, $jobData, $jobQueue);
+            Queue::push($jobHandlerClass, $jobData, $jobQueue);
         }
 
         //检测收录,延迟4,6,24小时
         $jobHandlerClass  = 'app\admin\job\Webmaster@checkIndex';
         $jobData = ['id' => $id, 'url' => $articleUrl, 'create_time' => date_time()];
         $jobQueue = config('queue.default');
-        \think\Queue::later(2 * 60 * 60, $jobHandlerClass, $jobData, $jobQueue);
-        \think\Queue::later(4 * 60 * 60, $jobHandlerClass, $jobData, $jobQueue);
+        Queue::later(2 * 60 * 60, $jobHandlerClass, $jobData, $jobQueue);
+        Queue::later(4 * 60 * 60, $jobHandlerClass, $jobData, $jobQueue);
     }
 
     //AfterUpdate事件后：计算/更新文章相似度
-    public function onAfterUpdate($article)
+    public static function onAfterUpdate($article)
     {
         $id = $article->id;
 
@@ -86,7 +87,7 @@ class ArticleModel extends BaseModel
         //任务归属的队列名称，如果为新队列，会自动创建
         $jobQueue = config('queue.default');
 
-        $isPushed = \think\Queue::push($jobHandlerClass, $jobData, $jobQueue);
+        $isPushed = Queue::push($jobHandlerClass, $jobData, $jobQueue);
         // database 驱动时，返回值为 1|false; redis 驱动时，返回值为 随机字符串|false
         if ($isPushed !== false) {
             Log::info('文章相似度LCS更新Job入列成功...');
@@ -106,14 +107,14 @@ class ArticleModel extends BaseModel
             $articleUrl = get_config('domain_name') . url('cms/Article/viewArticle', ['aid' => $id], true, false);
             $jobData = ['id' => $id, 'url' => $articleUrl, 'create_time' => date_time()];
             $jobQueue = config('queue.default');
-            \think\Queue::push($jobHandlerClass, $jobData, $jobQueue);
+            Queue::push($jobHandlerClass, $jobData, $jobQueue);
 
             //检测收录,延迟4,6,24小时
             $jobHandlerClass  = 'app\admin\job\Webmaster@checkIndex';
             $jobData = ['id' => $id, 'url' => $articleUrl, 'create_time' => date_time()];
             $jobQueue = config('queue.default');
-            \think\Queue::later(2 * 60 * 60, $jobHandlerClass, $jobData, $jobQueue);
-            \think\Queue::later(4 * 60 * 60, $jobHandlerClass, $jobData, $jobQueue);
+            Queue::later(2 * 60 * 60, $jobHandlerClass, $jobData, $jobQueue);
+            Queue::later(4 * 60 * 60, $jobHandlerClass, $jobData, $jobQueue);
         } else {
             Log::info('上次更新无需提交链接，状态值 为:' . $article->status_text);
         }
@@ -195,7 +196,7 @@ class ArticleModel extends BaseModel
             $data['post_time'] = date_time();
         }
 
-        $res = $this->allowField([])->save($data);
+        $res = $this->save($data);
 
         if (!$res) {
             return false;

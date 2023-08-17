@@ -158,7 +158,7 @@ class User extends Base
             }
             $UserRoleModel->insertAll($data);
         }
-        Cache::tag('menu')->rm($uid); //删除用户菜单配置缓存
+        Cache::tag('menu')->clear($uid); //删除用户菜单配置缓存
 
         //返回数据
         $UserModel = new UserModel();
@@ -208,7 +208,7 @@ class User extends Base
         $data['id'] = $params['id'];
         $data['password'] = encrypt_password($params['password'], $user['salt']);
         $UserModel = new UserModel();
-        $res = $UserModel->isUpdate(true)->save($data);
+        $res = $UserModel->update($data);
         if (!$res) {
             return ajax_error(ResultCode::E_DB_ERROR, '修改失败!');
         }
@@ -223,11 +223,11 @@ class User extends Base
 
         $uid = $params['id'];
         if ($uid == 0) {
-            $this->error('参数id错误');
+            return ajax_error(ResultCode::E_PARAM_ERROR, '参数id错误!');
         }
 
         $UserModel = new UserModel();
-        $res = $UserModel->where('id', $uid)->where('status', UserModel::STATUS_ACTIVED)->setField('status', UserModel::STATUS_FREEZED);
+        $res = $UserModel->where('id', $uid)->where('status', UserModel::STATUS_ACTIVED)->update(['status' => UserModel::STATUS_FREEZED]);
 
         if (!$res) {
             return ajax_return(ResultCode::E_DATA_VALIDATE_ERROR, '操作失败!');
@@ -243,11 +243,11 @@ class User extends Base
 
         $uid = $params['id'];
         if ($uid == 0) {
-            $this->error('参数id错误');
+            return ajax_error(ResultCode::E_PARAM_ERROR, '参数id错误!');
         }
 
         $UserModel = new UserModel();
-        $res = $UserModel->where('id', $uid)->setField('status', UserModel::STATUS_ACTIVED);
+        $res = $UserModel->where('id', $uid)->update(['status' => UserModel::STATUS_ACTIVED]);
 
         if (!$res) {
             return ajax_return(ResultCode::E_DATA_VALIDATE_ERROR, '操作失败!');
@@ -267,6 +267,11 @@ class User extends Base
         }
 
         $uid = $params['id'];
+        $user = UserModel::find($uid);
+        if (!$user) {
+            return ajax_return(ResultCode::E_PARAM_ERROR, '用户不存在!');
+        }
+
         // 修改权限
         $UserRoleModel = new UserRoleModel();
         $UserRoleModel->where(['uid' => $uid])->delete();
@@ -280,7 +285,7 @@ class User extends Base
             }
             $UserRoleModel->insertAll($data);
         }
-        Cache::tag('menu')->rm($uid); //删除用户菜单配置缓存
+        Cache::tag('menu')->clear($uid); //删除用户菜单配置缓存
 
         //返回数据
         $UserModel = new UserModel();

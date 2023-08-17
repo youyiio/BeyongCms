@@ -4,7 +4,7 @@ namespace app\api\controller;
 
 use app\common\library\ResultCode;
 use app\common\model\cms\LinkModel;
-use think\Validate;
+use think\facade\Validate;
 
 class Link extends Base
 {
@@ -43,19 +43,20 @@ class Link extends Base
     {
         $params = request()->put();
 
-        $validate = Validate::make([
+        $rule = [
             'title' => 'require',
             'url' => 'require|url',
             'sort' => 'integer',
-        ]);
-
+        ];
+        $validate = Validate::rule('edit')->rule($rule);
         if (!$validate->check($params)) {
-            return ajax_return(ResultCode::E_PARAM_ERROR, '参数错误!');
+            return ajax_return(ResultCode::ACTION_FAILED, '操作失败!', $validate->getError());
         }
+
 
         $params = parse_fields($params);
         $LinkModel = new LinkModel();
-        $res = $LinkModel->allowField(true)->save($params);
+        $res = $LinkModel->save($params);
         $id = $LinkModel->id;
         if (!$res) {
             return ajax_return(ResultCode::E_DB_ERROR, '操作失败!');
@@ -79,17 +80,18 @@ class Link extends Base
             return ajax_return(ResultCode::E_PARAM_ERROR, '友链不存在!');
         }
 
-        $validate = Validate::make([
+        $rule = [
             'title' => 'require',
             'url' => 'require|url',
             'sort' => 'integer',
-        ]);
+        ];
+        $validate = Validate::rule('edit')->rule($rule);
         if (!$validate->check($params)) {
             return ajax_return(ResultCode::E_PARAM_ERROR, '参数错误!');
         }
 
         $params = parse_fields($params);
-        $res = $link->isUpdate(true)->save($params);
+        $res = $link->update($params);
 
         if (!$res) {
             return ajax_return(ResultCode::E_DB_ERROR, '编辑失败!');
