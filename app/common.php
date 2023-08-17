@@ -781,6 +781,21 @@ function friendly_date($sTime, $type = 'normal', $alt = 'false')
     }
 }
 
+/**
+ * 友好的文件大小显示
+ * @param $size 大小，单位字节
+ * @return string
+ */
+function friendly_size($size)
+{
+    $units = [' B', ' KB', ' MB', ' GB', ' TB'];
+    for ($i = 0; $size >= 1024 && $i < 4; $i++) {
+        $size /= 1024;
+    }
+
+    return round($size, 2) . $units[$i];
+}
+
 //菜单激活状态判断
 function menu_select($mca = '')
 {
@@ -932,6 +947,114 @@ function http_build_query_ext($query_data)
     }
 
     return http_build_query($query_data);
+}
+
+/**
+ * 简易http get请求
+ *
+ * @param string $url
+ * @param mixed $requestParam 请求参数, array | string
+ * @param bool $responseDataSimple true时，直接返回content; 否则返回{content|http_status|error}
+ * @return string|bool|array
+ */
+function http_get($url, $requestParam = "", $responseDataSimple = true)
+{
+    $header = [
+        'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36'
+    ];
+
+    $paramStr = '';
+    if (is_array($requestParam)) {
+        $paramStr = http_build_query($requestParam);
+    } else if (is_string($requestParam)) {
+        $paramStr = $requestParam;
+    }
+
+    if (!empty($paramStr)) {
+        $url = strpos($url, '?') > 0 ? ($url . '&' . $paramStr) : ($url . '?' . $paramStr);
+    }
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+
+    // 执行
+    $content = curl_exec($ch);
+    $httpStatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $error = null;
+    if ($content == false) {
+        $error = curl_error($ch);
+        Log::error("http get: " . $url . " error: \n" . $error);
+    }
+    // 关闭
+    curl_close($ch);
+
+    $responseData = [
+        "content" => $content,
+        'http_status' => $httpStatus,
+        'error' => $error
+    ];
+
+    //输出结果
+    if ($responseDataSimple) {
+        return $content;
+    }
+
+    return $responseData;
+}
+
+/**
+ * 简易http post请求
+ *
+ * @param [type] $url
+ * @param array $requestData 请求参数
+ * @param bool $responseDataSimple true时，直接返回content; 否则返回{content|http_status|error}
+ * @return string|bool|array
+ */
+function http_post($url, $requestData = [], $responseDataSimple = true)
+{
+    $header = [
+        'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36'
+    ];
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+
+    if (is_array($requestData)) {
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($requestData));
+    } else {
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $requestData);
+    }
+
+    // 执行
+    $content = curl_exec($ch);
+    $httpStatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $error = null;
+    if ($content == false) {
+        $error = curl_error($ch);
+        Log::error("http post: " . $url . " error: \n" . $error);
+    }
+    // 关闭
+    curl_close($ch);
+
+    $responseData = [
+        "content" => $content,
+        'http_status' => $httpStatus,
+        'error' => $error
+    ];
+
+    //输出结果
+    if ($responseDataSimple) {
+        return $content;
+    }
+
+    return $responseData;
 }
 
 /**

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by VSCode.
  * User: cattong
@@ -8,16 +9,16 @@
 
 namespace app\cms\controller;
 
-use think\Controller;
+use think\facade\View;
 
 /**
  * 空控制器,空操作
  * 'empty_controller'       => 'Error',
  */
-class Error extends Controller
+class Error
 {
     public function _empty()
     {
-        return $this->fetch('public/404');
+        return View::fetch('public/404');
     }
 }
