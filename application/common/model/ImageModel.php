@@ -33,7 +33,7 @@ class ImageModel extends Model
 
         return $fullImageUrl;
     }
-    
+
     public function getFullImageUrlAttr($value, $data)
     {
         $switch = get_config('oss_switch');
@@ -89,7 +89,7 @@ class ImageModel extends Model
                 'file_url'     => $v->file_url,
                 'thumb_image_url'    => $v->thumb_image_url,
                 'image_url'       => $v->file_url,
-                'full_image_url'   => url_add_domain($v->file_path),
+                'full_image_url'   => url_add_domain($v->file_url),
                 'remark' => $v->remark,
             ];
         }
