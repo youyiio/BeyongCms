@@ -39,7 +39,8 @@
         "youyiio/beyong-commons": "^1.0",
         "youyiio/php-echarts": "^0.2.0",
         "jenssegers/date": "^4.0",
-        "topthink/think-captcha": "^3.0"            
+        "topthink/think-captcha": "^3.0",
+        "topthink/think-image": "^1.0"            
     },
     "require-dev": {
         "symfony/var-dumper": "^4.2",

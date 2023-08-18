@@ -60,7 +60,7 @@ class Upload extends Base
         //保存目录
         $filePath = root_path() . 'public' . DIRECTORY_SEPARATOR . 'upload';
         //文件验证&文件move操作
-        $rule = ['ext' => 'in' . ['jpg,gif,png,jpeg,bmp,ico,webp']];
+        $rule = ['ext' => 'in:jpg,gif,png,jpeg,bmp,ico,webp'];
 
         $validate = Validate::rule('image')->rule($rule);
         $data = ['ext' => $tmpFile->extension()];
@@ -69,7 +69,12 @@ class Upload extends Base
         }
 
         $file = $tmpFile->move($filePath);
-        $saveName = date('Ymd') . '/' . md5(uniqid()) . '.' . $file->extension(); //实际包含日期+名字：如20180724/erwrwiej...dfd.ext
+
+        $dateDir = $filePath . DIRECTORY_SEPARATOR . date('Ymd');
+        if (!file_exists($dateDir)) {
+            mkdir($dateDir, 0777, true);
+        }
+        $saveName = date('Ymd') . '/' . md5(uniqid()) . '.' . $tmpFile->extension(); //实际包含日期+名字：如20180724/erwrwiej...dfd.ext
         $imgUrl = $filePath . DIRECTORY_SEPARATOR . $saveName;
 
         //图片缩放处理
@@ -101,7 +106,6 @@ class Upload extends Base
             $image->thumb($tbWidth, $tbHeight, \think\Image::THUMB_FIXED); //固定尺寸缩放
             $image->save($tbImgUrl, $extension, $quality, true);
             $data['thumb_image_url'] =  DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . dirname($saveName) . DIRECTORY_SEPARATOR . 'tb_' . $file->getFilename();
-            $data['thumb_image_size'] = $file->getSize();
         }
 
         if (get_config('oss_switch') === 'true') {
@@ -118,9 +122,8 @@ class Upload extends Base
         $ImageModel = new ImageModel();
         $imageId = $ImageModel->insertGetId($data);
 
-        //返回数据
-        $fields = 'id,image_name,thumb_image_url,image_url,oss_image_url,thumb_image_size,image_size,remark,create_time';
-        $return = $ImageModel->where('id', '=', $imageId)->field($fields)->find()->toArray();
+        //返回数据=
+        $return = $ImageModel->where('id', '=', $imageId)->find()->toArray();
 
         $return['fullImageUrl'] = $ImageModel->getFullImageUrlAttr('', $return);
         $return['fullThumbImageUrl'] = $ImageModel->getFullThumbImageUrlAttr('', $return);
@@ -133,7 +136,7 @@ class Upload extends Base
     public function file()
     {
         $isfile = $_FILES;
-        if ($isfile['file']['tmp_name'] == '') {
+        if (!$isfile) {
             return ajax_return(ResultCode::ACTION_FAILED, '请选择上传文件');
         }
 
