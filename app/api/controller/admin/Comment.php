@@ -1,9 +1,9 @@
 <?php
 
-namespace app\api\controller;
+namespace app\api\controller\admin;
 
 use app\admin\controller\Message;
-use app\api\controller\Base;
+use app\api\controller\admin\Base;
 use app\common\library\ResultCode;
 use app\common\model\cms\ArticleModel;
 use app\common\model\cms\CommentModel;

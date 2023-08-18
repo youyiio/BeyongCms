@@ -1,8 +1,8 @@
 <?php
 
-namespace app\api\controller;
+namespace app\api\controller\admin;
 
-use app\api\controller\Base;
+use app\api\controller\admin\Base;
 
 class Server extends Base
 {

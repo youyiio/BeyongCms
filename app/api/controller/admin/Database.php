@@ -1,6 +1,6 @@
 <?php
 
-namespace app\api\controller;
+namespace app\api\controller\admin;
 
 use app\common\library\ResultCode;
 use think\facade\Db;

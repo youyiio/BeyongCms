@@ -1,6 +1,6 @@
 <?php
 
-namespace app\api\controller;
+namespace app\api\controller\admin;
 
 use app\common\library\ResultCode;
 use app\common\logic\UserLogic;
@@ -16,6 +16,10 @@ use think\Validate;
 //个人中心
 class Ucenter extends Base
 {
+    public function __construct()
+    {
+        parent::initialize();
+    }
     // 获取用户信息
     public function getInfo()
     {

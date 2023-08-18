@@ -1,6 +1,6 @@
 <?php
 
-namespace app\api\controller;
+namespace app\api\controller\admin;
 
 use app\api\middleware\JWTCheck;
 use app\common\library\ResultCode;

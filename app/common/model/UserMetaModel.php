@@ -1,4 +1,5 @@
 <?php
+
 namespace app\common\model;
 
 
@@ -7,7 +8,7 @@ class UserMetaModel extends BaseMetaModel
     protected $name = 'sys_user_meta';
 
     //读取|设置meta值
-    public function _meta($fkId, $metaKey='', $metaValue='', $mode=BaseModel::MODE_SINGLE_VALUE)
+    public function _meta($fkId, $metaKey = '', $metaValue = '', $mode = BaseModel::MODE_SINGLE_VALUE)
     {
         $fk = 'target_id';
         $where = [
@@ -38,7 +39,7 @@ class UserMetaModel extends BaseMetaModel
                     'meta_value' => $metaValue,
                     'update_time' => date_time()
                 ];
-                $this->where('id', $meta['id'])->setField($data);
+                $this->where('id', $meta['id'])->update($data);
             }
         } else {
             if ($metaValue === '') {
@@ -57,7 +58,7 @@ class UserMetaModel extends BaseMetaModel
     }
 
     //读取metas多值
-    public function _metas($fkId, $metaKey='')
+    public function _metas($fkId, $metaKey = '')
     {
         $fk = 'target_id';
         $where = [

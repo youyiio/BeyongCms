@@ -1,9 +1,9 @@
 <?php
 
-namespace app\api\controller;
+namespace app\api\controller\admin;
 
 use app\admin\controller\Image;
-use app\api\controller\Base;
+use app\api\controller\admin\Base;
 use app\common\library\ResultCode;
 use app\common\logic\ArticleLogic;
 use app\common\model\BaseModel;
@@ -19,7 +19,7 @@ use app\common\model\UserModel;
 // 文章相关接口
 class Article extends Base
 {
-    public function initialize()
+    public function __construct()
     {
         parent::initialize();
     }
@@ -276,7 +276,7 @@ class Article extends Base
 
         //发布文章
         $ArticleModel = new ArticleModel();
-        $success = $ArticleModel->where('id', 'in', $ids)->setField($data);
+        $success = $ArticleModel->where('id', 'in', $ids)->update($data);
         $fails = count($ids) - $success;
 
         $returnData = ['success' => $success, 'fail' => $fails];
@@ -306,7 +306,7 @@ class Article extends Base
         ];
 
         $ArticleModel = new ArticleModel();
-        $success = $ArticleModel->where('id', 'in', $ids)->setField($data);
+        $success = $ArticleModel->where('id', 'in', $ids)->update($data);
         $fails = count($ids) - $success;
 
         $returnData = ['success' => $success, 'fail' => $fails];

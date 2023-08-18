@@ -3,6 +3,7 @@
 namespace app\api\controller\app;
 
 use app\api\controller\Base;
+use app\api\middleware\JWTCheck;
 use app\common\library\ResultCode;
 use app\common\model\cms\ArticleDataModel;
 use app\common\model\cms\ArticleMetaModel;
@@ -15,6 +16,10 @@ use app\common\model\ImageModel;
 
 class Article
 {
+    protected $middleware = [
+        JWTCheck::class  => ['only'     => ['hello']],
+    ];
+
     //查询文章列表
     public function timeLine()
     {
@@ -39,7 +44,7 @@ class Article
         $where[] = ['status', '=', ArticleModel::STATUS_PUBLISHED];
         $order = 'sort desc,post_time desc';
         if ($cid) {
-            $childs = CategoryModel::findChild($cid);
+            $childs = CategoryModel::getChild($cid);
             $cids = $childs['ids'];
             $fields = 'cms_article.id,title,keywords,thumb_image_id,post_time,update_time,create_time,is_top,status,read_count,sort,author';
             $list = ArticleModel::hasWhere('CategoryArticle', [['category_id', 'in', $cids]], $fields)->where($where)->order($order)->paginate($size, false, ['page' => $page]);
@@ -90,7 +95,7 @@ class Article
         $where[] = ['status', '=', ArticleModel::STATUS_PUBLISHED];
         $order = 'post_time desc';
         if ($cid) {
-            $childs = CategoryModel::findChild($cid);
+            $childs = CategoryModel::getChild($cid);
             $cids = $childs['ids'];
             $fields = 'cms_article.id,title,keywords,thumb_image_id,post_time,update_time,create_time,is_top,status,read_count,sort,author';
             $list = ArticleModel::hasWhere('CategoryArticle', [['category_id', 'in', $cids]], $fields)->where($where)->order($order)->paginate($size, false, ['page' => $page]);
@@ -147,7 +152,7 @@ class Article
         $order = 'read_count desc';
         $fields = 'id,title,keywords,thumb_image_id,post_time,update_time,create_time,is_top,status,read_count,sort,author';
         if ($cid) {
-            $childs = CategoryModel::findChild($cid);
+            $childs = CategoryModel::getChild($cid);
             $cids = $childs['ids'];
             $fields = 'cms_article.id,title,keywords,thumb_image_id,post_time,update_time,create_time,is_top,status,read_count,sort,author';
             $list = ArticleModel::hasWhere('CategoryArticle', [['category_id', 'in', $cids]], $fields)->where($where)->order($order)->paginate($size, false, ['page' => $page]);
@@ -234,8 +239,8 @@ class Article
         }
 
         $params = request()->put();
-        $page = $params['page'] ?: 1;
-        $size = $params['size'] ?: 5;
+        $page = $params['page'] ?? 1;
+        $size = $params['size'] ?? 5;
         $filters = $params['filters'] ?? '';
         $keyword = $filters['keyword'] ?? '';
 
@@ -249,7 +254,7 @@ class Article
 
         $list = $CommentModel->where($where)->paginate($size, false, ['page' => $page]);
 
-        return ajax_return(ResultCode::ACTION_SUCCESS, '查询成功!', to_standard_pagelist($list));
+        return ajax_return(ResultCode::ACTION_SUCCESS, '查询成功!', pagelist_to_hump($list));
     }
 
     //查询相关推荐
@@ -292,7 +297,7 @@ class Article
         $fields = 'id,title,keywords,thumb_image_id,post_time,update_time,create_time,is_top,status,read_count,sort,author';
         $ArticleModel = new ArticleModel();
         if ($cid) {
-            $childs = CategoryModel::findChild($cid);
+            $childs = CategoryModel::getChild($cid);
             $cids = $childs['ids'];
             $fields = 'cms_article.id,title,keywords,thumb_image_id,post_time,update_time,create_time,is_top,status,read_count,sort,author';
             $list = ArticleModel::hasWhere('CategoryArticle', [['category_id', 'in', $cids]], $fields)->where($where)->order($order)->paginate($size, false, ['page' => $page]);

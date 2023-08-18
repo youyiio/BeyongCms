@@ -45,7 +45,6 @@ function ajax_error($code, $message = 'fail', $error = '')
 // 格式标准的page
 function to_standard_pagelist($paginator)
 {
-
     return [
         'total'    => $paginator->total(),
         'size'     => $paginator->listRows(),

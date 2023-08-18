@@ -51,6 +51,12 @@ class JWTCheck
             $request->user_info = $user_info;
             $uid = $user_info->uid;
             $permission = request()->controller() . ':' . request()->action();
+
+            $position = strpos($permission, '.');
+            if ($position) {
+                $permission = substr($permission, $position + 1);
+            }
+
             $permission = strtolower($permission);
             $rolePermission = new RolePermission();
             if (!$rolePermission->checkPermission($uid, $permission)) {

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by VSCode.
  * User: cattong
@@ -92,7 +93,7 @@ class Article
         $successCount = $result['success_count'];
         $failCount = $result['fail_count'];
 
-        Log::info("定时发布文章 stat:  ($successCount) success, (" . ($failCount) .") error!");
+        Log::info("定时发布文章 stat:  ($successCount) success, (" . ($failCount) . ") error!");
         Log::info('定时发布文章 job end...');
     }
 
@@ -122,8 +123,10 @@ class Article
             $articleId = $meta->article_id;
 
             $ArticleModel = ArticleModel::get($articleId);
-            if ($ArticleModel['status'] == ArticleModel::STATUS_PUBLISHED
-                || $ArticleModel['status'] == ArticleModel::STATUS_DELETED) {
+            if (
+                $ArticleModel['status'] == ArticleModel::STATUS_PUBLISHED
+                || $ArticleModel['status'] == ArticleModel::STATUS_DELETED
+            ) {
                 ArticleMetaModel::destroy(['id' => $meta->id]);
                 continue;
             }
@@ -190,7 +193,7 @@ class Article
     //全量相似度计算
     public static function fullSimilarCompute($articleId)
     {
-        $article = ArticleModel::get($articleId);
+        $article = ArticleModel::find($articleId);
         if (!$article) {
             return false;
         }
@@ -259,12 +262,11 @@ class Article
                 break;
             }
         }
-        array_splice($articleDatas, $i+1, 0, [$data]);
+        array_splice($articleDatas, $i + 1, 0, [$data]);
 
-//        Log::info($articleDatas);
+        //        Log::info($articleDatas);
         if (count($articleDatas) > 20) {
             array_splice($articleDatas, 20);
         }
-
     }
 }

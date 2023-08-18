@@ -1,17 +1,23 @@
 <?php
 
-namespace app\api\controller;
+namespace app\api\controller\admin;
 
+use app\api\controller\admin\Base;
 use app\common\library\ResultCode;
 use app\common\model\FileModel;
 use app\common\model\ImageModel;
 use app\common\model\UserModel;
 use think\facade\Env;
+use think\facade\Validate;
 
 class Upload extends Base
 {
     use \app\common\controller\Image;
 
+    public function __construct()
+    {
+        parent::initialize();
+    }
     //图片上传
     public function image()
     {
@@ -31,7 +37,7 @@ class Upload extends Base
         $remark = request()->param('remark/s', 0);
 
         //表单验证
-        $check = $this->validate(
+        $check = Validate::check(
             ['file' => $tmpFile],
             ['file' => 'require|image|fileSize:4097152'],
             [
@@ -54,12 +60,16 @@ class Upload extends Base
         //保存目录
         $filePath = root_path() . 'public' . DIRECTORY_SEPARATOR . 'upload';
         //文件验证&文件move操作
-        $file = $tmpFile->validate(['ext' => 'jpg,gif,png,jpeg,bmp,ico,webp'])->move($filePath);
-        if (!$file) {
-            return ajax_return(ResultCode::E_PARAM_VALIDATE_ERROR, '参数验证失败！', $tmpFile->getError());
+        $rule = ['ext' => 'in' . ['jpg,gif,png,jpeg,bmp,ico,webp']];
+
+        $validate = Validate::rule('image')->rule($rule);
+        $data = ['ext' => $tmpFile->extension()];
+        if (!$validate->check($data)) {
+            return ajax_return(ResultCode::E_PARAM_VALIDATE_ERROR, '参数验证失败！', $validate->getError());
         }
 
-        $saveName = $file->getSaveName();
+        $file = $tmpFile->move($filePath);
+        $saveName = date('Ymd') . '/' . md5(uniqid()) . '.' . $file->extension(); //实际包含日期+名字：如20180724/erwrwiej...dfd.ext
         $imgUrl = $filePath . DIRECTORY_SEPARATOR . $saveName;
 
         //图片缩放处理
@@ -71,17 +81,19 @@ class Upload extends Base
             $image->thumb($imgWidth, $imgHeight, \think\Image::THUMB_FIXED); //固定尺寸缩放
             $image->save($imgUrl, $extension, $quality, true);
         }
-
+        $user = $this->user_info;
+        $userInfo = UserModel::find($user->uid);
         //插入数据库
         $data = [
-            'image_name' => $file->getinfo()['name'],
-            'thumb_image_url' => '',
-            'image_url' => DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . $saveName,
-            'image_size' => $file->getSize(),
+            'file_url' => DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . $saveName,
+            'file_path' => root_path() . 'public',
+            'name' => $tmpFile->getoriginalName(),
+            'real_name' => $tmpFile->getoriginalName(),
+            'size' => $file->getSize(),
             'remark' => $remark,
             'create_time' => date_time(),
+            'create_by' => $userInfo->id
         ];
-
         //缩略图
         if ($tbWidth > 0 && $tbHeight > 0) {
             $tbImgUrl = $file->getPath() . DIRECTORY_SEPARATOR . 'tb_' . $file->getFilename();
@@ -94,12 +106,12 @@ class Upload extends Base
 
         if (get_config('oss_switch') === 'true') {
             if (!class_exists('\think\oss\OSSContext')) {
-                $this->error('您启用了OSS存储，却未安装 think-oss 组件，运行 > composer youyiio/think-oss 进行安装！');
+                return ajax_return(ResultCode::ACTION_FAILED, '您启用了OSS存储，却未安装 think-oss 组件，运行 > composer youyiio/think-oss 进行安装！');
             }
 
             $vendor = get_config('oss_vendor');
             $m = new \think\oss\OSSContext($vendor);
-            $ossImgUrl = $m->doUpload($file->getSaveName(), 'cms');
+            $ossImgUrl = $m->doUpload($saveName, 'cms');
             $data['oss_image_url'] = $ossImgUrl;
         }
 
@@ -125,10 +137,6 @@ class Upload extends Base
             return ajax_return(ResultCode::ACTION_FAILED, '请选择上传文件');
         }
 
-        $rule = [
-            'size' => 1024 * 1024 * 200, //200M
-        ];
-
         //通用文件后缀，加强安全;
         $common_file_exts = 'zip,rar,doc,docx,xls,xlsx,ppt,pptx,ppt,pptx,pdf,txt,exe,bat,sh,apk,ipa';
         $exts = request()->param('exts', ''); //文件格式，中间用,分隔
@@ -141,7 +149,7 @@ class Upload extends Base
             $exts = array_diff($exts, ['php']);
             $exts = implode(',', $exts);
         }
-        $rule['ext'] = $exts;
+
 
         //文件目录
         $filePath = root_path() . 'public';
@@ -150,29 +158,39 @@ class Upload extends Base
 
         //不能信任前端传进来的文件名, thinkphp默认使表单里的filename后缀
         $tmpFile = request()->file('file');
-        $file = $tmpFile->validate($rule)->move($path);;
-        if (!$file) {
-            $this->result(null, 0, $tmpFile->getError(), 'json');
+        $data = [
+            'size' => $tmpFile->getSize(),
+            'ext' => $tmpFile->extension()
+        ];
+        $rule = [
+            'size' => "<=:" . 1024 * 1024 * 200,
+            'ext' => "in:$exts"
+        ];
+        $validate = Validate::rule('file')->rule($rule);
+        if (!$validate->check($data)) {
+            return ajax_return(ResultCode::ACTION_FAILED, $validate->getError());
         }
 
         $user = $this->user_info;
         $userInfo = UserModel::find($user->uid);
-        $saveName = $file->getSaveName(); //实际包含日期+名字：如20180724/erwrwiej...dfd.ext
+        $file = $tmpFile->move($path);
+        $saveName = date('Ymd') . '/' . md5(uniqid()) . '.' . $file->extension(); //实际包含日期+名字：如20180724/erwrwiej...dfd.ext
         $fileUrl = DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . 'file' . DIRECTORY_SEPARATOR . $saveName;
         $data = [
             'file_url' => DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . $saveName,
             'file_path' => root_path() . 'public',
-            'file_name' => $file->getinfo()['name'],
-            'file_size' => $file->getSize(),
+            'name' => $tmpFile->getoriginalName(),
+            'real_name' => $tmpFile->getoriginalName(),
+            'size' => $file->getSize(),
             'remark' => $remark,
             'create_time' => date_time(),
+            'create_by' => $userInfo->id
         ];
 
         $FileModel = new FileModel();
         $fileId = $FileModel->insertGetId($data);
 
-        $fields = 'id,file_url,file_path,file_name,file_size,remark,file_path,create_time';
-        $return = $FileModel->where('id', '=', $fileId)->field($fields)->find()->toArray();
+        $return = $FileModel->where('id', '=', $fileId)->find()->toArray();
 
         $return['fullFileUrl'] = $FileModel->getFullFileUrlAttr('', $return);
         unset($return['file_path']);

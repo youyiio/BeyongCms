@@ -1,9 +1,9 @@
 <?php
 
-namespace app\api\controller;
+namespace app\api\controller\admin;
 
 // 不需要认证的话继承Base
-use app\api\controller\Base;
+use app\api\controller\admin\Base;
 use app\common\library\ResultCode;
 use app\common\model\cms\AdModel;
 use app\common\model\cms\AdServingModel;
