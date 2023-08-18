@@ -61,7 +61,7 @@ class Ad extends Base
 
             $AdModel = new AdModel();
             $data['create_time'] = date_time();
-            $rowsNum = $AdModel->isUpdate(false)->allowField(true)->save($data);
+            $rowsNum = $AdModel->save($data);
 
             //新增中间表数据
             $pivot = ['update_time' => date_time(), 'create_time' => date_time()];
@@ -116,7 +116,7 @@ class Ad extends Base
             }
         }
 
-        $ad = AdModel::get(['id' => $adId]);
+        $ad = AdModel::find($adId);
         if (empty($ad)) {
             $this->error('广告不存在');
         }

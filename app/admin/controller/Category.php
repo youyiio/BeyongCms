@@ -50,10 +50,11 @@ class Category extends Base
         if (request()->isAjax()) {
             $data = input('post.');
             $CategoryModel = new CategoryModel();
+            $data['status'] = CategoryModel::STATUS_ONLINE;
             if (empty($data['id'])) {
-                $res = $CategoryModel->isUpdate(false)->save($data);
+                $res = $CategoryModel->save($data);
             } else {
-                $res = $CategoryModel->isUpdate(true)->save($data);
+                $res = $CategoryModel->update($data);
             }
 
             if ($res) {

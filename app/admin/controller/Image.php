@@ -6,6 +6,7 @@ use app\common\model\FileModel;
 use app\common\model\ImageModel;
 use app\common\model\UserModel;
 use think\facade\Env;
+use think\facade\Validate;
 
 /**
  * 图片控制器
@@ -26,7 +27,7 @@ class Image extends Base
         if (empty($imageId)) {
             $tmpFile = request()->file('file');
             if (empty($tmpFile)) {
-                $this->result(null, 0, '请选择上传文件', 'json');
+                $this->error(null, 0, '请选择上传文件', 'json');
             }
 
             //图片规定尺寸
@@ -54,14 +55,24 @@ class Image extends Base
             }
 
             //文件验证&文件move操作
-            $file = $tmpFile->validate(['ext' => 'jpg,gif,png,jpeg,bmp,ico,webp'])->move($path);
+            $rule  = ['ext' => 'in:jpg,gif,png,jpeg,bmp,ico,webp'];
+            $data = [
+                'size' => $tmpFile->getSize(),
+                'ext' => $tmpFile->extension()
+            ];
+            $validate = Validate::rule('image')->rule($rule);
+            if (!$validate->check($data)) {
+                $this->error($validate->getError());
+            }
+
+            $file = $tmpFile->move($path);
             if (!$file) {
                 // 上传失败获取错误信息
-                $this->error($tmpFile->getError());
+                $this->error($file->getError());
             }
             list($width, $height, $type) = getimagesize($file->getRealPath()); //获得图片宽高类型
 
-            $saveName = $file->getSaveName();
+            $saveName = date('Ymd') . '/' . md5(uniqid()) . '.' . $file->extension();
 
             $data = [
                 'file_url' => DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . dirname($saveName) . DIRECTORY_SEPARATOR . $file->getFilename(),
@@ -69,7 +80,7 @@ class Image extends Base
                 'size' => $file->getSize(),
                 'ext' => strtolower($file->getExtension()),
                 'name' => $file->getFilename(),
-                'real_name' => $file->getinfo()['name'],
+                'real_name' => $tmpFile->getoriginalName(),
                 'thumb_image_url' => DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . dirname($saveName) . DIRECTORY_SEPARATOR . $file->getFilename(),
                 'remark' => input('post.remark'),
                 'create_by' => $this->uid,
@@ -82,7 +93,7 @@ class Image extends Base
 
                 $vendor = get_config('oss_vendor');
                 $m = new \think\oss\OSSContext($vendor);
-                $ossImgUrl = $m->doUpload($file->getSaveName(), 'cms');
+                $ossImgUrl = $m->doUpload($tmpFile->getoriginalName(), 'cms');
                 $data['oss_image_url'] = $ossImgUrl;
             }
 
@@ -95,7 +106,7 @@ class Image extends Base
                     $this->result($data, 1, 'image_need_crop', 'json');
                 }
             }
-            $this->result($data, 1, '图片上传成功', 'json');
+            $this->success($data, 1, '图片上传成功', 'json');
         }
 
 
