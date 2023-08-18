@@ -3,7 +3,7 @@
 use think\facade\Route;
 
 
-Route::group('api', function () {
+Route::group(function () {
 
     //通用公共接口
     Route::rule('config/query', 'api/Config/query', 'post');

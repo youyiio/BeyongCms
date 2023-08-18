@@ -5,10 +5,14 @@ namespace app\api\controller;
 use app\common\library\ResultCode;
 use app\common\model\ConfigModel;
 use app\common\model\UserModel;
-use think\Validate;
+use think\facade\Validate;
 
 class Config extends Base
 {
+    public function __construct()
+    {
+        parent::initialize();
+    }
 
     public function list()
     {
@@ -93,14 +97,15 @@ class Config extends Base
     {
         $params = request()->put();
         $params = parse_fields($params);
-        $validate = Validate::make([
+        $rule = [
             'name' => 'require',
             'group' => 'require',
             'key' => 'require',
             'value' => 'require',
             'value_type' => 'require',
-        ]);
+        ];
 
+        $validate = Validate::rule('create')->rule($rule);
         if (!$validate->check($params)) {
             ajax_return(ResultCode::E_PARAM_ERROR, '操作成功!', $validate->getError());
         }
@@ -134,7 +139,7 @@ class Config extends Base
         }
 
         $params = parse_fields($params);
-        $res = $config->isUpdate(false)->allowField(true)->save($params, ['id' => $id]);
+        $res = $config->update($params, ['id' => $id]);
 
         if (!$res) {
             return ajax_return(ResultCode::E_DB_ERROR, '操作失败!');

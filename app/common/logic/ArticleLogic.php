@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by VSCode.
  * User: cattong
@@ -12,12 +13,11 @@ use app\common\exception\ModelException;
 use app\common\model\BaseModel;
 use app\common\model\cms\ArticleMetaModel;
 use app\common\model\cms\ArticleModel;
-use think\Model;
 
-class ArticleLogic extends Model
+class ArticleLogic
 {
 
-    public function getHotList($pageIndex=1,$pageSize=10)
+    public function getHotList($pageIndex = 1, $pageSize = 10)
     {
         $where[] = ['status', '=', ArticleModel::STATUS_PUBLISHED];
         $ArticleModel = new ArticleModel();
@@ -25,7 +25,7 @@ class ArticleLogic extends Model
         return $list;
     }
 
-    public function getRecommendList($keyword,$pageIndex=1, $pageSize=10)
+    public function getRecommendList($keyword, $pageIndex = 1, $pageSize = 10)
     {
         $keywords = explode(',', $keyword);
         $where[] = ['status', '=', ArticleModel::STATUS_PUBLISHED];
@@ -45,7 +45,7 @@ class ArticleLogic extends Model
     //新增文章
     public function addArticle($data = [])
     {
-    
+
         $validator = new \app\api\validate\Article();
         $check = $validator->scene('create')->check($data);
         if ($check !== true) {
@@ -57,8 +57,8 @@ class ArticleLogic extends Model
         }
 
         $ArticleModel = new ArticleModel();
-      
-        $res = $ArticleModel->allowField(true)->isUpdate(false)->save($data);
+
+        $res = $ArticleModel->save($data);
         if (!$res) {
             return false;
         }
@@ -69,7 +69,7 @@ class ArticleLogic extends Model
 
         //标签，添加至meta表
         if (!empty($data['tags'])) {
-            foreach($data['tags'] as $tag) {
+            foreach ($data['tags'] as $tag) {
                 if (empty($tag)) {
                     continue;
                 }
@@ -80,7 +80,7 @@ class ArticleLogic extends Model
 
         //附加图片，添加至meta表
         if (!empty($data['meta_image_ids'])) {
-            foreach($data['meta_image_ids'] as $imageId) {
+            foreach ($data['meta_image_ids'] as $imageId) {
                 if (empty($imageId)) {
                     continue;
                 }
@@ -91,7 +91,7 @@ class ArticleLogic extends Model
 
         //附加图片，添加至meta表
         if (!empty($data['meta_file_ids'])) {
-            foreach($data['meta_file_ids'] as $fileId) {
+            foreach ($data['meta_file_ids'] as $fileId) {
                 if (empty($fileId)) {
                     continue;
                 }
@@ -106,19 +106,19 @@ class ArticleLogic extends Model
     //修改文章
     public function editArticle($data = [])
     {
-        $art = ArticleModel::get(['id'=>$data['id']]);
-        
+        $art = ArticleModel::find(['id' => $data['id']]);
+
         if (empty($art)) {
             throw new ModelException(0, '文章不存在');
         }
 
         if ($art->status == ArticleModel::STATUS_DRAFT && $data['status'] == ArticleModel::STATUS_PUBLISHED) {
             //审核开关关闭时
-            if (get_config('article_audit_switch') === 'true' ) {
+            if (get_config('article_audit_switch') === 'true') {
                 $data['status'] = ArticleModel::STATUS_PUBLISHING;
             }
             if (empty($art->post_time)) {
-                $data['post_time'] = date_time();//设置发布时间
+                $data['post_time'] = date_time(); //设置发布时间
             }
         }
 
@@ -130,7 +130,7 @@ class ArticleLogic extends Model
         }
 
         $ArticleModel = new ArticleModel();
-        $res = $ArticleModel->allowField(true)->isUpdate(true)->save($data);
+        $res = $ArticleModel->update($data, ['id' => $data['id']]);
 
         // 删除中间表数据
         if (!empty($data['category_ids'])) {
@@ -138,6 +138,7 @@ class ArticleLogic extends Model
             $art->categorys()->saveAll($data['category_ids']);
         }
 
+        $ArticleModel = $art;
         //标签，添加至meta表
         $ArticleModel->meta(ArticleMetaModel::KEY_TAG, null, BaseModel::MODE_MULTIPLE_VALUE);
         if (!empty($data['tags'])) {

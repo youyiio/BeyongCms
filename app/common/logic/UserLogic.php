@@ -83,7 +83,7 @@ class UserLogic
 
         $data['id'] = $userId;
         $data['password'] = $newPassword;
-        $result = $UserModel->isUpdate(true)->save($data);
+        $result = $UserModel->update($data);
         if ($result == false) {
             return false;
         }
@@ -178,7 +178,7 @@ class UserLogic
     public function editUser($uid, $params)
     {
         unset($params['password']); //防止修改密码
-        $user = UserModel::get($uid);
+        $user = UserModel::find($uid);
 
         if (isset($params['mobile']) && $user['mobile'] != $params['mobile']) {
             if ($user->findByMobile($params['mobile'])) {
@@ -196,7 +196,7 @@ class UserLogic
             }
         }
 
-        $res = $user->isUpdate(true)->allowField(true)->save($params);
+        $res = $user->update($params);
 
         return $res;
     }

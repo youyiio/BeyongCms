@@ -9,10 +9,15 @@ use app\common\model\RoleModel;
 use app\common\model\UserModel;
 use app\common\model\UserRoleModel;
 use think\facade\Cache;
-use think\Validate;
+use think\facade\Validate;
 
 class Role extends Base
 {
+    public function __construct()
+    {
+        parent::initialize();
+    }
+
     public function list()
     {
         $params = request()->put();
@@ -25,7 +30,7 @@ class Role extends Base
         $where = [];
         $fields = 'id,name,title,status,remark,create_by,update_by,create_time,update_time';
         if (!empty($keyword)) {
-            $where[] = ['name', 'like', '%' . $keyword . '%'];
+            $where[] = ['name|title', 'like', '%' . $keyword . '%'];
         }
 
         $RoleModel = new RoleModel();
@@ -46,10 +51,11 @@ class Role extends Base
     {
         $params = request()->put();
 
-        $validate = Validate::make([
+        $rule = [
             'name' => 'alphaDash',
             'title' => 'chs',
-        ]);
+        ];
+        $validate = Validate::rule('create')->rule($rule);
         if (!$validate->check($params)) {
             return ajax_return(ResultCode::ACTION_FAILED, '参数错误!', $validate->getError());
         }
@@ -62,7 +68,7 @@ class Role extends Base
         $params['update_time'] = date_time();
 
         $RoleModel = new RoleModel();
-        $id = $RoleModel->isUpdate(false)->allowField(true)->insertGetId($params);
+        $id = $RoleModel->insertGetId($params);
         if (!$id) {
             return ajax_return(ResultCode::E_DB_ERROR, '操作失败!');
         }
@@ -84,10 +90,12 @@ class Role extends Base
         if (!$role) {
             return ajax_return(ResultCode::E_PARAM_ERROR, '角色不存在!');
         }
-        $validate = Validate::make([
+
+        $rule = [
             'name' => 'alphaDash',
             'title' => 'chs',
-        ]);
+        ];
+        $validate = Validate::rule('edit')->rule($rule);
         if (!$validate->check($params)) {
             return ajax_return(ResultCode::ACTION_FAILED, '参数错误!', $validate->getError());
         }

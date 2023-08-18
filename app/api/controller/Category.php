@@ -72,7 +72,8 @@ class Category extends Base
         }
 
         $categoryModel = new CategoryModel();
-        $categoryModel->allowField(true)->isUpdate(false)->save($params);
+        $params['status'] = CategoryModel::STATUS_ONLINE;
+        $categoryModel->save($params);
         if (!$categoryModel->id) {
             return ajax_return(ResultCode::ACTION_FAILED, "操作失败!");
         }
@@ -101,12 +102,12 @@ class Category extends Base
             return ajax_return(ResultCode::E_DATA_NOT_FOUND, "参数错误!");
         }
 
-        $res = $category->isUpdate(true)->save($params);
+        $res = $category->update($params, ['id' => $id]);
         if (!$res) {
             return ajax_return(ResultCode::ACTION_FAILED, "操作失败!");
         }
 
-        $data = CategoryModel::find($params['id']);
+        $data = CategoryModel::find($id);
         $data = $data->toArray();
 
         $returnData = parse_fields($data, 1);
@@ -121,14 +122,15 @@ class Category extends Base
         $id = $params['id'];
         $category = CategoryModel::find($id);
         if (!$category) {
-            $this->error('分类不存在!');
+            return ajax_return(ResultCode::E_PARAM_ERROR, '分类不存在!');
         }
 
-        if (isset($params['pid']) && !is_numeric($params['status'])) {
-            return ajax_return(ResultCode::E_DATA_NOT_FOUND, "参数错误!");
+        $status = $params['status'];
+        if (!is_numeric($params['status']) || !in_array($status, [CategoryModel::STATUS_OFFLINE, CategoryModel::STATUS_ONLINE])) {
+            return ajax_return(ResultCode::E_PARAM_ERROR, "参数错误!");
         }
 
-        $category->status = $params['status'];
+        $category->status = $status;
         $category->save();
 
         return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!');

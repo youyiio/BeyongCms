@@ -1,4 +1,5 @@
 <?php
+
 namespace app\common\model;
 
 use think\facade\Env;
@@ -40,7 +41,7 @@ class BaseModel extends Model
 
     //表扩展列：ext；需要表级字段支持【使用场景：扩展表model业务中常用的字段】
     //@deprecated
-    public function ext($key, $value='')
+    public function ext($key, $value = '')
     {
         $fields = $this->getTableFields();
         if (!array_key_exists('ext', $fields)) {
@@ -55,7 +56,7 @@ class BaseModel extends Model
         }
 
         if ($value === '') {
-            return isset($exts[$key]) ? $exts[$key] : null ;
+            return isset($exts[$key]) ? $exts[$key] : null;
         } else if ($value === null) {
             unset($exts[$key]);
         } else {
@@ -63,12 +64,12 @@ class BaseModel extends Model
         }
 
         $pk = $this->getPk();
-        $pkVal = $this->$pk;
+        $pkVal = $this->getKey();
         $this->where($pk, $pkVal)->setField('ext', json_encode($exts));
     }
 
     //meta扩展表
-    public function meta($metaKey, $metaValue='', $mode=BaseModel::MODE_SINGLE_VALUE)
+    public function meta($metaKey, $metaValue = '', $mode = BaseModel::MODE_SINGLE_VALUE)
     {
         $pk = $this->pk;
 
@@ -81,12 +82,12 @@ class BaseModel extends Model
                 return $this->$metaKey;
             }
 
-            $this->$metaKey = $MetaModel->_meta($this->$pk, $metaKey);
+            $this->$metaKey = $MetaModel->_meta($this->getKey(), $metaKey);
             return $this->$metaKey;
         }
 
         isset($this->$metaKey) ? $this->$metaKey = null : false;
-        $MetaModel->_meta($this->$pk, $metaKey, $metaValue, $mode);
+        $MetaModel->_meta($this->getKey(), $metaKey, $metaValue, $mode);
     }
 
     //meta扩展表
@@ -97,7 +98,7 @@ class BaseModel extends Model
         $model = substr(get_class($this), 0, -5)  . 'MetaModel';
         $MetaModel = new $model;
 
-        $this->$metaKey = $MetaModel->_metas($this->$pk, $metaKey);
+        $this->$metaKey = $MetaModel->_metas($this->getKey(), $metaKey);
         return $this->$metaKey;
     }
 
@@ -144,7 +145,7 @@ class BaseModel extends Model
      * @return array 结构数据
      * @throws \Exception
      */
-    public function getTreeData($type = 'tree', $order = '', $name='name', $fieldPK='id', $fieldPid='pid')
+    public function getTreeData($type = 'tree', $order = '', $name = 'name', $fieldPK = 'id', $fieldPid = 'pid')
     {
         // 判断是否需要排序
         if (empty($order)) {

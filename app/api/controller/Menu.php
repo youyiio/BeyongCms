@@ -6,10 +6,14 @@ use app\common\library\ResultCode;
 use app\common\model\MenuModel;
 use app\common\model\UserModel;
 use beyong\commons\data\Tree;
-use think\Validate;
+use think\facade\Validate;
 
 class Menu extends Base
 {
+    public function __construct()
+    {
+        parent::initialize();
+    }
     public function list()
     {
         $params = request()->put();
@@ -54,13 +58,14 @@ class Menu extends Base
     public function create()
     {
         $params = request()->put();
-        $validate = Validate::make([
+        $rule = [
             'pid' => 'require|integer',
             'name' => 'unique:' . config('database.prefix') . 'sys_menu,name',
             'title' => 'require',
             'type' => 'require|integer',
 
-        ]);
+        ];
+        $validate = Validate::rule('create')->rule($rule);
         if (!$validate->check($params)) {
             return ajax_return(ResultCode::ACTION_FAILED, '操作失败!', $validate->getError());
         }
@@ -90,15 +95,17 @@ class Menu extends Base
     public function edit()
     {
         $params = request()->put();
-        $validate = Validate::make([
+        $rule = [
             'id' => 'require',
             'name' => 'unique:' . config('database.prefix') . 'sys_menu,name',
             'title' => 'require',
             'type' => 'require|integer',
-        ]);
+        ];
+        $validate = Validate::rule('edit')->rule($rule);
         if (!$validate->check($params)) {
             return ajax_return(ResultCode::ACTION_FAILED, '操作失败!', $validate->getError());
         }
+
         $user = $this->user_info;
         $userInfo = UserModel::find($user->uid);
 
@@ -107,7 +114,7 @@ class Menu extends Base
         $params['update_by'] = $userInfo['nickname'] ?? '';
 
         $MenuModel = new MenuModel();
-        $res = $MenuModel->isUpdate(true)->allowField(true)->save($params);
+        $res = $MenuModel->update($params);
         if (!$res) {
             return ajax_return(ResultCode::ACTION_FAILED, '操作失败!');
         }

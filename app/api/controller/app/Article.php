@@ -13,7 +13,7 @@ use app\common\model\cms\CommentModel;
 use app\common\model\cms\LinkModel;
 use app\common\model\ImageModel;
 
-class Article extends Base
+class Article
 {
     //查询文章列表
     public function timeLine()
