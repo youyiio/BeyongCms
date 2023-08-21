@@ -43,7 +43,7 @@ class BaiduUeditor extends Base
 
     public function index()
     {
-        $configJson = file_get_contents(Env::get('config_path') . "ueditor.json");
+        $configJson = file_get_contents(app()->getConfigPath() . "ueditor.json");
         $configJson = preg_replace("/\/\*[\s\S]+?\*\//", "", $configJson);
         $CONFIG = json_decode($configJson, true);
 

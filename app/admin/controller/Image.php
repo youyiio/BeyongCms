@@ -6,7 +6,6 @@ use app\common\model\FileModel;
 use app\common\model\ImageModel;
 use app\common\model\UserModel;
 use think\facade\Env;
-use think\facade\Validate;
 
 /**
  * 图片控制器
@@ -21,13 +20,15 @@ class Image extends Base
      * */
     public function upcrop()
     {
+        ini_set("memory_limit", "-1");
+
         $imageId = request()->param('imageId/d', 0);
 
         //id不存在时，图片上传
         if (empty($imageId)) {
             $tmpFile = request()->file('file');
             if (empty($tmpFile)) {
-                $this->error(null, 0, '请选择上传文件', 'json');
+                $this->result(null, 0, '请选择上传文件', 'json');
             }
 
             //图片规定尺寸
@@ -38,7 +39,7 @@ class Image extends Base
             $tbWidth = request()->param('thumbWidth/d', 0);
             $tbHeight = request()->param('thumbHeight/d', 0);
 
-            $path = root_path() . 'public' . DIRECTORY_SEPARATOR . 'upload';
+            $path = Env::get('root_path') . 'public' . DIRECTORY_SEPARATOR . 'upload';
 
             //表单验证
             $check = $this->validate(
@@ -55,33 +56,28 @@ class Image extends Base
             }
 
             //文件验证&文件move操作
-            $rule  = ['ext' => 'in:jpg,gif,png,jpeg,bmp,ico,webp'];
-            $data = [
-                'size' => $tmpFile->getSize(),
-                'ext' => $tmpFile->extension()
-            ];
-            $validate = Validate::rule('image')->rule($rule);
-            if (!$validate->check($data)) {
-                $this->error($validate->getError());
+            if (!in_array($tmpFile->Extension(), ['jpg', 'gif', 'png', 'jpeg', 'bmp', 'ico', 'webp'])) {
+                $this->error('文件格式错误');
             }
 
-            $file = $tmpFile->move($path);
-            if (!$file) {
-                // 上传失败获取错误信息
-                $this->error($file->getError());
+            //保存目录
+            $savePath = root_path() . 'public' . DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . date('Ymd');
+            if (!file_exists($savePath)) {
+                mkdir($savePath, 0777, true);
             }
+            $saveName = md5(uniqid()) . '.' . $tmpFile->extension(); //实际包含日期+名字：如20180724/erwrwiej...dfd.ext
+            $file = $tmpFile->move($savePath, $saveName);
+
             list($width, $height, $type) = getimagesize($file->getRealPath()); //获得图片宽高类型
 
-            $saveName = date('Ymd') . '/' . md5(uniqid()) . '.' . $file->extension();
-
             $data = [
-                'file_url' => DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . dirname($saveName) . DIRECTORY_SEPARATOR . $file->getFilename(),
-                'file_path' => root_path() . 'public',
+                'file_url' => DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . date('Ymd') .  DIRECTORY_SEPARATOR . $saveName,
+                'file_path' => root_path() . DIRECTORY_SEPARATOR . 'public',
                 'size' => $file->getSize(),
-                'ext' => strtolower($file->getExtension()),
-                'name' => $file->getFilename(),
+                'ext' => $tmpFile->extension(),
+                'name' => $tmpFile->getoriginalName(),
                 'real_name' => $tmpFile->getoriginalName(),
-                'thumb_image_url' => DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . dirname($saveName) . DIRECTORY_SEPARATOR . $file->getFilename(),
+                'thumb_image_url' => DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . date('Ymd') .  DIRECTORY_SEPARATOR . $saveName,
                 'remark' => input('post.remark'),
                 'create_by' => $this->uid,
                 'create_time' => date_time(),
@@ -93,7 +89,7 @@ class Image extends Base
 
                 $vendor = get_config('oss_vendor');
                 $m = new \think\oss\OSSContext($vendor);
-                $ossImgUrl = $m->doUpload($tmpFile->getoriginalName(), 'cms');
+                $ossImgUrl = $m->doUpload($saveName(), 'cms');
                 $data['oss_image_url'] = $ossImgUrl;
             }
 
@@ -106,9 +102,8 @@ class Image extends Base
                     $this->result($data, 1, 'image_need_crop', 'json');
                 }
             }
-            $this->success($data, 1, '图片上传成功', 'json');
+            $this->result($data, 1, '图片上传成功', 'json');
         }
-
 
         //图片裁剪
         $FileModel = FileModel::find($imageId);
@@ -136,10 +131,11 @@ class Image extends Base
         $height = request()->param('height/d', 0); //源图截取的高
 
 
-        $path = root_path() . 'public' . DIRECTORY_SEPARATOR;
+        $path = Env::get('root_path') . 'public';
         $realPath = $path . $FileModel->file_url;
-        $file = new \SplFileInfo($realPath);
-        $srcImage = \think\Image::open($file);
+        // $file = new \SplFileInfo($realPath);
+        // halt($realPath);
+        $srcImage = \think\Image::open($realPath);
         if (!$srcImage) {
             $this->error('读取图片文件失败!');
         }

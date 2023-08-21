@@ -26,9 +26,9 @@
         "php": ">=7.2.5",
         "topthink/framework": "^6.1.0",
         "topthink/think-orm": "^2.0",
-        "topthink/think-filesystem": "^1.0",
         "topthink/think-multi-app": "^1.0",
         "topthink/think-helper": "^3.1",
+        "league/flysystem": "^2.0",
         "liliuwei/thinkphp-jump": "^1.5",
         "cattong/think-mailer": "^1.0",
         "jaeger/querylist": "^4.2",
@@ -40,7 +40,8 @@
         "youyiio/php-echarts": "^0.2.0",
         "jenssegers/date": "^4.0",
         "topthink/think-captcha": "^3.0",
-        "topthink/think-image": "^1.0"            
+        "topthink/think-image": "^1.0",
+        "topthink/think-filesystem": "^2.0"            
     },
     "require-dev": {
         "symfony/var-dumper": "^4.2",
