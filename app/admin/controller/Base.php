@@ -24,8 +24,9 @@ class Base extends BaseController
         $uid = session('uid');
         if (!$uid) {
             if (request()->isAjax()) {
-                $this->error('请重新登陆', app('http')->getName() . '/Sign/login');
+                $this->error('请重新登陆', '/' . app('http')->getName() . '/Sign/login');
             }
+
             $this->redirect(app('http')->getName() . '/Sign/index');
         }
 
@@ -35,7 +36,8 @@ class Base extends BaseController
         $cacheLoginHash = cache($uid . CACHE_SEPARATOR . 'login_hash');
         if ($localLoginHash != $cacheLoginHash) {
             if (request()->isAjax()) {
-                $this->error('请重新登陆', app('http')->getName() . '/Sign/login');
+                $this->error('请重新登陆', '/' . app('http')->getName() . '/Sign/login');
+                redirect(app('http')->getName() . '/Sign/index')->send();
             } else {
                 redirect(app('http')->getName() . '/Sign/index');
             }

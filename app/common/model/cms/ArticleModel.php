@@ -270,7 +270,7 @@ class ArticleModel extends BaseModel
             return false;
         }
 
-        $res = $this->allowField(true)->isUpdate(true)->save($data);
+        $res = $art->update($data);
 
         // 删除中间表数据
         if (!empty($data['category_ids'])) {

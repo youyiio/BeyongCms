@@ -1,7 +1,14 @@
-{extend name="public/base" /} {block name="title"}{article:view aid="aid"
-id='art' assign="article"}{/article:view}{$article.title}{/block} {block
-name='keywords'}{$article.keywords}{/block} {block
-name='description'}{$article.description}{/block} {block name="body"}
+{extend name="public/base" /} 
+{block name="title"}
+  {article:view aid="aid" id='art' assign="article"}{/article:view}{$article.title}
+{/block} 
+{block name='keywords'}
+  {$article.keywords|default=''}
+{/block} 
+{block name='description'}
+  {$article.description}
+{/block}
+{block name="body"}
 <div class="content whisper-content leacots-content details-content">
   <div class="cont w1000">
     <div class="whisper-list">
@@ -12,8 +19,8 @@ name='description'}{$article.description}{/block} {block name="body"}
               <div class="title">
                 <h3><a href="">{$article.title}</a></h3>
                 <p class="cont-info">
-                  <span class="data">{$article.create_time}</span
-                  ><span class="author">{$article.user.nickname}</span>
+                  <span class="data">{$article.create_time}</span>
+                  <span class="author">{$article.user.nickname}</span>
                 </p>
               </div>
               <article>{$article.content|raw}</article>
