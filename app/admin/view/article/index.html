@@ -130,7 +130,7 @@
                                     </a>
                                 </td>
                                 <td>{if $vo.status == $ArticleModel->STATUS_PUBLISHED}
-                                    {$vo.post_time}
+                                    {$vo.post_time|default=''}
                                     {else /}
                                     {notempty name="$vo.timing"}{$vo.timing}<i class="fa fa-clock-o"></i>{/notempty}
                                     {/if}

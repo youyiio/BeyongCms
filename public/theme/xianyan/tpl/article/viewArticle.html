@@ -1,6 +1,6 @@
 {extend name="public/base" /}
 {block name="title"}{article:view aid="aid" id='art' assign="article"}{/article:view}{$article.title} - {cms:config key="site_name" /}{/block}
-{block name='keywords'}{$article.keywords}{/block}
+{block name='keywords'}{$article.keywords|default=''}{/block}
 {block name='description'}{$article.description}{/block}
 
 {block name="body"}

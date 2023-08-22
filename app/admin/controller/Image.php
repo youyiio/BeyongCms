@@ -131,11 +131,10 @@ class Image extends Base
         $height = request()->param('height/d', 0); //源图截取的高
 
 
-        $path = Env::get('root_path') . 'public';
+        $path = root_path() . 'public';
         $realPath = $path . $FileModel->file_url;
-        // $file = new \SplFileInfo($realPath);
-        // halt($realPath);
-        $srcImage = \think\Image::open($realPath);
+        $file = new \SplFileInfo($realPath);
+        $srcImage = \think\Image::open($file);
         if (!$srcImage) {
             $this->error('读取图片文件失败!');
         }

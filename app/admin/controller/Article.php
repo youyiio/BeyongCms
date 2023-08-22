@@ -180,6 +180,7 @@ class Article extends Base
         $categoryList = $CategoryModel->getTreeData('tree', 'sort,id', 'title');
         $this->assign('categoryList', $categoryList);
 
+
         //记录上一级来源，方便回跳; 优先redirect参数传递
         $fromReferee = input('redirect/s', $this->request->server('HTTP_REFERER'));
         $url = !empty($fromReferee) ? $fromReferee : url('Article/index');
@@ -314,7 +315,7 @@ class Article extends Base
             $data['status'] = ArticleModel::STATUS_PUBLISHED;
         }
 
-        $res = $article->isUpdate(true)->save($data, ['id' => $id]);
+        $res = $article->update($data, ['id' => $id]);
         if ($res) {
             $this->success('成功发布');
         } else {
