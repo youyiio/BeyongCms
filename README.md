@@ -1,34 +1,34 @@
-BeyongCms内容管理系统(简称BeyongCms)
+# BeyongCms内容管理系统(简称BeyongCms)
+
 ===============
 
-> 运行环境要求PHP7.2+，兼容PHP8.1
+> 运行环境要求PHP8.0+
 
 BeyongCms系统基于ThinkPHP6.0框架的轻量级内容管理系统，适用于企业Cms, 个人站长等，针对移动App、小程序优化；提供完善简洁的项目文档，方便开发人员进行二次开发。
 支持模块式开发，方便平台扩展及第三方进行二次开发。专注于个人站长、中小企业客户，提供基础平台功能及丰富的应用扩展，
 支持PC和移动场景，满足企业建站系统、后台管理框架、App后台开发、微信小程序开发、小程序开发框架、小程序API、小程序开发等实际二次开发场景。
 其主要特性包括：
 
- + 基于PHP最流行的ThinkPHP6.0+框架，web端采用jquery+bootstrap框架
- + 用户系统，邮箱、手机注册|登录支持
- + 文章系统，文章栏目管理、评论审核管理
- + 灵活的角色权限控制，RBAC管理
- + crontab定时任务;window下使用计划任务；linux下使用crontab
- + 主题系统;支持主题自定义开发；主题切换等
- + 插件系统
- + 站长特性支持，友链管理，Sitemap地图，收录检测，相关推荐，热门推荐等
- + 默认Composer第三方库支持，PHPQuery,think-queue
- + Phpspreadsheet支持数据报表导出
- + Swoole和Swoole协程支持
- + 针对App及小程序的api优化
- + 阿里云和七牛云OSS支持
- + 支持文章全文检索(开发中，支持ElasticSearch)
- 
-支持官网: https://www.beyongcms.com
++ 基于PHP最流行的ThinkPHP6.0+框架，web端采用jquery+bootstrap框架
++ 用户系统，邮箱、手机注册|登录支持
++ 文章系统，文章栏目管理、评论审核管理
++ 灵活的角色权限控制，RBAC管理
++ crontab定时任务;window下使用计划任务；linux下使用crontab
++ 主题系统;支持主题自定义开发；主题切换等
++ 插件系统
++ 站长特性支持，友链管理，Sitemap地图，收录检测，相关推荐，热门推荐等
++ 默认Composer第三方库支持，PHPQuery,think-queue
++ Phpspreadsheet支持数据报表导出
++ 针对App及小程序的api优化
++ 阿里云和七牛云OSS支持
++ 支持文章全文检索(开发中，支持ElasticSearch)
+
+支持官网: <https://www.beyongcms.com>
 交流QQ群1： 60916041
 
-> ThinkPHP5.1的运行环境要求PHP7.0及以上。
+> ThinkPHP6.1的运行环境要求PHP7.0及以上。
 
-##软件架构
+## 软件架构
 
 系统支持Linux/Window/Mac OS三大平台；
 软件架构采用nginx/apache + PHP + Mysql(MariaDB) [+redis] 的经典WEB架构，因为简单易于理解，且方便部署，门槛低；
@@ -37,6 +37,7 @@ BeyongCms系统基于ThinkPHP6.0框架的轻量级内容管理系统，适用于
 ## 安装教程
 
 ### 前期准备
+
 准备好您的域名，并设置好指向；
 安装apache/nginx, php及Mysql；
 创建数据库，并分配数据库帐号密码（不建议用root），当前BeyongCms不支持帮助用户创建数据库；
@@ -44,48 +45,48 @@ BeyongCms系统基于ThinkPHP6.0框架的轻量级内容管理系统，适用于
 ### nginx配置[推荐nginx]
 
 ```
-      location / {
-          if (!-e $request_filename) {
-             rewrite ^(.*)$ /index.php?s=/$1 last;
-             rewrite ^(.*)$ /index.php/$1 last;
-          }
-      }
+location / {
+    if (!-e $request_filename) {
+        rewrite ^(.*)$ /index.php?s=/$1 last;
+        rewrite ^(.*)$ /index.php/$1 last;
+    }
+}
 
-      # 静态资源配置start: 
-      # nginx发现文件不存时，尽早404，不向后匹配规则,停止搜索，否则会按最后匹配的规则；
-      location ^~ /static/ {
-          
-      }
-      location ^~ /upload/ {
-          
-      }
-      ## 避免模板被查看, 目录下php文件被禁止执行
-      location ~ ^/theme/.*\.(html|php)/?.*$ {
-          deny all;
-          #return 404;
-      }
-      ## 若此规则调前，优先匹配当前规则？？！(window平台无此问题)
-      location ~ ^/theme/ {
-          
-      }
-      # 静态资源配置end
-      
-      location ~* /(.git|.svn) {
-          deny all;
-      }
-      
-      location ~ \.php/?.*$ {
-          fastcgi_pass php70cgi;
-          fastcgi_index  index.php;
+# 静态资源配置start: 
+# nginx发现文件不存时，尽早404，不向后匹配规则,停止搜索，否则会按最后匹配的规则；
+location ^~ /static/ {
+    
+}
+location ^~ /upload/ {
+    
+}
+## 避免模板被查看, 目录下php文件被禁止执行
+location ~ ^/theme/.*\.(html|php)/?.*$ {
+    deny all;
+    #return 404;
+}
+## 若此规则调前，优先匹配当前规则？？！(window平台无此问题)
+location ~ ^/theme/ {
+    
+}
+# 静态资源配置end
 
-          fastcgi_split_path_info ^(.+\.php)(/.*)$;
-          fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
-          fastcgi_param PATH_INFO $fastcgi_path_info;
-          include        conf/fastcgi_params;
-          
-          include limit/limit_condition.conf;
-          include limit/black_list.conf;
-      }
+location ~* /(.git|.svn) {
+    deny all;
+}
+
+location ~ \.php/?.*$ {
+    fastcgi_pass php70cgi;
+    fastcgi_index  index.php;
+
+    fastcgi_split_path_info ^(.+\.php)(/.*)$;
+    fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+    fastcgi_param PATH_INFO $fastcgi_path_info;
+    include        conf/fastcgi_params;
+    
+    include limit/limit_condition.conf;
+    include limit/black_list.conf;
+}
 ```
 
 ### composer安装依赖
@@ -97,12 +98,12 @@ BeyongCms系统基于ThinkPHP6.0框架的轻量级内容管理系统，适用于
 ### 自动安装引导
 
 删除data/install.lock文件，如果存在的话；
-浏览器中输入: http://your_domain;
+浏览器中输入: <http://your_domain>;
 ![image](./public/static/install/screenshot/install.jpg)
 
 ### 管理后台
 
-浏览器输入: http://your_domain/admin
+浏览器输入: <http://your_domain/admin>
 ![image](./public/static/install/screenshot/admin_login.jpg)
 ![image](./public/static/install/screenshot/admin_tongji.jpg)
 
@@ -127,16 +128,15 @@ Linux下
 >sh start_queue.sh
 >sh start_timer.bat
 
-
 系统的目录结构如下：
 
 ~~~
 POROJECT_NAME  WEB部署目录（或者子目录）
-|-─addons                附加插件
-├─application           应用目录
-│  ├─admin             管理后模块
+├─app                  应用目录
+│  ├─admin             管理后台模块
+|  ├─api               api模块
 │  ├─common            公共模块
-│  ├─cms               CMS模块，站点及官网前端
+│  ├─frontend          CMS模块，站点及官网前端
 │  └─install           自动安装向导
 ├─config                应用配置目录
 ├─data                  数据存储目录(资源数据，安装数据，临时数据，备份数据)
@@ -168,4 +168,3 @@ POROJECT_NAME  WEB部署目录（或者子目录）
 ├─start_timer.bat       Window定时启动脚本（增加执行计划）
 ├─start_timer.sh        Linux定时启动脚本（添加crontab）
 ~~~
-
