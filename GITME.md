@@ -1,6 +1,14 @@
 
 # git for me [git使用帮助]
 
+## clone或新建项目
+
+> git clone https://github.com/youyiio/BeyongCms.git
+
+指定分支
+
+> git clone https://github.com/youyiio/BeyongCms.git -b 2.0
+
 ## 配置.git
 
 > code .git\config
@@ -8,8 +16,8 @@
 添加如下：
 
 [remote "gitlab"]
-	url = http://gitlab.xxxx.com/youyiio/project_xxx.git
-	fetch = +refs/heads/*:refs/remotes/origin/*
+url = http://gitlab.xxxx.com/youyiio/project_xxx.git
+fetch = +refs/heads/*:refs/remotes/origin/*
 
 ## git本地合并
 
