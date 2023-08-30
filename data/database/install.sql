@@ -580,6 +580,7 @@ create table sys_action_log
    action_time          bigint,
    params               text,
    user_agent           text comment '用户代理',
+   http_referer         text comment 'http referer来源',
    response             text,
    response_time        bigint,
    remark               varchar(256),
@@ -692,9 +693,9 @@ create table sys_file
    real_name            varchar(128) comment '原始名称',
    size                 int comment '大小',
    ext                  varchar(16) comment '后缀',
-   bucket               varchar(64) comment 'oss桶',
-   oss_url              varchar(512) comment 'ossurl',
    thumb_image_url      varchar(256) comment '缩略图',
+   oss_type             varchar(16) comment 'oss类型: minio,aliyun,tencent,qiniuyun',
+   oss_object_key       varchar(512) comment 'oss对象key',
    remark               varchar(512) comment '备注',
    create_by            varchar(255) comment '创建者',
    create_time          datetime not null comment '创建时间',
@@ -1016,10 +1017,12 @@ INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES
 
 INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('文章缩略图大小配置', 'article', 'article_thumb_image', '{\"width\":280,\"height\":280,\"thumb_width\":140,\"thumb_height\":140}', '文章缩略图大小配置', 'string', 0);
 INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('文章审核', 'article', 'article_audit_switch', 'true', '文章审核', 'bool', 1);
-INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('水印开关', 'article', 'article_water', '1', '水印开关(0:无水印,1:水印文字,2:水印图片)', 'number', 2);
-INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('水印文本', 'article', 'article_water_text', '', '水印文本', 'string', 3);
-INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('上传图片质量', 'article', 'image_upload_quality', '80', '上传图片质量', 'string', 4);
-INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('上传图片宽高', 'article', 'image_upload_max_limit', '680', '上传图片宽高最大值(单位px,0为不限制)', 'string', 5);
+INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('文章评论', 'article', 'article_comment_switch', 'false', '是否允许文章评论', 'bool', 2);
+INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('文章评论审核', 'article', 'article_comment_audit_switch', 'true', '文章评论审核', 'bool', 3);
+INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('水印开关', 'article', 'article_water', '1', '水印开关(0:无水印,1:水印文字,2:水印图片)', 'number', 4);
+INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('水印文本', 'article', 'article_water_text', '', '水印文本', 'string', 5);
+INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('上传图片质量', 'article', 'image_upload_quality', '80', '上传图片质量', 'string', 6);
+INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('上传图片宽高', 'article', 'image_upload_max_limit', '680', '上传图片宽高最大值(单位px,0为不限制)', 'string', 7);
 INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('联系地址', 'contact', 'address', '厦门市思明区软件园二期望海路000号000室', '联系地址', 'string', 1);
 INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('邮编', 'contact', 'zip_code', '361008', '邮编', 'string', 2);
 INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('传真', 'contact', 'fax', '0592-1234567', '传真', 'string', 3);
@@ -1034,28 +1037,31 @@ INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES
 INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('发件邮箱名称', 'email', 'email_name', 'service', '发件邮箱名称', 'string', 3);
 INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('发件邮箱地址', 'email', 'email_addr', 'service@beyongx.com', '发件邮箱地址', 'string', 4);
 INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('发件邮箱密码', 'email', 'email_pass', 'password', '发件邮箱密码', 'string', 5);
-INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('新用户邮箱激活html格式', 'email_template', 'email_activate_user', '<style type=\"text/css\">\r\n  p{text-indent: 2em;}\r\n</style>\r\n<div><strong>尊敬的用户</strong></div>\r\n<p>您好，非常感谢您对Beyongx(<a href=\"https://www.ituizhan.com/\" target=\"_blank\" title=\"Beyongx\">Beyongx</a>)的关注和热爱</p>\r\n<p>您本次申请注册成为Beyongx会员的邮箱验证链接是: <a style=\"font-size: 30px;color: red;\" href=\"{url}\">{url}</a></p>\r\n<p>如果非您本人操作，请忽略该邮件。</p>\r\n', '新用户邮箱激活html格式', 'text', 6);
-INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('用户邮箱重置密码html格式', 'email_template', 'email_reset_password', '<style type=\"text/css\">\r\np{text-indent: 2em;}\r\n</style>\r\n<div><strong>尊敬的用户</strong></div>\r\n<p>您好，非常感谢您对Beyongx(<a href=\"https://www.ituizhan.com/\" target=\"_blank\" title=\"Beyongx\">Beyongx</a>)的关注和热爱</p>\r\n<p>您本次申请找回密码的邮箱验证码是: <strong style=\"font-size: 30px;color: red;\">{code}</strong></p>\r\n<p>您本次重置密码的邮箱链接是: <a style=\"font-size: 30px;color: red;\"  href=\"{url}\">{url}</strong>\r\n<p>如果非您本人操作，请忽略该邮件。</p>\r\n', '用户邮箱重置密码html格式', 'text', 7);
+INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('新用户邮箱激活格式', 'email_template', 'email_activate_user', '<style type=\"text/css\">\r\n  p{text-indent: 2em;}\r\n</style>\r\n<div><strong>尊敬的用户</strong></div>\r\n<p>您好，非常感谢您对Beyongx(<a href=\"https://www.ituizhan.com/\" target=\"_blank\" title=\"Beyongx\">Beyongx</a>)的关注和热爱</p>\r\n<p>您本次申请注册成为Beyongx会员的邮箱验证链接是: <a style=\"font-size: 30px;color: red;\" href=\"{url}\">{url}</a></p>\r\n<p>如果非您本人操作，请忽略该邮件。</p>\r\n', '新用户邮箱激活html格式', 'text', 6);
+INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('邮箱重置密码格式', 'email_template', 'email_reset_password', '<style type=\"text/css\">\r\np{text-indent: 2em;}\r\n</style>\r\n<div><strong>尊敬的用户</strong></div>\r\n<p>您好，非常感谢您对Beyongx(<a href=\"https://www.ituizhan.com/\" target=\"_blank\" title=\"Beyongx\">Beyongx</a>)的关注和热爱</p>\r\n<p>您本次申请找回密码的邮箱验证码是: <strong style=\"font-size: 30px;color: red;\">{code}</strong></p>\r\n<p>您本次重置密码的邮箱链接是: <a style=\"font-size: 30px;color: red;\"  href=\"{url}\">{url}</strong>\r\n<p>如果非您本人操作，请忽略该邮件。</p>\r\n', '用户邮箱重置密码html格式', 'text', 7);
 
-INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('tab标签元数据', NULL, 'tab_meta', '[{\"tab\":\"base\",\"name\":\"基本设置\",\"sort\":1},{\"tab\":\"seo\",\"name\":\"SEO设置\",\"sort\":2},{\"tab\":\"contact\",\"name\":\"联系方式\",\"sort\":3},{\"tab\":\"email\",\"name\":\"邮箱设置\",\"sort\":4},{\"tab\":\"article\",\"name\":\"文章设置\",\"sort\":5},{\"tab\":\"aliyun_oss\",\"name\":\"阿里OSS存储\",\"sort\":6},{\"tab\":\"qiniuyun_oss\",\"name\":\"七牛OSS存储\",\"sort\":7},{\"tab\":\"email_template\",\"name\":\"邮件模板\",\"sort\":8},{\"tab\":\"oss\",\"name\":\"OSS存储设置\",\"sort\":9}]', 'tab标签元数据', 'string', 0);
+INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('tab标签元数据', NULL, 'tab_meta', '[{\"tab\":\"base\",\"name\":\"基本设置\",\"sort\":1},{\"tab\":\"seo\",\"name\":\"SEO设置\",\"sort\":2},{\"tab\":\"contact\",\"name\":\"联系方式\",\"sort\":3},{\"tab\":\"email\",\"name\":\"邮箱设置\",\"sort\":4},{\"tab\":\"article\",\"name\":\"文章设置\",\"sort\":5},{\"tab\":\"email_template\",\"name\":\"邮件模板\",\"sort\":6},{\"tab\":\"oss\",\"name\":\"OSS存储设置\",\"sort\":7},{\"tab\":\"minio_oss\",\"name\":\"minio存储\",\"sort\":8},{\"tab\":\"aliyun_oss\",\"name\":\"阿里OSS存储\",\"sort\":9},{\"tab\":\"qiniuyun_oss\",\"name\":\"七牛OSS存储\",\"sort\":10}]', 'tab标签元数据', 'string', 0);
 
 #oss存储配置
-INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('OSS存储开关', 'oss', 'oss_switch', 'false', 'bool', 'oss', 1);
-INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('OSS厂商', 'oss', 'oss_vendor', 'qiniuyun', 'string', 'oss', 2);
+INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('OSS存储开关', 'oss', 'oss_switch', 'false', 'OSS存储开关', 'bool', 1);
+INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('OSS厂商', 'oss', 'oss_vendor', 'minio', 'OSS厂商,minio|aliyun|qiniu', 'string', 2);
 
-INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('阿里oss Bucket名称', 'aliyun_oss', 'ali_bucket', 'Bucket名称', '阿里oss Bucket名称', 'string', 1);
-INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('阿里oss 外网地址endpoint', 'aliyun_oss', 'ali_endpoint', 'xxxx.aliyuncs.com', '阿里oss 外网地址endpoint', 'string', 2);
-INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('阿里Access Key ID', 'aliyun_oss', 'ali_key_id', '阿里云key id', '阿里Access Key ID', 'string', 3);
-INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('阿里Access Key Secret', 'aliyun_oss', 'ali_key_secret', '阿里云key secret', '阿里Access Key Secret', 'string', 4);
-INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('阿里oss 访问的地址', 'aliyun_oss', 'ali_url', '阿里云oss域名地址', '阿里oss 访问的地址', 'string', 5);
-INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('七牛oss Bucket', 'qiniuyun_oss', 'qiniu_bucket', 'Bucket名称', '七牛oss Bucket', 'string', 1);
-INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('七牛oss Accesskey', 'qiniuyun_oss', 'qiniu_key_id', '七牛oss Accesskey', '七牛oss Accesskey', 'string', 2);
-INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('七牛oss Secretkey', 'qiniuyun_oss', 'qiniu_key_secret', '七牛oss Secretkey', '七牛oss Secretkey', 'string', 3);
-INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('七牛oss 访问的地址', 'qiniuyun_oss', 'qiniu_url', '七牛域名地址', '七牛oss 访问的地址', 'string', 4);
+INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('minio endpoint', 'minio_oss', 'minio_endpoint', '', 'minio 地址endpoint', 'string', 1);
+INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('minio Bucket名称', 'minio_oss', 'minio_bucket', '', 'minio Bucket名称', 'string', 2);
+INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('minio credentials key', 'minio_oss', 'minio_key_id', '', 'minio credentials key', 'string', 3);
+INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('minio credentials secret', 'minio_oss', 'minio_key_secret', '', 'minio credentials secret', 'string', 4);
+INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('阿里oss 外网地址endpoint', 'aliyun_oss', 'aliyun_endpoint', '', '阿里oss 外网地址endpoint', 'string', 1);
+INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('阿里oss Bucket名称', 'aliyun_oss', 'aliyun_bucket', '', '阿里oss Bucket名称', 'string', 2);
+INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('阿里Access Key ID', 'aliyun_oss', 'aliyun_key_id', '', '阿里Access Key ID', 'string', 3);
+INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('阿里Access Key Secret', 'aliyun_oss', 'aliyun_key_secret', '', '阿里Access Key Secret', 'string', 4);
+INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('七牛oss 访问的地址', 'qiniuyun_oss', 'qiniu_endpoint', '', '七牛oss 访问的地址', 'string', 1);
+INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('七牛oss Bucket', 'qiniuyun_oss', 'qiniu_bucket', '', '七牛oss Bucket', 'string', 2);
+INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('七牛oss Accesskey', 'qiniuyun_oss', 'qiniu_key_id', '', '七牛oss Accesskey', 'string', 3);
+INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('七牛oss Secretkey', 'qiniuyun_oss', 'qiniu_key_secret', '', '七牛oss Secretkey', 'string', 4);
 
 #百度站长资源push
-INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('站长域名', 'zhanzhang', 'zhanzhang_site', '站长域名', '', 'string', 1);
-INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('站长token', 'zhanzhang', 'zhanzhang_token', '站长token', '', 'string', 2);
+INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('站长域名', 'zhanzhang', 'zhanzhang_site', '', '站长域名', 'string', 1);
+INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('站长token', 'zhanzhang', 'zhanzhang_token', '', '站长token', 'string', 2);
 /* ================================================================================================*/
 /* ============================================数据初始脚本：用户表================================*/
 truncate sys_user;
@@ -1064,7 +1070,7 @@ truncate sys_user;
 INSERT INTO
     `sys_user`(`id`,`mobile`,`email`,`account`,`password`,`status`,`nickname`,`sex`,`head_url`,`salt`,`register_time`,`last_login_time`,`last_login_ip`)
 VALUES
-    (1,'18888888888','admin@admin.com','admin','f6bc5c8794afdae1dd41edb7939020e2',2,'超级管理员',1,null,'lGfFSc17z8Q15P5kU0guNqq906DHNbA3','2015-01-01 00:00:00','2017-05-12 15:55:52','110.84.32.49');
+    (1,'18888888888','admin@beyongcms.com','admin','f6bc5c8794afdae1dd41edb7939020e2',2,'超级管理员',1,null,'lGfFSc17z8Q15P5kU0guNqq906DHNbA3','2015-01-01 00:00:00','2017-05-12 15:55:52','110.84.32.49');
 
 truncate `sys_user_role`;
 
@@ -1078,7 +1084,7 @@ truncate table `sys_role`;
 INSERT INTO `sys_role` (`id`,`name`,`title`,`status`,`remark`) VALUES (1, 'admin', '超级管理员', 1, '');
 INSERT INTO `sys_role` (`id`,`name`,`title`,`status`,`remark`) VALUES (2, 'manager', '普通管理员', 1, '');
 INSERT INTO `sys_role` (`id`,`name`,`title`,`status`,`remark`) VALUES (3, 'editor', '网站编辑', 1, '');
-INSERT INTO `sys_role` (`id`,`name`,`title`,`status`,`remark`) VALUES (4, 'user', '普通用户', 1, '');
+INSERT INTO `sys_role` (`id`,`name`,`title`,`status`,`remark`) VALUES (4, 'member', '普通会员', 1, '');
 
 # 菜单初始化
 truncate table sys_menu;
@@ -1145,14 +1151,15 @@ INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_t
 INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (242, 24, '友情链接', 'admin/System/links', '', 1, 1, 1, 1,'admin');
 INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (243, 24, '清理缓存', 'admin/System/clearCache', '', 1, 1, 1, 1,'admin');
 INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (244, 24, '日志审计', 'admin/System/actionLogs', '', 1, 1, 1, 1,'admin');
+INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (245, 24, '站长工具', 'admin/Webmaster/index', '', 1, 1, 1, 1,'admin');
 
 INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (251, 25, '主题管理', 'admin/Theme/index', '', 1, 1, 1, 1,'admin');
 INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (252, 25, '插件管理', 'admin/Addon/index', '', 1, 1, 1, 1,'admin');
 
 INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (261, 26, '文章管理', 'admin/Article/index', '', 1, 1, 1, 1,'admin');
-INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (262, 26, '评论管理', 'admin/Article/commentList', '', 1, 1, 1, 1,'admin');
-INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (263, 26, '文章分类', 'admin/Article/categoryList', '', 1, 1, 1, 1,'admin');
-INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (264, 26, '广告管理', 'admin/Article/adList', '', 1, 1, 1, 1,'admin');
+INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (262, 26, '评论管理', 'admin/Comment/index', '', 1, 1, 1, 1,'admin');
+INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (263, 26, '文章分类', 'admin/Category/index', '', 1, 1, 1, 1,'admin');
+INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (264, 26, '广告管理', 'admin/Ad/index', '', 1, 1, 1, 1,'admin');
 
 INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (271, 27, '客服消息', 'admin/Feedback/index', '', 1, 1, 1, 1,'admin');
 
@@ -1356,6 +1363,12 @@ INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) 
 ;
 
 INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES 
+(245, '站长工具', 'admin/Webmaster/index', '', 1, 0, 1, 1,'admin'),
+(245, '百度站长', 'admin/Webmaster/baidu', '', 1, 0, 1, 1,'admin'),
+(245, '生成站点地图', 'admin/Webmaster/sitemap', '', 1, 0, 1, 1,'admin')
+;
+
+INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES 
 (251, '查看主题', 'admin/Theme/viewTheme', '', 1, 0, 1, 1,'admin'),
 (251, '主题演示', 'admin/Theme/demo', '', 1, 0, 1, 1,'admin'),
 (251, '下载主题', 'admin/Theme/download', '', 1, 0, 1, 1,'admin'),
@@ -1379,18 +1392,18 @@ INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) 
 ;
 
 INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES 
-(262, '审核评论', 'admin/Article/auditComment', '', 1, 0, 1, 1,'admin'),
-(262, '回发评论', 'admin/Article/postComment', '', 1, 0, 1, 1,'admin'),
-(262, '删除评论', 'admin/Article/deleteComment', '', 1, 0, 1, 1,'admin'),
-(262, '查看评论', 'admin/Article/viewComments', '', 1, 0, 1, 1,'admin'),
-(263, '新增分类', 'admin/Article/addCategory', '', 1, 0, 1, 1,'admin'),
-(263, '编辑分类', 'admin/Article/editCategory', '', 1, 0, 1, 1,'admin'),
-(263, '排序分类', 'admin/Article/orderCategory', '', 1, 0, 1, 1,'admin'),
-(263, '删除分类', 'admin/Article/deleteCategory', '', 1, 0, 1, 1,'admin'),
-(264, '新增广告', 'admin/Article/addAd', '', 1, 0, 1, 1,'admin'),
-(264, '编辑广告', 'admin/Article/editAd', '', 1, 0, 1, 1,'admin'),
-(264, '广告排序', 'admin/Article/orderAd', '', 1, 0, 1, 1,'admin'),
-(264, '删除广告', 'admin/Article/deleteAd', '', 1, 0, 1, 1,'admin')
+(262, '审核评论', 'admin/Comment/auditComment', '', 1, 0, 1, 1,'admin'),
+(262, '回发评论', 'admin/Comment/postComment', '', 1, 0, 1, 1,'admin'),
+(262, '删除评论', 'admin/Comment/deleteComment', '', 1, 0, 1, 1,'admin'),
+(262, '查看评论', 'admin/Comment/viewComments', '', 1, 0, 1, 1,'admin'),
+(263, '新增分类', 'admin/Category/addCategory', '', 1, 0, 1, 1,'admin'),
+(263, '编辑分类', 'admin/Category/editCategory', '', 1, 0, 1, 1,'admin'),
+(263, '排序分类', 'admin/Category/orderCategory', '', 1, 0, 1, 1,'admin'),
+(263, '删除分类', 'admin/Category/deleteCategory', '', 1, 0, 1, 1,'admin'),
+(264, '新增广告', 'admin/Ad/addAd', '', 1, 0, 1, 1,'admin'),
+(264, '编辑广告', 'admin/Ad/editAd', '', 1, 0, 1, 1,'admin'),
+(264, '广告排序', 'admin/Ad/orderAd', '', 1, 0, 1, 1,'admin'),
+(264, '删除广告', 'admin/Ad/deleteAd', '', 1, 0, 1, 1,'admin')
 ;
 
 
