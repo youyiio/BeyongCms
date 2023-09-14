@@ -11,6 +11,7 @@
 
 // 应用公共文件
 
+use app\common\model\ImageModel;
 use think\facade\Cache;
 use think\facade\Env;
 use think\facade\Log;
@@ -446,10 +447,10 @@ function get_config($key = '', $default = null)
 function get_image($id)
 {
     if (is_array($id)) {
-        $FileModel = new \app\common\model\FileModel();
-        return $FileModel->where('id', 'in', $id)->select();
+        $ImageModel = new \app\common\model\ImageModel();
+        return $ImageModel->where('id', 'in', $id)->select();
     } else {
-        return \app\common\model\FileModel::get($id);
+        return \app\common\model\ImageModel::get($id);
     }
 }
 
