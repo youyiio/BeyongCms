@@ -1007,22 +1007,46 @@ function http_get($url, $requestParam = "", $responseDataSimple = true)
  * @param [type] $url
  * @param array $requestData 请求参数
  * @param bool $responseDataSimple true时，直接返回content; 否则返回{content|http_status|error}
+ * @param $header 
+ * @param $timeout 超时时间
+ * @param $proxy 代理, 格式为 ip:port
  * @return string|bool|array
  */
-function http_post($url, $requestData = [], $responseDataSimple = true)
+function http_post($url, $requestData = [], $responseDataSimple = true, $header = array(), $timeout = 0, $proxy = '')
 {
-    $header = [
-        'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36'
-    ];
+    $httpHeader = ['User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36'];
+    if (is_array($header) && count($header) > 0) {
+        $httpHeader = array_merge($httpHeader, $header);
+    }
+    // dump($httpHeader);
+    $applicationJson = false;
+    foreach ($httpHeader as $value) {
+        if (strpos(strtolower($value), 'application/json') !== false) {
+            $applicationJson = true;
+            break;
+        }
+    }
+
+    Log::info('http request: ' . $url);
+
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $httpHeader);
+    if ($timeout) {
+        curl_setopt($ch, CURLOPT_TIMEOUT, $timeout); //最长等待时间
+    }
+    if ($proxy) {
+        $proArr = explode(":", $proxy);
+        curl_setopt($ch, CURLOPT_PROXY, $proArr[0]);
+        curl_setopt($ch, CURLOPT_PROXYPORT, $proArr[1]);
+    }
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
 
+
     if (is_array($requestData)) {
-        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($requestData));
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $applicationJson ? json_encode($requestData) : http_build_query($requestData));
     } else {
         curl_setopt($ch, CURLOPT_POSTFIELDS, $requestData);
     }
@@ -1037,6 +1061,8 @@ function http_post($url, $requestData = [], $responseDataSimple = true)
     }
     // 关闭
     curl_close($ch);
+
+    Log::info('http response: ' . $content);
 
     $responseData = [
         "content" => $content,
