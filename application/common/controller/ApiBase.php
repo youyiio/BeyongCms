@@ -76,13 +76,11 @@ trait ApiBase
         //Api权限验证      
         if (config('jwt.jwt_auth_on') !== 'off') {
             $uid = $user_info->uid;
-            //$permission = request()->module() . '/' . request()->controller() . '/' . request()->action();
-            //$permission = request()->controller() . ':' . request()->action();
+
             $permission = request()->module() . ":" . request()->controller() . ':' . request()->action();
             $permission = strtolower($permission);
             $rolePermission = new RolePermission();
-            //$module = request()->module();
-            $module = "api";
+            $module = config('jwt.api_module') ?? "api";
             if (!$rolePermission->checkPermission($uid, $permission, $module, 'permission')) {
                 $response = json_encode([
                     'code'  => ResultCode::E_ACCESS_LIMIT,
