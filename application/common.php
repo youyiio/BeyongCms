@@ -950,13 +950,17 @@ function http_build_query_ext($query_data)
  * @param string $url
  * @param mixed $requestParam 请求参数, array | string
  * @param bool $responseDataSimple true时，直接返回content; 否则返回{content|http_status|error}
+ * @param $header 
+ * @param $timeout 超时时间
+ * @param $proxy 代理, 格式为 ip:port
  * @return string|bool|array
  */
-function http_get($url, $requestParam = "", $responseDataSimple = true)
+function http_get($url, $requestParam = "", $responseDataSimple = true, $header = array(), $timeout = 0, $proxy = '')
 {
-    $header = [
-        'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36'
-    ];
+    $httpHeader = ['User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36'];
+    if (is_array($header) && count($header) > 0) {
+        $httpHeader = array_merge($httpHeader, $header);
+    }
 
     $paramStr = '';
     if (is_array($requestParam)) {
@@ -971,7 +975,15 @@ function http_get($url, $requestParam = "", $responseDataSimple = true)
 
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $httpHeader);
+    if ($timeout) {
+        curl_setopt($ch, CURLOPT_TIMEOUT, $timeout); //最长等待时间
+    }
+    if ($proxy) {
+        $proArr = explode(":", $proxy);
+        curl_setopt($ch, CURLOPT_PROXY, $proArr[0]);
+        curl_setopt($ch, CURLOPT_PROXYPORT, $proArr[1]);
+    }
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
