@@ -37,7 +37,7 @@ git commit -m "message": 提交到本地仓库;
 注： git pull remote remotebranch:localbranch
 > git pull gitlab master:ItuizhanApi  (: 意思如 =>, 远程的master合并入本地的ItuizhanApi)
 
-
+通过pull
 git pull = git fetch + git merge
 
 > git pull gitlab master:master
@@ -45,6 +45,12 @@ git pull = git fetch + git merge
 > git pull origin master:master
 
 冒号后面省略是时，合并到当前工作的分支
+
+通过fetch，git fetch拉取分支后建立分支
+
+> git fetch gitlab release
+
+> git checkout -b local-release FETCH_HEAD
 
 ## 分支新建及删除
 
