@@ -12,6 +12,7 @@ use app\common\model\MessageModel;
 use app\common\logic\MessageLogic;
 use app\common\model\RoleModel;
 use app\common\model\UserRoleModel;
+use beyong\commons\utils\PregUtils;
 
 /**
 * 用户管理控制器
@@ -21,23 +22,24 @@ class User extends Base
     //用户列表
     public function index()
     {
-        $map['status'] = ['egt',0];
-        $type = input('param.type');
-        $key = input('param.key');
+        $map['status'] = ['egt', 0];
+        $type = input('param.type', '');
+        $key = input('param.key', '');
         $map = [];
         if ($key && $type) {
+            $type = PregUtils::isEmail($key) ? 'email' : (PregUtils::isMobile($key) ? 'mobile' : 'uid');
             switch ($type) {
                 case 'mobile':
                     $key = trim($key);
-                    $map[] = ['mobile','like',"%$key%"];
+                    $map[] = ['mobile', 'like', "%$key%"];
                     break;
                 case 'email':
                     $key = trim($key);
-                    $map[] = ['email','like',"%$key%"];
+                    $map[] = ['email', 'like', "%$key%"];
                     break;
                 case 'uid':
                     $key = intval($key);
-                    $map['id'] = $key;
+                    $map[] = ['id', '=', $key];
                     break;
                 default:
                     break;
