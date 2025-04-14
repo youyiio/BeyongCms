@@ -1,4 +1,5 @@
 <?php
+
 namespace app\api\controller\app;
 
 use app\api\controller\Base;
@@ -11,11 +12,14 @@ class Config extends Base
     public function base()
     {
         $ConfigModel = new ConfigModel();
-        
+
         $fields = 'id,name,group,key,value,value_type,remark';
-        $list = $ConfigModel->field($fields)->select();
+        $where = [];
+        $where[] = ['group', '=', 'base'];
+        $list = $ConfigModel->field($fields)->where($where)->select();
 
         $returnData = parse_fields($list, 1);
+
         return ajax_return(ResultCode::ACTION_SUCCESS, '操作成功!', $returnData);
     }
 
@@ -23,7 +27,7 @@ class Config extends Base
     public function status($name)
     {
         $ConfigModel = new ConfigModel();
-        $list = $ConfigModel->where('group', '=', $name.'_status')->field('key,value')->select();
+        $list = $ConfigModel->where('group', '=', $name . '_status')->field('key,value')->select();
 
         if (empty($list)) {
             return ajax_return(ResultCode::E_DATA_NOT_FOUND, '数据未找到');
