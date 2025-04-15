@@ -4,7 +4,8 @@ use think\facade\Route;
 
 
 Route::group('api', function () {
-    
+
+    /***********************admin 管理端接口 start ************************* */
     //通用公共接口
     Route::rule('config/query', 'api/Config/query', 'post');
     Route::rule('config/:name/status', 'api/Config/status', 'get');
@@ -39,11 +40,11 @@ Route::group('api', function () {
     Route::rule("role/menus/:id", 'api/Role/menus', 'get');
     Route::rule("role/addMenus/:id", 'api/Role/addMenus', 'post');
     Route::rule("role/users/:id", 'api/Role/users', 'get');
-    
+
     //文章管理相关
     Route::rule("article/list", 'api/Article/list', 'get|post');
     Route::rule("article/create", 'api/Article/create', 'post');
-    Route::rule("article/:aid", 'api/Article/query', 'get');    
+    Route::rule("article/:aid", 'api/Article/query', 'get');
     Route::rule("article/:aid", 'api/Article/edit', 'post');
     Route::rule("article/delete", 'api/Article/delete', 'delete');
     Route::rule("article/publish", 'api/Article/publish', 'post');
@@ -105,25 +106,30 @@ Route::group('api', function () {
     Route::rule("config/query", 'api/Config/query', 'post');
 
     Route::rule("log/list", 'api/Log/list', 'get|post');
+    /***********************admin 管理端接口 end ************************* */
 
-    //移动端通用公共接口
-    Route::rule('app/config/:name/status', 'api/app.Config/status', 'get');
-    Route::rule('app/config/base', 'api/app.Config/base', 'get');
-    Route::rule('app/carousel', 'api/Ad/carousel', 'post');
 
-    //移动端公共管理相关
-    Route::rule('app/article/timeline', 'api/app.Article/timeline', 'get|post');
-    Route::rule('app/article/latest', 'api/app.Article/latest', 'get|post');
-    Route::rule('app/article/hottest', 'api/app.Article/hotTest', 'get|post');
-    Route::rule('app/article/:aid', 'api/app.Article/query', 'get');
-    Route::rule('app/article/comments/:aid', 'api/app.Article/comments', 'get|post');
-    Route::rule('app/article/related/:aid', 'api/app.Article/related', 'get|post');
-    Route::rule('app/category/list', 'api/app.Article/categoryList', 'get|post');
-    Route::rule('app/link/list', 'api/app.Article/linkList', 'get|post');
+    /***********************outlet 对外接口 start ************************* */
+    //对外cms应用相关接口
+    Route::rule('outlet/cms/categoryList', 'api/outlet.Cms/categoryList', 'post');
+    Route::rule('outlet/cms/linkList', 'api/outlet.Cms/linkList', 'post');
+    Route::rule('outlet/cms/carousel', 'api/outlet.Cms/carousel', 'post');
+
+    //对外配置相关接口
+    Route::rule('outlet/config/base', 'api/outlet.Config/base', 'get');
+    Route::rule('outlet/config/:name/status', 'api/outlet.Config/status', 'get');
+
+    //对外文章相关接口
+    Route::rule('outlet/article/timeline', 'api/outlet.Article/timeline', 'get|post');
+    Route::rule('outlet/article/top', 'api/outlet.Article/top', 'get|post');
+    Route::rule('outlet/article/latest', 'api/outlet.Article/latest', 'get|post');
+    Route::rule('outlet/article/hottest', 'api/outlet.Article/hottest', 'get|post');
+    Route::rule('outlet/article/:aid', 'api/outlet.Article/query', 'get');
+    Route::rule('outlet/article/comments', 'api/outlet.Article/comments', 'post');
+    Route::rule('outlet/article/related', 'api/outlet.Article/related', 'post');
+    /***********************outlet 对外接口 end ************************* */
 
     // 定义miss路由
     Route::miss('api/Base/miss');
-
-
 })->ext(false)->header('Access-Control-Allow-Headers', 'token')
-->allowCrossDomain()->pattern(['aid' => '\d+']);
+    ->allowCrossDomain()->pattern(['aid' => '\d+']);

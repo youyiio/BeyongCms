@@ -1,6 +1,6 @@
 <?php
 
-namespace app\api\controller\app;
+namespace app\api\controller\outlet;
 
 use app\api\controller\Base;
 use app\common\model\cms\CategoryModel;
