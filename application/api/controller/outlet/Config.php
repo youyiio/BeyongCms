@@ -2,7 +2,6 @@
 
 namespace app\api\controller\outlet;
 
-use app\api\controller\Base;
 use app\common\library\ResultCode;
 use app\common\model\ConfigModel;
 

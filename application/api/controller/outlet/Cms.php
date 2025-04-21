@@ -2,7 +2,6 @@
 
 namespace app\api\controller\outlet;
 
-use app\api\controller\Base;
 use app\common\model\cms\CategoryModel;
 use app\common\model\cms\LinkModel;
 use app\common\library\ResultCode;

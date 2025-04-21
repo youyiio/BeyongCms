@@ -2,7 +2,6 @@
 
 namespace app\api\controller\outlet;
 
-use app\api\controller\Base;
 use app\common\library\ResultCode;
 use app\common\model\cms\ArticleDataModel;
 use app\common\model\cms\ArticleMetaModel;
@@ -19,7 +18,8 @@ class Article extends Base
         $params = $this->request->put();
         $page = $params['page'] ?? 1;
         $size = $params['size'] ?? 10;
-        $filters = $params['filters'] ?? '';
+        $orders = $params['orders'] ?? [];
+        $filters = $params['filters'] ?? [];
         $cid = $filters['cid'] ?? 0;
         $cname = $filters['cname'] ?? '';
 
@@ -34,11 +34,18 @@ class Article extends Base
             }
         }
 
+        $order = [];
+        if ($orders && !empty($orders['isTop'])) {
+            $order['is_top'] = $orders['isTop'] == 'desc' ? 'desc' : 'asc';
+        }
+        $order['post_time'] = 'desc';
+
         $where[] = ['status', '=', ArticleModel::STATUS_PUBLISHED];
-        $order = 'sort desc,post_time desc';
+
         if ($cid) {
             $childs = CategoryModel::getChild($cid);
             $cids = $childs['ids'];
+            $cids[] = $cid;
             $fields = 'cms_article.id,title,keywords,thumb_image_id,post_time,update_time,create_time,is_top,status,read_count,sort,author';
             $list = ArticleModel::hasWhere('CategoryArticle', [['category_id', 'in', $cids]], $fields)->where($where)->order($order)->paginate($size, false, ['page' => $page]);
         } else {
@@ -90,6 +97,7 @@ class Article extends Base
         if ($cid) {
             $childs = CategoryModel::getChild($cid);
             $cids = $childs['ids'];
+            $cids[] = $cid;
             $fields = 'cms_article.id,title,keywords,thumb_image_id,post_time,update_time,create_time,is_top,status,read_count,sort,author';
             $list = ArticleModel::hasWhere('CategoryArticle', [['category_id', 'in', $cids]], $fields)->where($where)->order($order)->paginate($size, false, ['page' => $page]);
         } else {
@@ -147,6 +155,7 @@ class Article extends Base
         if ($cid) {
             $childs = CategoryModel::getChild($cid);
             $cids = $childs['ids'];
+            $cids[] = $cid;
             $fields = 'cms_article.id,title,keywords,thumb_image_id,post_time,update_time,create_time,is_top,status,read_count,sort,author';
             $list = ArticleModel::hasWhere('CategoryArticle', [['category_id', 'in', $cids]], $fields)->where($where)->order($order)->paginate($size, false, ['page' => $page]);
         } else {
