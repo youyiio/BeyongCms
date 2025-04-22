@@ -2,11 +2,16 @@
 
 namespace app\api\controller\outlet;
 
+use app\api\middleware\JWTOptionalCheck;
 use app\common\library\ResultCode;
 use app\common\model\ConfigModel;
 
 class Config extends Base
 {
+    protected $middleware = [
+        JWTOptionalCheck::class
+    ];
+
     //查询应用信息
     public function base()
     {

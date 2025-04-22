@@ -2,11 +2,16 @@
 
 namespace app\api\controller\outlet;
 
+use app\api\middleware\JWTOptionalCheck;
 use app\common\library\ResultCode;
 use app\common\model\FileModel;
 
 class File extends Base
 {
+    protected $middleware = [
+        JWTOptionalCheck::class
+    ];
+
     public function list()
     {
         $params = $this->request->put();

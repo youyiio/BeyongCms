@@ -2,6 +2,7 @@
 
 namespace app\api\controller\outlet;
 
+use app\api\middleware\JWTOptionalCheck;
 use app\common\library\ResultCode;
 use app\common\model\cms\ArticleDataModel;
 use app\common\model\cms\ArticleMetaModel;
@@ -12,6 +13,10 @@ use app\common\model\cms\CommentModel;
 
 class Article extends Base
 {
+    protected $middleware = [
+        JWTOptionalCheck::class
+    ];
+
     //查询文章列表
     public function timeline()
     {
@@ -319,6 +324,70 @@ class Article extends Base
                 $categorys[] = $CategoryModel->where('id', '=', $cateId)->field('id,name,title')->find();
             }
             $art['categorys'] = $categorys;
+        }
+
+        $list = $list->toArray();
+        //返回数据
+        $returnData['current'] = $list['current_page'];
+        $returnData['pages'] = $list['last_page'];
+        $returnData['size'] = $list['per_page'];
+        $returnData['total'] = $list['total'];
+        $returnData['records'] = parse_fields($list['data'], 1);
+
+        return ajax_return(ResultCode::ACTION_SUCCESS, '查询成功!', $returnData);
+    }
+
+    //搜索文章
+    public function search()
+    {
+        $params = $this->request->put();
+        $page = $params['page'] ?? 1;
+        $size = $params['size'] ?? 10;
+        $orders = $params['orders'] ?? [];
+        $filters = $params['filters'] ?? [];
+        $cid = $filters['cid'] ?? 0;
+        $cname = $filters['cname'] ?? '';
+        $keyword = $filters['keyword'] ?? '';
+
+        $ArticleModel = new ArticleModel();
+        $fields = 'id,title,keywords,thumb_image_id,post_time,last_update_time,create_time,is_top,status,read_count,sort,author';
+        if (empty($cid) && !empty($cname)) {
+            $category = CategoryModel::where(['title_en' => $cname])->find();
+            if (!empty($category)) {
+                $cid = $category['id'];
+            } else {
+                $cid = -1;
+            }
+        }
+
+        $order = [];
+        if ($orders && !empty($orders['isTop'])) {
+            $order['is_top'] = $orders['isTop'] == 'desc' ? 'desc' : 'asc';
+        }
+        $order['post_time'] = 'desc';
+        //dump($order);
+
+        $where[] = ['status', '=', ArticleModel::STATUS_PUBLISHED];
+        if ($keyword) {
+            $where[] = ['title|keywords', 'like', '%' . $keyword . '%'];
+        }
+
+        if ($cid) {
+            $childs = CategoryModel::getChild($cid);
+            $cids = $childs['ids'];
+            $cids[] = $cid;
+            $fields = 'cms_article.id,title,keywords,thumb_image_id,post_time,last_update_time,create_time,is_top,status,read_count,sort,author';
+            $list = ArticleModel::hasWhere('CategoryArticle', [['category_id', 'in', $cids]], $fields)->where($where)->order($order)->paginate($size, false, ['page' => $page]);
+        } else {
+            $list = $ArticleModel->where($where)->field($fields)->order($order)->paginate($size, false, ['page' => $page]);
+        }
+
+        //添加缩略图和分类
+        $CategoryArticleModel = new CategoryArticleModel();
+        foreach ($list as $art) {
+            $art['thumbImage'] = findThumbImage($art);
+            $categorysIds = CategoryArticleModel::where('article_id', '=', $art['id'])->column('category_id');
+            $art['categorys'] = CategoryModel::where('id', 'in', $categorysIds)->field('id,title_cn,title_en')->select();
         }
 
         $list = $list->toArray();

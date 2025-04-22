@@ -120,13 +120,23 @@ Route::group('api', function () {
     Route::rule('outlet/config/:name/status', 'api/outlet.Config/status', 'get');
 
     //对外文章相关接口
-    Route::rule('outlet/article/timeline', 'api/outlet.Article/timeline', 'get|post');
-    Route::rule('outlet/article/top', 'api/outlet.Article/top', 'get|post');
-    Route::rule('outlet/article/latest', 'api/outlet.Article/latest', 'get|post');
-    Route::rule('outlet/article/hottest', 'api/outlet.Article/hottest', 'get|post');
+    Route::rule('outlet/article/timeline', 'api/outlet.Article/timeline', 'post');
+    Route::rule('outlet/article/top', 'api/outlet.Article/top', 'post');
+    Route::rule('outlet/article/latest', 'api/outlet.Article/latest', 'post');
+    Route::rule('outlet/article/hottest', 'api/outlet.Article/hottest', 'post');
     Route::rule('outlet/article/:aid', 'api/outlet.Article/query', 'get');
     Route::rule('outlet/article/comments', 'api/outlet.Article/comments', 'post');
     Route::rule('outlet/article/related', 'api/outlet.Article/related', 'post');
+    Route::rule('outlet/article/search', 'api/outlet.Article/search', 'post');
+    Route::rule('outlet/brand/:aid', 'api/outlet.Article/queryBrand', 'get');
+
+    //文件下载
+    Route::rule('outlet/file/list', 'api/outlet.File/list', 'post');
+
+    //用户接口
+    Route::rule('outlet/ucenter/getInfo', 'api/outlet.Ucenter/getInfo', 'get');
+    Route::rule('outlet/ucenter/editProfile', 'api/outlet.Ucenter/editProfile', 'post');
+
     /***********************outlet 对外接口 end ************************* */
 
     // 定义miss路由

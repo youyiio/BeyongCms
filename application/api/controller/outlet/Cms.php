@@ -2,6 +2,7 @@
 
 namespace app\api\controller\outlet;
 
+use app\api\middleware\JWTOptionalCheck;
 use app\common\model\cms\CategoryModel;
 use app\common\model\cms\LinkModel;
 use app\common\library\ResultCode;
@@ -11,6 +12,10 @@ use think\Validate;
 
 class Cms extends Base
 {
+    protected $middleware = [
+        JWTOptionalCheck::class
+    ];
+
     //查询分类列表
     public function categoryList()
     {
