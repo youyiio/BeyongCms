@@ -1,4 +1,5 @@
 <?php
+
 namespace app\admin\controller;
 
 use app\common\model\cms\ArticleMetaModel;
@@ -6,12 +7,13 @@ use app\common\model\cms\CommentModel;
 use app\common\model\MessageModel;
 use app\common\model\UserModel;
 use app\common\model\cms\ArticleModel;
+use app\common\model\cms\ArticleViewModel;
 use app\common\model\cms\CategoryModel;
 use think\facade\Cookie;
 
 /**
-* 文章控制器
-*/
+ * 文章控制器
+ */
 class Article extends Base
 {
     //文章列表
@@ -35,11 +37,11 @@ class Article extends Base
 
             //$ArticleModel = ArticleModel::has('CategoryArticle', [['category_id','in',$childCateIds]]);
             $fields = 'ArticleModel.id,title,thumb_image_id,post_time,update_time,create_time,is_top,status,read_count,sort';
-            $ArticleModel = ArticleModel::hasWhere('CategoryArticle', [['category_id','in',$childCateIds]], $fields)->group([]); //hack:group用于清理hasmany默认加group key
+            $ArticleModel = ArticleModel::hasWhere('CategoryArticle', [['category_id', 'in', $childCateIds]], $fields)->group([]); //hack:group用于清理hasmany默认加group key
         }
 
         //文章状态
-        $status = input('param.status','');
+        $status = input('param.status', '');
         if ($status !== '') {
             $where[] = ['status', '=', $status];
         }
@@ -63,7 +65,7 @@ class Article extends Base
         ];
 
         $sortedFields = ['post_time' => '', 'create_time' => ''];
-        $field =input('field');
+        $field = input('field');
         $sort = input('sort');
         if ($field && $sort) {
             unset($orders['sort']);
@@ -169,7 +171,7 @@ class Article extends Base
 
         //分类列表
         $CategoryModel = new CategoryModel();
-        $categoryList = $CategoryModel->getTreeData('tree','sort,id', 'title');
+        $categoryList = $CategoryModel->getTreeData('tree', 'sort,id', 'title');
         $this->assign('categoryList', $categoryList);
 
         //记录上一级来源，方便回跳; 优先redirect参数传递
@@ -183,7 +185,7 @@ class Article extends Base
     //查看文章
     public function viewArticle($id)
     {
-        $article = ArticleModel::get(['id'=>$id]);
+        $article = ArticleModel::get(['id' => $id]);
         if (empty($article)) {
             $this->error('文章不存在');
         }
@@ -316,7 +318,7 @@ class Article extends Base
     //文章初审
     public function auditFirst($id = 0, $pass = 1)
     {
-        $article = ArticleModel::get(['id'=>$id]);
+        $article = ArticleModel::get(['id' => $id]);
         if (empty($article)) {
             $this->error('文章不存在');
         }
@@ -342,7 +344,7 @@ class Article extends Base
     //文章终审
     public function auditSecond($id = 0, $pass = 1)
     {
-        $article = ArticleModel::get(['id'=>$id]);
+        $article = ArticleModel::get(['id' => $id]);
         if (empty($article)) {
             $this->error('文章不存在');
         }
@@ -388,7 +390,7 @@ class Article extends Base
 
         //文章分类列表
         $CategoryModel = new CategoryModel();
-        $categorys = $CategoryModel->getTreeData('tree','sort,id', 'title');
+        $categorys = $CategoryModel->getTreeData('tree', 'sort,id', 'title');
         $this->assign('categorys', $categorys);
 
         return $this->fetch('batchCategory');
@@ -444,7 +446,7 @@ class Article extends Base
         $startTime = input('param.startTime');
         $endTime = input('param.endTime');
         if (!(isset($startTime) && isset($endTime))) {
-            $startTime  = date('Y-m-d',strtotime('-7 day'));
+            $startTime  = date('Y-m-d', strtotime('-7 day'));
             $endTime   = date('Y-m-d');
         }
 
@@ -452,15 +454,16 @@ class Article extends Base
         $endDatetime = date('Y-m-d 23:59:59', strtotime($endTime));
 
         $where = [
-            ['update_time', 'between', [$startDatetime, $endDatetime]]
+            ['view_time', 'between', [$startDatetime, $endDatetime]]
         ];
 
         $pageConfig = [
             'type' => '\\app\\common\\paginator\\BootstrapTable',
         ];
 
-        $ArticleMetaModel = new ArticleMetaModel();
-        $list = $ArticleMetaModel->where(['article_id' => $id, 'meta_key' => 'read_ip'])->where($where)->order('update_time desc')->paginate(15, false, $pageConfig);
+        // TODO 修改成 article_view
+        $ArticleViewModel = new ArticleViewModel();
+        $list = $ArticleViewModel->where(['article_id' => $id])->where($where)->order('id desc')->paginate(15, false, $pageConfig);
         $startTimestamp = strtotime($startTime);
         $endTimestamp = strtotime($endTime);
 
@@ -474,7 +477,6 @@ class Article extends Base
         $this->assign('pages', $list->render());
 
         return $this->fetch('article/articleStat');
-
     }
 
     //文章访问统计图
@@ -485,9 +487,9 @@ class Article extends Base
             $this->error('文章不存在');
         }
 
-        $option =[
-            'xAxis'=> ['data'=>[]],
-            'series'=> [['data'=>[]]],
+        $option = [
+            'xAxis' => ['data' => []],
+            'series' => [['data' => []]],
         ];
 
         $where = [];
@@ -495,13 +497,13 @@ class Article extends Base
         $endTime = input('param.end');
 
         $ArticleMetaModel = new ArticleMetaModel();
-        for ($i = $startTime ; $i <= $endTime; $i += (24*3600)) {
-            $day = date('m-d',$i);
-            $beginTime = mktime(0, 0, 0, date('m',$i), date('d',$i), date('Y',$i));
-            $endTime = mktime(23, 59, 59, date('m',$i), date('d',$i), date('Y',$i));
+        for ($i = $startTime; $i <= $endTime; $i += (24 * 3600)) {
+            $day = date('m-d', $i);
+            $beginTime = mktime(0, 0, 0, date('m', $i), date('d', $i), date('Y', $i));
+            $endTime = mktime(23, 59, 59, date('m', $i), date('d', $i), date('Y', $i));
 
             unset($where);
-            $where[] = ['update_time','between', [date_time($beginTime), date_time($endTime)]];
+            $where[] = ['update_time', 'between', [date_time($beginTime), date_time($endTime)]];
             $inquiryCount = $ArticleMetaModel->where(['article_id' => $id, 'meta_key' => 'read_ip'])->where($where)->count();
 
             array_push($option['xAxis']['data'], $day);
