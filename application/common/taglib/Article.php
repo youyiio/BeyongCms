@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by VSCode.
  * User: cattong
@@ -24,6 +25,7 @@ class Article extends TagLib
         'prev'  => ['attr' => 'aid,cid,cname,id,assign', 'close' => true], //下一篇文章标签
         'next'  => ['attr' => 'aid,cid,cname,id,assign', 'close' => true], //上一篇文章标签
         'list'   => ['attr' => 'cid,cname,cache,page-size,id,assign', 'close' => true], //文章列表标签
+        'timeline' => ['attr' => 'cid,cname,cache,page-size,id,assign', 'close' => true], //文章时间线列表标签
         'search'  => ['attr' => 'cid,keyword,page-size,id,assign', 'close' => true], //搜索文章列表标签
         'hotlist' => ['attr' => 'cid,cname,cache,limit,id', 'close' => true], //热门文章列表标签
         'latestlist' => ['attr' => 'cid,cname,cache,limit,id', 'close' => true], //最新文章列表标签
@@ -173,7 +175,7 @@ class Article extends TagLib
     }
 
     /**
-     * 查询文章列表，
+     * 查询文章列表，关注置顶
      * {article:list cid='' cache='true' limit='10' id='vo'} {/article:list}
      * @param $tag
      * @param $content
@@ -184,7 +186,7 @@ class Article extends TagLib
         $cid = empty($tag['cid']) ? 0 : $tag['cid'];
         $cname = empty($tag['cname']) ? '' : $tag['cname'];
         $defaultCache = 10 * 60;
-        $cache = empty($tag['cache']) ? $defaultCache : (strtolower($tag['cache'] =='true')? $defaultCache:intval($tag['cache']));
+        $cache = empty($tag['cache']) ? $defaultCache : (strtolower($tag['cache'] == 'true') ? $defaultCache : intval($tag['cache']));
         $pageSize = empty($tag['page-size']) ? 10 : $tag['page-size'];
         $assign = empty($tag['assign']) ? $this->_randVarName(10) : $tag['assign'];
         $id = empty($tag['id']) ? '_id' : $tag['id'];
@@ -214,6 +216,78 @@ class Article extends TagLib
         $parse .= "  \$where[] = ['status', '=', \app\common\model\cms\ArticleModel::STATUS_PUBLISHED];";
         $parse .= "  \$field = 'id,title,description,author,thumb_image_id,post_time,read_count,comment_count';";
         $parse .= "  \$order = 'sort desc,post_time desc';";
+        $parse .= "  if ($cache) { ";
+        $parse .= "    $internalList = cache(\$cacheMark); ";
+        $parse .= "  } ";
+        $parse .= "  if (empty($internalList)) { ";
+        $parse .= "    if ($internalCid) { ";
+        $parse .= "      \$childs = \app\common\model\cms\CategoryModel::getChild($internalCid);";
+        $parse .= "      \$cids = \$childs['ids'];";
+        $parse .= "      array_push(\$cids, $internalCid);";
+        $parse .= "      \$field = 'cms_article.id,title,description,author,thumb_image_id,post_time,read_count,comment_count';";
+        $parse .= "      $internalList = \app\common\model\cms\ArticleModel::hasWhere('CategoryArticle', [['category_id','in',\$cids]], \$field)->where(\$where)->field(\$field)->order(\$order)->paginate($pageSize,false,['query'=>input('param.')]);";
+        $parse .= "    } else { ";
+        $parse .= "      \$ArticleModel = new \app\common\model\cms\ArticleModel();";
+        $parse .= "      $internalList = \$ArticleModel->where(\$where)->field(\$field)->order(\$order)->paginate($pageSize,false,['query'=>input('param.')]);";
+        $parse .= "    } ";
+        $parse .= "    if ($cache) {";
+        $parse .= "      cache(\$cacheMark, $internalList, $cache);";
+        $parse .= "    }";
+        $parse .= "  } ";
+
+        $parse .= "  $assign = $internalList;";
+        $parse .= "  ?> ";
+        $parse .= "  {volist name='$internalList' id='$id'}";
+        $parse .= $content;
+        $parse .= "  {/volist}";
+
+        return $parse;
+    }
+
+    /**
+     * 查询文章列表，只关注时间线，不关注置顶
+     * {article:timeline cid='' cache='true' reverse="true" limit='10' id='vo'} {/article:list}
+     * @param $tag
+     * @param $content
+     * @return string
+     */
+    public function tagTimeline($tag, $content)
+    {
+        $cid = empty($tag['cid']) ? 0 : $tag['cid'];
+        $cname = empty($tag['cname']) ? '' : $tag['cname'];
+        $defaultCache = 10 * 60;
+        $cache = empty($tag['cache']) ? $defaultCache : (strtolower($tag['cache'] == 'true') ? $defaultCache : intval($tag['cache']));
+        $pageSize = !empty($tag['page-size']) ? $tag['page-size'] : ($tag['limit'] ?? 10);
+        $reverse = empty($tag['reverse']) ? 'true' : 'false';
+        $assign = empty($tag['assign']) ? $this->_randVarName(10) : $tag['assign'];
+        $id = empty($tag['id']) ? '_id' : $tag['id'];
+
+        //作用绑定上下文变量，以':'开头调用函数；以'$'解析为值；非'$'开头的字符串中解析为变量名表达式；
+        $cid = $this->autoBuildVar($cid);
+        //$cname = $this->autoBuildVar($cname);dump($cname);die('dd');
+        $pageSize = $this->autoBuildVar($pageSize);
+        $reverse    = $this->autoBuildVar($reverse);
+        $assign = $this->autoBuildVar($assign);
+
+        //标签内局部变量
+        $internalList = '$_list_' . $this->_randVarName(10);
+        $internalCid = '$_cid_' . $this->_randVarName(10);
+        $internalCname = '$_cname_' . $this->_randVarName(10);
+
+        $parse  = "<?php ";
+        $parse .= "  \$page = input('page/d', 1); ";
+        $parse .= "  $internalCid = $cid; ";
+        $parse .= "  $internalCname = \"$cname\";";
+        $parse .= "  $internalList = [];";
+        $parse .= "  if (empty($internalCid) && !empty($internalCname)) {";
+        $parse .= "    \$internalCategory = \app\common\model\cms\CategoryModel::where(['name'=>$internalCname])->find();";
+        $parse .= "    if (!empty(\$internalCategory)) { $internalCid = \$internalCategory['id'];} else { $internalCid = -1;}";
+        $parse .= "  }";
+        $parse .= "  \$cacheMark = 'index_category_' . $internalCid . '_' . $pageSize . '_' . \$page;";
+        $parse .= "  \$where = [];";
+        $parse .= "  \$where[] = ['status', '=', \app\common\model\cms\ArticleModel::STATUS_PUBLISHED];";
+        $parse .= "  \$field = 'id,title,description,author,thumb_image_id,post_time,read_count,comment_count';";
+        $parse .= "  \$order = $reverse == 'true' ? 'post_time desc' : 'post_time asc';";
         $parse .= "  if ($cache) { ";
         $parse .= "    $internalList = cache(\$cacheMark); ";
         $parse .= "  } ";
@@ -305,7 +379,7 @@ class Article extends TagLib
         $cid = empty($tag['cid']) ? 0 : $tag['cid'];
         $cname = empty($tag['cname']) ? '' : $tag['cname'];
         $defaultCache = 10 * 60;
-        $cache = empty($tag['cache']) ? $defaultCache : (strtolower($tag['cache']=='true')? $defaultCache:intval($tag['cache']));
+        $cache = empty($tag['cache']) ? $defaultCache : (strtolower($tag['cache'] == 'true') ? $defaultCache : intval($tag['cache']));
         $limit = empty($tag['limit']) ? 10 : $tag['limit'];
         $id = empty($tag['id']) ? '_id' : $tag['id'];
 
@@ -371,7 +445,7 @@ class Article extends TagLib
         $cid = empty($tag['cid']) ? 0 : $tag['cid'];
         $cname = empty($tag['cname']) ? '' : $tag['cname'];
         $defaultCache = 10 * 60;
-        $cache = empty($tag['cache']) ? $defaultCache : (strtolower($tag['cache']=='true')? $defaultCache:intval($tag['cache']));
+        $cache = empty($tag['cache']) ? $defaultCache : (strtolower($tag['cache'] == 'true') ? $defaultCache : intval($tag['cache']));
         $limit = empty($tag['limit']) ? 10 : $tag['limit'];
         $id = empty($tag['id']) ? '_id' : $tag['id'];
 
@@ -436,7 +510,7 @@ class Article extends TagLib
         $cid = empty($tag['cid']) ? 0 : $tag['cid'];
         $cname = empty($tag['cname']) ? '' : $tag['cname'];
         $defaultCache = 10 * 60;
-        $cache = empty($tag['cache']) ? $defaultCache : (strtolower($tag['cache']=='true')? $defaultCache:intval($tag['cache']));
+        $cache = empty($tag['cache']) ? $defaultCache : (strtolower($tag['cache'] == 'true') ? $defaultCache : intval($tag['cache']));
         $limit = empty($tag['limit']) ? 10 : $tag['limit'];
         $id = empty($tag['id']) ? '_id' : $tag['id'];
 
@@ -520,7 +594,7 @@ class Article extends TagLib
         $cid = empty($tag['cid']) ? 0 : $tag['cid'];
         $cname = empty($tag['cname']) ? '' : $tag['cname'];
         $defaultCache = 10 * 60;
-        $cache = empty($tag['cache']) ? $defaultCache : (strtolower($tag['cache']=='true')? $defaultCache:intval($tag['cache']));
+        $cache = empty($tag['cache']) ? $defaultCache : (strtolower($tag['cache'] == 'true') ? $defaultCache : intval($tag['cache']));
         $limit = empty($tag['limit']) ? 10 : $tag['limit'];
         $id = empty($tag['id']) ? '_id' : $tag['id'];
 
@@ -576,7 +650,7 @@ class Article extends TagLib
         $pattern = '1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLOMNOPQRSTUVWXYZ_';    //字符池
         $key = '';
         $count = strlen($pattern);
-        for($i = 0; $i < $length; $i++) {
+        for ($i = 0; $i < $length; $i++) {
             if ($i == 0) {
                 $key .= $pattern[mt_rand(10, $count - 1)];
             } else {
