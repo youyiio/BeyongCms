@@ -21,7 +21,7 @@ BeyongCms系统基于ThinkPHP5.1框架的轻量级内容管理系统，适用于
  + 阿里云和七牛云OSS支持
  + 支持文章全文检索(开发中，支持ElasticSearch)
  
-支持官网: https://www.beyongcms.com
+帮助文档: https://www.365table.com/beyongcms
 交流QQ群1： 60916041
 
 > ThinkPHP5.1的运行环境要求PHP7.0及以上。
@@ -29,8 +29,7 @@ BeyongCms系统基于ThinkPHP5.1框架的轻量级内容管理系统，适用于
 ##软件架构
 
 系统支持Linux/Window/Mac OS三大平台；
-软件架构采用nginx/apache + PHP + Mysql(MariaDB) [+redis] 的经典WEB架构，因为简单易于理解，且方便部署，门槛低；
-理论上可支持SQL server, Oracle, Postgre SQL, MongoDB等，但未经充分测试。
+软件架构采用nginx/apache + PHP + Mysql(MariaDB) [+redis] 的经典WEB架构，因为简单易于理解，且方便部署，门槛低。
 
 ## 安装教程
 

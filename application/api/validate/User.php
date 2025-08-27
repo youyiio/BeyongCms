@@ -24,7 +24,7 @@ class User extends Validate
         'born'       => ['date'],
         'qq'         => ['regex' => '/^[1-9][0-9]{5,}$/'],
         'weixin'     => ['regex' => '/^[a-zA-Z][a-zA-Z\d_-]{5,19}$/'],
-        'mobile'     => ['require', 'regex' => '/^((13[0-9])|(14[5,7])|(15[0-3,5-9])|16[6]|(17[0,3,5-8])|(18[0-9])|19[89])\d{8}$/'],
+        'mobile'     => ['require', 'regex' => '/^1\d{10}/'],
         'phone'      => ['regex' => '/^(\d{3,4}-)?\d{7,8}$/'],
         'headUrl'    => ['regex' => '/\.(png|jpg|gif|jpeg|webp)$/'],
         'website'    => ['url'],
