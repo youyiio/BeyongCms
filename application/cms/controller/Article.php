@@ -15,9 +15,26 @@ use think\helper\Time;
 class Article extends Base
 {
 
+    // 定义前置操作方法列表
+    protected $beforeActionList = [
+        'checkHttpReferer' => ['except' => 'viewArticle'],
+    ];
+
     public function initialize()
     {
         parent::initialize();
+    }
+
+    protected function checkHttpReferer()
+    {
+        $referer = $this->request->header('Referer');
+        //$referer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : "";
+        // 输出：https://www.yourdomain.com
+        $domain = $this->request->domain();
+        if (strpos($referer, $domain) === false) {
+            $this->redirect($domain);
+            die('invalid');
+        }
     }
 
     /**
