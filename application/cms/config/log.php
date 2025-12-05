@@ -19,7 +19,7 @@ return [
     // 日志保存目录
     'path'  => think\facade\Env::get('runtime_path') . 'log' . DIRECTORY_SEPARATOR . 'frontend' . DIRECTORY_SEPARATOR,
     // 日志记录级别
-    'level' => ['error', 'notice', 'info', 'log', 'debug'],
+    'level' => ['error', 'notice', 'info', 'log', 'debug', 'sql'],
     //独立日志
-    'apart_level'   =>  ['error'],
+    'apart_level'   =>  ['error', 'sql'],
 ];
