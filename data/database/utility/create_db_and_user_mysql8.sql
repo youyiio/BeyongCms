@@ -6,6 +6,13 @@ create database cmsdb DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 #mysql8默认使用caching_sha2_password加密插件(php7.4及以上支持)，php7.4以下只支持mysql_native_password以支付旧版
 create user 'cmsdba'@'%' IDENTIFIED WITH mysql_native_password BY '' PASSWORD EXPIRE NEVER;
 
+grant
+    all privileges
+on
+    cmsdb.*
+To
+    'cmsdba'@'%';
+#或者精细化权限分配       
 grant 
     create, drop,  grant   option, alter,
     delete, index, select, insert, update,

@@ -1,6 +1,6 @@
 <?php
 
-namespace app\api\controller\app;
+namespace app\api\controller\outlet;
 
 use app\api\controller\Base;
 use app\api\middleware\JWTCheck;
@@ -198,7 +198,7 @@ class Article
         }
 
         //文章分类
-        $data = $art->categorys()->select();
+        $data = $art->categorys;
         $categorys = [];
         if (!empty($data)) {
             foreach ($data as $val) {

@@ -65,6 +65,8 @@ class JWTCheck
         }
 
         //session('jwt_payload_data', $payload->data);
+        $request->user_info = $payload->data;
+
         return $next($request);
     }
 }
