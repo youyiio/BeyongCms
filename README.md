@@ -16,15 +16,14 @@ BeyongCms系统基于ThinkPHP5.1框架的轻量级内容管理系统，适用于
  + 站长特性支持，友链管理，Sitemap地图，收录检测，相关推荐，热门推荐等
  + 默认Composer第三方库支持，PHPQuery,think-queue
  + Phpspreadsheet支持数据报表导出
- + Swoole和Swoole协程支持
  + 针对App及小程序的api优化
- + 阿里云和七牛云OSS支持
+ + 阿里云和腾讯云OSS支持
  + 支持文章全文检索(开发中，支持ElasticSearch)
  
 帮助文档: https://www.365table.com/beyongcms
 交流QQ群1： 60916041
 
-> ThinkPHP5.1的运行环境要求PHP7.0及以上。
+> ThinkPHP8.1的运行环境要求PHP8.0及以上。
 
 ##软件架构
 
@@ -124,13 +123,6 @@ Linux下
 >sh start_queue.sh
 >sh start_timer.bat
 
-### Swoole模式的启动方式
-
-Window下
->start_swoole.bat
-
-Linux下
->start_swoole.sh 
 
 
 系统的目录结构如下：
