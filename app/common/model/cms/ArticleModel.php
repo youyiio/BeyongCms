@@ -31,9 +31,9 @@ class ArticleModel extends BaseModel
     protected $update = ['update_time'];
 
     //静态初始化时，依赖注入事件
-    public static function init()
-    {
-    }
+    // public static function init()
+    // {
+    // }
 
     //AfterInsert事件后：计算文章相似度，article_a_id > article_b_id
     public static function onAfterInsert($article)

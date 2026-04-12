@@ -90,6 +90,12 @@ BeyongCms系统基于ThinkPHP5.1框架的轻量级内容管理系统，适用于
 
 > composer update
 
+测试运行
+
+php think run
+
+即可访问 http://127.0.0.1:8000
+
 ### 自动安装引导
 
 删除data/install.lock文件，如果存在的话；

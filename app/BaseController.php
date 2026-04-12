@@ -2,11 +2,9 @@
 
 declare(strict_types=1);
 
-namespace app\common\controller;
+namespace app;
 
 use think\App;
-
-use think\exception\HttpResponseException;
 use think\exception\ValidateException;
 use think\Validate;
 
@@ -14,13 +12,11 @@ use think\Response;
 use think\facade\View;
 use think\facade\Route;
 
-
 /**
  * 控制器基础类
  */
 abstract class BaseController
 {
-
     /**
      * Request实例
      * @var \think\Request
