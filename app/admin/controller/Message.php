@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by VSCode.
  * User: Administrator
@@ -69,7 +70,7 @@ class Message extends Base
             $data['mailMsg'] = $mailMsg;
             $data['totalMsgCount'] = $commentMsgCount + $systemMsgCount + $mailMsgCount;
 
-            $this->success('ok', '', $data);
+            return $this->success('ok', '', $data);
         }
     }
 }

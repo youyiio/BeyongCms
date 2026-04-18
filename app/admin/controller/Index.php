@@ -145,7 +145,7 @@ class Index extends Base
 
         $option->series([$chart]);
 
-        $this->success('ok', '', $option);
+        return $this->success('ok', '', $option);
     }
 
     public function month()
@@ -178,7 +178,7 @@ class Index extends Base
 
         $option->series([$chart]);
 
-        $this->success('ok', '', $option);
+        return $this->success('ok', '', $option);
     }
 
     public function year()
@@ -211,6 +211,6 @@ class Index extends Base
 
         $option->series([$chart]);
 
-        $this->success('ok', '', $option);
+        return $this->success('ok', '', $option);
     }
 }

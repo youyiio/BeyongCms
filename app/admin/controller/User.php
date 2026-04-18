@@ -75,7 +75,7 @@ class User extends Base
             $email = input('post.email/s');
             $password = input('post.password/s');
             if (!validate('User')->scene('add')->check(input('post.'))) {
-                $this->error(validate('User')->getError());
+                return $this->error(validate('User')->getError());
             }
             $userModel = new UserModel();
             $user = $userModel->createUser($mobile, $password, $nickname, $email);
@@ -93,9 +93,9 @@ class User extends Base
                     $UserRoleModel = new UserRoleModel();
                     $UserRoleModel->insertAll($group);
                 }
-                $this->success('成功新增用户', url('User/index'));
+                return $this->success('成功新增用户', url('User/index'));
             } else {
-                $this->error($userModel->getError());
+                return $this->error($userModel->getError());
             }
         }
 
@@ -118,7 +118,7 @@ class User extends Base
             $validate = validate('User');
             $check = $validate->scene('edit')->check($data);
             if ($check !== true) {
-                $this->error($validate->getError());
+                return $this->error($validate->getError());
             }
 
             // 修改权限
@@ -140,15 +140,15 @@ class User extends Base
             $res = $userModel->editUser($uid, $data);
 
             if ($res !== false) {
-                $this->success('成功修改', url('User/index'));
+                return $this->success('成功修改', url('User/index'));
             } else {
-                $this->error($userModel->getError());
+                return $this->error($userModel->getError());
             }
         }
 
         $uid = input('param.uid', 0);
         if ($uid == 0) {
-            $this->error('参数错误');
+            return $this->error('参数错误');
         }
 
         $user = UserModel::find($uid);
@@ -170,14 +170,14 @@ class User extends Base
     {
         $uid = input('uid/d', 0);
         if ($uid == 0) {
-            $this->error('参数错误');
+            return $this->error('参数错误');
         }
 
-        $res = UserModel::where('id', $uid)->setField('status', UserModel::STATUS_DELETED);
+        $res = UserModel::where('id', $uid)->update(['status' => UserModel::STATUS_DELETED]);
         if ($res) {
-            $this->success('成功删除用户');
+            return $this->success('成功删除用户');
         } else {
-            $this->success('删除失败');
+            return $this->success('删除失败');
         }
     }
 
@@ -186,7 +186,7 @@ class User extends Base
     {
         $uid = input('uid/d', 0);
         if ($uid == 0) {
-            $this->error('参数错误');
+            return $this->error('参数错误');
         }
 
         $userModel = new UserModel();
@@ -212,7 +212,7 @@ class User extends Base
     {
         $uid = input('uid/d');
         if ($uid === 1) {
-            $this->error('super admin error!');
+            return $this->error('super admin error!');
         }
 
         if (request()->isAjax()) {
@@ -223,21 +223,21 @@ class User extends Base
                 $data['newRePwd'] = $newPwd;
             }
             if (!validate('User')->scene('changePwd')->check($data)) {
-                $this->error(validate('User')->getError());
+                return $this->error(validate('User')->getError());
             }
 
             $UserModel = new UserModel();
             $res = $UserModel->modifyPassword($uid, $newPwd);
             if ($res) {
-                $this->success('成功修改密码');
+                return $this->success('成功修改密码');
             } else {
-                $this->error('密码修改失败');
+                return $this->error('密码修改失败');
             }
         }
 
         $user = UserModel::find($uid);
         if (!$user) {
-            $this->error('用户不存在');
+            return $this->error('用户不存在');
         }
         $this->assign('uid', $uid);
         $this->assign('user', $user);
@@ -250,15 +250,15 @@ class User extends Base
     {
         $uid = input('uid/d', 0);
         if ($uid == 0) {
-            $this->error('参数uid错误');
+            return $this->error('参数uid错误');
         }
 
         $UserModel = new UserModel();
-        $res = $UserModel->where('id', $uid)->where('status', UserModel::STATUS_ACTIVED)->setField('status', UserModel::STATUS_FREEZED);
+        $res = $UserModel->where('id', $uid)->where('status', UserModel::STATUS_ACTIVED)->update(['status' => UserModel::STATUS_FREEZED]);
         if ($res) {
-            $this->success('操作成功');
+            return $this->success('操作成功');
         } else {
-            $this->error('操作失败');
+            return $this->error('操作失败');
         }
     }
 
@@ -267,14 +267,14 @@ class User extends Base
     {
         $uid = input('uid/d', 0);
         if ($uid == 0) {
-            $this->error('参数uid错误');
+            return $this->error('参数uid错误');
         }
         $UserModel = new UserModel();
-        $res = $UserModel->where('id', $uid)->setField('status', UserModel::STATUS_ACTIVED);
+        $res = $UserModel->where('id', $uid)->update(['status' => UserModel::STATUS_ACTIVED]);
         if ($res) {
-            $this->success('操作成功');
+            return $this->success('操作成功');
         } else {
-            $this->error('操作失败');
+            return $this->error('操作失败');
         }
     }
 
@@ -367,7 +367,7 @@ class User extends Base
 
         $option->series([$chart]);
 
-        $this->success('success', '', $option);
+        return $this->success('success', '', $option);
     }
 
     //开通vip会员N天操作
@@ -391,7 +391,7 @@ class User extends Base
         $user->meta('is_vip', 1);
         $user->meta('vip_to_date', $vipToDate);
 
-        $this->success('操作成功');
+        return $this->success('操作成功');
     }
 
     //给用户发送邮件
@@ -400,7 +400,7 @@ class User extends Base
         $data = input('post.');
         $check = $this->validate($data, ['uid' => 'require|gt:0', 'title' => 'require', 'content' => 'require']);
         if ($check !== true) {
-            $this->error($check);
+            return $this->error($check);
         }
 
         $uid = input('post.uid/d');
@@ -411,9 +411,9 @@ class User extends Base
         $toUser = $UserModel->where('id', $uid)->value('email');
         $res = send_mail($toUser, $title, $content);
         if ($res) {
-            $this->success('邮件已发送');
+            return $this->success('邮件已发送');
         } else {
-            $this->error('邮件发送失败');
+            return $this->error('邮件发送失败');
         }
     }
 
@@ -422,7 +422,7 @@ class User extends Base
     {
         $check = $this->validate(input('post.'), ['uid' => 'require|gt:0', 'title' => 'require', 'content' => 'require']);
         if ($check !== true) {
-            $this->error($check);
+            return $this->error($check);
         }
 
         $uid = input('post.uid/d');
@@ -433,9 +433,9 @@ class User extends Base
         $messageLogic = new MessageLogic();
         $res = $messageLogic->createMessage($uid, MessageModel::TYPE_SYSTEM, $title, $content, $extra);
         if ($res) {
-            $this->success('消息已推送');
+            return $this->success('消息已推送');
         } else {
-            $this->error('消息推送失败');
+            return $this->error('消息推送失败');
         }
     }
 }

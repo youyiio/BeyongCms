@@ -26,13 +26,13 @@ class System extends Base
             $ConfigModel = new ConfigModel();
             foreach ($data as $k => $v) {
                 if ($ConfigModel->where('name', $k)->select()) {
-                    $ConfigModel->where('name', $k)->setField('value', $v);
+                    $ConfigModel->where('name', $k)->update(['value' => $v]);
                 } else {
                     $ConfigModel->save(['name' => $k, 'value' => $v]);
                 }
             }
             cache('config', null);
-            $this->success('设置成功');
+            return $this->success('设置成功');
         }
 
         //获取标签组
@@ -60,13 +60,13 @@ class System extends Base
             $ConfigModel = new ConfigModel();
             foreach ($data as $k => $v) {
                 if ($ConfigModel->where('name', $k)->select()) {
-                    $ConfigModel->where('name', $k)->setField('value', $v);
+                    $ConfigModel->where('name', $k)->update(['value' => $v]);
                 } else {
                     $ConfigModel->save(['name' => $k, 'value' => $v]);
                 }
             }
             cache('config', null);
-            $this->success('设置成功');
+            return $this->success('设置成功');
         }
 
         //获取标签组
@@ -88,21 +88,17 @@ class System extends Base
     {
         $res = send_mail("28897292@qq.com", "test", "test");
         if ($res) {
-            $this->success('邮件已发送');
+            return $this->success('邮件已发送');
         } else {
-            $this->error('邮件发送失败');
+            return $this->error('邮件发送失败');
         }
     }
 
     //短信测试
-    public function testSms()
-    {
-    }
+    public function testSms() {}
 
     //公众号测试
-    public function testMp()
-    {
-    }
+    public function testMp() {}
 
 
     //清理缓存
@@ -112,7 +108,7 @@ class System extends Base
             $types = input('types');
 
             if (count($types) <= 0) {
-                $this->error("请选择要清理的缓存！");
+                return $this->error("请选择要清理的缓存！");
             }
 
             $dir = new \beyong\commons\io\Dir(Env::get('runtime_path'));
@@ -144,7 +140,7 @@ class System extends Base
             }
 
 
-            $this->success("清除缓存成功！");
+            return $this->success("清除缓存成功！");
         }
 
         return view('clearCache');
@@ -167,7 +163,7 @@ class System extends Base
             $checked = input('post.checked', 'false');
             $link = LinkModel::find($id);
             if (!$link) {
-                $this->error('友链不存在!');
+                return $this->error('友链不存在!');
             }
 
             $msg = "";
@@ -181,7 +177,7 @@ class System extends Base
 
             $link->save();
 
-            $this->success($msg);
+            return $this->success($msg);
         }
 
         $LinkModel = new LinkModel();
@@ -204,12 +200,13 @@ class System extends Base
         }
 
         $LinkModel = new LinkModel();
-        $res = $LinkModel->allowField(true)->save($data);
+        //$res = $LinkModel->allowField(true)->save($data);
+        $res = $LinkModel->save($data);
         if ($res) {
             cache('links', null);
-            $this->success('添加成功');
+            return $this->success('添加成功');
         } else {
-            $this->error('添加失败');
+            return $this->error('添加失败');
         }
     }
 
@@ -227,9 +224,9 @@ class System extends Base
         $res = LinkModel::update($data);
         if ($res) {
             cache('links', null);
-            $this->success('修改成功');
+            return $this->success('修改成功');
         } else {
-            $this->error('修改失败');
+            return $this->error('修改失败');
         }
     }
 
@@ -239,10 +236,10 @@ class System extends Base
         $data = input('post.');
         $LinkModel = new LinkModel();
         foreach ($data as $k => $v) {
-            $LinkModel->where('id', $k)->setField('sort', $v);
+            $LinkModel->where('id', $k)->update(['sort' => $v]);
         }
         cache('links', null);
-        $this->success('成功排序');
+        return $this->success('成功排序');
     }
 
     //删除友链
@@ -253,9 +250,9 @@ class System extends Base
         $res = $LinkModel->where('id', $id)->delete();
         if ($res) {
             cache('links', null);
-            $this->success('删除成功');
+            return $this->success('删除成功');
         } else {
-            $this->error('删除失败');
+            return $this->error('删除失败');
         }
     }
 

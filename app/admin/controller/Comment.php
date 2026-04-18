@@ -58,11 +58,11 @@ class Comment extends Base
     {
         $com = CommentModel::find($id);
         if (empty($com)) {
-            $this->error('评论不存在');
+            return $this->error('评论不存在');
         }
 
         if ($com->status != CommentModel::STATUS_PUBLISHING) {
-            $this->error('评论审核未通过，无法发布');
+            return $this->error('评论审核未通过，无法发布');
         }
 
         if ($pass) {
@@ -73,9 +73,9 @@ class Comment extends Base
 
         $res = $com->save();
         if ($res !== false) {
-            $this->success('操作成功');
+            return $this->success('操作成功');
         } else {
-            $this->error('操作失败');
+            return $this->error('操作失败');
         }
     }
 
@@ -109,11 +109,11 @@ class Comment extends Base
             $CommentModel = new CommentModel();
             $result = $CommentModel->save($data);
             if (!$result) {
-                $this->error('回复失败');
+                return $this->error('回复失败');
             } elseif (stripos($_SERVER["HTTP_REFERER"], 'viewComments')) {
-                $this->success('回复成功', url("Comment/viewComments", ['id' => $pid]));
+                return $this->success('回复成功', url("Comment/viewComments", ['id' => $pid]));
             } else {
-                $this->success('回复成功', url('Comment/index'));
+                return $this->success('回复成功', url('Comment/index'));
             }
         }
 
@@ -128,10 +128,10 @@ class Comment extends Base
 
         $numRows = $CommentModel->where([['id', 'in', $ids]])->delete();
         if ($numRows  == count($ids)) {
-            $this->success('成功删除');
+            return $this->success('成功删除');
         } else {
             $fails = count($ids) - $numRows;
-            $this->error("成功删除 $numRows 条，失败 $fails 条!");
+            return $this->error("成功删除 $numRows 条，失败 $fails 条!");
         }
     }
 
@@ -141,7 +141,7 @@ class Comment extends Base
         $comment = CommentModel::find($id);
 
         if (empty($comment)) {
-            $this->error('评论不存在');
+            return $this->error('评论不存在');
         }
 
         $CommentModel = new CommentModel();

@@ -133,9 +133,9 @@ class Feedback extends Base
             //消息状态 已读 => 已回复
             $replyTime = date('Y-m-d H:i:s');
             FeedbackModel::update(['status' => FeedbackModel::STATUS_REPLY, 'reply_time' => $replyTime], ['feedback_id' => $replyFeedbackId]);
-            $this->success('回复成功', '', ['replyFeedbackId' => $replyFeedbackId]);
+            return $this->success('回复成功', '', ['replyFeedbackId' => $replyFeedbackId]);
         } else {
-            $this->error('回复失败');
+            return $this->error('回复失败');
         }
     }
 }

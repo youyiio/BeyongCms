@@ -41,9 +41,9 @@ class Ucenter extends Base
             $UserModel = new UserModel();
             $res = $UserModel->setProfile($uid, $nickname, '', '', $qq, $weixin);
             if (!$res) {
-                $this->error($UserModel->getError());
+                return $this->error($UserModel->getError());
             }
-            $this->success('修改成功');
+            return $this->success('修改成功');
         }
 
 
@@ -63,7 +63,7 @@ class Ucenter extends Base
             $validate = validate('User');
             $check = $validate->scene('modifyPassword')->check($data);
             if ($check !== true) {
-                $this->error($validate->getError());
+                return $this->error($validate->getError());
             }
 
             $oldPassword = input("param.password");
@@ -73,10 +73,10 @@ class Ucenter extends Base
             $userLogic = new UserLogic();
             $result = $userLogic->modifyPassword($userId, $oldPassword, $password);
             if (!$result) {
-                $this->error("出错了!");
+                return $this->error("出错了!");
             }
 
-            $this->success('成功修改密码', url('admin/Sign/logout'));
+            return $this->success('成功修改密码', url('admin/Sign/logout'));
         }
 
         return $this->fetch('password');

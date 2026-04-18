@@ -56,7 +56,7 @@ class Ad extends Base
             ];
             $check = $this->validate($data, $rule);
             if ($check !== true) {
-                $this->error($check);
+                return $this->error($check);
             }
 
             $AdModel = new AdModel();
@@ -68,9 +68,9 @@ class Ad extends Base
             $AdModel->adSlots()->attach($data['slot_ids'], $pivot);
 
             if ($rowsNum !== false) {
-                $this->success('成功新增广告', url('ad/index'));
+                return $this->success('成功新增广告', url('ad/index'));
             } else {
-                $this->error('新增失败');
+                return $this->error('新增失败');
             }
         }
 
@@ -96,7 +96,7 @@ class Ad extends Base
             ];
             $check = $this->validate($data, $rule);
             if ($check !== true) {
-                $this->error($check);
+                return $this->error($check);
             }
 
             $data['create_time'] = date_time();
@@ -110,15 +110,15 @@ class Ad extends Base
             $AdModel->adSlots()->attach($data['slot_ids'], $pivot);
 
             if ($rowsNum !== false) {
-                $this->success('成功修改广告', url('ad/index'));
+                return $this->success('成功修改广告', url('ad/index'));
             } else {
-                $this->error('修改失败');
+                return $this->error('修改失败');
             }
         }
 
         $ad = AdModel::find($adId);
         if (empty($ad)) {
-            $this->error('广告不存在');
+            return $this->error('广告不存在');
         }
         $this->assign('ad', $ad);
 
@@ -143,9 +143,9 @@ class Ad extends Base
     {
         $res = AdModel::destroy($adId);
         if ($res) {
-            $this->success('删除成功');
+            return $this->success('删除成功');
         } else {
-            $this->error('删除失败');
+            return $this->error('删除失败');
         }
     }
 
@@ -155,8 +155,8 @@ class Ad extends Base
         $data = input('post.');
         $AdModel = new AdModel();
         foreach ($data as $k => $v) {
-            $AdModel->where('id', $k)->setField('sort', $v);
+            $AdModel->where('id', $k)->update(['sort' => $v]);
         }
-        $this->success('成功排序');
+        return $this->success('成功排序');
     }
 }

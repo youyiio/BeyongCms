@@ -43,15 +43,15 @@ class Crawler extends Base
 
             $check = validate('Crawler')->scene('add')->check($data);
             if ($check !== true) {
-                $this->error(validate('Crawler')->getError());
+                return $this->error(validate('Crawler')->getError());
             }
 
             $CrawlerModel = new CrawlerModel();
             $res = $CrawlerModel->save($data);
             if ($res === true) {
-                $this->success('成功添加新规则', url('crawler/index'));
+                return $this->success('成功添加新规则', url('crawler/index'));
             } else {
-                $this->error($CrawlerModel->getError());
+                return $this->error($CrawlerModel->getError());
             }
         }
 
@@ -69,11 +69,11 @@ class Crawler extends Base
     {
         $id = input('param.id', 0);
         if (empty($id)) {
-            $this->error('参数错误');
+            return $this->error('参数错误');
         }
         $crawler = CrawlerModel::find($id);
         if (!$crawler) {
-            $this->error('采集规则不存在！');
+            return $this->error('采集规则不存在！');
         }
 
         if (request()->isAjax()) {
@@ -88,7 +88,7 @@ class Crawler extends Base
                 // 验证失败 输出错误信息
                 return ($e->getError());
             }
-            $this->success('规则修改成功！', 'Crawler/index');
+            return $this->success('规则修改成功！', 'Crawler/index');
         }
 
         $this->assign('crawler', $crawler);
@@ -129,14 +129,14 @@ class Crawler extends Base
 
         $check = validate('Crawler')->scene('test')->check($data);
         if ($check !== true) {
-            $this->error(validate('Crawler')->getError(), 'javascript:void(0)'); //不做跳转
+            return $this->error(validate('Crawler')->getError(), 'javascript:void(0)'); //不做跳转
         }
 
         try {
             $endPage = $isPaging ? $startPage : $endPage; //测试抓取时，分页只抓取一页的urls
             $urls = \app\admin\job\Crawler::crawlUrls($url, $articleUrl, $isPaging, $startPage, $endPage, $pagingUrl);
             if (empty($urls)) {
-                $this->error('未采集到文章网址', 'javascript:void(0)');
+                return $this->error('未采集到文章网址', 'javascript:void(0)');
             }
 
             $contentUrl = $urls[0];
@@ -145,7 +145,7 @@ class Crawler extends Base
             $this->assign('article', $result);
         } catch (\Exception $e) {
             $error = $e->getMessage();
-            $this->error($error, 'javascript:void(0)');
+            return $this->error($error, 'javascript:void(0)');
         }
 
         return $this->fetch('crawler/crawlTest');
@@ -158,7 +158,7 @@ class Crawler extends Base
         $crawler = CrawlerModel::find($id);
 
         if (!$crawler) {
-            $this->error('采集规则不存在');
+            return $this->error('采集规则不存在');
         }
 
         //更新采集状态
@@ -175,9 +175,9 @@ class Crawler extends Base
         $isPushed = Queue::later(10, $jobHandlerClass, $jobData, $jobQueue);
         // database 驱动时，返回值为 1|false; redis 驱动时，返回值为 随机字符串|false
         if ($isPushed !== false) {
-            $this->success('采集任务已经启动...');
+            return $this->success('采集任务已经启动...');
         } else {
-            $this->error('采集失败！');
+            return $this->error('采集失败！');
         }
     }
 
@@ -186,14 +186,14 @@ class Crawler extends Base
     {
         $cid = input('id/d', 0);
         if ($cid <= 0) {
-            $this->error('参数错误');
+            return $this->error('参数错误');
         }
 
-        $res = CrawlerModel::where('id', $cid)->setField('status', CrawlerModel::STATUS_DELETED);
+        $res = CrawlerModel::where('id', $cid)->update(['status' => CrawlerModel::STATUS_DELETED]);
         if ($res) {
-            $this->success('成功删除规则');
+            return $this->success('成功删除规则');
         } else {
-            $this->error('删除失败');
+            return $this->error('删除失败');
         }
     }
 
@@ -202,12 +202,12 @@ class Crawler extends Base
     {
         $cid = input('id/d', 0);
         if ($cid <= 0) {
-            $this->error('参数错误');
+            return $this->error('参数错误');
         }
 
         $crawler = CrawlerModel::find($cid);
         if (empty($crawler)) {
-            $this->error('采集规则不存在!');
+            return $this->error('采集规则不存在!');
         }
 
         $data = $crawler->toArray();
@@ -219,9 +219,9 @@ class Crawler extends Base
         $CrawlerModel = new CrawlerModel();
         $res = $CrawlerModel->save($data);
         if ($res) {
-            $this->success('克隆规则成功!');
+            return $this->success('克隆规则成功!');
         } else {
-            $this->error('克隆规则失败');
+            return $this->error('克隆规则失败');
         }
     }
 
@@ -239,11 +239,11 @@ class Crawler extends Base
 
         if (request()->isAjax()) {
             if ($crawlerId <= 0) {
-                $this->error('请选择采集规则!');
+                return $this->error('请选择采集规则!');
             }
 
             if (empty($searchText) || empty($replaceText)) {
-                $this->error('请输入替换规则!');
+                return $this->error('请输入替换规则!');
             }
 
             //判断是否正则表达式替换；TODO代码性能优化
@@ -285,7 +285,7 @@ class Crawler extends Base
                     }
                 }
 
-                $this->success('数据文本替换成功！');
+                return $this->success('数据文本替换成功！');
             } else {
                 $count = CrawlerMetaModel::where('target_id', '=', $crawlerId)->count('id');
                 if ($count > 100) {
@@ -323,7 +323,7 @@ class Crawler extends Base
                 }
 
 
-                $this->success('数据正则替换成功！');
+                return $this->success('数据正则替换成功！');
             }
         }
 
@@ -372,7 +372,7 @@ class Crawler extends Base
         if (request()->isAjax()) {
             $aids = input('aids', '[]');
             if ($crawlerId < 0 && empty($aids)) {
-                $this->error('请选择采集规则');
+                return $this->error('请选择采集规则');
             }
 
             $aids = json_decode($aids, true);
@@ -385,7 +385,7 @@ class Crawler extends Base
                 ];
                 $articles = ArticleModel::where($where)->field('id,status')->select();
                 if (count($articles) == 0) {
-                    $this->error('您选中的文章已入库，无需再入库!');
+                    return $this->error('您选中的文章已入库，无需再入库!');
                 }
 
                 $count = 0;
@@ -395,13 +395,13 @@ class Crawler extends Base
                     $count++;
                 }
 
-                $this->success('成功入库' . $count . '篇文章');
+                return $this->success('成功入库' . $count . '篇文章');
             } else {
                 $ArticleModel = new ArticleModel();
                 $fields = ['a.id,a.title,a.status,a.create_time'];
 
                 if ($crawlerId <= 0) {
-                    $this->error('请选择采集规则');
+                    return $this->error('请选择采集规则');
                 }
 
                 //查找未入库文章
@@ -416,7 +416,7 @@ class Crawler extends Base
                     $article->save();
                 }
 
-                $this->success('成功入库' . count($articles) . '篇文章');
+                return $this->success('成功入库' . count($articles) . '篇文章');
             }
         }
 
@@ -516,7 +516,7 @@ class Crawler extends Base
                 }
             }
 
-            $this->success("设定成功！");
+            return $this->success("设定成功！");
         }
 
 

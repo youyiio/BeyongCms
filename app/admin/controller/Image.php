@@ -3,8 +3,6 @@
 namespace app\admin\controller;
 
 use app\common\model\FileModel;
-use app\common\model\ImageModel;
-use app\common\model\UserModel;
 use think\facade\Env;
 
 /**
@@ -52,12 +50,12 @@ class Image extends Base
                 ]
             );
             if ($check !== true) {
-                $this->error($check);
+                return $this->error($check);
             }
 
             //文件验证&文件move操作
             if (!in_array($tmpFile->Extension(), ['jpg', 'gif', 'png', 'jpeg', 'bmp', 'ico', 'webp'])) {
-                $this->error('文件格式错误');
+                return $this->error('文件格式错误');
             }
 
             //保存目录
@@ -84,7 +82,7 @@ class Image extends Base
             ];
             if (get_config('oss_switch') === 'true') {
                 if (!class_exists('\think\oss\OSSContext')) {
-                    $this->error('您启用了OSS存储，却未安装 think-oss 组件，运行 > composer youyiio/think-oss 进行安装！');
+                    return $this->error('您启用了OSS存储，却未安装 think-oss 组件，运行 > composer youyiio/think-oss 进行安装！');
                 }
 
                 $vendor = get_config('oss_vendor');
@@ -108,7 +106,7 @@ class Image extends Base
         //图片裁剪
         $FileModel = FileModel::find($imageId);
         if (!$FileModel) {
-            $this->error('图片不存在');
+            return $this->error('图片不存在');
         }
 
         $thumbWidth = request()->param('thumbWidth/d', 0); //截取后缩略图的宽
@@ -136,7 +134,7 @@ class Image extends Base
         $file = new \SplFileInfo($realPath);
         $srcImage = \think\Image::open($file);
         if (!$srcImage) {
-            $this->error('读取图片文件失败!');
+            return $this->error('读取图片文件失败!');
         }
 
         //图片旋转

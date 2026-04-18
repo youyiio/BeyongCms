@@ -38,22 +38,22 @@ class Webmaster extends Base
             $zhanzhang_token = input("post.zhanzhang_token", '');
 
             $ConfigModel = new ConfigModel();
-            $ConfigModel->where('key', 'zhanzhang_site')->setField('value', $zhanzhang_site);
-            $ConfigModel->where('key', 'zhanzhang_token')->setField('value', $zhanzhang_token);
+            $ConfigModel->where('key', 'zhanzhang_site')->update(['value' => $zhanzhang_site]);
+            $ConfigModel->where('key', 'zhanzhang_token')->update(['value' => $zhanzhang_token]);
 
             cache('config', null);
 
-            $this->success('操作成功');
+            return $this->success('操作成功');
         } else if ($tab == 'push-urls') {
             $zhanzhang_site = get_config('zhanzhang_site', '');
             $zhanzhang_token = get_config('zhanzhang_token', '');
             if (empty($zhanzhang_site) || empty($zhanzhang_token)) {
-                $this->error("zhanzhang_site 或 zhanzhang_token  未配置！！！");
+                return $this->error("zhanzhang_site 或 zhanzhang_token  未配置！！！");
             }
 
             $urls = input("post.urls", '');
             if (empty($urls)) {
-                $this->error("urls地址不能为空!");
+                return $this->error("urls地址不能为空!");
             }
 
             $api = "http://data.zz.baidu.com/urls?site=$zhanzhang_site&token=$zhanzhang_token";
@@ -64,10 +64,10 @@ class Webmaster extends Base
             $res = json_decode($output, true);
             Log::info($res);
             if (isset($res['error'])) {
-                $this->error($res['message']);
+                return $this->error($res['message']);
             }
             if (isset($res['success'])) {
-                $this->success("操作成功, 成功 {$res['success']} 个");
+                return $this->success("操作成功, 成功 {$res['success']} 个");
             }
         }
     }
@@ -78,7 +78,7 @@ class Webmaster extends Base
 
         $data = $this->_sitemapInfo($pageSize);
 
-        $this->success("ok", null, $data);
+        return $this->success("ok", null, $data);
     }
 
     //sitemap xml生成工具
@@ -179,7 +179,7 @@ class Webmaster extends Base
         $costTime = millisecond() - $costTimeStart;
         $costTime = sprintf('%01.2f', $costTime);
 
-        $this->success("生成sitemap成功，用时 : $costTime (ms)");
+        return $this->success("生成sitemap成功，用时 : $costTime (ms)");
     }
 
     //下载sitemap.txt

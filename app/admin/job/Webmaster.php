@@ -141,7 +141,7 @@ class Webmaster
         } else if ($sp == 'sg') {
             return self::sogouSiteCmd($domain);
         } else {
-            //$this->error('未实现');
+            //return $this->error('未实现');
             return -1;
         }
     }
@@ -160,7 +160,7 @@ class Webmaster
             $check = preg_match($preg, $output, $arr);
         }
         if (!$check) {
-            //$this->error = '网站未被收录';
+            //return $this->error = '网站未被收录';
             return -1;
         }
         $sites = $arr[1];

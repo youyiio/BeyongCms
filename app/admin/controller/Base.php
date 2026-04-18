@@ -6,7 +6,6 @@ use app\api\library\RolePermission;
 use app\common\controller\BaseController;
 use app\common\model\MenuModel;
 use think\facade\Cache;
-use think\helper\Time;
 use app\common\model\UserModel;
 use think\facade\Config;
 use think\facade\View;
@@ -24,10 +23,11 @@ class Base extends BaseController
         $uid = session('uid');
         if (!$uid) {
             if (request()->isAjax()) {
-                $this->error('请重新登陆', '/' . app('http')->getName() . '/Sign/login');
+                return $this->error('请重新登陆', '/' . app('http')->getName() . '/Sign/login');
             }
 
             $this->redirect(app('http')->getName() . '/Sign/index');
+            exit;
         }
 
         $this->uid = $uid;
@@ -36,8 +36,8 @@ class Base extends BaseController
         $cacheLoginHash = cache($uid . CACHE_SEPARATOR . 'login_hash');
         if ($localLoginHash != $cacheLoginHash) {
             if (request()->isAjax()) {
-                $this->error('请重新登陆', '/' . app('http')->getName() . '/Sign/login');
-                redirect(app('http')->getName() . '/Sign/index')->send();
+                return $this->error('请重新登陆', '/' . app('http')->getName() . '/Sign/login');
+                //redirect(app('http')->getName() . '/Sign/index')->send();
             } else {
                 redirect(app('http')->getName() . '/Sign/index');
             }
@@ -46,7 +46,7 @@ class Base extends BaseController
         //用户有请求操作时，session时间重置
         $expire = Config::get('session.expire'); //缓存期限
         session('uid', $uid);
-        cookie('uid', $uid, $expire);
+        cookie('uid', $uid, ['expire' => $expire]);
 
         //权限验证
         if (config('cms.auth_on') == 'on') {
@@ -55,7 +55,7 @@ class Base extends BaseController
             $rolePermission = new RolePermission();
             $module = app('http')->getName();
             if (!$rolePermission->checkPermission($uid, $permission, $module, 'path')) {
-                $this->error('没有访问权限', 'javascript:void(0);');
+                return $this->error('没有访问权限', 'javascript:void(0);');
             }
         }
 

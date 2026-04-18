@@ -58,16 +58,16 @@ class Theme extends Base
     public function setCurrentTheme($package_name)
     {
         if (empty($package_name)) {
-            $this->error('参数错误');
+            return $this->error('参数错误');
         }
 
         $ConfigModel = new ConfigModel();
-        $ConfigModel->where('key', 'theme_package_name')->setField('value', $package_name);
+        $ConfigModel->where('key', 'theme_package_name')->update(['value' => $package_name]);
 
         //清空缓存
         Cache::set('config', null);
 
-        $this->success('主题切换成功');
+        return $this->success('主题切换成功');
     }
 
     //上传主题
@@ -76,7 +76,7 @@ class Theme extends Base
         $fileId = input('fileId/d', 0);
         $file = FileModel::find($fileId);
         if (!$file) {
-            $this->error('文件不存在！');
+            return $this->error('文件不存在！');
         }
 
         $themePath = root_path()  . 'public' . DIRECTORY_SEPARATOR . 'theme' . DIRECTORY_SEPARATOR;
@@ -84,7 +84,7 @@ class Theme extends Base
         //dump($themePath);dump($zipFile);die('dd');
         x_unzip($zipFile, $themePath);
 
-        $this->success('主题上传并安装成功！');
+        return $this->success('主题上传并安装成功！');
     }
 
     public function market()

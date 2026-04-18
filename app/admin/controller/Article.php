@@ -111,7 +111,7 @@ class Article extends Base
             $validate = new ValidateArticle;
             $result = $validate->scene('add')->check($data);
             if (!$result) {
-                $this->error($validate->getError());
+                return $this->error($validate->getError());
             }
 
             //审核开关关闭时
@@ -123,9 +123,9 @@ class Article extends Base
             $res = $articleModel->add($data);
 
             if ($res) {
-                $this->success('新增成功', url('Article/index'));
+                return $this->success('新增成功', url('Article/index'));
             } else {
-                $this->error('新增失败:' . $articleModel->getError());
+                return $this->error('新增失败:' . $articleModel->getError());
             }
         }
 
@@ -155,15 +155,15 @@ class Article extends Base
                 $url = Cookie::get('HTTP_REFERER');
                 Cookie::delete('HTTP_REFERER');
 
-                $this->success('更新成功', urldecode($url));
+                return $this->success('更新成功', urldecode($url));
             } else {
-                $this->error('更新失败:' . $ArticleModel->getError());
+                return $this->error('更新失败:' . $ArticleModel->getError());
             }
         }
 
         $article = ArticleModel::find($id);
         if (empty($article)) {
-            $this->error('文章不存在');
+            return $this->error('文章不存在');
         }
         $this->assign('article', $article);
 
@@ -194,7 +194,7 @@ class Article extends Base
     {
         $article = ArticleModel::find($id);
         if (empty($article)) {
-            $this->error('文章不存在');
+            return $this->error('文章不存在');
         }
         $this->assign('article', $article);
 
@@ -230,13 +230,13 @@ class Article extends Base
     {
         $ids = explode(',', $id);
         $ArticleModel = new ArticleModel();
-        $numRows = $ArticleModel->where([['id', 'in', $ids]])->setField('status', ArticleModel::STATUS_DELETED);
+        $numRows = $ArticleModel->where([['id', 'in', $ids]])->update(['status' => ArticleModel::STATUS_DELETED]);
 
         if ($numRows == count($ids)) {
-            $this->success('成功删除!');
+            return $this->success('成功删除!');
         } else {
             $fails = count($ids) - $numRows;
-            $this->error("成功删除 $numRows 条，失败 $fails 条!");
+            return $this->error("成功删除 $numRows 条，失败 $fails 条!");
         }
     }
 
@@ -257,7 +257,7 @@ class Article extends Base
         if (is_int($id)) {
             $article = ArticleModel::find($id);
             if (empty($article)) {
-                $this->error('文章不存在');
+                return $this->error('文章不存在');
             }
 
             $ids[] = $id;
@@ -292,9 +292,9 @@ class Article extends Base
         }
 
         if ($numRows > 0) {
-            $this->success('设置成功');
+            return $this->success('设置成功');
         } else {
-            $this->error('设置失败');
+            return $this->error('设置失败');
         }
     }
 
@@ -303,7 +303,7 @@ class Article extends Base
     {
         $article = ArticleModel::find($id);
         if (empty($article)) {
-            $this->error('文章不存在');
+            return $this->error('文章不存在');
         }
 
         $data = [
@@ -317,9 +317,9 @@ class Article extends Base
 
         $res = $article->update($data, ['id' => $id]);
         if ($res) {
-            $this->success('成功发布');
+            return $this->success('成功发布');
         } else {
-            $this->error('发布失败');
+            return $this->error('发布失败');
         }
     }
 
@@ -328,11 +328,11 @@ class Article extends Base
     {
         $article = ArticleModel::find($id);
         if (empty($article)) {
-            $this->error('文章不存在');
+            return $this->error('文章不存在');
         }
 
         if ($article->status != ArticleModel::STATUS_PUBLISHING) {
-            $this->error('文章状态不正确，无法进行初审');
+            return $this->error('文章状态不正确，无法进行初审');
         }
 
         if ($pass) {
@@ -343,9 +343,9 @@ class Article extends Base
 
         $res = $article->save();
         if ($res !== false) {
-            $this->success('操作成功');
+            return $this->success('操作成功');
         } else {
-            $this->error('操作失败');
+            return $this->error('操作失败');
         }
     }
 
@@ -354,11 +354,11 @@ class Article extends Base
     {
         $article = ArticleModel::find($id);
         if (empty($article)) {
-            $this->error('文章不存在');
+            return $this->error('文章不存在');
         }
 
         if ($article->status != ArticleModel::STATUS_FIRST_AUDITED) {
-            $this->error('文章状态未初审通过，无法进行终审');
+            return $this->error('文章状态未初审通过，无法进行终审');
         }
 
         if ($pass) {
@@ -369,9 +369,9 @@ class Article extends Base
 
         $res = $article->save();
         if ($res !== false) {
-            $this->success('操作成功');
+            return $this->success('操作成功');
         } else {
-            $this->error('操作失败');
+            return $this->error('操作失败');
         }
     }
 
@@ -380,7 +380,7 @@ class Article extends Base
     {
         if (request()->isAjax()) {
             if (empty($ids) || empty($cids)) {
-                $this->error('请选择文章或分类');
+                return $this->error('请选择文章或分类');
             }
 
             foreach ($ids as $id) {
@@ -389,11 +389,11 @@ class Article extends Base
                 $res = $article->categorys()->saveAll($cids);
 
                 if ($res == false) {
-                    $this->error('操作失败');
+                    return $this->error('操作失败');
                 }
             }
 
-            $this->success('操作成功');
+            return $this->success('操作成功');
         }
 
         //文章分类列表
@@ -410,16 +410,16 @@ class Article extends Base
         $aid = input('param.id/d');
         $article = ArticleModel::find(['id' => $aid]);
         if (empty($article)) {
-            $this->error('文章不存在!');
+            return $this->error('文章不存在!');
         }
 
         $article->is_top = 1; //只用于置顶标记
         $article->sort = ArticleModel::max('sort') + 1;  //实际用于置顶排序
         $res = $article->save();
         if ($res) {
-            $this->success('成功置顶');
+            return $this->success('成功置顶');
         } else {
-            $this->error('置顶失败');
+            return $this->error('置顶失败');
         }
     }
 
@@ -429,16 +429,16 @@ class Article extends Base
         $aid = input('param.id/d');
         $article = ArticleModel::find(['id' => $aid]);
         if (empty($article)) {
-            $this->error('文章不存在!');
+            return $this->error('文章不存在!');
         }
 
         $article->is_top = 0;
         $article->sort = 0;
         $res = $article->save();
         if ($res) {
-            $this->success('成功取消置顶');
+            return $this->success('成功取消置顶');
         } else {
-            $this->error('取消置顶失败');
+            return $this->error('取消置顶失败');
         }
     }
 
@@ -486,11 +486,11 @@ class Article extends Base
     {
         $com = CommentModel::find($id);
         if (empty($com)) {
-            $this->error('评论不存在');
+            return $this->error('评论不存在');
         }
 
         if ($com->status != CommentModel::STATUS_PUBLISHING) {
-            $this->error('评论审核未通过，无法发布');
+            return $this->error('评论审核未通过，无法发布');
         }
 
         if ($pass) {
@@ -501,9 +501,9 @@ class Article extends Base
 
         $res = $com->save();
         if ($res !== false) {
-            $this->success('操作成功');
+            return $this->success('操作成功');
         } else {
-            $this->error('操作失败');
+            return $this->error('操作失败');
         }
     }
 
@@ -537,11 +537,11 @@ class Article extends Base
             $CommentModel = new CommentModel();
             $result = $CommentModel->save($data);
             if (!$result) {
-                $this->error('回复失败');
+                return $this->error('回复失败');
             } elseif (stripos($_SERVER["HTTP_REFERER"], 'viewComments')) {
-                $this->success('回复成功', url("Article/viewComments", ['id' => $pid]));
+                return $this->success('回复成功', url("Article/viewComments", ['id' => $pid]));
             } else {
-                $this->success('回复成功', url('Article/commentList'));
+                return $this->success('回复成功', url('Article/commentList'));
             }
         }
 
@@ -556,10 +556,10 @@ class Article extends Base
 
         $numRows = $CommentModel->where([['id', 'in', $ids]])->delete();
         if ($numRows  == count($ids)) {
-            $this->success('成功删除');
+            return $this->success('成功删除');
         } else {
             $fails = count($ids) - $numRows;
-            $this->error("成功删除 $numRows 条，失败 $fails 条!");
+            return $this->error("成功删除 $numRows 条，失败 $fails 条!");
         }
     }
 
@@ -569,7 +569,7 @@ class Article extends Base
         $comment = CommentModel::find($id);
 
         if (empty($comment)) {
-            $this->error('评论不存在');
+            return $this->error('评论不存在');
         }
 
         $CommentModel = new CommentModel();
@@ -596,7 +596,7 @@ class Article extends Base
             $checked = input('post.checked', 'false');
             $category = CategoryModel::find($id);
             if (!$category) {
-                $this->error('分类不存在!');
+                return $this->error('分类不存在!');
             }
 
             $msg = "";
@@ -610,7 +610,7 @@ class Article extends Base
 
             $category->save();
 
-            $this->success($msg);
+            return $this->success($msg);
         }
 
         $CategoryModel = new CategoryModel();
@@ -634,9 +634,9 @@ class Article extends Base
             }
 
             if ($res) {
-                $this->success('操作成功', url('Article/categoryList'));
+                return $this->success('操作成功', url('Article/categoryList'));
             } else {
-                $this->error('操作失败');
+                return $this->error('操作失败');
             }
         }
 
@@ -665,9 +665,9 @@ class Article extends Base
         $CategoryModel = new CategoryModel();
         $result = $CategoryModel->isUpdate(true)->saveAll($arr);
         if ($result) {
-            $this->success('排序成功', url('Article/categoryList'));
+            return $this->success('排序成功', url('Article/categoryList'));
         } else {
-            $this->error('排序失败');
+            return $this->error('排序失败');
         }
     }
 
@@ -677,7 +677,7 @@ class Article extends Base
         $CategoryModel = new CategoryModel();
         $category = $CategoryModel->find($id);
         if (empty($category)) {
-            $this->error('数据不存在');
+            return $this->error('数据不存在');
         }
         $this->assign('category', $category);
         return $this->fetch('addCategory');
@@ -689,9 +689,9 @@ class Article extends Base
         $CategoryModel = new CategoryModel();
         $res = $CategoryModel->where('id', $id)->delete();
         if ($res) {
-            $this->success('成功删除');
+            return $this->success('成功删除');
         } else {
-            $this->error('删除失败');
+            return $this->error('删除失败');
         }
     }
 
@@ -737,7 +737,7 @@ class Article extends Base
             ];
             $check = $this->validate($data, $rule);
             if ($check !== true) {
-                $this->error($check);
+                return $this->error($check);
             }
 
             $AdModel = new AdModel();
@@ -749,9 +749,9 @@ class Article extends Base
             $AdModel->adSlots()->attach($data['slot_ids'], $pivot);
 
             if ($rowsNum !== false) {
-                $this->success('成功新增广告', url('article/adList'));
+                return $this->success('成功新增广告', url('article/adList'));
             } else {
-                $this->error('新增失败');
+                return $this->error('新增失败');
             }
         }
 
@@ -777,7 +777,7 @@ class Article extends Base
             ];
             $check = $this->validate($data, $rule);
             if ($check !== true) {
-                $this->error($check);
+                return $this->error($check);
             }
 
             $data['create_time'] = date_time();
@@ -791,15 +791,15 @@ class Article extends Base
             $AdModel->adSlots()->attach($data['slot_ids'], $pivot);
 
             if ($rowsNum !== false) {
-                $this->success('成功修改广告', url('article/adList'));
+                return $this->success('成功修改广告', url('article/adList'));
             } else {
-                $this->error('修改失败');
+                return $this->error('修改失败');
             }
         }
 
         $ad = AdModel::find(['id' => $adId]);
         if (empty($ad)) {
-            $this->error('广告不存在');
+            return $this->error('广告不存在');
         }
         $this->assign('ad', $ad);
 
@@ -824,9 +824,9 @@ class Article extends Base
     {
         $res = AdModel::destroy($adId);
         if ($res) {
-            $this->success('删除成功');
+            return $this->success('删除成功');
         } else {
-            $this->error('删除失败');
+            return $this->error('删除失败');
         }
     }
 
@@ -836,9 +836,9 @@ class Article extends Base
         $data = input('post.');
         $AdModel = new AdModel();
         foreach ($data as $k => $v) {
-            $AdModel->where('id', $k)->setField('sort', $v);
+            $AdModel->where('id', $k)->update(['sort' => $v]);
         }
-        $this->success('成功排序');
+        return $this->success('成功排序');
     }
 
     //文章访问统计
@@ -846,7 +846,7 @@ class Article extends Base
     {
         $article = ArticleModel::find($id);
         if (empty($article)) {
-            $this->error('文章不存在');
+            return $this->error('文章不存在');
         }
         $this->assign('article', $article);
 
@@ -890,7 +890,7 @@ class Article extends Base
     {
         $article = ArticleModel::find($id);
         if (empty($article)) {
-            $this->error('文章不存在');
+            return $this->error('文章不存在');
         }
 
         $option = [
@@ -915,6 +915,6 @@ class Article extends Base
             array_push($option['xAxis']['data'], $day);
             array_push($option['series'][0]['data'], $inquiryCount);
         }
-        $this->success('success', '', $option);
+        return $this->success('success', '', $option);
     }
 }

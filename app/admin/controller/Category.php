@@ -18,7 +18,7 @@ class Category extends Base
             $checked = input('post.checked', 'false');
             $category = CategoryModel::get($id);
             if (!$category) {
-                $this->error('分类不存在!');
+                return $this->error('分类不存在!');
             }
 
             $msg = "";
@@ -32,7 +32,7 @@ class Category extends Base
 
             $category->save();
 
-            $this->success($msg);
+            return $this->success($msg);
         }
 
         $CategoryModel = new CategoryModel();
@@ -58,9 +58,9 @@ class Category extends Base
             }
 
             if ($res) {
-                $this->success('操作成功', url('category/index'));
+                return $this->success('操作成功', url('category/index'));
             } else {
-                $this->error('操作失败');
+                return $this->error('操作失败');
             }
         }
 
@@ -89,9 +89,9 @@ class Category extends Base
         $CategoryModel = new CategoryModel();
         $result = $CategoryModel->isUpdate(true)->saveAll($arr);
         if ($result) {
-            $this->success('排序成功', url('category/index'));
+            return $this->success('排序成功', url('category/index'));
         } else {
-            $this->error('排序失败');
+            return $this->error('排序失败');
         }
     }
 
@@ -101,7 +101,7 @@ class Category extends Base
         $CategoryModel = new CategoryModel();
         $category = $CategoryModel->find($id);
         if (empty($category)) {
-            $this->error('数据不存在');
+            return $this->error('数据不存在');
         }
 
         $this->assign('category', $category);
@@ -115,9 +115,9 @@ class Category extends Base
         $CategoryModel = new CategoryModel();
         $res = $CategoryModel->where('id', $id)->delete();
         if ($res) {
-            $this->success('成功删除');
+            return $this->success('成功删除');
         } else {
-            $this->error('删除失败');
+            return $this->error('删除失败');
         }
     }
 }
