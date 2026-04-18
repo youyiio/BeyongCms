@@ -10,8 +10,8 @@
 namespace app\frontend\middleware;
 
 use think\facade\Config;
-use think\facade\Env;
 use think\facade\View;
+use think\Paginator;
 
 /**
  * 主题设置，主题切换
@@ -48,7 +48,14 @@ class ThemeInit
 
         //如果分页配置存在时，加载分页配置
         if (file_exists($paginateFile)) {
-            Config::load($paginateFile, 'paginate');
+            $paginateConfig = include $paginateFile;
+            $paginateConfig = array_merge(Config::get('paginate'), $paginateConfig);
+
+            // 动态注册自定义分页器
+            Paginator::maker(function ($items, $listRows, $currentPage, $total, $simple, $options) use ($paginateConfig) {
+                $paginateDriver = $paginateConfig['type'];
+                return new $paginateDriver($items, $listRows, $currentPage, $total, $simple, $options);
+            });
         }
 
         return $next($request);
