@@ -18,7 +18,7 @@ class Search extends Base
     public function index($q = '', $p = 1)
     {
         if (empty($q)) {
-            $this->error('请输入搜索词!');
+            return $this->error('请输入搜索词!');
         }
 
         if (true) {
@@ -53,12 +53,8 @@ class Search extends Base
     }
 
     //从ElasticSearch搜索
-    private function _searchFromES($q = '', $p = '')
-    {
-    }
+    private function _searchFromES($q = '', $p = '') {}
 
     //记录用户搜索日志
-    private function _searchLog($q = '', $p = 1)
-    {
-    }
+    private function _searchLog($q = '', $p = 1) {}
 }

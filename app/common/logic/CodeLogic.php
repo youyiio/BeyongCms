@@ -46,7 +46,6 @@ class CodeLogic
         $UserModel = new UserModel();
         $user = $UserModel->findByEmail($email);
         if (empty($user)) {
-            $this->error = '邮箱不存在';
             throw new LogicException(ResultCode::E_USER_EMAIL_NOT_EXIST, "邮箱不存在！");
             return false;
         }
@@ -82,14 +81,14 @@ class CodeLogic
         $UserModel = new UserModel();
         $user = $UserModel->findByEmail($email);
         if ($user) {
-            //$this->error = '邮箱已经注册！';
+            //return $this->error = '邮箱已经注册！';
             throw new LogicException(ResultCode::E_USER_EMAIL_HAS_EXIST, "邮箱已经注册！");
             return false;
         }
 
         $code = StringUtils::getRandNum(6);
 
-        $url = url('frontend/Index/index', '', false, get_config('domain_name'));
+        $url = url('/frontend/Index/index', [], false, get_config('domain_name'));
 
         $subject = '新用户注册';
         $message = "您的注册验证码：{code}，10分钟内有效! <a href=\"{url}\">{site_name}</a>";
@@ -120,7 +119,7 @@ class CodeLogic
         $UserModel = new UserModel();
         $user = $UserModel->findByMobile($mobile);
         if ($user) {
-            //$this->error = '手机已经注册！';
+            //return $this->error = '手机已经注册！';
             throw new LogicException(ResultCode::E_USER_MOBILE_HAS_EXIST, "手机已经注册！");
             return false;
         }
@@ -194,7 +193,7 @@ class CodeLogic
     public function sendResetCodeEmail($email)
     {
         if (!PregUtils::isEmail($email)) {
-            $this->error = '邮箱格式不正确';
+            return $this->error = '邮箱格式不正确';
             return false;
         }
 
@@ -202,13 +201,13 @@ class CodeLogic
         $UserModel = new UserModel();
         $user = $UserModel->findByEmail($email);
         if (empty($user)) {
-            $this->error = '邮箱不存在';
+            return $this->error = '邮箱不存在';
             return false;
         }
 
         $mark = $user['id'] . '_send_reset_count';
         if (cache($mark) >= 5 && !config('app_debug')) {
-            $this->error = '您今天请求重置码次数已经超限!';
+            return $this->error = '您今天请求重置码次数已经超限!';
             return false;
         }
 
@@ -284,11 +283,11 @@ class CodeLogic
     {
         $cacheCode = Cache::get($type . CACHE_SEPARATOR . $username, null);
         if ($cacheCode === null) {
-            $this->error = '验证码已过期!';
+            return $this->error = '验证码已过期!';
             return false;
         }
         if ($cacheCode == null || $cacheCode !== $code) {
-            $this->error = '验证码不正确!';
+            return $this->error = '验证码不正确!';
             return false;
         }
 
@@ -306,7 +305,7 @@ class CodeLogic
     {
         $cacheCode = Cache::get($type . CACHE_SEPARATOR . $username, null);
         if ($cacheCode == null || $cacheCode !== $code) {
-            $this->error = '验证码不正确或已过期!';
+            return $this->error = '验证码不正确或已过期!';
             return false;
         }
 

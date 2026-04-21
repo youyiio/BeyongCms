@@ -9,6 +9,7 @@ use think\facade\Cache;
 use app\common\model\UserModel;
 use think\facade\Config;
 use think\facade\View;
+use think\exception\HttpResponseException;
 
 /**
  * 基础控制器
@@ -21,12 +22,12 @@ class Base extends BaseController
     {
         //判断登陆session('uid')
         $uid = session('uid');
-        if (!$uid) {
+        if (empty($uid)) {
             if (request()->isAjax()) {
-                return $this->error('请重新登陆', '/' . app('http')->getName() . '/Sign/login');
+                $this->error('请重新登陆', '/' . app('http')->getName() . '/Sign/login')->send();
+            } else {
+                $this->redirect('/' . app('http')->getName() . '/Sign/index')->send();
             }
-
-            $this->redirect(app('http')->getName() . '/Sign/index');
             exit;
         }
 
@@ -36,11 +37,12 @@ class Base extends BaseController
         $cacheLoginHash = cache($uid . CACHE_SEPARATOR . 'login_hash');
         if ($localLoginHash != $cacheLoginHash) {
             if (request()->isAjax()) {
-                return $this->error('请重新登陆', '/' . app('http')->getName() . '/Sign/login');
-                //redirect(app('http')->getName() . '/Sign/index')->send();
+                $this->error('请重新登陆', '/' . app('http')->getName() . '/Sign/login')->send();
             } else {
-                redirect(app('http')->getName() . '/Sign/index');
+                $this->redirect('/' . app('http')->getName() . '/Sign/index')->send();
+                //throw new HttpResponseException(redirect(app('http')->getName() . '/Sign/index'));                
             }
+            exit;
         }
 
         //用户有请求操作时，session时间重置
@@ -50,12 +52,12 @@ class Base extends BaseController
 
         //权限验证
         if (config('cms.auth_on') == 'on') {
-            $permission = app('http')->getName() . '/' . request()->controller() . '/' . request()->action();
+            $permission = '/' . app('http')->getName() . '/' . request()->controller() . '/' . request()->action();
             $permission = strtolower($permission);
             $rolePermission = new RolePermission();
             $module = app('http')->getName();
             if (!$rolePermission->checkPermission($uid, $permission, $module, 'path')) {
-                return $this->error('没有访问权限', 'javascript:void(0);');
+                throw new HttpResponseException($this->error('没有访问权限', 'javascript:void(0);'));
             }
         }
 

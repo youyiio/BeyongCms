@@ -21,7 +21,7 @@ trait File
 
         $tmpFile = request()->file('file');
         if (empty($tmpFile)) {
-            $this->result(null, 0, '请选择上传文件', 'json');
+            return $this->result(null, 0, '请选择上传文件', 'json');
         }
 
         //通用文件后缀，加强安全;
@@ -49,10 +49,10 @@ trait File
 
         //不能信任前端传进来的文件名, thinkphp默认使表单里的filename后
         if ($tmpFile->getSize() > 200) {
-            $this->result('尺寸过大');
+            return $this->result('尺寸过大');
         }
         if (in_array($tmpFile->getExtension(), (array)$exts)) {
-            $this->result('文件类型不符合要求');
+            return $this->result('文件类型不符合要求');
         }
 
         $file = $tmpFile->move($path);
@@ -82,7 +82,7 @@ trait File
         $data['id'] = $fileId;
         $data['ext_icon_url'] = '/static/common/img/format/' . strtolower($ext) . '.png';
 
-        $this->result($data, 1, '文件上传成功', 'json');
+        return $this->result($data, 1, '文件上传成功', 'json');
     }
 
     //上传软件，桌面端软件，如果.exe.zip
@@ -94,8 +94,8 @@ trait File
         //ini_set('upload_max_filesize', '128M');
         $file = request()->file('file');
         if (empty($file)) {
-            //$this->error('请选择上传文件');
-            $this->result(null, 0, '请选择上传文件', 'json');
+            //return $this->error('请选择上传文件');
+            return $this->result(null, 0, '请选择上传文件', 'json');
         }
         $rule = [
             'ext' => 'zip,rar,exe',
@@ -108,7 +108,7 @@ trait File
         $check = $file->validate($rule);
 
         if (!$check) {
-            $this->error($file->getError());
+            return $this->error($file->getError());
         }
 
         $version = input('param.version');
@@ -147,7 +147,7 @@ trait File
     {
         $file = request()->file('file');
         if (empty($file)) {
-            $this->error('请选择上传文件');
+            return $this->error('请选择上传文件');
         }
         $rule = [
             'ext' => 'apk,ipa',
@@ -160,7 +160,7 @@ trait File
         $check = $file->validate($rule);
 
         if (!$check) {
-            $this->error($file->getError());
+            return $this->error($file->getError());
         }
 
         $appId = input('param.app_id');

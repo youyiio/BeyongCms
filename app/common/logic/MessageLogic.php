@@ -16,7 +16,7 @@ class MessageLogic extends Model
     public function createMessage($receiveUserId, $type, $title, $content, $extra = null)
     {
         if (empty($title) || empty($content) || empty($receiveUserId)) {
-            $this->error = "参数为空";
+            //return $this->error = "参数为空";
             return false;
         }
 

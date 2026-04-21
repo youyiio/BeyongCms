@@ -5,22 +5,29 @@
         <ul class="nav metismenu" id="side-menu">
             <li class="nav-header">
                 <div class="dropdown profile-element">
-                    <span><img alt="image" class="img-circle" src="{$myself.head_url|default='__PUBLIC__/static/admin/img/profile_small.jpg'}" width="48" height="48"/></span>
+                    <span><img alt="image" class="img-circle"
+                            src="{$myself.head_url|default='__PUBLIC__/static/admin/img/profile_small.jpg'}" width="48"
+                            height="48" /></span>
                     <a data-toggle="dropdown" class="dropdown-toggle" href="#">
                         <span class="clear">
-                            <span class="block m-t-xs"><strong class="font-bold">{:get_config('site_name','管理后台')}</strong></span>
+                            <span class="block m-t-xs"><strong
+                                    class="font-bold">{:get_config('site_name','管理后台')}</strong></span>
                             <span class="text-muted text-xs block">{$myself.nickname}<b class="caret"></b></span>
                         </span>
                     </a>
                     <ul class="dropdown-menu animated fadeInRight m-t-xs">
-                        <li><a class="J_menuItem" onclick="$('.profile-element a.dropdown-toggle').click();" href="{:url('Ucenter/profile',['uid'=>$myself['id']])}">个人资料</a>
+                        <li><a class="J_menuItem" onclick="$('.profile-element a.dropdown-toggle').click();"
+                                href="{:url('/admin/Ucenter/profile',['uid'=>$myself['id']])}">个人资料</a>
                         </li>
-                        <li><a class="J_menuItem" onclick="$('.profile-element a.dropdown-toggle').click();" href="javascript:void(0)">修改头像</a>
+                        <li><a class="J_menuItem" onclick="$('.profile-element a.dropdown-toggle').click();"
+                                href="javascript:void(0)">修改头像</a>
                         </li>
-                        <li><a class="J_menuItem" onclick="$('.profile-element a.dropdown-toggle').click();" href="{:url('Ucenter/password',['uid'=>$myself['id']])}">修改密码</a>
+                        <li><a class="J_menuItem" onclick="$('.profile-element a.dropdown-toggle').click();"
+                                href="{:url('/admin/Ucenter/password',['uid'=>$myself['id']])}">修改密码</a>
                         </li>
                         <li class="divider"></li>
-                        <li><a onclick="$('.profile-element a.dropdown-toggle').click();" href="{:url('Sign/logout')}">安全退出</a>
+                        <li><a onclick="$('.profile-element a.dropdown-toggle').click();"
+                                href="{:url('/admin/Sign/logout')}">安全退出</a>
                         </li>
                     </ul>
                 </div>
@@ -32,11 +39,13 @@
             <!-- 一级菜单 -->
             {empty name="menu._data"}
             <li class="{:menu_select($menu['path'])}" class="leftSubNav">
-                <a class="J_menuItem" href="{:url($menu['path'])}">{notempty name="menu.icon"}<i class="fa {$menu.icon}"></i>{/notempty} <span class="nav-label">{$menu.title}</span></a>
+                <a class="J_menuItem" href="{:url($menu['path'])}">{notempty name="menu.icon"}<i
+                        class="fa {$menu.icon}"></i>{/notempty} <span class="nav-label">{$menu.title}</span></a>
             </li>
             {else/}
             <li>
-                <a href="#">{notempty name="menu.icon"}<i class="fa {$menu.icon}"></i>{/notempty} <span class="nav-label">{$menu.title} </span>
+                <a href="#">{notempty name="menu.icon"}<i class="fa {$menu.icon}"></i>{/notempty} <span
+                        class="nav-label">{$menu.title} </span>
                     {if $menu.id == 3}
                     <span class="label label-warning pull-right">{:user_count('new')}</span>
                     {else /}

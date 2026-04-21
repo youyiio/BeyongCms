@@ -126,8 +126,8 @@ abstract class BaseController
     {
         if (is_null($url) && isset($_SERVER["HTTP_REFERER"])) {
             $url = $_SERVER["HTTP_REFERER"];
-        } elseif ('' !== $url) {
-            $url = (strpos($url, '://') || 0 === strpos($url, '/')) ? $url : Route::buildUrl($url);
+        } elseif (is_string($url)) {
+            $url = (strpos($url, '://') || 0 === strpos($url, '/')) ? $url : url($url)->build();
         }
 
         $result = [
@@ -141,11 +141,11 @@ abstract class BaseController
         $type = $this->getResponseType();
         if ($type == "json") {
             $header['Content-Type'] = 'application/json; charset=utf-8';
-            return Response::create($result, 'json', 200, $header);
+            return Response::create($result, 'json', 200)->header($header);
         }
 
         // 普通请求
-        return View::fetch(config('app.dispatch_success_tmpl'), $result);
+        return View::fetch($url, $result);
     }
 
     protected function error($msg = '', $url = null, $data = '', int $wait = 3, array $header = [])
@@ -167,11 +167,11 @@ abstract class BaseController
         $type = $this->getResponseType();
         if ($type == "json") {
             $header['Content-Type'] = 'application/json; charset=utf-8';
-            return Response::create($result, 'json', 200, $header);
+            return Response::create($result, 'json', 200)->header($header);
         }
 
         // 普通请求
-        return View::fetch(config('app.dispatch_error_tmpl'), $result);
+        return View::fetch($url, $result);
     }
 
     /**
@@ -211,7 +211,7 @@ abstract class BaseController
      */
     protected function redirect($url)
     {
-        redirect((string) url($url))->send();
+        return redirect((string) url($url));
     }
 
 

@@ -123,7 +123,7 @@ abstract class BaseController
         if (is_null($url) && isset($_SERVER["HTTP_REFERER"])) {
             $url = $_SERVER["HTTP_REFERER"];
         } elseif ('' !== $url) {
-            $url = (strpos($url, '://') || 0 === strpos($url, '/')) ? $url : Route::buildUrl($url);
+            $url = (strpos($url, '://') || 0 === strpos($url, '/')) ? $url : Route::buildUrl($url)->build();
         }
 
         $result = [

@@ -50,7 +50,7 @@ class CrawlerMetaModel extends BaseMetaModel
                     'meta_value' => $metaValue,
                     'update_time' => date_time()
                 ];
-                $this->where('id', $meta['id'])->setField($data);
+                $this->where('id', $meta['id'])->update($data);
             }
         } else {
             if ($metaValue === '') {

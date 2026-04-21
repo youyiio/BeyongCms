@@ -154,7 +154,7 @@ class Sms extends Base
             'from_referee' => cookie('from_referee'),
             'entrance_url'     => cookie('entrance_url'),
         ];
-        $UserModel->where('id', $user['id'])->setField($profileData);
+        $UserModel->where('id', $user['id'])->update($profileData);
 
         //权限初始化
         $group[] = [

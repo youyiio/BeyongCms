@@ -82,7 +82,7 @@ class Feedback extends Base
             $user = session('visitor');
         }
         if (!request()->isPost()) {
-            $this->error('请求错误！');
+            return $this->error('请求错误！');
         }
         $data = input('param.');
         $send_client_id = $user;
@@ -102,9 +102,9 @@ class Feedback extends Base
         $result = $FeedbackModel->save($map);
 
         if ($result) {
-            $this->redirect('Feedback/index');
+            return $this->redirect('Feedback/index');
         } else {
-            $this->error('发送失败');
+            return $this->error('发送失败');
         }
     }
 }

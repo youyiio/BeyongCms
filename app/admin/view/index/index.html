@@ -58,14 +58,17 @@
                         </li>
                     </ul>
                 </div>
-                <a href="javascript:void(0)" class="roll-nav roll-right J_tabExit"><i class="fa fa fa-long-arrow-left"></i> 返回</a>
+                <a href="javascript:void(0)" class="roll-nav roll-right J_tabExit"><i
+                        class="fa fa fa-long-arrow-left"></i> 返回</a>
             </div>
 
             <div class="row J_mainContent" id="content-main">
-                <iframe class="J_iframe" name="iframe0" width="100%" height="100%" src="{:url('index/welcome')}" frameborder="0" data-id="{:url('index/welcome')}" seamless></iframe>
+                <iframe class="J_iframe" name="iframe0" width="100%" height="100%" src="{:url('/admin/index/welcome')}"
+                    frameborder="0" data-id="{:url('index/welcome')}" seamless></iframe>
             </div>
             <div class="footer">
-                <div class="pull-right">&copy; 2016-{:date('Y')} <a href="{:get_config('domain_name')}" target="_blank">{:get_config('site_name')}</a>
+                <div class="pull-right">&copy; 2016-{:date('Y')} <a href="{:get_config('domain_name')}"
+                        target="_blank">{:get_config('site_name')}</a>
                 </div>
             </div>
         </div>
@@ -87,7 +90,7 @@
 
     <script src="__PUBLIC__/static/layui/layui.js"></script>
     <script>
-        $(".J_tabExit").click(function() {
+        $(".J_tabExit").click(function () {
             var id = $(".J_menuTab.active").data("id");
             var $iframe = $('.J_iframe[data-id="' + id + '"]');
             //IE下contentWindow可以忽略
@@ -99,9 +102,10 @@
         })
 
         var laytpl;
-        layui.use(['laytpl'], function(){
+        layui.use(['laytpl'], function () {
             laytpl = layui.laytpl;
         });
     </script>
 </body>
+
 </html>

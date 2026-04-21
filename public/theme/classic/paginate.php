@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by VSCode.
  * User: cattong
@@ -7,7 +8,7 @@
  */
 
 return [
-    'type'      => '\\theme\\classic\\Layui',
+    'type'      => 'theme\classic\Layui',
     'var_page'  => 'page',
     'list_rows' => 10,
 ];

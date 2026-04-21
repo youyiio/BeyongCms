@@ -108,7 +108,7 @@ class UserLogic
             $where['uid'] = $userId;
             $where['access_id'] = $accessId;
             $where['device_id'] = $deviceId;
-            $TokenModel->where($where)->setField('status', TokenModel::STATUS_EXPIRED);
+            $TokenModel->where($where)->update(['status' => TokenModel::STATUS_EXPIRED]);
 
             $tokenInfo = $TokenModel->updateTokenInfo($userId, $accessId, $deviceId);
         }

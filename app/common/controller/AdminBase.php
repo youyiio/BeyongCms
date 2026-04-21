@@ -3,7 +3,6 @@
 namespace app\common\controller;
 
 use app\api\library\RolePermission;
-use app\common\model\AuthRuleModel;
 use app\common\model\MenuModel;
 use think\facade\Cache;
 use app\common\model\UserModel;
@@ -27,9 +26,9 @@ trait AdminBase
         $uid = Session::get('uid', $this->prefix);
         if (!$uid) {
             if (request()->isAjax()) {
-                $this->error('请重新登陆', url('admin/Sign/login'));
+                return $this->error('请重新登陆', url('admin/Sign/login'));
             }
-            $this->redirect('admin/Sign/index', ['redirect' => urlencode($this->url())]);
+            return $this->redirect('admin/Sign/index', ['redirect' => urlencode($this->url())]);
         }
         $this->uid = $uid;
 
@@ -38,9 +37,9 @@ trait AdminBase
         // $cacheLoginHash = Cache::get($uid . CACHE_SEPARATOR . 'login_hash');
         // if ($localLoginHash != $cacheLoginHash) {
         //     if (request()->isAjax()) {
-        //         $this->error('请重新登陆', url('admin/Sign/index'));
+        //         return $this->error('请重新登陆', url('admin/Sign/index'));
         //     } else {
-        //         $this->redirect('admin/Sign/index', ['redirect' => urlencode($this->url())]);
+        //         return $this->redirect('admin/Sign/index', ['redirect' => urlencode($this->url())]);
         //     }
         // }
 
@@ -57,7 +56,7 @@ trait AdminBase
             $module = app('http')->getName();
             $module = $module == 'api' ? 'api' : 'admin';
             if (!$rolePermission->checkPermission($uid, $permission, $module, 'path')) {
-                $this->error(
+                return $this->error(
                     '没有访问权限',
                     'javascript:void(0);'
                 );

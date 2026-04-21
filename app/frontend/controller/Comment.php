@@ -31,7 +31,7 @@ class Comment extends Base
         $ArticleModel = new ArticleModel();
         $article = $ArticleModel->find($aid);
         if (empty($article)) {
-            $this->error('文章不存在');
+            return $this->error('文章不存在');
         }
 
         $this->assign('aid', $aid);
@@ -49,7 +49,7 @@ class Comment extends Base
     public function create($aid = 0)
     {
         if (get_config('article_comment_switch') === 'false') {
-            $this->error('评论失败:评论功能已关闭');
+            return $this->error('评论失败:评论功能已关闭');
         }
 
         $ArticleModel = new ArticleModel();
@@ -62,7 +62,7 @@ class Comment extends Base
             $content = input('content/s', '');
             $check = $this->validate(input('param.'), 'Comment.create');
             if ($check !== true) {
-                $this->error($check);
+                return $this->error($check);
             }
 
             $content = remove_xss($content);
@@ -106,7 +106,7 @@ class Comment extends Base
             $result = $CommentModel->save($data);
 
             if (!$result) {
-                $this->error('评论发表失败！');
+                return $this->error('评论发表失败！');
             } else {
                 //增加评论数量;
                 $ArticleModel->where('id', $aid)->inc('comment_count');

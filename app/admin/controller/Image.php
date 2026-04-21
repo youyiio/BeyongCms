@@ -26,7 +26,7 @@ class Image extends Base
         if (empty($imageId)) {
             $tmpFile = request()->file('file');
             if (empty($tmpFile)) {
-                $this->result(null, 0, '请选择上传文件', 'json');
+                return $this->result(null, 0, '请选择上传文件', 'json');
             }
 
             //图片规定尺寸
@@ -97,10 +97,10 @@ class Image extends Base
             $data['id'] = $imageId;
             if ($imgWidth > 0 && $imgHeight > 0) {
                 if (!($width >= $imgWidth - 10 && $width <= $imgWidth + 10 && $height >= $imgHeight - 10 && $height <= $imgHeight + 10)) {
-                    $this->result($data, 1, 'image_need_crop', 'json');
+                    return $this->result($data, 1, 'image_need_crop', 'json');
                 }
             }
-            $this->result($data, 1, '图片上传成功', 'json');
+            return $this->result($data, 1, '图片上传成功', 'json');
         }
 
         //图片裁剪
@@ -159,6 +159,6 @@ class Image extends Base
         $FileModel->save();
 
         $data = $FileModel;
-        $this->result($data, 1, '图片裁剪成功', 'json');
+        return $this->result($data, 1, '图片裁剪成功', 'json');
     }
 }

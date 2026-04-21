@@ -77,7 +77,7 @@ class UserModel extends BaseModel
             $exts[$key] = $value;
         }
 
-        $this->where('id', $this->id)->setField('ext', json_encode($exts));
+        $this->where('id', $this->id)->update(['ext' => json_encode($exts)]);
     }
 
     public function createUser($mobile, $password, $nickname = '', $email = '', $account = '', $status = UserModel::STATUS_ACTIVED)
@@ -255,13 +255,13 @@ class UserModel extends BaseModel
         $validate = validate('User');
         $check = $validate->scene('edit')->check($data);
         if ($check !== true) {
-            $this->error = $validate->getError();
+            return $this->error = $validate->getError();
             return false;
         }
 
         $res = $this->allowField(true)->isUpdate(true)->save($data, ['id' => $uid]);
         if ($res === false) {
-            $this->error = '修改失败';
+            return $this->error = '修改失败';
             return false;
         }
 

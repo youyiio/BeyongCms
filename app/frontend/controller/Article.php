@@ -46,7 +46,7 @@ class Article extends Base
             $CategoryModel = new CategoryModel();
             $category = $CategoryModel->where(['name' => $cname])->find();
             if (empty($category)) {
-                $this->error('分类名不存在');
+                return $this->error('分类名不存在');
             }
 
             $cid = $category['id'];
@@ -57,7 +57,7 @@ class Article extends Base
         $CategoryModel = new CategoryModel();
         $category = $CategoryModel->where(['id' => $cid])->find();
         if (empty($category)) {
-            $this->error('分类不存在');
+            return $this->error('分类不存在');
         }
         $this->assign('category', $category);
 
@@ -76,18 +76,18 @@ class Article extends Base
     private function articleSublist($cname = '', $csubname = '')
     {
         if (empty($cname) || empty($csubname)) {
-            $this->error('参数错误');
+            return $this->error('参数错误');
         }
 
         $CategoryModel = new CategoryModel();
         $child = $CategoryModel->where(['name' => $csubname])->find();
         if (empty($child)) {
-            $this->error('子分类名不存在');
+            return $this->error('子分类名不存在');
         }
 
         $category = $child['parent'];
         if (empty($category) || $category->name != $cname) {
-            $this->error('两个分类不存在父子关系!');
+            return $this->error('两个分类不存在父子关系!');
         }
 
         $cid = $child['id'];
@@ -116,13 +116,13 @@ class Article extends Base
     public function viewArticle($aid = 0, $cid = 0, $cname = '', $page = 1)
     {
         if (empty($aid)) {
-            $this->error('参数错误');
+            return $this->error('参数错误');
         }
 
         $ArticleModel = new ArticleModel();
         $article = $ArticleModel->find($aid);
         if (empty($article) || $article['status'] != ArticleModel::STATUS_PUBLISHED) {
-            $this->error('文章不存在');
+            return $this->error('文章不存在');
         }
         $this->assign('aid', $aid);
 
@@ -163,7 +163,7 @@ class Article extends Base
         $CategoryModel = new CategoryModel();
         $category = $CategoryModel->where(['id' => $cid])->find();
         if (empty($category)) {
-            $this->error('分类不存在');
+            return $this->error('分类不存在');
         }
         $this->assign('category', $category);
 
@@ -186,7 +186,7 @@ class Article extends Base
     public function tag($tag = '')
     {
         if (empty($tag)) {
-            $this->error('标签不能为空');
+            return $this->error('标签不能为空');
         }
         $where = [
             'status' => ArticleModel::STATUS_PUBLISHED,

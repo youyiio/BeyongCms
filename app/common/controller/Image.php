@@ -3,8 +3,6 @@
 namespace app\common\controller;
 
 use app\common\model\FileModel;
-use think\facade\Env;
-use app\common\model\ImageModel;
 
 /**
  * 图片上传组件
@@ -16,11 +14,10 @@ trait Image
     public function upload()
     {
 
-        $tmpFile = request()->file('Filedata');
-        if (empty($tmpFile)) $tmpFile = request()->file('file');
+        $tmpFile = request()->file('Filedata') ?? request()->file('file');
         if (empty($tmpFile)) {
-            //$this->error('请选择上传文件');
-            $this->result(null, 0, '请选择上传文件', 'json');
+            //return $this->error('请选择上传文件');
+            return $this->result(null, 0, '请选择上传文件', 'json');
         }
 
         //图片规定尺寸
@@ -43,13 +40,13 @@ trait Image
             ]
         );
         if ($check !== true) {
-            $this->error($check);
+            return $this->error($check);
         }
 
         list($width, $height, $type) = getimagesize($tmpFile->getRealPath()); //获得图片宽高类型
         if ($imgWidth > 0 && $imgHeight > 0) {
             if (!($width >= $imgWidth - 10 && $width <= $imgWidth + 10 && $height >= $imgHeight - 10 && $height <= $imgHeight + 10)) {
-                $this->error('图片尺寸不符合要求:' . $imgWidth . '*' . $imgHeight);
+                return $this->error('图片尺寸不符合要求:' . $imgWidth . '*' . $imgHeight);
             }
         }
 
@@ -57,7 +54,7 @@ trait Image
         $file = $tmpFile->validate(['ext' => 'jpg,gif,png,jpeg,bmp,ico,webp'])->move($path);
         if (!$file) {
             // 上传失败获取错误信息
-            $this->error($tmpFile->getError());
+            return $this->error($tmpFile->getError());
         }
 
         $saveName = $file->getSaveName();
@@ -115,7 +112,7 @@ trait Image
 
         if (get_config('oss_switch') === 'true') {
             if (!class_exists('\think\oss\OSSContext')) {
-                $this->error('您启用了OSS存储，却未安装 think-oss 组件，运行 > composer youyiio/think-oss 进行安装！');
+                return $this->error('您启用了OSS存储，却未安装 think-oss 组件，运行 > composer youyiio/think-oss 进行安装！');
             }
 
             $vendor = get_config('oss_vendor');
@@ -130,6 +127,6 @@ trait Image
         $data['id'] = $imageId;
 
         //$this->success('图片上传成功',null, $data);
-        $this->result($data, 1, '图片上传成功', 'json');
+        return $this->result($data, 1, '图片上传成功', 'json');
     }
 }

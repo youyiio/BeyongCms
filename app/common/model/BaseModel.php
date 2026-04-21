@@ -65,7 +65,7 @@ class BaseModel extends Model
 
         $pk = $this->getPk();
         $pkVal = $this->getKey();
-        $this->where($pk, $pkVal)->setField('ext', json_encode($exts));
+        $this->where($pk, $pkVal)->update(['ext' => json_encode($exts)]);
     }
 
     //meta扩展表
@@ -115,7 +115,7 @@ class BaseModel extends Model
         foreach ($data as $k => $v) {
             $data[$k] = trim($v);
         }
-        $result = $this->where($map)->setField($data);
+        $result = $this->where($map)->update($data);
         return $result;
     }
 
