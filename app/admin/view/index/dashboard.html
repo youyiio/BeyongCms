@@ -16,9 +16,11 @@
             <div class="ibox-content">
                 <h1 class="no-margins">{$todayCount}</h1>
                 {if $dayPercent > 0}
-                <div class="stat-percent font-bold text-navy">{$dayPercent|sprintf='%.2f',###}% <i class="fa fa-level-up"></i></div>
+                <div class="stat-percent font-bold text-navy">{$dayPercent|sprintf='%.2f',###}% <i
+                        class="fa fa-level-up"></i></div>
                 {else /}
-                <div class="stat-percent font-bold text-success">{$dayPercent|sprintf='%.2f',###}% <i class="fa fa-bolt"></i></div>
+                <div class="stat-percent font-bold text-success">{$dayPercent|sprintf='%.2f',###}% <i
+                        class="fa fa-bolt"></i></div>
                 {/if}
                 <small>新增数量</small>
             </div>
@@ -33,9 +35,11 @@
             <div class="ibox-content">
                 <h1 class="no-margins">{$curWeekCount}</h1>
                 {if $weekPercent > 0}
-                <div class="stat-percent font-bold text-navy">{$weekPercent|sprintf='%.2f',###}% <i class="fa fa-level-up"></i></div>
+                <div class="stat-percent font-bold text-navy">{$weekPercent|sprintf='%.2f',###}% <i
+                        class="fa fa-level-up"></i></div>
                 {else /}
-                <div class="stat-percent font-bold text-success">{$weekPercent|sprintf='%.2f',###}% <i class="fa fa-bolt"></i></div>
+                <div class="stat-percent font-bold text-success">{$weekPercent|sprintf='%.2f',###}% <i
+                        class="fa fa-bolt"></i></div>
                 {/if}
                 <small>新增数量</small>
             </div>
@@ -50,9 +54,11 @@
             <div class="ibox-content">
                 <h1 class="no-margins">{$curMonthCount}</h1>
                 {if $monthPercent > 0}
-                <div class="stat-percent font-bold text-navy">{$monthPercent|sprintf='%.2f',###}% <i class="fa fa-level-up"></i></div>
+                <div class="stat-percent font-bold text-navy">{$monthPercent|sprintf='%.2f',###}% <i
+                        class="fa fa-level-up"></i></div>
                 {else /}
-                <div class="stat-percent font-bold text-success">{$monthPercent|sprintf='%.2f',###}% <i class="fa fa-bolt"></i></div>
+                <div class="stat-percent font-bold text-success">{$monthPercent|sprintf='%.2f',###}% <i
+                        class="fa fa-bolt"></i></div>
                 {/if}
                 <small>新增数量</small>
             </div>
@@ -90,9 +96,12 @@
                 <h5>用户新增统计</h5>
                 <div class="pull-right">
                     <div class="btn-group">
-                        <button type="button" class="btn btn-xs btn-white btn-tab" data-action="{:url('index/today')}">今天</button>
-                        <button type="button" class="btn btn-xs btn-white btn-tab" data-action="{:url('index/month')}">本月</button>
-                        <button type="button" class="btn btn-xs btn-white btn-tab" data-action="{:url('index/year')}">年度</button>
+                        <button type="button" class="btn btn-xs btn-white btn-tab"
+                            data-action="{:url('/admin/Index/today')}">今天</button>
+                        <button type="button" class="btn btn-xs btn-white btn-tab"
+                            data-action="{:url('/admin/Index/month')}">本月</button>
+                        <button type="button" class="btn btn-xs btn-white btn-tab"
+                            data-action="{:url('/admin/Index/year')}">年度</button>
                     </div>
                 </div>
             </div>
@@ -115,7 +124,7 @@
 <!-- echarts -->
 <script src="__PUBLIC__/static/echarts/echarts.min.js" type="text/javascript"></script>
 <script>
-    $(document).ready(function() {
+    $(document).ready(function () {
         var option = {
             tooltip: {
                 trigger: 'axis',
@@ -139,10 +148,10 @@
                 }
             },
             grid: {
-                top:20,
-                right:20,
-                bottom:40,
-                left:40,
+                top: 20,
+                right: 20,
+                bottom: 40,
+                left: 40,
             },
             xAxis: {
                 type: 'category',
@@ -152,10 +161,10 @@
             yAxis: {
                 type: 'value',
                 axisLine: {
-                    show:true
+                    show: true
                 },
                 axisTick: {
-                    show:true
+                    show: true
                 }
             },
             series: [{
@@ -188,7 +197,7 @@
                 if (res.code != 1) {
                     return;
                 }
-                
+
                 myChart.setOption(res.data);
             });
         });

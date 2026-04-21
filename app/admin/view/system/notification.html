@@ -11,7 +11,9 @@
             <div class="tabs-container">
                 <ul class="nav nav-tabs">
                     {volist name="tabs" id="vo"}
-                    <li class="{if $vo.tab===$tab}active{/if}"><a href="{:url('System/notification')}?tab={$vo.tab}" aria-expanded="true">{$vo.name}</a></li>
+                    <li class="{if $vo.tab===$tab}active{/if}"><a
+                            href="{:url('/admin/System/notification')}?tab={$vo.tab}"
+                            aria-expanded="true">{$vo.name}</a></li>
                     {/volist}
 
                 </ul>
@@ -21,17 +23,26 @@
 
                             <div class="col-12">
 
-                                <form class="form-horizontal ajax-form" action="{:url('System/notification')}" method="post">
+                                <form class="form-horizontal ajax-form" action="{:url('/admin/System/notification')}"
+                                    method="post">
                                     {volist name="configs" id="config"}
                                     <div class="form-group">
                                         <label class="col-lg-2 col-md-3 control-label">{$config.remark}</label>
                                         <div class="col-lg-6 col-md-9">
                                             {switch $config.value_type}
-                                            {case text}<input type="text" name="{$config.name}" placeholder="{$config.remark}" class="form-control" autocomplete="off" value="{$config.value}">{/case}
-                                            {case bool}<input type="checkbox" class="ajax-switch" name="{$config.name}" {if $config.value === 'true'} checked {/if}>{/case}
-                                            {case number}<input type="number" name="{$config.name}" placeholder="{$config.remark}" class="form-control" autocomplete="off" value="{$config.value}">{/case}
-                                            {case muti_text}<textarea class="form-control"  name="{$config.name}" rows="5" placeholder="">{$config.value}</textarea>{/case}
-                                            {default/}<input type="text" name="{$config.name}" placeholder="{$config.remark}" class="form-control" autocomplete="off" value="{$config.value}">
+                                            {case text}<input type="text" name="{$config.name}"
+                                                placeholder="{$config.remark}" class="form-control" autocomplete="off"
+                                                value="{$config.value}">{/case}
+                                            {case bool}<input type="checkbox" class="ajax-switch" name="{$config.name}"
+                                                {if $config.value==='true' } checked {/if}>{/case}
+                                            {case number}<input type="number" name="{$config.name}"
+                                                placeholder="{$config.remark}" class="form-control" autocomplete="off"
+                                                value="{$config.value}">{/case}
+                                            {case muti_text}<textarea class="form-control" name="{$config.name}"
+                                                rows="5" placeholder="">{$config.value}</textarea>{/case}
+                                            {default/}<input type="text" name="{$config.name}"
+                                                placeholder="{$config.remark}" class="form-control" autocomplete="off"
+                                                value="{$config.value}">
                                             {/switch}
                                             <span class="help-block m-b-none"></span>
                                         </div>
@@ -43,7 +54,8 @@
                                         <div class="col-lg-offset-2 col-lg-10">
                                             <button class="btn btn-success" type="submit">提交</button>
                                             {if $tab == "email"}
-                                            <a href="{:url('System/testEmail')}" class="btn btn-info ajax-a">测试邮件</a>
+                                            <a href="{:url('/admin/System/testEmail')}"
+                                                class="btn btn-info ajax-a">测试邮件</a>
                                             {/if}
                                         </div>
                                     </div>
@@ -69,23 +81,23 @@
 <script src="__PUBLIC__/static/inspinia/js/plugins/switchery/switchery.js"></script>
 <script>
     function changeConfig(name, value) {
-        var url = "{:url(request()->controller() . '/index')}" + "?" + name + "=" + value;
+        var url = "{:url('/admin/' . request()->controller() . '/index')}" + "?" + name + "=" + value;
 
-        $.get(url, function(data) {
+        $.get(url, function (data) {
             if (data.code) {
                 layer.msg(data.msg);
             } else {
-                layer.msg(data.msg, function(){});
+                layer.msg(data.msg, function () { });
             }
         });
     }
 
-    $(document).ready(function() {
+    $(document).ready(function () {
         var elems = document.querySelectorAll('.ajax-switch');
         for (var i = 0; i < elems.length; i++) {
             var checkbox = elems[i];
             var switchery = new Switchery(checkbox, { color: '#1AB394' });
-            checkbox.onchange = function() {
+            checkbox.onchange = function () {
                 changeConfig(this.name, this.checked);
             }
         }

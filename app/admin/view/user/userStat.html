@@ -20,7 +20,7 @@
                         <i class="fa fa-wrench"></i>
                     </a>
                     <ul class="dropdown-menu dropdown-user">
-                        <li><a href="{:url('User/addUser')}">新增用户</a></li>
+                        <li><a href="{:url('/admin/User/addUser')}">新增用户</a></li>
                     </ul>
                     <a class="close-link">
                         <i class="fa fa-times"></i>
@@ -35,17 +35,20 @@
                             <span class="btn btn-warning">请输入需要查询的时间</span>
                         </label>
                         {else/}
-                        <button class="btn btn-default btn-sm">用户注册量<span class="badge badge-info">{$count}</span></button>
+                        <button class="btn btn-default btn-sm">用户注册量<span
+                                class="badge badge-info">{$count}</span></button>
                         {/empty}
                     </div>
                 </div>
                 <div class="col-lg-8 col-md-8 text-right">
                     <form method="get" role="form" class="form-inline">
                         <div class="form-group">
-                            <input type="text" class="form-datetime form-control" placeholder="起始日期" id="queryDate" name="startTime" value="{$Response.get.startTime |default=$startTime}">
+                            <input type="text" class="form-datetime form-control" placeholder="起始日期" id="queryDate"
+                                name="startTime" value="{$Response.get.startTime |default=$startTime}">
                         </div>
                         <div class="form-group">
-                            <input type="text" class="form-datetime form-control" placeholder="终止日期" name="endTime" value="{$Response.get.endTime |default=$endTime}">
+                            <input type="text" class="form-datetime form-control" placeholder="终止日期" name="endTime"
+                                value="{$Response.get.endTime |default=$endTime}">
                         </div>
                         <button type="submit" class="btn btn-primary" style="margin-bottom: 0px">查找</button>
                     </form>
@@ -57,7 +60,7 @@
                     <div class="pull-right">
                         <div class="btn-group">
                             <button type="button" class="btn btn-xs btn-success btn-tab"
-                                    data-action="{:url('user/echartShow',['start'=>$startTimestamp,'end'=>$endTimestamp])}">
+                                data-action="{:url('/admin/user/echartShow',['start'=>$startTimestamp,'end'=>$endTimestamp])}">
                                 报表
                             </button>
                         </div>
@@ -79,44 +82,46 @@
                         <div class="table-responsive">
                             <table class="table table-hover table-striped table-border">
                                 <thead>
-                                <tr>
-                                    <!--<th><input type="checkbox" class="i-checks ajax-check-all"></th>-->
-                                    <th>用户ID</th>
-                                    <th>手机</th>
-                                    <th>邮箱</th>
-                                    <th>昵称</th>
-                                    <th>注册时间</th>
-                                    <th>状态</th>
-                                    <th>推荐人</th>
-                                    <th>来源</th>
-                                    <th>首访</th>
-                                </tr>
+                                    <tr>
+                                        <!--<th><input type="checkbox" class="i-checks ajax-check-all"></th>-->
+                                        <th>用户ID</th>
+                                        <th>手机</th>
+                                        <th>邮箱</th>
+                                        <th>昵称</th>
+                                        <th>注册时间</th>
+                                        <th>状态</th>
+                                        <th>推荐人</th>
+                                        <th>来源</th>
+                                        <th>首访</th>
+                                    </tr>
                                 </thead>
                                 <tbody>
-                                {empty name="list"}
-                                <tr>
-                                    <td colspan="8">暂无数据</td>
-                                </tr>
-                                {else/}
-                                {volist name="list" id="vo"}
-                                <tr>
-                                    <td>{$vo.id}</td>
-                                    <td>{$vo.mobile}</td>
-                                    <td>{$vo.email}</td>
-                                    <td>{$vo.nickname}</td>
-                                    <td>{$vo.register_time}</td>
-                                    <td>{$vo.status_html|raw}</td>
-                                    <td>{$vo.referee}</td>
-                                    <td><span title="{$vo.from_referee}">{$vo.from_referee|sub_str=###,0,30}</span></td>
-                                    <td><span title="{$vo.entrance_url}">{$vo.entrance_url|sub_str=###,0,30}</span></td>
-                                </tr>
-                                {/volist}
-                                {/empty}
+                                    {empty name="list"}
+                                    <tr>
+                                        <td colspan="8">暂无数据</td>
+                                    </tr>
+                                    {else/}
+                                    {volist name="list" id="vo"}
+                                    <tr>
+                                        <td>{$vo.id}</td>
+                                        <td>{$vo.mobile}</td>
+                                        <td>{$vo.email}</td>
+                                        <td>{$vo.nickname}</td>
+                                        <td>{$vo.register_time}</td>
+                                        <td>{$vo.status_html|raw}</td>
+                                        <td>{$vo.referee}</td>
+                                        <td><span title="{$vo.from_referee}">{$vo.from_referee|sub_str=###,0,30}</span>
+                                        </td>
+                                        <td><span title="{$vo.entrance_url}">{$vo.entrance_url|sub_str=###,0,30}</span>
+                                        </td>
+                                    </tr>
+                                    {/volist}
+                                    {/empty}
                                 </tbody>
                                 <tfoot>
-                                <tr>
-                                    <td colspan="9" class="footable-visible">{$pages|raw}</td>
-                                </tr>
+                                    <tr>
+                                        <td colspan="9" class="footable-visible">{$pages|raw}</td>
+                                    </tr>
                                 </tfoot>
                             </table>
                         </div>
@@ -137,7 +142,7 @@
 <!-- echarts -->
 <script src="__PUBLIC__/static/echarts/echarts.min.js" type="text/javascript"></script>
 <script>
-    $(document).ready(function() {
+    $(document).ready(function () {
         var option = {
             tooltip: {
                 trigger: 'axis',
@@ -161,10 +166,10 @@
                 }
             },
             grid: {
-                top:20,
-                right:20,
-                bottom:40,
-                left:40,
+                top: 20,
+                right: 20,
+                bottom: 40,
+                left: 40,
             },
             xAxis: {
                 type: 'category',
@@ -174,17 +179,17 @@
             yAxis: {
                 type: 'value',
                 axisLine: {
-                    show:true
+                    show: true
                 },
                 axisTick: {
-                    show:true
+                    show: true
                 }
             },
             series: [{
                 name: '注册量',
                 data: [],
                 type: 'bar',
-                barMaxWidth:60
+                barMaxWidth: 60
             }]
         };
 
@@ -203,7 +208,7 @@
 
             var url = $(this).data('action');
             myChart.showLoading();
-            $.getJSON(url, [1522281600,1523404800], function (json) {
+            $.getJSON(url, [1522281600, 1523404800], function (json) {
                 myChart.hideLoading();
                 // admin.log(json);
                 if (json.code != 1) {
@@ -230,8 +235,7 @@
 
 
     $('#dateType').change(function () {
-        if ($('#dateType').val() == "day")
-        {
+        if ($('#dateType').val() == "day") {
             $('.form-datetime').datetimepicker({
                 language: 'zh-CN',
                 format: 'yyyy-mm-dd',

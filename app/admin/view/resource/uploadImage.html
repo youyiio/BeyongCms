@@ -21,15 +21,16 @@
             </div>
         </div>
         <div class="ibox-content">
-            <form class="form-horizontal ajax-form" action="{:url('uploadImage')}" method="post">
+            <form class="form-horizontal ajax-form" action="{:url('/admin/Resource/uploadImage')}" method="post">
 
                 <div class="form-group">
-                    <label class="col-lg-2 control-label" >上传图片</label>
+                    <label class="col-lg-2 control-label">上传图片</label>
                     <div class="col-lg-10">
-                        <input type="hidden" name="imageId" id="imageId" value="" >
+                        <input type="hidden" name="imageId" id="imageId" value="">
                         {assign name="dropzone_thumb_width" value="140"/}
                         {assign name="dropzone_thumb_height" value="140"/}
-                        <div class="dropzone needsclick dz-clickable" id="uploadImage" data-input-name="imageId"  data-thumb-width="{$dropzone_thumb_width}" data-thumb-height="{$dropzone_thumb_height}">
+                        <div class="dropzone needsclick dz-clickable" id="uploadImage" data-input-name="imageId"
+                            data-thumb-width="{$dropzone_thumb_width}" data-thumb-height="{$dropzone_thumb_height}">
                             <div class="dz-message needsclick">
 
                                 点击此处上传图片 <br>
@@ -76,12 +77,12 @@
 <script>
 
     var config = {
-        '.chosen-select'           : {},
-        '.chosen-select-deselect'  : {allow_single_deselect:true},
-        '.chosen-select-search'    : {search_contains:true},
-        '.chosen-select-no-single' : {disable_search_threshold:10},
-        '.chosen-select-no-results': {no_results_text:'没有匹配的选项'},
-        '.chosen-select-width'     : {width:"100%!important"}
+        '.chosen-select': {},
+        '.chosen-select-deselect': { allow_single_deselect: true },
+        '.chosen-select-search': { search_contains: true },
+        '.chosen-select-no-single': { disable_search_threshold: 10 },
+        '.chosen-select-no-results': { no_results_text: '没有匹配的选项' },
+        '.chosen-select-width': { width: "100%!important" }
     };
     for (var selector in config) {
         $(selector).chosen(config[selector]);
@@ -107,11 +108,11 @@
         acceptedFiles: '.jpg,.jpeg,.png,.gif', //允许上传的文件后缀
         dictCancelUpload: '取消上传',
         dictRemoveFile: '删除图片',
-        maxfilesexceeded: function(file) {
-            layer.alert('超最大数量,请删除现有文件后再上传', {icon: 2, title: '上传失败'});
+        maxfilesexceeded: function (file) {
+            layer.alert('超最大数量,请删除现有文件后再上传', { icon: 2, title: '上传失败' });
             file.previewElement.remove();
         },
-        sending: function(file,xhr,formData) {
+        sending: function (file, xhr, formData) {
             var $element = $(this.element);
             //图片尺寸
             formData.append("width", $element.data('width'));
@@ -120,7 +121,7 @@
             formData.append("thumbWidth", $element.data('thumbWidth'));
             formData.append("thumbHeight", $element.data('thumbHeight'));
         },
-        success: function(file,response) {
+        success: function (file, response) {
             //admin.log(response);
             var $element = $(this.element);
             var thumbWidth = $element.data('thumbWidth');
@@ -130,23 +131,23 @@
                 var imageId = response.data.id;
                 var imageUrl = "" + response.data.file_url;
                 $('#' + $element.data('inputName')).val(imageId);
-                var displayHtml = '<img src="'+imageUrl+'" style="border:1px solid #ccc;width:_thumbWidth_px;height:_thumbHeight_px;max-width:100%">';
+                var displayHtml = '<img src="' + imageUrl + '" style="border:1px solid #ccc;width:_thumbWidth_px;height:_thumbHeight_px;max-width:100%">';
                 displayHtml = displayHtml.replace('_thumbWidth_', thumbWidth);
                 displayHtml = displayHtml.replace('_thumbHeight_', thumbHeight);
                 $element.find('.dz-message').html('').append(displayHtml);
             } else {
-                layer.alert(response.msg, {icon: 2, title: '上传失败'});
+                layer.alert(response.msg, { icon: 2, title: '上传失败' });
                 file.previewElement.remove();
             }
         },
-        complete: function(file){
+        complete: function (file) {
             if (this.options.maxFiles == 1) {
                 this.removeFile(file);
             }
         },
-        error: function(file,message) {
+        error: function (file, message) {
             //上传错误
-            layer.alert(response.msg, {icon: 2, title: '上传失败'});
+            layer.alert(response.msg, { icon: 2, title: '上传失败' });
             file.previewElement.remove();
         }
     });

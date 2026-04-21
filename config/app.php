@@ -20,7 +20,7 @@ return [
     // 域名绑定（自动多应用模式有效）
     'domain_bind'      => [],
     // 禁止URL访问的应用列表（自动多应用模式有效）
-    'deny_app_list'    => [],
+    'deny_app_list'    => ['common'],
 
     // 默认跳转页面对应的模板文件
     'dispatch_success_tmpl'  => app()->getAppPath() . 'tpl/dispatch_jump.tpl',

@@ -20,19 +20,22 @@
             </div>
         </div>
         <div class="ibox-content">
-            <form class="form-horizontal ajax-form" action="{:url(request()->controller().'/'. request()->action())}" method="post">
+            <form class="form-horizontal ajax-form"
+                action="{:url('/admin/'.request()->controller().'/'. request()->action())}" method="post">
 
                 <div class="form-group">
                     <label class="col-lg-2 control-label" for="title">标题</label>
                     <div class="col-lg-10">
-                        <input class="form-control" type="text" id="title" name="title" placeholder="标题" value="{$ad.title|default=''}" >
+                        <input class="form-control" type="text" id="title" name="title" placeholder="标题"
+                            value="{$ad.title|default=''}">
                         <span class="help-block m-b-none"></span>
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="col-lg-2 control-label" for="url">链接</label>
                     <div class="col-lg-10">
-                        <input class="form-control" type="text" id="url" name="url" placeholder="链接,以http://开头" value="{$ad.url|default='http://'}">
+                        <input class="form-control" type="text" id="url" name="url" placeholder="链接,以http://开头"
+                            value="{$ad.url|default='http://'}">
                         <span class="help-block m-b-none"></span>
                     </div>
                 </div>
@@ -43,10 +46,14 @@
                         $themeConfig = get_theme_config('cms');
                         $adImages = $themeConfig['ad_images'];
                         {/php}
-                        <select name="slot_ids[]" id="slot_ids" data-placeholder="请选择广告位置" class="form-control chosen-select form-control chosen-select-deselect chosen-select-no-single chosen-select-no-results chosen-select-search"  ><!-- 多选加: multiple-->
+                        <select name="slot_ids[]" id="slot_ids" data-placeholder="请选择广告位置"
+                            class="form-control chosen-select form-control chosen-select-deselect chosen-select-no-single chosen-select-no-results chosen-select-search"><!-- 多选加: multiple-->
                             <option value="-1">请选择显示位置</option>
                             {volist name="slotList" id="vo"}
-                            <option value="{$vo.id}" data-image-size="{if isset($adImages[$vo['name']])}{:htmlspecialchars(json_encode($adImages[$vo['name']]))}{/if}" {present name="$ad"}{in name="vo.id" value="$oldSlots"}selected{/in}{/present}>{$vo.title}</option>
+                            <option value="{$vo.id}"
+                                data-image-size="{if isset($adImages[$vo['name']])}{:htmlspecialchars(json_encode($adImages[$vo['name']]))}{/if}"
+                                {present name="$ad" }{in name="vo.id" value="$oldSlots" }selected{/in}{/present}>
+                                {$vo.title}</option>
                             {/volist}
                         </select>
                         <span class="help-block m-b-none"></span>
@@ -55,7 +62,8 @@
                 <div class="form-group">
                     <label class="col-lg-2 control-label" for="sort">排序</label>
                     <div class="col-lg-10">
-                        <input class="form-control" type="number" id="sort" name="sort" placeholder="排序" value="{$ad.sort|default='1'}">
+                        <input class="form-control" type="number" id="sort" name="sort" placeholder="排序"
+                            value="{$ad.sort|default='1'}">
                         <span class="help-block m-b-none">数值越小越靠前</span>
                     </div>
                 </div>
@@ -64,11 +72,13 @@
                     <div class="col-lg-10">
                         <input type="hidden" name="image_id" id="image_id" value="{$ad.image_id|default=''}">
                         {php}$ad_image = ['width'=>1000,'height'=>300,'thumb_width'=>500,'thumb_height'=>150];{/php}
-                        <div class="dropzone needsclick dz-clickable" id="uploadImage" data-input-name="image_id" data-width="{$ad_image.width}" data-height="{$ad_image.height}"
-                             data-thumb-width="{$ad_image.thumb_width}" data-thumb-height="{$ad_image.thumb_height}">
+                        <div class="dropzone needsclick dz-clickable" id="uploadImage" data-input-name="image_id"
+                            data-width="{$ad_image.width}" data-height="{$ad_image.height}"
+                            data-thumb-width="{$ad_image.thumb_width}" data-thumb-height="{$ad_image.thumb_height}">
                             <div class="dz-message needsclick">
                                 {if isset($ad) && $ad.image_id > 0}
-                                <img src="{$ad.image.full_file_url}" style="border:1px solid #ccc;width:{$ad_image.thumb_width}px;height:{$ad_image.thumb_height}px">
+                                <img src="{$ad.image.full_file_url}"
+                                    style="border:1px solid #ccc;width:{$ad_image.thumb_width}px;height:{$ad_image.thumb_height}px">
                                 {else/}
                                 点击此处上传图片规格 （请先选择广告显示位置）<br>
                                 <span class="note needsclick"></span>
@@ -100,12 +110,12 @@
 <script>
 
     var config = {
-        '.chosen-select'           : {},
-        '.chosen-select-deselect'  : {allow_single_deselect:true},
-        '.chosen-select-search'    : {search_contains:true},
-        '.chosen-select-no-single' : {disable_search_threshold:10},
-        '.chosen-select-no-results': {no_results_text:'没有匹配的选项'},
-        '.chosen-select-width'     : {width:"100%!important"}
+        '.chosen-select': {},
+        '.chosen-select-deselect': { allow_single_deselect: true },
+        '.chosen-select-search': { search_contains: true },
+        '.chosen-select-no-single': { disable_search_threshold: 10 },
+        '.chosen-select-no-results': { no_results_text: '没有匹配的选项' },
+        '.chosen-select-width': { width: "100%!important" }
     };
     for (var selector in config) {
         $(selector).chosen(config[selector]);
@@ -115,7 +125,7 @@
     //图片上传
     Dropzone.autoDiscover = false;
     $("#uploadImage").dropzone({
-        url: "{:url('Image/upcrop')}",
+        url: "{:url('/admin/Image/upcrop')}",
         paramName: 'file', //input的name
         maxFilesize: 5, // MB
         addRemoveLinks: true, //添加删除链接
@@ -126,11 +136,11 @@
         // thumbnailheight: 200,
         dictCancelUpload: '取消上传',
         dictRemoveFile: '删除图片',
-        maxfilesexceeded: function(file) {
-            layer.alert('超最大数量,请删除现有文件后再上传', {icon: 2, title: '错误'});
+        maxfilesexceeded: function (file) {
+            layer.alert('超最大数量,请删除现有文件后再上传', { icon: 2, title: '错误' });
             file.previewElement.remove();
         },
-        sending: function(file,xhr,formData) {
+        sending: function (file, xhr, formData) {
             var $element = $(this.element);
             //图片尺寸
             formData.append("width", $element.data('width'));
@@ -139,7 +149,7 @@
             formData.append("thumbWidth", $element.data('thumbWidth'));
             formData.append("thumbHeight", $element.data('thumbHeight'));
         },
-        success: function(file,response) {
+        success: function (file, response) {
             var $element = $(this.element);
             var thumbWidth = $element.data('thumbWidth');
             var thumbHeight = $element.data('thumbHeight');
@@ -148,10 +158,10 @@
                 var imageId = response.data.id;
                 var imageUrl = "" + response.data.file_url;
                 $('#' + $element.data('inputName')).val(imageId);
-                var displayHtml = '<img src="'+imageUrl+'" style="border:1px solid #ccc;width:_thumbWidth_px;height:_thumbHeight_px;max-width:100%">';
+                var displayHtml = '<img src="' + imageUrl + '" style="border:1px solid #ccc;width:_thumbWidth_px;height:_thumbHeight_px;max-width:100%">';
                 if (thumbWidth == 0) {
                     //按500等比例缩放
-                    displayHtml = '<img src="'+imageUrl+'" width="500" style="border:1px solid #ccc;max-width:100%">';
+                    displayHtml = '<img src="' + imageUrl + '" width="500" style="border:1px solid #ccc;max-width:100%">';
                 }
                 displayHtml = displayHtml.replace('_thumbWidth_', thumbWidth);
                 displayHtml = displayHtml.replace('_thumbHeight_', thumbHeight);
@@ -171,17 +181,17 @@
                     });
                 }
             } else {
-                layer.alert(response.msg, {icon: 2, title: '上传失败'});
+                layer.alert(response.msg, { icon: 2, title: '上传失败' });
             }
         },
-        complete: function(file) {
+        complete: function (file) {
             if (this.options.maxFiles == 1) {
                 this.removeFile(file);
             }
         },
-        error: function(file, message) {
+        error: function (file, message) {
             //上传错误
-            layer.alert(message, {icon: 2, title: '上传失败'});
+            layer.alert(message, { icon: 2, title: '上传失败' });
             //file.previewElement.remove();
             this.removeFile(file);
         }

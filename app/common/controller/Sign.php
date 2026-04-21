@@ -133,6 +133,8 @@ class Sign extends BaseController
         $loginSuccessView = $this->defaultConfig['login_success_view'];
         if (input('redirect')) {
             $loginSuccessView = urldecode(input('redirect'));
+            dump(input('redirect'));
+            die($loginSuccessView);
         }
 
         return $this->success('登陆成功', $loginSuccessView);

@@ -9,6 +9,7 @@
 
         width: 100%;
     }
+
     .theme-body {
         border: 1px solid #e7eaec;
         padding: 0;
@@ -17,18 +18,20 @@
         margin-bottom: 20px;
         margin-right: 20px;
     }
+
     .theme-image {
         height: 100px;
         overflow: hidden;
     }
+
     .theme-name {
         padding: 10px;
         background-color: #f8f8f8;
         border-top: 1px solid #e7eaec;
     }
-    .theme-name strong {
 
-    }
+    .theme-name strong {}
+
     .theme-name small {
         color: #676a6c;
     }
@@ -49,7 +52,8 @@
                 <div class="file-manager">
                     <h5>本地已安装主题：</h5>
                     <ul class="folder-list" style="padding: 0">
-                        <li><a href="javascript:void(0)"><i class="fa fa-folder"></i> Cms(<span class="text-danger">0</span>)</a>
+                        <li><a href="javascript:void(0)"><i class="fa fa-folder"></i> Cms(<span
+                                    class="text-danger">0</span>)</a>
                         </li>
                         <li><a href="javascript:void(0)"><i class="fa fa-folder"></i> 企业官网(0)</a>
                         </li>
@@ -91,9 +95,11 @@
                                 {if $vo.package_name == get_config('theme_package_name')}
                                 <a href="#" class="btn btn-sm btn-primary" disabled="">当前主题</a>
                                 {else/}
-                                <a href="{:url('Theme/setCurrentTheme', ['package_name'=>$vo.package_name])}" class="btn btn-sm btn-primary ajax-a">切换</a>
+                                <a href="{:url('/admin/Theme/setCurrentTheme', ['package_name'=>$vo.package_name])}"
+                                    class="btn btn-sm btn-primary ajax-a">切换</a>
                                 {/if}
-                                <a href="{$vo.download_url|default='#'}" class="btn btn-sm btn-success" disabled="">安装</a>
+                                <a href="{$vo.download_url|default='#'}" class="btn btn-sm btn-success"
+                                    disabled="">安装</a>
                                 <a href="{$vo.demo_url|default='#'}" class="btn btn-sm btn-white">在线演示</a>
                             </div>
                         </a>
@@ -114,33 +120,33 @@
 
 {block name="js"}
 <script>
-    $(function() {
-        layui.use('upload', function(){
+    $(function () {
+        layui.use('upload', function () {
             var upload = layui.upload;
 
             var loading = '';
             //执行实例
             var uploadInst = upload.render({
                 elem: '#uploadTheme' //绑定元素
-                ,url: "{:url('admin/File/upload')}" //上传接口
-                ,accept: 'file'
-                ,exts: 'zip|7z'
-                ,before: function() {
+                , url: "{:url('/admin/File/upload')}" //上传接口
+                , accept: 'file'
+                , exts: 'zip|7z'
+                , before: function () {
                     loading = layer.load(1);
                 }
-                ,done: function(res) {
+                , done: function (res) {
                     //上传完毕回调
                     if (res.code != 1) {
                         layer.close(loading);
-                        layer.msg(res.msg, function(){});
+                        layer.msg(res.msg, function () { });
                         return;
                     }
 
                     let fileId = res.data.id;
-                    $.getJSON("{:url('admin/Theme/upload')}", {fileId: fileId}, function (json) {
+                    $.getJSON("{:url('/admin/Theme/upload')}", { fileId: fileId }, function (json) {
                         layer.close(loading);
                         if (json.code != 1) {
-                            layer.msg(json.msg, function(){});
+                            layer.msg(json.msg, function () { });
                             return;
                         }
 
@@ -152,9 +158,9 @@
                     });
 
                 }
-                ,error: function() {
+                , error: function () {
                     //请求异常回调
-                    layer.msg('上传出错!', function(){});
+                    layer.msg('上传出错!', function () { });
                 }
             });
         });

@@ -20,14 +20,16 @@
             <div class="ibox-content">
                 <div class="row">
                     <div class="col-lg-12 col-md-12">
-                        <form class="form form-horizontal" action="{:url('Crawler/preprocess')}" method="get">
+                        <form class="form form-horizontal" action="{:url('/admin/Crawler/preprocess')}" method="get">
                             <div class="form-group">
-                                <label class="col-lg-2 control-label">采集规则<span class="text text-danger">*</span>:</label>
+                                <label class="col-lg-2 control-label">采集规则<span
+                                        class="text text-danger">*</span>:</label>
                                 <div class="col-lg-10">
                                     <select name="crawlerId" class="form-control" onchange="selectChange()">
                                         <option value="-1">查看全部</option>
                                         {volist name='crawlerList' id='vo'}
-                                        <option value="{$vo.id}" {notempty name="Think.get.crawlerId"}{eq name="Think.get.crawlerId" value="$vo['id']"}selected{/eq} {/notempty}>
+                                        <option value="{$vo.id}" {notempty name="Think.get.crawlerId" }{eq
+                                            name="Think.get.crawlerId" value="$vo['id']" }selected{/eq} {/notempty}>
                                             {$vo.title}
                                         </option>
                                         {/volist}
@@ -36,32 +38,48 @@
                             </div>
 
                             <div class="form-group">
-                                <label class="col-lg-2 control-label">替换范围<span class="text text-danger">*</span>:</label>
+                                <label class="col-lg-2 control-label">替换范围<span
+                                        class="text text-danger">*</span>:</label>
                                 <div class="col-lg-10">
                                     <select class="form-control" name="replaceField" data-placeholder="选择替换范围">
-                                        <option value="all" {notempty name="Think.get.crawlerId"}{eq name="Think.get.replaceField" value="all"} selected{/eq}{/notempty}>全部(all)</option>
-                                        <option value="title" {notempty name="Think.get.crawlerId"}{eq name="Think.get.replaceField" value="title"} selected{/eq}{/notempty}>标题(title)</option>
-                                        <option value="keywords" {notempty name="Think.get.crawlerId"}{eq name="Think.get.replaceField" value="keywords"} selected{/eq}{/notempty}>关键词(keywords)</option>
-                                        <option value="description" {notempty name="Think.get.crawlerId"}{eq name="Think.get.replaceField" value="description"} selected{/eq}{/notempty}>简介(description)</option>
-                                        <option value="content" {notempty name="Think.get.crawlerId"}{eq name="Think.get.replaceField" value="content"} selected{/eq}{/notempty}>内容(content)</option>
+                                        <option value="all" {notempty name="Think.get.crawlerId" }{eq
+                                            name="Think.get.replaceField" value="all" } selected{/eq}{/notempty}>全部(all)
+                                        </option>
+                                        <option value="title" {notempty name="Think.get.crawlerId" }{eq
+                                            name="Think.get.replaceField" value="title" } selected{/eq}{/notempty}>
+                                            标题(title)</option>
+                                        <option value="keywords" {notempty name="Think.get.crawlerId" }{eq
+                                            name="Think.get.replaceField" value="keywords" } selected{/eq}{/notempty}>
+                                            关键词(keywords)</option>
+                                        <option value="description" {notempty name="Think.get.crawlerId" }{eq
+                                            name="Think.get.replaceField" value="description" }
+                                            selected{/eq}{/notempty}>简介(description)</option>
+                                        <option value="content" {notempty name="Think.get.crawlerId" }{eq
+                                            name="Think.get.replaceField" value="content" } selected{/eq}{/notempty}>
+                                            内容(content)</option>
                                     </select>
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="col-lg-2 control-label">替换规则<span class="text text-danger">*</span>:</label>
+                                <label class="col-lg-2 control-label">替换规则<span
+                                        class="text text-danger">*</span>:</label>
                                 <div class="col-lg-5">
-                                    <input type="text" name="searchText" placeholder="请输入替换的文字，支持正则表达式/regular/Uixs" class="form-control" value="{$Response.get.searchText|default=''}" autocomplete="off">
+                                    <input type="text" name="searchText" placeholder="请输入替换的文字，支持正则表达式/regular/Uixs"
+                                        class="form-control" value="{$Response.get.searchText|default=''}"
+                                        autocomplete="off">
                                     <span class="help-block m-b-none"></span>
                                 </div>
                                 <div class="col-lg-5">
-                                    <input type="text" name="replaceText" placeholder="请输入替换后的文本" class="form-control" value="{$Response.get.replaceText|default=''}" autocomplete="off">
+                                    <input type="text" name="replaceText" placeholder="请输入替换后的文本" class="form-control"
+                                        value="{$Response.get.replaceText|default=''}" autocomplete="off">
                                     <span class="help-block m-b-none"></span>
                                 </div>
                             </div>
 
                             <div class="form-group">
                                 <div class="col-lg-offset-10 col-lg-2 text-right">
-                                    <button id="replaceButton" class="btn btn-warning" type="button"><i class="fa fa-pencil"></i>替换</button>
+                                    <button id="replaceButton" class="btn btn-warning" type="button"><i
+                                            class="fa fa-pencil"></i>替换</button>
                                     <button class="btn btn-primary" type="submit"><i class="fa fa-eye"></i>查找</button>
                                 </div>
                             </div>
@@ -74,58 +92,81 @@
                     <div class="fixed-table-container">
                         <table class="table table-bordered table-hover table-striped table-condensed col-lg-12">
                             <thead>
-                            <tr>
-                                <th><div class="th-inner">ID</div></th>
-                                <th><div class="th-inner">分类</div></th>
-                                <th><div class="th-inner">标题</div></th>
-                                <th><div class="th-inner">采集规则</div></th>
-                                <th><div class="th-inner">状态</div></th>
-                                <th><div class="th-inner">发布时间</div></th>
-                                <th><div class="th-inner">创建时间</div></th>
-                                <th><div class="th-inner">操作</div></th>
-                            </tr>
+                                <tr>
+                                    <th>
+                                        <div class="th-inner">ID</div>
+                                    </th>
+                                    <th>
+                                        <div class="th-inner">分类</div>
+                                    </th>
+                                    <th>
+                                        <div class="th-inner">标题</div>
+                                    </th>
+                                    <th>
+                                        <div class="th-inner">采集规则</div>
+                                    </th>
+                                    <th>
+                                        <div class="th-inner">状态</div>
+                                    </th>
+                                    <th>
+                                        <div class="th-inner">发布时间</div>
+                                    </th>
+                                    <th>
+                                        <div class="th-inner">创建时间</div>
+                                    </th>
+                                    <th>
+                                        <div class="th-inner">操作</div>
+                                    </th>
+                                </tr>
                             </thead>
                             <tbody class="body">
-                            {foreach name='articleList' item='vo'}
-                            <tr>
-                                <td>{$vo.id}</td>
-                                <td>
-                                    {volist name="vo.categorys" id="categoryVo" empty="未分类"}
-                                    {gt name="key" value="0"}<br>{/gt}<span class="label">{$categoryVo.title}</span>
-                                    {/volist}
-                                </td>
-                                <td><a href="{:url('Article/viewArticle',['id'=>$vo['id']])}">{$vo.title}</a></td>
-                                <td>{$vo.crawlerMeta.crawler.title}</td>
-                                <td>{$vo.status_text}</td>
-                                <td>{if $vo.status == $ArticleModel->STATUS_PUBLISHED}
-                                    {$vo.post_time}
-                                    {else /}
-                                    {notempty name="$vo.timing"}{$vo.timing}<i class="fa fa-clock-o"></i>{/notempty}
-                                    {/if}
-                                </td>
-                                <td>{$vo.create_time}</td>
-                                <td>
-                                    <div class="btn-group">
-                                        <button data-toggle="dropdown" class="btn btn-white btn-xs dropdown-toggle">
-                                            操作<span class="caret"></span>
-                                        </button>
+                                {foreach name='articleList' item='vo'}
+                                <tr>
+                                    <td>{$vo.id}</td>
+                                    <td>
+                                        {volist name="vo.categorys" id="categoryVo" empty="未分类"}
+                                        {gt name="key" value="0"}<br>{/gt}<span class="label">{$categoryVo.title}</span>
+                                        {/volist}
+                                    </td>
+                                    <td><a href="{:url('/admin/Article/viewArticle',['id'=>$vo['id']])}">{$vo.title}</a>
+                                    </td>
+                                    <td>{$vo.crawlerMeta.crawler.title}</td>
+                                    <td>{$vo.status_text}</td>
+                                    <td>{if $vo.status == $ArticleModel->STATUS_PUBLISHED}
+                                        {$vo.post_time}
+                                        {else /}
+                                        {notempty name="$vo.timing"}{$vo.timing}<i class="fa fa-clock-o"></i>{/notempty}
+                                        {/if}
+                                    </td>
+                                    <td>{$vo.create_time}</td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <button data-toggle="dropdown" class="btn btn-white btn-xs dropdown-toggle">
+                                                操作<span class="caret"></span>
+                                            </button>
 
-                                        <ul class="dropdown-menu">
-                                            <li>
-                                                <a href="{:url('Article/viewArticle',['id'=>$vo['id']])}" class="J_addMenuTab" data-menu-name="查看文章"><i class="fa fa-eye"></i> 查看</a>
-                                            </li>
-                                            <li>
-                                                <a href="{:url('Article/editArticle',['id'=>$vo['id'],'redirect'=>urlencode(get_cur_url())])}" class="J_addMenuTab"><i class="fa fa-pencil"></i> 修改</a>
-                                            </li>
-                                            <li class="divider"></li>
-                                            <li>
-                                                <a href="javascript:void(0)" class="text-danger ajax-btn-warning" data-action="{:url('Article/deleteArticle',['id'=>$vo['id']])}" data-title="提示" data-text="您确认要删除文章吗"><i class="fa fa-trash"></i> 删除</a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </td>
-                            </tr>
-                            {/foreach}
+                                            <ul class="dropdown-menu">
+                                                <li>
+                                                    <a href="{:url('/admin/Article/viewArticle',['id'=>$vo['id']])}"
+                                                        class="J_addMenuTab" data-menu-name="查看文章"><i
+                                                            class="fa fa-eye"></i> 查看</a>
+                                                </li>
+                                                <li>
+                                                    <a href="{:url('/admin/Article/editArticle',['id'=>$vo['id'],'redirect'=>urlencode(get_cur_url())])}"
+                                                        class="J_addMenuTab"><i class="fa fa-pencil"></i> 修改</a>
+                                                </li>
+                                                <li class="divider"></li>
+                                                <li>
+                                                    <a href="javascript:void(0)" class="text-danger ajax-btn-warning"
+                                                        data-action="{:url('/admin/Article/deleteArticle',['id'=>$vo['id']])}"
+                                                        data-title="提示" data-text="您确认要删除文章吗"><i
+                                                            class="fa fa-trash"></i> 删除</a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {/foreach}
                             </tbody>
                         </table>
                     </div>
@@ -146,9 +187,9 @@
 <script>
     function selectChange() {
         let crawlerId = $("select[name='crawlerId'] option:selected").val();
-        window.location.href = "{:url('Crawler/preprocess')}?crawlerId=" + crawlerId;
+        window.location.href = "{:url('/admin/Crawler/preprocess')}?crawlerId=" + crawlerId;
     }
-    
+
     $("#replaceButton").click(function () {
         let crawlerId = $("select[name='crawlerId']").val();
         let searchText = $("input[name='searchText']").val();
@@ -170,12 +211,12 @@
         let loading = layer.load(1);
         $.ajax({
             type: 'get',
-            url: '{:url(request()->controller().\'/\'.request()->action())}',
+            url: "{:url('/admin/'.request()->controller().'\'.request()->action())}",
             data: data,
             success: function (resp) {
                 layer.close(loading);
                 if (resp.code == 0) {
-                    layer.msg(resp.msg, function() {});
+                    layer.msg(resp.msg, function () { });
                     return;
                 }
 

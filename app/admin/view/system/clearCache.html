@@ -1,7 +1,8 @@
 {extend name="public/base" /}
 {block name="title"}系统设置{/block}
 {block name="css"}
-<link href="__PUBLIC__/static/inspinia/css/plugins/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css" rel="stylesheet">
+<link href="__PUBLIC__/static/inspinia/css/plugins/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css"
+    rel="stylesheet">
 {/block}
 
 {block name="main"}
@@ -21,7 +22,7 @@
                     </div>
                 </div>
                 <div class="ibox-content">
-                    <form class="form-horizontal ajax-form" action="{:url('System/clearCache')}" method="post">
+                    <form class="form-horizontal ajax-form" action="{:url('/admin/System/clearCache')}" method="post">
                         <div class="form-group">
                             <label class="col-lg-3 control-label">模板缓存:</label>
                             <div class="col-lg-9">

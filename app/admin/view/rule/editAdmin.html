@@ -8,7 +8,7 @@
         <h2>权限控制</h2>
         <ol class="breadcrumb">
             <li>
-                <a href="{:url('Rule/userList')}">管理员列表</a>
+                <a href="{:url('/admin/Rule/userList')}">管理员列表</a>
             </li>
             <li class="active">
                 <strong>修改管理员</strong>
@@ -32,13 +32,14 @@
                 </div>
             </div>
             <div class="ibox-content">
-                <form class="form-horizontal ajax-form" action="{:url('Rule/editAdmin')}" method="post">
+                <form class="form-horizontal ajax-form" action="{:url('/admin/Rule/editAdmin')}" method="post">
                     <div class="form-group">
                         <label class="col-lg-2 control-label">分组</label>
                         <div class="col-lg-10">
                             <div class="checkbox">
                                 {volist name="groups" id="vo"}
-                                <label><input type="checkbox" name="group_ids[]" value="{$vo.id}" {if condition="in_array($vo['id'],$userGroups)"}checked{/if}> {$vo.title}</label>
+                                <label><input type="checkbox" name="group_ids[]" value="{$vo.id}" {if
+                                        condition="in_array($vo['id'],$userGroups)" }checked{/if}> {$vo.title}</label>
                                 {/volist}
                             </div>
                             <span class="help-block m-b-none"></span>
@@ -46,17 +47,22 @@
                     </div>
                     <div class="form-group">
                         <label class="col-lg-2 control-label">昵称</label>
-                        <div class="col-lg-10"><input type="text" name="nickname" placeholder="昵称" class="form-control" value="{$user.nickname|default=''}" autocomplete="off"> <span class="help-block m-b-none"></span>
+                        <div class="col-lg-10"><input type="text" name="nickname" placeholder="昵称" class="form-control"
+                                value="{$user.nickname|default=''}" autocomplete="off"> <span
+                                class="help-block m-b-none"></span>
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-lg-2 control-label">邮箱</label>
-                        <div class="col-lg-10"><input type="text" name="email" placeholder="邮箱" class="form-control" value="{$user.email|default=''}"> <span class="help-block m-b-none"></span>
+                        <div class="col-lg-10"><input type="text" name="email" placeholder="邮箱" class="form-control"
+                                value="{$user.email|default=''}"> <span class="help-block m-b-none"></span>
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-lg-2 control-label">初始密码</label>
-                        <div class="col-lg-10"><input type="text" name="password" placeholder="登录密码" class="form-control" value="" autocomplete="off"> <span class="help-block m-b-none">留空表示不修改密码</span>
+                        <div class="col-lg-10"><input type="text" name="password" placeholder="登录密码"
+                                class="form-control" value="" autocomplete="off"> <span
+                                class="help-block m-b-none">留空表示不修改密码</span>
                         </div>
                     </div>
 
@@ -65,11 +71,13 @@
                         <div class="col-lg-10">
                             <div class="radio">
                                 <label>
-                                    <input type="radio" name="status" id="status" value="1" {eq name="user.status" value="1"}checked{/eq}>
+                                    <input type="radio" name="status" id="status" value="1" {eq name="user.status"
+                                        value="1" }checked{/eq}>
                                     允许登录
                                 </label>
                                 <label>
-                                    <input type="radio" name="status" id="status" value="0" {eq name="user.status" value="0"}checked{/eq}>
+                                    <input type="radio" name="status" id="status" value="0" {eq name="user.status"
+                                        value="0" }checked{/eq}>
                                     禁止登录
                                 </label>
                             </div>

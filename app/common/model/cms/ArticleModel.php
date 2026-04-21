@@ -57,7 +57,7 @@ class ArticleModel extends BaseModel
 
         //若文章已发布，提交链接|检测收录，$article['status'] == ArticleModel::STATUS_PUBLISHED 此时做这个判断会有延迟
 
-        $articleUrl = get_config('domain_name') . url('cms/Article/viewArticle', ['aid' => $id], true, false);
+        $articleUrl = get_config('domain_name') . url('frontend/Article/viewArticle', ['aid' => $id], true, false);
 
         //提交链接
         if ($article['status'] == ArticleModel::STATUS_PUBLISHED) {
@@ -104,7 +104,7 @@ class ArticleModel extends BaseModel
         }
         if ($article->status == ArticleModel::STATUS_PUBLISHED) {
             $jobHandlerClass  = 'app\admin\job\Webmaster@pushLinks';
-            $articleUrl = get_config('domain_name') . url('cms/Article/viewArticle', ['aid' => $id], true, false);
+            $articleUrl = get_config('domain_name') . url('frontend/Article/viewArticle', ['aid' => $id], true, false);
             $jobData = ['id' => $id, 'url' => $articleUrl, 'create_time' => date_time()];
             $jobQueue = config('queue.default');
             Queue::push($jobHandlerClass, $jobData, $jobQueue);
@@ -331,5 +331,10 @@ class ArticleModel extends BaseModel
                 }
             }
         }
+    }
+
+    public static function getStatuses()
+    {
+        return (new \ReflectionClass(__CLASS__))->getConstants();
     }
 }

@@ -19,7 +19,7 @@
                         <i class="fa fa-wrench"></i>
                     </a>
                     <ul class="dropdown-menu dropdown-user">
-                        <li><a href="{:url('User/addUser')}">新增用户</a></li>
+                        <li><a href="{:url('/admin/User/addUser')}">新增用户</a></li>
                     </ul>
                     <a class="close-link">
                         <i class="fa fa-times"></i>
@@ -30,42 +30,52 @@
                 <div class="row">
                     <div class="col-lg-12  col-md-12 m-b-xs">
                         <div class="btn-group">
-                            <a href="{:url('User/index')}"  class="btn btn-sm {if input('status','')===''}btn-default active{else/}btn-white{/if}">所有用户<span class="badge">{$userTotal}</span></a>
+                            <a href="{:url('/admin/User/index')}"
+                                class="btn btn-sm {if input('status','')===''}btn-default active{else/}btn-white{/if}">所有用户<span
+                                    class="badge">{$userTotal}</span></a>
                         </div>
                         <div class="btn-group">
-                            <a href="{:url('User/index',['status'=>\\app\\common\\model\\UserModel::STATUS_FREEZED])}" class=" btn btn-sm {if input('status','')==3}btn-warning active{else/}btn-white{/if}">冻结用户<span class="badge badge-danger">{$freezeTotal}</span></a>
+                            <a href="{:url('/admin/User/index',['status'=>\\app\\common\\model\\UserModel::STATUS_FREEZED])}"
+                                class=" btn btn-sm {if input('status','')==3}btn-warning active{else/}btn-white{/if}">冻结用户<span
+                                    class="badge badge-danger">{$freezeTotal}</span></a>
                         </div>
                         <div class="btn-group">
-                            <a href="{:url('User/index',['status'=>\\app\\common\\model\\UserModel::STATUS_ACTIVED])}" class=" btn btn-sm {if input('status','')==2}btn-info active{else/}btn-white{/if}">激活用户<span class="badge badge-success">{$activeTotal}</span></a>
+                            <a href="{:url('/admin/User/index',['status'=>\\app\\common\\model\\UserModel::STATUS_ACTIVED])}"
+                                class=" btn btn-sm {if input('status','')==2}btn-info active{else/}btn-white{/if}">激活用户<span
+                                    class="badge badge-success">{$activeTotal}</span></a>
                         </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-lg-4 col-md-4 m-b-xs">
                         <div class="btn-group">
-                            <a href="{:url('User/addUser')}" class="btn btn-success btn-sm"><i class="fa fa-plus"></i>
+                            <a href="{:url('/admin/User/addUser')}" class="btn btn-success btn-sm"><i
+                                    class="fa fa-plus"></i>
                                 新增</a>
                         </div>
                         <div data-toggle="buttons" class="btn-group">
                             <label class="ladda-button btn btn-sm btn-danger ajax-batch-set" data-style="zoom-in"
-                                   data-action="{:url('User/freeze')}"> <i class="fa fa-close"></i> 禁用 </label>
+                                data-action="{:url('/admin/User/freeze')}"> <i class="fa fa-close"></i> 禁用 </label>
                         </div>
                         <div data-toggle="buttons" class="btn-group">
                             <label class="ladda-button btn btn-sm btn-primary ajax-batch-set" data-style="zoom-in"
-                                   data-action="{:url('User/active')}"> <i class="fa fa-check"></i> 激活 </label>
+                                data-action="{:url('/admin/User/active')}"> <i class="fa fa-check"></i> 激活 </label>
                         </div>
                     </div>
                     <div class="col-lg-8 col-md-8 text-right">
                         <form method="get" role="form" class="form-inline">
                             <div class="form-group">
                                 <input type="text" name="key" placeholder="关键字" class="form-control"
-                                       value="{$Response.get.key|default=''}">
+                                    value="{$Response.get.key|default=''}">
                             </div>
                             <div class="form-group">
                                 <select name="type" class="form-control">
-                                    <option value="mobile" {notempty name="Response.get.type" }{eq name="Response.get.type" value="mobile" }selected{/eq}{/notempty}>手机号</option>
-                                    <option value="email" {notempty name="Response.get.type" }{eq name="Response.get.type" value="email" }selected{/eq}{/notempty}>邮箱</option>
-                                    <option value="uid" {notempty name="Response.get.type" }{eq name="Response.get.type" value="uid" }selected{/eq}{/notempty}>UID</option>
+                                    <option value="mobile" {notempty name="Response.get.type" }{eq
+                                        name="Response.get.type" value="mobile" }selected{/eq}{/notempty}>手机号</option>
+                                    <option value="email" {notempty name="Response.get.type" }{eq
+                                        name="Response.get.type" value="email" }selected{/eq}{/notempty}>邮箱</option>
+                                    <option value="uid" {notempty name="Response.get.type" }{eq name="Response.get.type"
+                                        value="uid" }selected{/eq}{/notempty}>UID</option>
                                 </select>
                             </div>
                             <button type="submit" class="btn btn-primary" style="margin-bottom: 0px">查找</button>
@@ -75,18 +85,18 @@
                 <div class="table-responsive">
                     <table class="table table-hover table-striped table-border">
                         <thead>
-                        <tr>
-                            <th><input type="checkbox" class="i-checks ajax-check-all"></th>
-                            <th>用户ID</th>
-                            <th>手机</th>
-                            <th>邮箱</th>
-                            <th>昵称</th>
-                            <th>用户分组</th>
-                            <th>注册时间</th>
-                            <th>最后登录</th>
-                            <th>状态</th>
-                            <th>操作</th>
-                        </tr>
+                            <tr>
+                                <th><input type="checkbox" class="i-checks ajax-check-all"></th>
+                                <th>用户ID</th>
+                                <th>手机</th>
+                                <th>邮箱</th>
+                                <th>昵称</th>
+                                <th>用户分组</th>
+                                <th>注册时间</th>
+                                <th>最后登录</th>
+                                <th>状态</th>
+                                <th>操作</th>
+                            </tr>
                         </thead>
                         <tbody>
                             {empty name="list"}
@@ -112,14 +122,14 @@
                                 <td>{$vo.last_login_time|default=""}</td>
                                 <td>{$vo.status_html|raw}</td>
                                 <td>
-                                    <a href="{:url(app('http')->getName().'/User/viewUser',['uid'=>$vo['id']])}"
-                                       class="btn btn-xs btn-info">详情</a>
-                                    <a href="{:url('User/editUser',['uid'=>$vo['id']])}"
-                                       class="btn btn-xs btn-warning">修改</a>
+                                    <a href="{:url('/'.app('http')->getName().'/User/viewUser',['uid'=>$vo['id']])}"
+                                        class="btn btn-xs btn-info">详情</a>
+                                    <a href="{:url('/admin/User/editUser',['uid'=>$vo['id']])}"
+                                        class="btn btn-xs btn-warning">修改</a>
                                     <button class="btn btn-xs btn-success changePwd" data-uid="{$vo.id}">修改密码</button>
                                     <button class="btn btn-xs btn-danger ajax-btn-warning"
-                                            data-action="{:url('User/deleteUser',['uid'=>$vo['id']])}"
-                                            data-title="提示" data-text="确定删除此用户吗？">删除
+                                        data-action="{:url('/admin/User/deleteUser',['uid'=>$vo['id']])}"
+                                        data-title="提示" data-text="确定删除此用户吗？">删除
                                     </button>
                                 </td>
                             </tr>
@@ -127,9 +137,9 @@
                             {/empty}
                         </tbody>
                         <tfoot>
-                        <tr>
-                            <td colspan="10" class="footable-visible">{$pages|raw}</td>
-                        </tr>
+                            <tr>
+                                <td colspan="10" class="footable-visible">{$pages|raw}</td>
+                            </tr>
                         </tfoot>
                     </table>
                 </div>
@@ -153,10 +163,10 @@
         var uids = getAjaxCheckedValues(); //选择的任务
         var action = $(this).data('action');
         $.each(uids, function (i, uid) {
-            $.post(action, {uid: uid}, function (data) {
+            $.post(action, { uid: uid }, function (data) {
                 //console.log(data);
                 if (data.code == 0 && uids.length == 1) {
-                    layer.msg(data.msg, function(){});
+                    layer.msg(data.msg, function () { });
                     location.reload();
                     return false;
                 }
@@ -173,15 +183,15 @@
         e.preventDefault();
 
         var uid = $(this).data('uid');
-        layer.prompt({title: '请输入新的密码', formType: 1}, function(inputValue, index) {
+        layer.prompt({ title: '请输入新的密码', formType: 1 }, function (inputValue, index) {
             if (inputValue === false || inputValue === "") {
                 layer.msg("请输入值");
                 return false
             }
             layer.close(index);
-            $.post("{:url('User/changePwd')}", {'uid': uid, 'newPwd': inputValue}, function (res) {
+            $.post("{:url('/admin/User/changePwd')}", { 'uid': uid, 'newPwd': inputValue }, function (res) {
                 if (res.code) {
-                    $.post("{:url('User/sendMail')}", {
+                    $.post("{:url('/admin/User/sendMail')}", {
                         'uid': uid,
                         'title': '密码变更',
                         'message': '管理员修改了您的密码,您的新密码为:' + inputValue

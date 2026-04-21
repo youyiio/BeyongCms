@@ -20,12 +20,14 @@
                 </div>
             </div>
             <div class="ibox-content">
-                <form class="form-horizontal ajax-form" action="{:url('User/addUser')}" method="post">
+                <form class="form-horizontal ajax-form" action="{:url('/admin/User/addUser')}" method="post">
                     <input type="password" style="display:none"><!-- for disable autocomplete on chrome -->
                     <div class="form-group">
                         <label class="col-lg-2 control-label">用户分组</label>
                         <div class="col-lg-10">
-                            <select name="group_ids[]" tabindex="4" required="" data-placeholder="选择分组" class="form-control chosen-select form-control chosen-select-deselect chosen-select-no-single chosen-select-no-results chosen-select-search" multiple style="width:100%!important;">
+                            <select name="group_ids[]" tabindex="4" required="" data-placeholder="选择分组"
+                                class="form-control chosen-select form-control chosen-select-deselect chosen-select-no-single chosen-select-no-results chosen-select-search"
+                                multiple style="width:100%!important;">
                                 {volist name="groups" id="vo"}
                                 <option value="{$vo.id}">{$vo.title}</option>
                                 {/volist}
@@ -35,28 +37,34 @@
                     </div>
                     <div class="form-group">
                         <label class="col-lg-2 control-label">昵称</label>
-                        <div class="col-lg-10"><input type="text" name="nickname" placeholder="昵称" class="form-control" autocomplete="off"> <span class="help-block m-b-none"></span>
+                        <div class="col-lg-10"><input type="text" name="nickname" placeholder="昵称" class="form-control"
+                                autocomplete="off"> <span class="help-block m-b-none"></span>
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-lg-2 control-label">手机号</label>
-                        <div class="col-lg-10"><input type="text" name="mobile" placeholder="11位手机号" class="form-control" autocomplete="off" maxlength="11"> <span class="help-block m-b-none"></span>
+                        <div class="col-lg-10"><input type="text" name="mobile" placeholder="11位手机号"
+                                class="form-control" autocomplete="off" maxlength="11"> <span
+                                class="help-block m-b-none"></span>
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-lg-2 control-label">邮箱</label>
-                        <div class="col-lg-10"><input type="email" name="email" placeholder="邮箱" class="form-control"> <span class="help-block m-b-none"></span>
+                        <div class="col-lg-10"><input type="email" name="email" placeholder="邮箱" class="form-control">
+                            <span class="help-block m-b-none"></span>
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-lg-2 control-label">登录密码</label>
-                        <div class="col-lg-10"><input type="password" name="password" placeholder="登录密码" class="form-control" autocomplete="off"> <span class="help-block m-b-none"></span>
+                        <div class="col-lg-10"><input type="password" name="password" placeholder="登录密码"
+                                class="form-control" autocomplete="off"> <span class="help-block m-b-none"></span>
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-lg-2 control-label">确认密码</label>
                         <div class="col-lg-10">
-                            <input type="password" name="repassword" placeholder="确认密码" class="form-control" autocomplete="off">
+                            <input type="password" name="repassword" placeholder="确认密码" class="form-control"
+                                autocomplete="off">
                         </div>
                     </div>
                     <div class="form-group">
@@ -80,11 +88,11 @@
 <script>
     var config = {
         '.chosen-select': {},
-        '.chosen-select-deselect': {allow_single_deselect: true},
-        '.chosen-select-search': {search_contains: true},
-        '.chosen-select-no-single': {disable_search_threshold: 10},
-        '.chosen-select-no-results': {no_results_text: '没有匹配的选项'},
-        '.chosen-select-width': {width: "100%!important"}
+        '.chosen-select-deselect': { allow_single_deselect: true },
+        '.chosen-select-search': { search_contains: true },
+        '.chosen-select-no-single': { disable_search_threshold: 10 },
+        '.chosen-select-no-results': { no_results_text: '没有匹配的选项' },
+        '.chosen-select-width': { width: "100%!important" }
     }
     for (var selector in config) {
         $(selector).chosen(config[selector]);

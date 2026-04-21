@@ -11,13 +11,15 @@
         <div class="col-lg-10 col-lg-offset-1">
             <div class="ibox-content" style="padding:10px">
                 <div class="ibox">
-                    <a class="btn btn-sm btn-primary J_layer_dialog" href="javascript:void(0)" data-url="{:url('article/articleStat',['id'=>$id])}"
-                       data-width="850" data-height="650">查看访问统计</a>
+                    <a class="btn btn-sm btn-primary J_layer_dialog" href="javascript:void(0)"
+                        data-url="{:url('/admin/Article/articleStat',['id'=>$id])}" data-width="850"
+                        data-height="650">查看访问统计</a>
                     <div class="pull-right">
                         {volist name="article.categorys" id="vo"}
                         <span class="label">{$vo.title}</span>
                         {/volist}
-                        <button class="btn btn-white btn-xs" id="btnCopy" data-clipboard-text="{:url('cms/Article/viewArticle', ['aid'=>$article.id], true, get_config('domain_name'))}">
+                        <button class="btn btn-white btn-xs" id="btnCopy"
+                            data-clipboard-text="{:url('/frontend/Article/viewArticle', ['aid'=>$article.id], true, get_config('domain_name'))}">
                             复制文章地址
                         </button>
                     </div>
@@ -26,11 +28,13 @@
                             {$article.title}
                         </h1>
                         {if $article.status == $ArticleModel->STATUS_PUBLISHED}
-                        <span class="text-muted"> 创建时间：{$article.create_time}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;发布时间：{$article.update_time}</span>
+                        <span class="text-muted">
+                            创建时间：{$article.create_time}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;发布时间：{$article.update_time}</span>
                         {else if}
-                        <span class="text-muted"> 创建时间：{$article.create_time}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;发布时间：未发布</span>
+                        <span class="text-muted">
+                            创建时间：{$article.create_time}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;发布时间：未发布</span>
                         {/if}
-                        <br/>
+                        <br />
                         {foreach name="$article->metas('tag')" item="tag"}
                         <span class="text-muted"><i class="fa fa-tags"></i>{$tag}</span>
                         {/foreach}
@@ -60,7 +64,8 @@
                             <div class="social-feed-box">
                                 <div class="social-avatar">
                                     <a href="#" class="pull-left">
-                                        <img alt="image" src="{$comment.user.head_url|default='__PUBLIC__/static/inspinia/img/a6.jpg'}">
+                                        <img alt="image"
+                                            src="{$comment.user.head_url|default='__PUBLIC__/static/inspinia/img/a6.jpg'}">
                                     </a>
                                     <div class="media-body">
                                         <a href="#">

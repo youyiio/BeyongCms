@@ -22,14 +22,16 @@
             <div class="ibox-content" style="padding:10px">
                 <div class="row">
                     <div class="col-lg-8 col-md-8">
-                        <form method="get" action="{:url('User/newUsers')}" role="form" class="form-inline">
+                        <form method="get" action="{:url('/admin/User/newUsers')}" role="form" class="form-inline">
                             <div class="form-group">
                                 <label>开始日期</label>
-                                <input type="text" name="timeStart" class="form-control form-datetime-day" placeholder="开始日期" value="{:input('param.timeStart',date('Y-m-d'))}"  required />
+                                <input type="text" name="timeStart" class="form-control form-datetime-day"
+                                    placeholder="开始日期" value="{:input('param.timeStart',date('Y-m-d'))}" required />
                             </div>
                             <div class="form-group">
                                 <label>结束日期</label>
-                                <input type="text" name="timeEnd" class="form-control form-datetime-day" placeholder="结束日期" value="{:input('param.timeEnd',date('Y-m-d'))}" />
+                                <input type="text" name="timeEnd" class="form-control form-datetime-day"
+                                    placeholder="结束日期" value="{:input('param.timeEnd',date('Y-m-d'))}" />
                             </div>
                             <button type="submit" class="btn btn-primary" style="margin-bottom: 0px">查找</button>
                         </form>
@@ -38,40 +40,43 @@
                 <div class="table-responsive">
                     <table class="table table-hover table-striped table-border">
                         <thead>
-                        <tr>
-                            <th><input type="checkbox" class="i-checks ajax-check-all"></th>
-                            <th>用户ID</th>
-                            <th>类型</th>
-                            <th>用户名</th>
-                            <th>邮箱</th>
-                            <th>最后登录</th>
-                            <th>状态</th>
-                            <th>操作</th>
-                        </tr>
+                            <tr>
+                                <th><input type="checkbox" class="i-checks ajax-check-all"></th>
+                                <th>用户ID</th>
+                                <th>类型</th>
+                                <th>用户名</th>
+                                <th>邮箱</th>
+                                <th>最后登录</th>
+                                <th>状态</th>
+                                <th>操作</th>
+                            </tr>
                         </thead>
                         <tbody>
-                        {empty name="list"}
-                        <tr>
-                            <td colspan="8">暂无数据</td>
-                        </tr>
-                        {else/}
-                        {volist name="list" id="vo"}
-                        <tr>
-                            <td><input type="checkbox" class="i-checks js-check" value="{$vo.id}"></td>
-                            <td>{$vo.id}</td>
-                            <td>{$vo.user_type_text}</td>
-                            <td>{$vo.username}</td>
-                            <td>{$vo.email}</td>
-                            <td>{$vo.last_login_time}</td>
-                            <td>{$vo.status_label}</td>
-                            <td>
-                                <a href="{:url('User/viewUser',['uid'=>$vo['id']])}" class="btn btn-xs btn-info">详情</a>
-                                <a href="{:url('User/editUser',['uid'=>$vo['id']])}" class="btn btn-xs btn-warning">修改</a>
-                                <button data-action="{:url('User/deleteUser',['uid'=>$vo['id']])}" class="btn btn-xs btn-danger ajax-btn">删除</button>
-                            </td>
-                        </tr>
-                        {/volist}
-                        {/empty}
+                            {empty name="list"}
+                            <tr>
+                                <td colspan="8">暂无数据</td>
+                            </tr>
+                            {else/}
+                            {volist name="list" id="vo"}
+                            <tr>
+                                <td><input type="checkbox" class="i-checks js-check" value="{$vo.id}"></td>
+                                <td>{$vo.id}</td>
+                                <td>{$vo.user_type_text}</td>
+                                <td>{$vo.username}</td>
+                                <td>{$vo.email}</td>
+                                <td>{$vo.last_login_time}</td>
+                                <td>{$vo.status_label}</td>
+                                <td>
+                                    <a href="{:url('/admin/User/viewUser',['uid'=>$vo['id']])}"
+                                        class="btn btn-xs btn-info">详情</a>
+                                    <a href="{:url('/admin/User/editUser',['uid'=>$vo['id']])}"
+                                        class="btn btn-xs btn-warning">修改</a>
+                                    <button data-action="{:url('/admin/User/deleteUser',['uid'=>$vo['id']])}"
+                                        class="btn btn-xs btn-danger ajax-btn">删除</button>
+                                </td>
+                            </tr>
+                            {/volist}
+                            {/empty}
                         </tbody>
                     </table>
                     {$pages|raw}
@@ -87,11 +92,11 @@
 <script src="__PUBLIC__/static/inspinia/js/plugins/datapicker/bootstrap-datetimepicker.min.js"></script>
 <script type="text/javascript">
 
-  $('.form-datetime-day').datetimepicker({
-    locale: 'zh-cn',
-    viewMode: 'days',
-    format: 'YYYY-MM-DD',
-  });
+    $('.form-datetime-day').datetimepicker({
+        locale: 'zh-cn',
+        viewMode: 'days',
+        format: 'YYYY-MM-DD',
+    });
 
 </script>
 {/block}

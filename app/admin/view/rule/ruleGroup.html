@@ -17,7 +17,7 @@
                     </a>
                     <ul class="dropdown-menu dropdown-user">
                         {volist name="groups" id="vo"}
-                        <li><a href="{:url('Rule/ruleGroup',['id'=>$vo['id']])}">{$vo.title}</a></li>
+                        <li><a href="{:url('/admin/Rule/ruleGroup',['id'=>$vo['id']])}">{$vo.title}</a></li>
                         {/volist}
                     </ul>
                     <a class="close-link">
@@ -36,7 +36,9 @@
                             <th width="10%">
                                 <label>
                                     {$v['title']}
-                                    <input type="checkbox" name="rule_ids[]" value="{$v['id']}" {if condition="in_array($v['id'],$group_data['rules'])"}  checked="checked"{/if} onclick="checkAll(this)" >
+                                    <input type="checkbox" name="rule_ids[]" value="{$v['id']}" {if
+                                        condition="in_array($v['id'],$group_data['rules'])" } checked="checked" {/if}
+                                        onclick="checkAll(this)">
                                 </label>
                             </th>
                             <td></td>
@@ -45,7 +47,9 @@
                         <tr class="b-group">
                             <th width="10%">
                                 <label>
-                                    {$v['title']} <input type="checkbox" name="rule_ids[]" value="{$v['id']}" {if condition="in_array($v['id'],$group_data['rules'])"}  checked="checked"{/if} onclick="checkAll(this)">
+                                    {$v['title']} <input type="checkbox" name="rule_ids[]" value="{$v['id']}" {if
+                                        condition="in_array($v['id'],$group_data['rules'])" } checked="checked" {/if}
+                                        onclick="checkAll(this)">
                                 </label>
                             </th>
                             <td class="b-child">
@@ -54,14 +58,20 @@
                                     <tr class="b-group">
                                         <th width="10%">
                                             <label>
-                                                {$n['title']} <input type="checkbox" name="rule_ids[]" value="{$n['id']}" {if condition="in_array($n['id'],$group_data['rules'])"}  checked="checked"{/if} onclick="checkAll(this)">
+                                                {$n['title']} <input type="checkbox" name="rule_ids[]"
+                                                    value="{$n['id']}" {if
+                                                    condition="in_array($n['id'],$group_data['rules'])" }
+                                                    checked="checked" {/if} onclick="checkAll(this)">
                                             </label>
                                         </th>
                                         <td>
                                             {notempty name="n['_data']"}
                                             {volist name="n['_data']" id="c"}
                                             <label>
-                                                &emsp;{$c['title']} <input type="checkbox" name="rule_ids[]" value="{$c['id']}" {if condition="in_array($c['id'],$group_data['rules'])"}  checked="checked"{/if} >
+                                                &emsp;{$c['title']} <input type="checkbox" name="rule_ids[]"
+                                                    value="{$c['id']}" {if
+                                                    condition="in_array($c['id'],$group_data['rules'])" }
+                                                    checked="checked" {/if}>
                                             </label>
                                             {/volist}
                                             {/notempty}
@@ -88,18 +98,18 @@
 {/block}
 {block name="js"}
 <script>
-function checkAll(obj){
-  $(obj).parents('.b-group').eq(0).find("input[type='checkbox']").prop('checked', $(obj).prop('checked'));
-}
-//选中复选框,父级复选框跟着选中
-$('input[type="checkbox"]').click(function(e){
-  var $group = $(this).parents('.b-group');
-  if ($(this).prop('checked')) {
-    $.each($group,function(i,v){
-      $(v).find('input[type="checkbox"]:eq(0)').prop('checked','checked');
-    })
-  }
+    function checkAll(obj) {
+        $(obj).parents('.b-group').eq(0).find("input[type='checkbox']").prop('checked', $(obj).prop('checked'));
+    }
+    //选中复选框,父级复选框跟着选中
+    $('input[type="checkbox"]').click(function (e) {
+        var $group = $(this).parents('.b-group');
+        if ($(this).prop('checked')) {
+            $.each($group, function (i, v) {
+                $(v).find('input[type="checkbox"]:eq(0)').prop('checked', 'checked');
+            })
+        }
 
-})
+    })
 </script>
 {/block}

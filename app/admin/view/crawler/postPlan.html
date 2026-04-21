@@ -4,7 +4,9 @@
 <link href="__PUBLIC__/static/inspinia/css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
 <link href="__PUBLIC__/static/inspinia/css/plugins/chosen/chosen.css" rel="stylesheet">
 <style>
-    li{float: left;}
+    li {
+        float: left;
+    }
 </style>
 {/block}
 
@@ -25,10 +27,12 @@
                         <div class="form-group">
                             <label class="col-lg-2 control-label">采集列表<span class="text text-danger">*</span>:</label>
                             <div class="col-lg-10">
-                                <select name="crawlerId"  class="form-control m-b-xs">
+                                <select name="crawlerId" class="form-control m-b-xs">
                                     <option value="-1">请选择采集规则</option>
                                     {volist name='crawlerList' id='vo'}
-                                    <option value="{$vo.id}" {notempty name="Think.get.crawlerId"}{eq name="Think.get.crawlerId" value="$vo['id']"}selected{/eq}{/notempty}>{$vo.title}</option>
+                                    <option value="{$vo.id}" {notempty name="Think.get.crawlerId" }{eq
+                                        name="Think.get.crawlerId" value="$vo['id']" }selected{/eq}{/notempty}>
+                                        {$vo.title}</option>
                                     {/volist}
                                 </select>
                             </div>
@@ -47,16 +51,21 @@
                         <div class="form-group">
                             <label class="col-lg-2 control-label">执行周期数<span class="text text-danger">*</span>:</label>
                             <div class="col-lg-10">
-                                <input type="number" name="days" class="form-control" placeholder="计划执行周期" value="{$Request.get.days|default=''}">
+                                <input type="number" name="days" class="form-control" placeholder="计划执行周期"
+                                    value="{$Request.get.days|default=''}">
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="col-lg-2 control-label">每天文章数量<span class="text text-danger">*</span>:</label>
                             <div class="col-lg-10">
                                 <div class="input-group m-b">
-                                    <span class="input-group-btn"><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#timeSetModal">小时数量分配</button> </span>
-                                    <input type="number" name="countPerDay" value="{$Request.get.countPerDay|default=''}" class="form-control" placeholder="每天发布文章数量" required>
-                                    <input type="hidden" name="hourCounts" id="hourCounts" value="{$Request.get.hourCounts|default=''}">
+                                    <span class="input-group-btn"><button type="button" class="btn btn-primary"
+                                            data-toggle="modal" data-target="#timeSetModal">小时数量分配</button> </span>
+                                    <input type="number" name="countPerDay"
+                                        value="{$Request.get.countPerDay|default=''}" class="form-control"
+                                        placeholder="每天发布文章数量" required>
+                                    <input type="hidden" name="hourCounts" id="hourCounts"
+                                        value="{$Request.get.hourCounts|default=''}">
                                 </div>
                             </div>
                         </div>
@@ -74,63 +83,86 @@
                 <div class="fixed-table-container">
                     <table class="table table-bordered table-hover table-striped table-condensed col-lg-12">
                         <thead>
-                        <tr>
-                            <th><div class="th-inner">ID</div></th>
-                            <th><div class="th-inner">分类</div></th>
-                            <th><div class="th-inner">采集规则</div></th>
-                            <th><div class="th-inner">标题</div></th>
-                            <th><div class="th-inner">状态</div></th>
-                            <th><div class="th-inner">发布时间</div></th>
-                            <th><div class="th-inner">创建时间</div></th>
-                            <th><div class="th-inner">操作</div></th>
-                        </tr>
+                            <tr>
+                                <th>
+                                    <div class="th-inner">ID</div>
+                                </th>
+                                <th>
+                                    <div class="th-inner">分类</div>
+                                </th>
+                                <th>
+                                    <div class="th-inner">采集规则</div>
+                                </th>
+                                <th>
+                                    <div class="th-inner">标题</div>
+                                </th>
+                                <th>
+                                    <div class="th-inner">状态</div>
+                                </th>
+                                <th>
+                                    <div class="th-inner">发布时间</div>
+                                </th>
+                                <th>
+                                    <div class="th-inner">创建时间</div>
+                                </th>
+                                <th>
+                                    <div class="th-inner">操作</div>
+                                </th>
+                            </tr>
                         </thead>
                         <tbody class="body">
-                        {foreach name='articleList' item='vo'}
-                        <tr>
-                            <input type="hidden" name="ids" value="{$vo.id}">
-                            <td>{$vo.id}</td>
-                            <td>
-                                {volist name="vo.categorys" id="categoryVo" empty="未分类"}
-                                {gt name="key" value="0"}<br>{/gt}<span class="label">{$categoryVo.title}</span>
-                                {/volist}
-                            </td>
-                            <td>{$vo.crawlerMeta.crawler.title|default=""}</td>
-                            <td>{$vo.title}</td>
-                            <td>{$vo.status_text}</td>
-                            <td>{if $vo.status == $ArticleModel->STATUS_PUBLISHED}
-                                {$vo.post_time}
-                                {else /}
-                                {notempty name="$vo.timing"}{$vo.timing}<i class="fa fa-clock-o"></i>{/notempty}
-                                {/if}
-                            </td>
-                            <td>{$vo.create_time}</td>
-                            <td>
-                                <div class="btn-group">
-                                    <button data-toggle="dropdown" class="btn btn-white btn-xs dropdown-toggle">
-                                        操作<span class="caret"></span>
-                                    </button>
+                            {foreach name='articleList' item='vo'}
+                            <tr>
+                                <input type="hidden" name="ids" value="{$vo.id}">
+                                <td>{$vo.id}</td>
+                                <td>
+                                    {volist name="vo.categorys" id="categoryVo" empty="未分类"}
+                                    {gt name="key" value="0"}<br>{/gt}<span class="label">{$categoryVo.title}</span>
+                                    {/volist}
+                                </td>
+                                <td>{$vo.crawlerMeta.crawler.title|default=""}</td>
+                                <td>{$vo.title}</td>
+                                <td>{$vo.status_text}</td>
+                                <td>{if $vo.status == $ArticleModel->STATUS_PUBLISHED}
+                                    {$vo.post_time}
+                                    {else /}
+                                    {notempty name="$vo.timing"}{$vo.timing}<i class="fa fa-clock-o"></i>{/notempty}
+                                    {/if}
+                                </td>
+                                <td>{$vo.create_time}</td>
+                                <td>
+                                    <div class="btn-group">
+                                        <button data-toggle="dropdown" class="btn btn-white btn-xs dropdown-toggle">
+                                            操作<span class="caret"></span>
+                                        </button>
 
-                                    <ul class="dropdown-menu">
-                                        <li>
-                                            <a href="{:url('Article/viewArticle',['id'=>$vo['id']])}" class="J_addMenuTab" data-menu-name="查看文章"><i class="fa fa-eye"></i> 查看</a>
-                                        </li>
-                                        <li>
-                                            <a href="{:url('Article/editArticle',['id'=>$vo['id'],'redirect'=>urlencode(get_cur_url())])}" class="J_addMenuTab"><i class="fa fa-pencil"></i> 修改</a>
-                                        </li>
-                                        <li class="divider"></li>
-                                        <li>
-                                            <a href="javascript:void(0)" class="text-danger ajax-btn-warning" data-action="{:url('Article/deleteArticle',['id'=>$vo['id']])}" data-title="提示" data-text="您确认要删除文章吗"><i class="fa fa-trash"></i> 删除</a>
-                                        </li>
-                                    </ul>
-                                </div>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a href="{:url('/admin/Article/viewArticle',['id'=>$vo['id']])}"
+                                                    class="J_addMenuTab" data-menu-name="查看文章"><i class="fa fa-eye"></i>
+                                                    查看</a>
+                                            </li>
+                                            <li>
+                                                <a href="{:url('/admin/Article/editArticle',['id'=>$vo['id'],'redirect'=>urlencode(get_cur_url())])}"
+                                                    class="J_addMenuTab"><i class="fa fa-pencil"></i> 修改</a>
+                                            </li>
+                                            <li class="divider"></li>
+                                            <li>
+                                                <a href="javascript:void(0)" class="text-danger ajax-btn-warning"
+                                                    data-action="{:url('/admin/Article/deleteArticle',['id'=>$vo['id']])}"
+                                                    data-title="提示" data-text="您确认要删除文章吗"><i class="fa fa-trash"></i>
+                                                    删除</a>
+                                            </li>
+                                        </ul>
+                                    </div>
 
-                                {if $vo.status== -4}
-                                <button class="btn btn-xs btn-info hidden" onclick="showTimingPostModel(this)" data-id="{$vo['id']}" ><i class="fa fa-clock-o"></i>定时发布</button>
-                                {/if}
-                            </td>
-                        </tr>
-                        {/foreach}
+                                    {if $vo.status== -4}
+                                    <button class="btn btn-xs btn-info hidden" onclick="showTimingPostModel(this)"
+                                        data-id="{$vo['id']}"><i class="fa fa-clock-o"></i>定时发布</button>
+                                    {/if}
+                                </td>
+                            </tr>
+                            {/foreach}
                         </tbody>
                     </table>
                 </div>
@@ -152,7 +184,7 @@
 
 <script>
     $("select[name='crawlerId']").change(function () {
-        window.location.href = "{:url('Crawler/postPlan')}?crawlerId=" + $(this).val();
+        window.location.href = "{:url('/admin/Crawler/postPlan')}?crawlerId=" + $(this).val();
     });
 </script>
 {/block}

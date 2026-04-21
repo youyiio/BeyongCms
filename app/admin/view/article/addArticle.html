@@ -23,7 +23,8 @@
         <div class="ibox-content">
 
             <div class="tabs-container">
-                <form class="form-horizontal ajax-form" action="{:url(request()->controller().'/'.request()->action())}" method="post">
+                <form class="form-horizontal ajax-form"
+                    action="{:url('/admin/' . request()->controller().'/'.request()->action())}" method="post">
 
                     <ul class="nav nav-tabs">
                         <li class="active"><a data-toggle="tab" href="#tab-base">文章内容</a></li>
@@ -35,8 +36,10 @@
                             <input type="hidden" name="oldCategoryIds" value="{$oldCategoryIds|json_encode}">
                             {/present}
 
-                            <button class="btn btn-white btn-save" type="submit"><i class="fa fa-plus"></i> {$article ? '保 存' : '保存为草稿'}</button>
-                            <button class="btn btn-primary btn-post" type="submit"><i class="fa fa-plus-circle"></i> {$article ? '发 布' : '立即发布'}</button>
+                            <button class="btn btn-white btn-save" type="submit"><i class="fa fa-plus"></i> {$article ?
+                                '保 存' : '保存为草稿'}</button>
+                            <button class="btn btn-primary btn-post" type="submit"><i class="fa fa-plus-circle"></i>
+                                {$article ? '发 布' : '立即发布'}</button>
                         </li>
                     </ul>
 
@@ -50,7 +53,7 @@
 
                         <div id="tab-advance" class="tab-pane">
                             <div class="panel-body">
-                               {include file="article/addArticleAdvance"}
+                                {include file="article/addArticleAdvance"}
                             </div>
                         </div>
 
@@ -58,8 +61,10 @@
 
                     <div class="row m-t-md">
                         <div class="col-lg-12 text-right">
-                            <button class="btn btn-white btn-save" type="submit"><i class="fa fa-plus"></i> {$article ? '保 存' : '保存为草稿'}</button>
-                            <button class="btn btn-primary btn-post" type="submit"><i class="fa fa-plus-circle"></i> {$article ? '发 布' : '立即发布'}</button>
+                            <button class="btn btn-white btn-save" type="submit"><i class="fa fa-plus"></i> {$article ?
+                                '保 存' : '保存为草稿'}</button>
+                            <button class="btn btn-primary btn-post" type="submit"><i class="fa fa-plus-circle"></i>
+                                {$article ? '发 布' : '立即发布'}</button>
                         </div>
                     </div>
 
@@ -91,31 +96,31 @@
 <script src="__PUBLIC__/static/ueditor/ueditor.all.js?2017041701"></script>
 <script>
     //ueditor代码
-    var url="{:url('BaiduUeditor/index')}";
-    var ue = UE.getEditor('container',{
-      serverUrl :url,
-      UEDITOR_HOME_URL:'__PUBLIC__/static/ueditor/',
-      initialFrameHeight :600,
-      autoHeightEnabled : true,
-      maximumWords : 200000,
+    var url = "{:url('/admin/BaiduUeditor/index')}";
+    var ue = UE.getEditor('container', {
+        serverUrl: url,
+        UEDITOR_HOME_URL: '__PUBLIC__/static/ueditor/',
+        initialFrameHeight: 600,
+        autoHeightEnabled: true,
+        maximumWords: 200000,
     });
 
     let config = {
-        '.chosen-select'           : {},
-        '.chosen-select-deselect'  : {allow_single_deselect:true},
-        '.chosen-select-search'    : {search_contains:true},
-        '.chosen-select-no-single' : {disable_search_threshold:10},
-        '.chosen-select-no-results': {no_results_text:'没有匹配的选项'},
-        '.chosen-select-width'     : {width:"100%!important"}
+        '.chosen-select': {},
+        '.chosen-select-deselect': { allow_single_deselect: true },
+        '.chosen-select-search': { search_contains: true },
+        '.chosen-select-no-single': { disable_search_threshold: 10 },
+        '.chosen-select-no-results': { no_results_text: '没有匹配的选项' },
+        '.chosen-select-width': { width: "100%!important" }
     };
     for (let selector in config) {
         $(selector).chosen(config[selector]);
     }
 
-    $('button.btn-save').click(function() {
+    $('button.btn-save').click(function () {
         //$('input[name=status]').val("{:\\app\\common\\model\\cms\\ArticleModel::STATUS_DRAFT}");
     });
-    $('button.btn-post').click(function() {
+    $('button.btn-post').click(function () {
         $('input[name=status]').val("{:\\app\\common\\model\\cms\\ArticleModel::STATUS_PUBLISHED}");
     });
 
@@ -137,7 +142,7 @@
     //图片上传
     Dropzone.autoDiscover = false;
     $("#uploadThumbImage").dropzone({
-        url: "{:url('Image/upcrop')}",
+        url: "{:url('/admin/Image/upcrop')}",
         paramName: 'file', //input的name
         maxFilesize: 5, // MB
         addRemoveLinks: true, //添加删除链接
@@ -148,11 +153,11 @@
         // thumbnailHeight: 200,
         dictCancelUpload: '取消上传',
         dictRemoveFile: '删除图片',
-        maxfilesexceeded: function(file) {
-            layer.alert('超最大数量,请删除现有文件后再上传', {icon: 2, title: '错误'});
+        maxfilesexceeded: function (file) {
+            layer.alert('超最大数量,请删除现有文件后再上传', { icon: 2, title: '错误' });
             file.previewElement.remove();
         },
-        sending: function(file,xhr,formData) {
+        sending: function (file, xhr, formData) {
             var $element = $(this.element);
             //图片尺寸
             formData.append("width", $element.data('width'));
@@ -161,7 +166,7 @@
             formData.append("thumbWidth", $element.data('thumbWidth'));
             formData.append("thumbHeight", $element.data('thumbHeight'));
         },
-        success: function(file,response) {
+        success: function (file, response) {
             console.log(response);
             var $element = $(this.element);
             var thumbWidth = $element.data('thumbWidth');
@@ -169,9 +174,9 @@
             if (response.code) {
                 //将图片id填入input
                 var imageId = response.data.id;
-                var imageUrl = ""+response.data.file_url;
+                var imageUrl = "" + response.data.file_url;
                 $('#' + $element.data('inputName')).val(imageId);
-                var displayHtml = '<img src="'+imageUrl+'" style="border:1px solid #ccc;width:_thumbWidth_px;height:_thumbHeight_px;max-width:100%">';
+                var displayHtml = '<img src="' + imageUrl + '" style="border:1px solid #ccc;width:_thumbWidth_px;height:_thumbHeight_px;max-width:100%">';
                 displayHtml = displayHtml.replace('_thumbWidth_', thumbWidth);
                 displayHtml = displayHtml.replace('_thumbHeight_', thumbHeight);
                 $element.find('.dz-message').html('').append(displayHtml);
@@ -190,17 +195,17 @@
                     });
                 }
             } else {
-                layer.alert(response.msg, {icon: 2, title: '上传失败'});
+                layer.alert(response.msg, { icon: 2, title: '上传失败' });
             }
         },
-        complete: function(file) {
+        complete: function (file) {
             if (this.options.maxFiles == 1) {
                 this.removeFile(file);
             }
         },
-        error: function(file, message) {
+        error: function (file, message) {
             //上传错误
-            layer.alert(message, {icon: 2, title: '上传失败'});
+            layer.alert(message, { icon: 2, title: '上传失败' });
             //file.previewElement.remove();
             this.removeFile(file);
         }

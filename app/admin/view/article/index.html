@@ -21,7 +21,7 @@
                         <i class="fa fa-wrench"></i>
                     </a>
                     <ul class="dropdown-menu dropdown-user">
-                        <li><a href="{:url(request()->controller().'/addArticle')}">新增文章</a></li>
+                        <li><a href="{:url('/admin/' . request()->controller().'/addArticle')}">新增文章</a></li>
                     </ul>
                     <a class="close-link">
                         <i class="fa fa-times"></i>
@@ -31,57 +31,82 @@
             <div class="ibox-content" style="padding:10px">
                 <div class="row">
                     <div class="col-lg-4 col-md-12">
-                        <a class="btn btn-sm btn-primary J_addMenuTab" href="{:url(request()->controller().'/addArticle')}">新增文章</a>
+                        <a class="btn btn-sm btn-primary J_addMenuTab"
+                            href="{:url('/admin/' . request()->controller().'/addArticle')}">新增文章</a>
                         <div class="btn-group">
                             <button data-toggle="dropdown" class="btn btn-success btn-sm dropdown-toggle">
                                 <i class="fa fa-check"></i>批量操作<span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu">
-                                <li><a href="javascript:void(0)" class="ajax-batch-set" data-action="{:url(request()->controller().'/postArticle')}">立即发布</a></li>
-                                <li><a href="javascript:void(0)" class="ajax-batch-set" data-action="{:url(request()->controller().'/auditFirst')}">初审</a></li>
-                                <li><a href="javascript:void(0)" class="ajax-batch-set" data-action="{:url(request()->controller().'/auditSecond')}">终审</a></li>
+                                <li><a href="javascript:void(0)" class="ajax-batch-set"
+                                        data-action="{:url('/admin/' . request()->controller().'/postArticle')}">立即发布</a>
+                                </li>
+                                <li><a href="javascript:void(0)" class="ajax-batch-set"
+                                        data-action="{:url('/admin/' . request()->controller().'/auditFirst')}">初审</a>
+                                </li>
+                                <li><a href="javascript:void(0)" class="ajax-batch-set"
+                                        data-action="{:url('/admin/' . request()->controller().'/auditSecond')}">终审</a>
+                                </li>
                                 <li role="separator" class="divider"></li>
                                 <li><a class="batchCategory">修改分类</a></li>
                             </ul>
                         </div>
 
                         <div data-toggle="buttons" class="btn-group">
-                            <label class="ladda-button btn btn-sm btn-warning ajax-batch-set" data-style="zoom-in" data-action="{:url('Article/setTop')}"> <i class="fa fa-arrow-circle-up"></i> 置顶 </label>
-                            <label class="ladda-button btn btn-sm btn-info" data-style="zoom-in" data-action="{:url('Article/setTimingPost')}" onclick="showTimingPost(this)"> <i class="fa fa-clock-o"></i> 定时发布 </label>
-                            <label class="ladda-button btn btn-sm btn-danger ajax-batch-set-prompt" data-style="zoom-in" data-title="提示" data-text="确认要批量删除文章吗？" data-action="{:url('Article/deleteArticle')}"> <i class="fa fa-trash"></i> 删除 </label>
+                            <label class="ladda-button btn btn-sm btn-warning ajax-batch-set" data-style="zoom-in"
+                                data-action="{:url('/admin/Article/setTop')}"> <i class="fa fa-arrow-circle-up"></i> 置顶
+                            </label>
+                            <label class="ladda-button btn btn-sm btn-info" data-style="zoom-in"
+                                data-action="{:url('/admin/Article/setTimingPost')}" onclick="showTimingPost(this)"> <i
+                                    class="fa fa-clock-o"></i> 定时发布 </label>
+                            <label class="ladda-button btn btn-sm btn-danger ajax-batch-set-prompt" data-style="zoom-in"
+                                data-title="提示" data-text="确认要批量删除文章吗？"
+                                data-action="{:url('/admin/Article/deleteArticle')}">
+                                <i class="fa fa-trash"></i> 删除 </label>
                         </div>
                     </div>
                     <div class="col-lg-8 col-md-12 text-right">
                         <form method="get" role="form" class="form-inline">
                             <div class="form-group">
-                                <input type="text" name="key" placeholder="关键字" class="form-control m-b-xs" value="{$Response.get.key|default=''}">
+                                <input type="text" name="key" placeholder="关键字" class="form-control m-b-xs"
+                                    value="{$Response.get.key|default=''}">
                             </div>
                             <div class="form-group">
                                 <select name="status" class="form-control m-b-xs">
                                     <option value="">文章状态</option>
-                                    <option value="0" {heq name="Think.get.status" value="0"}selected{/heq}>草稿</option>
+                                    <option value="0" {heq name="Think.get.status" value="0" }selected{/heq}>草稿</option>
                                     {if get_config('article_audit_switch') == 'true'}
-                                    <option value="1" {heq name="Think.get.status" value="1"}selected{/heq}>申请发布</option>
-                                    <option value="2" {heq name="Think.get.status" value="2"}selected{/heq}>初审拒绝</option>
-                                    <option value="3" {heq name="Think.get.status" value="3"}selected{/heq}>初审通过</option>
-                                    <option value="4" {heq name="Think.get.status" value="4"}selected{/heq}>终审拒绝</option>
+                                    <option value="1" {heq name="Think.get.status" value="1" }selected{/heq}>申请发布
+                                    </option>
+                                    <option value="2" {heq name="Think.get.status" value="2" }selected{/heq}>初审拒绝
+                                    </option>
+                                    <option value="3" {heq name="Think.get.status" value="3" }selected{/heq}>初审通过
+                                    </option>
+                                    <option value="4" {heq name="Think.get.status" value="4" }selected{/heq}>终审拒绝
+                                    </option>
                                     {/if}
-                                    <option value="5" {heq name="Think.get.status" value="5"}selected{/heq}>已发布</option>
+                                    <option value="5" {heq name="Think.get.status" value="5" }selected{/heq}>已发布
+                                    </option>
                                 </select>
                             </div>
                             <div class="form-group">
                                 <select name="categoryId" class="form-control m-b-xs">
                                     <option value="-1">不限分类</option>
                                     {volist name="categoryList" id="vo"}
-                                    <option value="{$vo.id}" {notempty name="Think.get.categoryId"}{eq name="Think.get.categoryId" value="$vo['id']"}selected{/eq}{/notempty}>{$vo._name|raw}</option>
+                                    <option value="{$vo.id}" {notempty name="Think.get.categoryId" }{eq
+                                        name="Think.get.categoryId" value="$vo['id']" }selected{/eq}{/notempty}>
+                                        {$vo._name|raw}</option>
                                     {/volist}
                                 </select>
                             </div>
                             <div class="form-group">
-                                <input type="text" autocomplete="off" class="form-control m-b-xs form-datetime" placeholder="起始日期" id="queryDate" name="startTime" value="{$Response.get.startTime |default=$startTime}">
+                                <input type="text" autocomplete="off" class="form-control m-b-xs form-datetime"
+                                    placeholder="起始日期" id="queryDate" name="startTime"
+                                    value="{$Response.get.startTime |default=$startTime}">
                             </div>
                             <div class="form-group">
-                                <input type="text" autocomplete="off" class="form-control m-b-xs form-datetime" placeholder="终止日期" name="endTime" value="{$Response.get.endTime |default=$endTime}">
+                                <input type="text" autocomplete="off" class="form-control m-b-xs form-datetime"
+                                    placeholder="终止日期" name="endTime" value="{$Response.get.endTime |default=$endTime}">
                             </div>
                             <div class="form-group">
                                 <button type="submit" class="btn btn-primary m-b-xs">查找</button>
@@ -95,18 +120,39 @@
                     <div class="fixed-table-container">
                         <table class="table table-bordered table-hover table-striped table-condensed">
                             <thead>
-                            <tr>
-                                <th><div class="th-inner"><input type="checkbox" class="ajax-check-all" id="0"></div></th>
-                                <th><div class="th-inner">ID</div></th>
-                                <th><div class="th-inner">所属分类</div></th>
-                                <th><div class="th-inner">标题</div></th>
-                                <th><div class="th-inner">状态</div></th>
-                                <th><div class="th-inner">浏览量</div></th>
-                                <th><div class="th-inner">索引(？)</div></th>
-                                <th data-field="post_time"><div class="th-inner sortable both {$sortedFields.post_time}">发布时间</div></th>
-                                <th data-field="create_time"><div class="th-inner sortable both {$sortedFields.create_time}">创建时间</div></th>
-                                <th><div class="th-inner">操作</div></th>
-                            </tr>
+                                <tr>
+                                    <th>
+                                        <div class="th-inner"><input type="checkbox" class="ajax-check-all" id="0">
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div class="th-inner">ID</div>
+                                    </th>
+                                    <th>
+                                        <div class="th-inner">所属分类</div>
+                                    </th>
+                                    <th>
+                                        <div class="th-inner">标题</div>
+                                    </th>
+                                    <th>
+                                        <div class="th-inner">状态</div>
+                                    </th>
+                                    <th>
+                                        <div class="th-inner">浏览量</div>
+                                    </th>
+                                    <th>
+                                        <div class="th-inner">索引(？)</div>
+                                    </th>
+                                    <th data-field="post_time">
+                                        <div class="th-inner sortable both {$sortedFields.post_time}">发布时间</div>
+                                    </th>
+                                    <th data-field="create_time">
+                                        <div class="th-inner sortable both {$sortedFields.create_time}">创建时间</div>
+                                    </th>
+                                    <th>
+                                        <div class="th-inner">操作</div>
+                                    </th>
+                                </tr>
                             </thead>
                             {foreach name="list" item="vo"}
                             <tr>
@@ -117,14 +163,16 @@
                                     {gt name="key" value="0"}<br>{/gt}<span class="label">{$categoryVo.title}</span>
                                     {/volist}
                                 </td>
-                                <td><a href="{:url('Article/viewArticle',['id'=>$vo['id']])}" class="J_addMenuTab">{$vo.title}</a>
+                                <td><a href="{:url('/admin/Article/viewArticle',['id'=>$vo['id']])}"
+                                        class="J_addMenuTab">{$vo.title}</a>
                                     {if $vo.thumb_image_id > 0}<i class="fa fa-picture-o"></i>{/if}
                                     {eq name="vo.is_top" value="1"}<span class="label label-info label-sm">顶</span>{/eq}
                                 </td>
                                 <td>{$vo.status_text}</td>
                                 <td align="center">{$vo.read_count}</td>
                                 <td align="center">
-                                    <a href="https://www.baidu.com/s?wd={:url('cms/Article/viewArticle', ['aid'=>$vo.id], true, get_config('domain_name'))}" target="_blank">
+                                    <a href="https://www.baidu.com/s?wd={:url('/frontend/Article/viewArticle', ['aid'=>$vo.id], true, get_config('domain_name'))}"
+                                        target="_blank">
                                         {php}$index = $vo->meta('baidu_index');{/php}
                                         {:$index != true ? '否': '是'}
                                     </a>
@@ -138,8 +186,8 @@
                                 <td>{$vo.create_time}</td>
                                 <td>
                                     <!--
-                                    <a href="{:url('Article/viewArticle',['id'=>$vo['id']])}" class="J_addMenuTab" data-menu-name="查看文章"><button class="btn btn-xs btn-info" data-toggle="tooltip" data-placement="top" title="查看"><i class="fa fa-eye"></i> 查看</button></a>
-                                    <a href="{:url('Article/editArticle',['id'=>$vo['id']])}"><button class="btn btn-xs btn-warning" data-toggle="tooltip" data-placement="top" title="修改"><i class="fa fa-pencil"></i> 修改</button></a>
+                                    <a href="{:url('/admin/Article/viewArticle',['id'=>$vo['id']])}" class="J_addMenuTab" data-menu-name="查看文章"><button class="btn btn-xs btn-info" data-toggle="tooltip" data-placement="top" title="查看"><i class="fa fa-eye"></i> 查看</button></a>
+                                    <a href="{:url('/admin/Article/editArticle',['id'=>$vo['id']])}"><button class="btn btn-xs btn-warning" data-toggle="tooltip" data-placement="top" title="修改"><i class="fa fa-pencil"></i> 修改</button></a>
                                     -->
                                     <div class="btn-group">
                                         <button data-toggle="dropdown" class="btn btn-white btn-xs dropdown-toggle">
@@ -148,14 +196,20 @@
 
                                         <ul class="dropdown-menu">
                                             <li>
-                                                <a href="{:url('Article/viewArticle',['id'=>$vo['id']])}" class="J_addMenuTab" data-menu-name="查看文章"><i class="fa fa-eye"></i> 查看</a>
+                                                <a href="{:url('/admin/Article/viewArticle',['id'=>$vo['id']])}"
+                                                    class="J_addMenuTab" data-menu-name="查看文章"><i class="fa fa-eye"></i>
+                                                    查看</a>
                                             </li>
                                             <li>
-                                                <a href="{:url('Article/editArticle',['id'=>$vo['id']])}" class=""><i class="fa fa-pencil"></i> 修改</a>
+                                                <a href="{:url('/admin/Article/editArticle',['id'=>$vo['id']])}"
+                                                    class=""><i class="fa fa-pencil"></i> 修改</a>
                                             </li>
                                             <li class="divider"></li>
                                             <li>
-                                                <a href="javascript:void(0)" class="text-danger ajax-btn-warning" data-action="{:url('Article/deleteArticle',['id'=>$vo['id']])}" data-title="提示" data-text="您确认要删除文章吗"><i class="fa fa-trash"></i> 删除</a>
+                                                <a href="javascript:void(0)" class="text-danger ajax-btn-warning"
+                                                    data-action="{:url('/admin/Article/deleteArticle',['id'=>$vo['id']])}"
+                                                    data-title="提示" data-text="您确认要删除文章吗"><i class="fa fa-trash"></i>
+                                                    删除</a>
                                             </li>
                                         </ul>
                                     </div>
@@ -167,13 +221,15 @@
                                         <ul class="dropdown-menu">
                                             {if $vo.status == $ArticleModel->STATUS_DRAFT}
                                             <li>
-                                                <a href="{:url('Article/postArticle',['id'=>$vo['id']])}" class="ajax-a" style="color: black">立即发布</a>
+                                                <a href="{:url('/admin/Article/postArticle',['id'=>$vo['id']])}"
+                                                    class="ajax-a" style="color: black">立即发布</a>
                                             </li>
                                             {/if}
                                             {if get_config('article_audit_switch') == 'true'}
                                             <li>
                                                 {if $vo.status == $ArticleModel->STATUS_PUBLISHING}
-                                                <a href="{:url('Article/auditFirst',['id'=>$vo['id']])}" class="ajax-a" style="color: black">初审</a>
+                                                <a href="{:url('/admin/Article/auditFirst',['id'=>$vo['id']])}"
+                                                    class="ajax-a" style="color: black">初审</a>
                                                 {elseif $vo.status >= $ArticleModel->STATUS_FIRST_AUDITED/}
                                                 <a class="firstTrial">已初审</a>
                                                 {else /}
@@ -183,7 +239,8 @@
                                             <li class="divider"></li>
                                             <li>
                                                 {if $vo.status == $ArticleModel->STATUS_FIRST_AUDITED}
-                                                <a href="{:url('Article/auditSecond',['id'=>$vo['id']])}" class="ajax-a" style="color: black">终审</a>
+                                                <a href="{:url('/admin/Article/auditSecond',['id'=>$vo['id']])}"
+                                                    class="ajax-a" style="color: black">终审</a>
                                                 {elseif $vo.status >= $ArticleModel->STATUS_PUBLISHED/}
                                                 <a class="secondTrial">已终审</a>
                                                 {else /}
@@ -195,16 +252,23 @@
                                     </div>
 
                                     {eq name="vo.is_top" value="0"}
-                                    <button class="btn btn-xs btn-warning ajax-btn" data-action="{:url(request()->controller().'/setTop',['id'=>$vo['id']])}"><i class="fa fa-arrow-circle-up"></i> 置顶</button>
+                                    <button class="btn btn-xs btn-warning ajax-btn"
+                                        data-action="{:url('/admin/' . request()->controller().'/setTop',['id'=>$vo['id']])}"><i
+                                            class="fa fa-arrow-circle-up"></i> 置顶</button>
                                     {else/}
-                                    <button class="btn btn-xs btn-white ajax-btn" data-action="{:url(request()->controller().'/unsetTop',['id'=>$vo['id']])}"><i class="fa fa-arrow-circle-down"></i> 取消置顶</button>
+                                    <button class="btn btn-xs btn-white ajax-btn"
+                                        data-action="{:url('/admin/' . request()->controller().'/unsetTop',['id'=>$vo['id']])}"><i
+                                            class="fa fa-arrow-circle-down"></i> 取消置顶</button>
                                     {/eq}
 
-                                    {if $vo.status >= $ArticleModel->STATUS_DRAFT &&  $vo.status < $ArticleModel->STATUS_PUBLISHED}
-                                    <button class="btn btn-xs btn-info" onclick="showTimingPost(this)" data-id="{$vo['id']}"><i class="fa fa-clock-o"></i>定时发布</button>
-                                    {elseif $vo.status == $ArticleModel->STATUS_PUBLISHED}
-                                    <button class="btn btn-xs btn-default" onclick="javascript:void(0)" data-id="{$vo['id']}" disabled><i class="fa fa-clock-o"></i>定时发布</button>
-                                    {/if}
+                                    {if $vo.status >= $ArticleModel->STATUS_DRAFT && $vo.status < $ArticleModel->
+                                        STATUS_PUBLISHED}
+                                        <button class="btn btn-xs btn-info" onclick="showTimingPost(this)"
+                                            data-id="{$vo['id']}"><i class="fa fa-clock-o"></i>定时发布</button>
+                                        {elseif $vo.status == $ArticleModel->STATUS_PUBLISHED}
+                                        <button class="btn btn-xs btn-default" onclick="javascript:void(0)"
+                                            data-id="{$vo['id']}" disabled><i class="fa fa-clock-o"></i>定时发布</button>
+                                        {/if}
                                 </td>
                             </tr>
                             {/foreach}
@@ -250,25 +314,25 @@
     });
 
     // 排序
-    $(function() {
+    $(function () {
         //批量操作 审核,取消审核,删除
         var laddaBtn = $('.ajax-batch-set').ladda();
-        laddaBtn.click(function() {
+        laddaBtn.click(function () {
             // Start loading
             $(this).ladda('start');
 
             var ids = getAjaxCheckedValues();
             if (!ids) {
-                layer.msg('请选择要操作的文章!', function(){});
+                layer.msg('请选择要操作的文章!', function () { });
                 $(this).ladda('stop');
                 return;
             }
             var action = $(this).data('action');
             $.each(ids, function (i, id) {
-                $.post(action, {id: id}, function (data) {
+                $.post(action, { id: id }, function (data) {
                     //console.log(data);
                     if (data.code == 0 && ids.length == 1) {
-                        layer.msg(data.msg, function(){});
+                        layer.msg(data.msg, function () { });
                         location.reload();
                         return false;
                     }
@@ -281,14 +345,14 @@
         });
 
         //删除前提示
-        $('.ajax-batch-set-prompt').click(function() {
+        $('.ajax-batch-set-prompt').click(function () {
             var title = $(this).data('title') != undefined ? $(this).data('title') : '提示';
             var text = $(this).data('text') != undefined ? $(this).data('text') : '确认要执行此操作吗?';
 
             layer.confirm(text, {
                 title: title,
                 btn: ['确认', '取消']
-            }, function() {
+            }, function () {
                 layer.closeAll('dialog');
 
                 var laddaBtn = $('.ajax-batch-set-prompt').ladda();
@@ -298,15 +362,15 @@
 
                 var ids = getAjaxCheckedValues();
                 if (!ids) {
-                    layer.msg('请选择要操作的文章!', function(){});
+                    layer.msg('请选择要操作的文章!', function () { });
                     $(laddaBtn).ladda('stop');
                     return;
                 }
                 var action = $(laddaBtn).data('action');
-                $.post(action, {id: ids.join(',')}, function (data) {
+                $.post(action, { id: ids.join(',') }, function (data) {
                     //console.log(data);
                     if (data.code == 0 && ids.length == 1) {
-                        layer.msg(data.msg, function(){});
+                        layer.msg(data.msg, function () { });
                         location.reload();
                         return false;
                     }
@@ -323,7 +387,7 @@
         });
 
 
-        $(".bootstrap-table").on('click', 'div.sortable', function(event) {
+        $(".bootstrap-table").on('click', 'div.sortable', function (event) {
             event.preventDefault();
             /* Act on the event */
             // 获取排序方式
@@ -350,7 +414,7 @@
         });
     });
 
-    $('.addHeadline').click(function(e){
+    $('.addHeadline').click(function (e) {
         e.preventDefault();
         var $adModal = $('#addAd');
         var _this = $(this);
@@ -380,9 +444,9 @@
             type: 2,
             title: '修改分类',
             offset: ['200px'],
-            area:['600px', '300px'],
+            area: ['600px', '300px'],
             shadeClose: true,
-            content: '{:url(request()->controller().\'/batchCategory\')}'
+            content: '{:url(\'/admin/\' . request()->controller().\'/batchCategory\')}'
         });
     });
 </script>
@@ -393,7 +457,7 @@
         if ($(obj).prop('tagName') == 'LABEL') {
             var ids = getAjaxCheckedValues();
             if (!ids) {
-                layer.msg('请选择要操作的文章!', function () {});
+                layer.msg('请选择要操作的文章!', function () { });
                 return;
             }
             id = ids.join(',');
@@ -401,7 +465,7 @@
             id = $(obj).data('id');
         }
 
-        $.get("{:url('admin/Article/setTimingPost')}?id=" + id, function(data) {
+        $.get("{:url('/admin/Article/setTimingPost')}?id=" + id, function (data) {
 
             layer.open({
                 type: 1,  //0,带btn;1,html;2,iframe

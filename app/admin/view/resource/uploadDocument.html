@@ -21,14 +21,14 @@
             </div>
         </div>
         <div class="ibox-content">
-            <form class="form-horizontal ajax-form" enctype="multipart/form-data"  method="post">
+            <form class="form-horizontal ajax-form" enctype="multipart/form-data" method="post">
 
                 <div class="form-group">
-                    <label class="col-lg-2 control-label" >上传文件</label>
+                    <label class="col-lg-2 control-label">上传文件</label>
                     <div class="col-lg-10">
                         <input type="hidden" name="fileId" id="fileId" value="">
 
-                        <div class="dropzone needsclick dz-clickable" id="uploadFile" data-input-name="fileId"  >
+                        <div class="dropzone needsclick dz-clickable" id="uploadFile" data-input-name="fileId">
                             <div class="dz-message needsclick">
 
                                 点击此处上传文档 <br>
@@ -37,7 +37,8 @@
                             </div>
                             <div class="text fileName"></div>
                         </div>
-                        <span class="help-block m-b-none">文件类型:doc,docx,ppt,pptx,txt,avi,pdf,mp3,zip,mp4,xlsx; &nbsp;&nbsp;&nbsp;&nbsp;   文件小于200M</span>
+                        <span class="help-block m-b-none">文件类型:doc,docx,ppt,pptx,txt,avi,pdf,mp3,zip,mp4,xlsx;
+                            &nbsp;&nbsp;&nbsp;&nbsp; 文件小于200M</span>
                     </div>
                 </div>
 
@@ -76,12 +77,12 @@
 <script>
 
     var config = {
-        '.chosen-select'           : {},
-        '.chosen-select-deselect'  : {allow_single_deselect:true},
-        '.chosen-select-search'    : {search_contains:true},
-        '.chosen-select-no-single' : {disable_search_threshold:10},
-        '.chosen-select-no-results': {no_results_text:'没有匹配的选项'},
-        '.chosen-select-width'     : {width:"100%!important"}
+        '.chosen-select': {},
+        '.chosen-select-deselect': { allow_single_deselect: true },
+        '.chosen-select-search': { search_contains: true },
+        '.chosen-select-no-single': { disable_search_threshold: 10 },
+        '.chosen-select-no-results': { no_results_text: '没有匹配的选项' },
+        '.chosen-select-width': { width: "100%!important" }
     };
     for (var selector in config) {
         $(selector).chosen(config[selector]);
@@ -92,7 +93,7 @@
     Dropzone.autoDiscover = false;
     $("#uploadFile").dropzone({
         // autoProcessQueue:false,
-        url: "{:url('File/upload')}",
+        url: "{:url('/admin/File/upload')}",
         paramName: 'file', //input的name
         maxFilesize: 200, // MB
         addRemoveLinks: true, //添加删除链接
@@ -100,14 +101,14 @@
         acceptedFiles: '.doc,.docx,.ppt,.pptx,.txt,.avi,.pdf,.mp3,.zip,.mp4,.xlsx', //允许上传的文件后缀
         dictCancelUpload: '取消上传',
         dictRemoveFile: '删除图片',
-        maxfilesexceeded: function(file) {
-            layer.alert('超最大数量,请删除现有文件后再上传', {icon: 2, title: '上传失败'});
+        maxfilesexceeded: function (file) {
+            layer.alert('超最大数量,请删除现有文件后再上传', { icon: 2, title: '上传失败' });
             file.previewElement.remove();
         },
-        sending: function(file,xhr,formData) {
+        sending: function (file, xhr, formData) {
             var $element = $(this.element);
         },
-        success: function(file,response) {
+        success: function (file, response) {
             var $element = $(this.element);
             if (response.code) {
                 //将图片id填入input
@@ -121,15 +122,15 @@
                 // file.previewElement.remove();
                 // this.removeFile(file);
             } else {
-                layer.alert(response.msg, {icon: 2, title: '上传失败'});
+                layer.alert(response.msg, { icon: 2, title: '上传失败' });
             }
         },
-        complete: function(file){
+        complete: function (file) {
 
         },
-        error: function(file, message) {
+        error: function (file, message) {
             //上传错误
-            layer.alert(message, {icon: 2, title: '上传失败'});
+            layer.alert(message, { icon: 2, title: '上传失败' });
             this.removeFile(file);
         }
     });

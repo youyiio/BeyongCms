@@ -18,18 +18,21 @@
                 </div>
             </div>
             <div class="ibox-content">
-                <form class="form-horizontal ajax-form" action="{:url('User/changePwd')}" method="post">
+                <form class="form-horizontal ajax-form" action="{:url('/admin/User/changePwd')}" method="post">
                     <div class="form-group">
                         <label class="col-lg-2 control-label">用户</label>
-                        <div class="col-lg-10"><input type="text" name="email" value="{$user.email}" class="form-control" disabled></div>
+                        <div class="col-lg-10"><input type="text" name="email" value="{$user.email}"
+                                class="form-control" disabled></div>
                     </div>
                     <div class="form-group">
                         <label class="col-lg-2 control-label">新密码</label>
-                        <div class="col-lg-10"><input type="password" name="newPwd" placeholder="新密码" class="form-control"></div>
+                        <div class="col-lg-10"><input type="password" name="newPwd" placeholder="新密码"
+                                class="form-control"></div>
                     </div>
                     <div class="form-group">
                         <label class="col-lg-2 control-label">确认密码</label>
-                        <div class="col-lg-10"><input type="password" name="newRePwd" placeholder="确认密码" class="form-control"></div>
+                        <div class="col-lg-10"><input type="password" name="newRePwd" placeholder="确认密码"
+                                class="form-control"></div>
                     </div>
                     <div class="form-group">
                         <div class="col-lg-offset-2 col-lg-10">

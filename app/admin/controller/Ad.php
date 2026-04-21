@@ -68,7 +68,7 @@ class Ad extends Base
             $AdModel->adSlots()->attach($data['slot_ids'], $pivot);
 
             if ($rowsNum !== false) {
-                return $this->success('成功新增广告', url('ad/index'));
+                return $this->success('成功新增广告', url('/admin/ad/index'));
             } else {
                 return $this->error('新增失败');
             }

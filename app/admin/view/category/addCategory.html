@@ -18,12 +18,13 @@
             </div>
         </div>
         <div class="ibox-content">
-            <form class="form-horizontal ajax-form" action="{:url('Category/addCategory')}" method="post">
+            <form class="form-horizontal ajax-form" action="{:url('/admin/Category/addCategory')}" method="post">
 
                 <div class="form-group">
                     <label class="col-lg-2 control-label" for="title">分类名称</label>
                     <div class="col-lg-10">
-                        <input class="form-control" type="text" id="title" name="title" placeholder="分类名称" value="{$category.title|default=''}" required>
+                        <input class="form-control" type="text" id="title" name="title" placeholder="分类名称"
+                            value="{$category.title|default=''}" required>
                         <span class="help-block m-b-none"></span>
                     </div>
                 </div>
@@ -31,7 +32,8 @@
                 <div class="form-group">
                     <label class="col-lg-2 control-label" for="name">英文名称</label>
                     <div class="col-lg-10">
-                        <input class="form-control" type="text" id="name" name="name" placeholder="英文名称" value="{$category.name|default=''}" required>
+                        <input class="form-control" type="text" id="name" name="name" placeholder="英文名称"
+                            value="{$category.name|default=''}" required>
                         <span class="help-block m-b-none"></span>
                     </div>
                 </div>
@@ -39,7 +41,8 @@
                 <div class="form-group">
                     <label class="col-lg-2 control-label" for="remark">备注</label>
                     <div class="col-lg-10">
-                        <input class="form-control" type="text" id="remark" name="remark" placeholder="备注" value="{$category.remark|default=''}">
+                        <input class="form-control" type="text" id="remark" name="remark" placeholder="备注"
+                            value="{$category.remark|default=''}">
                         <span class="help-block m-b-none"></span>
                     </div>
                 </div>
@@ -47,7 +50,8 @@
                 <div class="form-group">
                     <label class="col-lg-2 control-label" for="sort">排序</label>
                     <div class="col-lg-10">
-                        <input class="form-control" type="number" id="sort" name="sort" placeholder="排序" value="{$category.sort|default=$defaultSort}" required>
+                        <input class="form-control" type="number" id="sort" name="sort" placeholder="排序"
+                            value="{$category.sort|default=$defaultSort}" required>
                         <span class="help-block m-b-none"></span>
                     </div>
                 </div>
@@ -60,7 +64,8 @@
                         {else/}
                         <input type="hidden" name="pid" value="{:input('param.pid/d',0)}">
                         {/present}
-                        <button class="btn btn-primary btn-lg" type="submit" id="submitBtn">{$category ? '修改' : '新增'}</button>
+                        <button class="btn btn-primary btn-lg" type="submit" id="submitBtn">{$category ? '修改' :
+                            '新增'}</button>
                     </div>
                 </div>
             </form>

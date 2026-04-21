@@ -1,11 +1,13 @@
 <!--定时发布-->
 
 
-<form class="form-horizontal ajax-form" action="{:url('Article/setTimingPost')}" method="post" style="margin-left: 40px;margin-right:40px">
+<form class="form-horizontal ajax-form" action="{:url('/admin/Article/setTimingPost')}" method="post"
+    style="margin-left: 40px;margin-right:40px">
     <div class="form-group">
         <label class="control-label">选择时间:</label>
         <div class="col-12">
-            <input type="text" name="postTime" autocomplete="off" placeholder="点击输入框选择" class="form-control form-datetime-timing" readonly>
+            <input type="text" name="postTime" autocomplete="off" placeholder="点击输入框选择"
+                class="form-control form-datetime-timing" readonly>
             <span class="help-block m-b-none"></span>
         </div>
     </div>
@@ -22,7 +24,7 @@
 <script>
 
     //表单ajax提交
-    $(function() {
+    $(function () {
         //日期控件（定时器）
         $('.form-datetime-timing').datetimepicker({
             language: 'zh-CN',
@@ -36,44 +38,44 @@
         if (typeof rules == 'undefined') {
             $("form.ajax-form").each(function () {
                 $(this).validate({
-                    errorElement : 'div',
-                    errorClass : 'help-block',
+                    errorElement: 'div',
+                    errorClass: 'help-block',
                     //自定义错误消息放到哪里
-                    errorPlacement : function(error, element) {
+                    errorPlacement: function (error, element) {
                         //element.next().remove();//删除显示图标
                         //element.after('<span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>');
                         element.closest('.form-group').append(error);//显示错误消息提示
                     },
                     //给未通过验证的元素进行处理
-                    highlight : function(element) {
+                    highlight: function (element) {
                         $(element).closest('.form-group').addClass('has-error has-feedback');
                     },
                     //验证通过的处理
-                    success : function(label) {
-                        var el=label.closest('.form-group').find("input");
+                    success: function (label) {
+                        var el = label.closest('.form-group').find("input");
                         //el.next().remove();//与errorPlacement相似
                         //el.after('<span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>');
                         label.closest('.form-group').removeClass('has-error').addClass("has-feedback has-success");
                         label.remove();
                     },
-                    submitHandler : function(form) {
+                    submitHandler: function (form) {
                         ajaxFormSubmitFunc(form);
                     }
                 });
             });
 
         } else {
-            $("form.ajax-form").each(function() {
+            $("form.ajax-form").each(function () {
                 $(this).validate(rules);
             })
         }
     });
 
-    function showTimingPostModel(obj){
+    function showTimingPostModel(obj) {
         if ($(obj).prop('tagName') == 'LABEL') {
             var ids = getAjaxCheckedValues();
             if (!ids) {
-                layer.msg('请选择要操作的文章!', function () {});
+                layer.msg('请选择要操作的文章!', function () { });
                 return;
             }
             var id = ids.join(',');
