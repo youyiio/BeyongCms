@@ -1,4 +1,3 @@
-
 # git for me [git使用帮助]
 
 ## clone或新建项目
@@ -17,14 +16,12 @@
 
 [remote "gitlab"]
 url = http://gitlab.xxxx.com/youyiio/project_xxx.git
-fetch = +refs/heads/*:refs/remotes/origin/*
+fetch = +refs/heads/_:refs/remotes/origin/_
 
 ## git本地合并
 
 > git checkout master
-
 > git merge branch_xxx
-
 
 ## git提交操作
 
@@ -36,15 +33,15 @@ git commit -m "message": 提交到本地仓库;
 ## 推送至remote
 
 注： git push remote localbranch:remotebranch
-注:  git push remote branchname  (等同于：git push remote branchname:branchname)
+注: git push remote branchname (等同于：git push remote branchname:branchname)
 
 > git push gitlab ItuizhanApi:master (ItuizhanApi=>master)
 
 ## 拉取remote
 
 注： git pull remote remotebranch:localbranch
-> git pull gitlab master:ItuizhanApi  (: 意思如 =>, 远程的master合并入本地的ItuizhanApi)
 
+> git pull gitlab master:ItuizhanApi (: 意思如 =>, 远程的master合并入本地的ItuizhanApi)
 
 git pull = git fetch + git merge
 
@@ -66,26 +63,24 @@ git pull = git fetch + git merge
 
 创建分支
 
-> git branch newbranch   
+> git branch newbranch
 
-#提交分支
+提交分支
 
 > git push gitlab newbranch:newbranch
 
-#删除分支
+删除分支
 
 > git branch -d newbranch
 
-#删除远程分支
+删除远程分支
 
 > git push gitlab --delete newbranch
 
 ## 标签新建及同步
 
 > git tag v1.0
-
 > git push gitlab --tag
-
 > git pull gitlab --tag
 
 删除标签
@@ -102,21 +97,17 @@ git pull = git fetch + git merge
 
 配置.git\config
 [remote "base"]
-	url = http://gitlab.xxxx.com/youyiio/basexxx(根据实际修改).git
-	fetch = +refs/heads/*:refs/remotes/origin/*
+url = http://gitlab.xxxx.com/youyiio/basexxx(根据实际修改).git
+fetch = +refs/heads/_:refs/remotes/origin/_
 
 若base项目更新时，做合并更新有2种方法:
 
 ### 1) 在衍生项目中做合并
 
 > git checkout base
-
 > git pull base master:base
-
 > git checkout master
-
 > git merge base
-
 
 ### 从base项目中推送更新至衍生项目的base分支(当衍生项目比较多时，比较麻烦)
 
@@ -127,9 +118,6 @@ base项目中
 衍生项目中
 
 > git checkout base
-
 > git pull gitlab base:base
-
 > git checkout master
-
 > git merge base
