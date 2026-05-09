@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Created by VSCode.
  * User: cattong
@@ -91,7 +90,7 @@ class Webmaster
 
     //*****************静态业务逻辑，供Job及command调用**********************
     //检测url是否收录收录验证
-    public static function baiduCheckIndex($url = '', $fine = true)
+    public static function baiduCheckIndex($url = '', $fine=true)
     {
         $count = 0;
         $spUrl = "https://www.baidu.com/s?wd=" . urlencode($url);
@@ -102,7 +101,7 @@ class Webmaster
             $sorts = self::getTargetUrl($domain, $spUrl, 'bd');
             $sorts && $count = count($sorts);
         } else {
-            $output = self::httpGet($spUrl);
+            $output = http_get($spUrl);
             $preg = '/百度为您找到相关结果约(\d+)个/';
             $check = preg_match($preg, $output, $arr);
             $check && $count = $arr[1];
@@ -123,7 +122,7 @@ class Webmaster
 
         $api = "http://data.zz.baidu.com/urls?site=$site&token=$token";
 
-        $output = self::httpPost($api, implode("\n", $links));
+        $output = http_post($api, implode("\n", $links));
         Log::debug($api);
         Log::debug($links);
         Log::debug($output);
@@ -132,7 +131,7 @@ class Webmaster
     }
 
     //site指令：域名收录情况
-    public static function siteCmd($domain, $sp, $source = 'pc')
+    public static function siteCmd($domain, $sp, $source='pc')
     {
         if ($sp == 'bd') {
             return self::baiduSiteCmd($domain);
@@ -141,7 +140,7 @@ class Webmaster
         } else if ($sp == 'sg') {
             return self::sogouSiteCmd($domain);
         } else {
-            //return $this->error('未实现');
+            //$this->error('未实现');
             return -1;
         }
     }
@@ -150,7 +149,7 @@ class Webmaster
     public static function baiduSiteCmd($domain = '')
     {
         $url = "https://www.baidu.com/s?wd=site:$domain";
-        $output = self::httpGet($url);
+        $output = http_get($url);
         //echo $output;
         $preg = '/找到相关结果数约(\d+)个/';
         $check = preg_match($preg, $output, $arr);
@@ -160,7 +159,7 @@ class Webmaster
             $check = preg_match($preg, $output, $arr);
         }
         if (!$check) {
-            //return $this->error = '网站未被收录';
+            //$this->error = '网站未被收录';
             return -1;
         }
         $sites = $arr[1];
@@ -171,7 +170,7 @@ class Webmaster
 
     public static function getTargetUrl($domain, $spUrl, $sp)
     {
-        $output = self::httpGet($spUrl);
+        $output = http_get($spUrl);
         if ($output == false) {
             //页面获取失败
             return false;
@@ -179,26 +178,26 @@ class Webmaster
         switch ($sp) {
             case 'bd':
                 $rules = [
-                    'target' => ['.f13 a:eq(0)', 'text'],
+                    'target' => ['.f13 a:eq(0)','text'],
                 ];
                 $range = '.result';
                 break;
             case 'mb':
                 $rules = [
-                    'title' => array('.c-title.c-gap-top-small', 'text'),
-                    'target' => ['span.c-showurl', 'text'],
+                    'title' => array('.c-title.c-gap-top-small','text'),
+                    'target' => ['span.c-showurl','text'],
                 ];
                 $range = '.result';
                 break;
             case 'so':
                 $rules = [
-                    'target' => ['.res-linkinfo cite', 'text'],
+                    'target' => ['.res-linkinfo cite','text'],
                 ];
                 $range = 'ul.result>li.res-list';
                 break;
             case 'sg':
                 $rules = [
-                    'target' => ['cite', 'text'],
+                    'target' => ['cite','text'],
                 ];
                 $range = '.results .fb';
                 break;
@@ -237,7 +236,7 @@ class Webmaster
                 if (preg_match("/$domainOrName/", $v['target'])) {
                     $res[] = [
                         'sort' => $k + 1,
-                        'target' => preg_replace('/(\s|\&nbsp\;|　|\xc2\xa0)$/', '', $v['target']), //去除尾巴空格
+                        'target' => preg_replace('/(\s|\&nbsp\;|　|\xc2\xa0)$/','',$v['target']), //去除尾巴空格
                     ];
                 }
             }
@@ -245,7 +244,7 @@ class Webmaster
             foreach ($pageList as $k => $v) {
                 $res[] = [
                     'sort' => $k + 1,
-                    'target' => preg_replace('/(\s|\&nbsp\;|　|\xc2\xa0)$/', '', $v['target']), //去除尾巴空格
+                    'target' => preg_replace('/(\s|\&nbsp\;|　|\xc2\xa0)$/','',$v['target']), //去除尾巴空格
                 ];
             }
         }
@@ -253,60 +252,4 @@ class Webmaster
         return $res;
     }
 
-    //get访问
-    private static function httpGet($url)
-    {
-        $header = [
-            'User-Agent: Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.146 Safari/537.36'
-        ];
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-        // 执行
-        $content = curl_exec($ch);
-        if ($content == false) {
-            Log::error(curl_error($ch));
-            return false;
-        }
-        // 关闭
-        curl_close($ch);
-
-        //输出结果
-        return $content;
-    }
-
-    //get访问
-    private static function httpPost($url, $requestData = array())
-    {
-        $header = [
-            'User-Agent: Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.146 Safari/537.36'
-        ];
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-
-        if (is_array($requestData)) {
-            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($requestData));
-        } else {
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $requestData);
-        }
-
-        // 执行
-        $content = curl_exec($ch);
-        if ($content == false) {
-            Log::error(curl_error($ch));
-            return false;
-        }
-        // 关闭
-        curl_close($ch);
-
-        //输出结果
-        return $content;
-    }
 }
