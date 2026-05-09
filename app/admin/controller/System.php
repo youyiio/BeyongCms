@@ -1,5 +1,4 @@
 <?php
-
 namespace app\admin\controller;
 
 use app\common\model\ActionLogModel;
@@ -95,10 +94,16 @@ class System extends Base
     }
 
     //短信测试
-    public function testSms() {}
+    public function testSms()
+    {
+
+    }
 
     //公众号测试
-    public function testMp() {}
+    public function testMp()
+    {
+
+    }
 
 
     //清理缓存
@@ -150,6 +155,7 @@ class System extends Base
     public function ad()
     {
         if (request()->isAjax()) {
+
         }
 
         return view();
@@ -161,7 +167,7 @@ class System extends Base
         if (request()->isPost()) {
             $id = input('post.id', 0);
             $checked = input('post.checked', 'false');
-            $link = LinkModel::find($id);
+            $link = LinkModel::get($id);
             if (!$link) {
                 return $this->error('友链不存在!');
             }
@@ -181,7 +187,6 @@ class System extends Base
         }
 
         $LinkModel = new LinkModel();
-        $this->assign('LinkModel', $LinkModel);
         $list = $LinkModel->order('sort')->select();
         $this->assign('list', $list);
 
@@ -198,10 +203,9 @@ class System extends Base
         if (empty($data['end_time'])) {
             $data['end_time'] = null;
         }
-
+        
         $LinkModel = new LinkModel();
-        //$res = $LinkModel->allowField(true)->save($data);
-        $res = $LinkModel->save($data);
+        $res = $LinkModel->allowField(true)->save($data);
         if ($res) {
             cache('links', null);
             return $this->success('添加成功');
@@ -220,7 +224,7 @@ class System extends Base
         if (empty($data['end_time'])) {
             $data['end_time'] = null;
         }
-
+    
         $res = LinkModel::update($data);
         if ($res) {
             cache('links', null);
@@ -238,8 +242,8 @@ class System extends Base
         foreach ($data as $k => $v) {
             $LinkModel->where('id', $k)->update(['sort' => $v]);
         }
-        cache('links', null);
-        return $this->success('成功排序');
+        cache('links',null);
+        $this->success('成功排序');
     }
 
     //删除友链
@@ -290,7 +294,7 @@ class System extends Base
             ];
         }
 
-        $fields = 'id, username, action, module, ip, remark, user_agent, create_time';
+        $fields = 'id, username, action, module, component, ip, user_agent, response, remark, create_time';
         $pageConfig = [
             'type' => '\\app\\common\\paginator\\BootstrapTable',
             'query' => input('param.')

@@ -1,16 +1,24 @@
 <?php
+/**
+ * Created by VSCode.
+ * User: Administrator
+ * Date: 2018/5/9
+ * Time: 11:29
+ */
 
 namespace app\admin\controller;
 
 use app\common\model\FileModel;
+use app\common\model\ImageModel;
+use think\facade\Env;
 
 class Resource extends Base
 {
     //文档列表
     public function documents()
     {
-
-        $map[] = ['ext', 'in', ['doc', 'docx', 'ppt', 'pptx', 'txt', 'avi', 'pdf', 'mp3', 'zip', 'mp4', 'xlsx']];
+        
+        $map[] = ['ext', 'in', ['doc','docx','ppt','pptx','txt','avi','pdf','mp3','zip','mp4','xlsx']];
         $key = input('param.key');
         if ($key) {
             $map[] = ['remark', 'like', "%$key%"];
@@ -19,7 +27,7 @@ class Resource extends Base
         $FileModel = new FileModel();
         $files = $FileModel->where($map)->paginate(21);
         $pages = $files->render();
-
+      
         $this->assign('files', $files);
         $this->assign('pages', $pages);
 

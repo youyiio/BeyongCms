@@ -1,15 +1,14 @@
 <?php
-
 namespace app\admin\controller;
 
 use app\common\model\cms\CategoryModel;
 
 /**
- * 文章分类控制器
- */
+* 文章分类控制器
+*/
 class Category extends Base
 {
-
+    
     //文章分类
     public function index()
     {
@@ -36,8 +35,7 @@ class Category extends Base
         }
 
         $CategoryModel = new CategoryModel();
-        $this->assign('CategoryModel', $CategoryModel);
-        $list = $CategoryModel->getTreeData('tree', 'sort,id', 'title', 'id', 'pid');
+        $list = $CategoryModel->getTreeData('tree','sort,id', 'title', 'id', 'pid');
         $this->assign('list', $list);
 
         return $this->fetch('category/index');
@@ -50,11 +48,10 @@ class Category extends Base
         if (request()->isAjax()) {
             $data = input('post.');
             $CategoryModel = new CategoryModel();
-            $data['status'] = CategoryModel::STATUS_ONLINE;
             if (empty($data['id'])) {
-                $res = $CategoryModel->save($data);
+                $res = $CategoryModel->isUpdate(false)->save($data);
             } else {
-                $res = $CategoryModel->update($data);
+                $res = $CategoryModel->isUpdate(true)->save($data);
             }
 
             if ($res) {
@@ -120,4 +117,5 @@ class Category extends Base
             return $this->error('删除失败');
         }
     }
+
 }

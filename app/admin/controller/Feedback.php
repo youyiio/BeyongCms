@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Created by VSCode.
  * User: Administrator
@@ -12,7 +11,6 @@ namespace app\admin\controller;
 
 use app\common\model\cms\FeedbackModel as FeedbackModel;
 use app\common\model\UserModel;
-use think\facade\Log;
 
 class Feedback extends Base
 {
@@ -21,10 +19,10 @@ class Feedback extends Base
     {
         $map[] = ['status', '<=', FeedbackModel::STATUS_REPLY];
         //$map[] = ['reply_client_id', 'exp', 'null'];
-        //        $map[] = ['reply_feedback_id','exp','is null'];
+//        $map[] = ['reply_feedback_id','exp','is null'];
         $FeedbackModel = new FeedbackModel();
         $list = $FeedbackModel->where($map)->whereNull('reply_client_id')->whereNull('reply_feedback_id')->order('status')->order('create_time desc')->select();
-
+//        dump($GLOBALS);
         $senderArr = [];
         foreach ($list as $k => $value) {
             $sendClientId = $value['send_client_id'];
@@ -33,7 +31,7 @@ class Feedback extends Base
 
             if ($user) {
                 $value['sender'] = $user->nickname;
-            } else { //非注册用户
+            } else {//非注册用户
                 $value['sender'] = $value['send_client_id'];
             }
             //同一用户信息处理(未读消息统计)
@@ -82,19 +80,19 @@ class Feedback extends Base
             if ($value['reply_client_id'] == null && $value['reply_feedback_id'] == null) {
 
                 $user = $UserModel->where('id', '=', $sendClientIds)->find();
-                if ($user) { //注册用户
+                if ($user) {//注册用户
                     $value['sender'] = $user->nickname;
                 } else { //非注册用户
                     $value['sender'] = $value['send_client_id'];
                 }
                 //消息状态 send => read
                 if ($value['status'] <= FeedbackModel::STATUS_SEND) {
-                    $data = ['status' => FeedbackModel::STATUS_READ, 'read_time' => $readTime];
+                    $data = ['status' => FeedbackModel::STATUS_READ,'read_time' => $readTime];
                     $where = ['feedback_id' => $value['feedback_id']];
                     FeedbackModel::update($data, $where);
                 }
-            } else { //管理员
-                $admin = $UserModel->where('id', '=', $sendClientIds)->find();
+            } else {//管理员
+                $admin = $UserModel->where('id','=', $sendClientIds)->find();
                 $value['sender'] = $admin->nickname;
             }
         }
@@ -111,7 +109,7 @@ class Feedback extends Base
     {
         $data = input('param.');
 
-        $sendClientId = session('uid'); //session();
+        $sendClientId = session('uid');//session();
         $replyFeedbackId = $data['reply_feedback_id'];
         $replyClientId = $data['reply_client_id'];
         $content = $data['content'];
@@ -133,9 +131,12 @@ class Feedback extends Base
             //消息状态 已读 => 已回复
             $replyTime = date('Y-m-d H:i:s');
             FeedbackModel::update(['status' => FeedbackModel::STATUS_REPLY, 'reply_time' => $replyTime], ['feedback_id' => $replyFeedbackId]);
-            return $this->success('回复成功', '', ['replyFeedbackId' => $replyFeedbackId]);
+            $this->success('回复成功','',['replyFeedbackId'=>$replyFeedbackId]);
         } else {
-            return $this->error('回复失败');
+            $this->error('回复失败');
         }
     }
+
+
+
 }

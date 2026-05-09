@@ -1,19 +1,16 @@
 <?php
-
 namespace app\admin\controller;
 
-use app\admin\validate\Crawler as ValidateCrawler;
 use app\common\model\cms\ArticleMetaModel;
 use app\common\model\cms\ArticleModel;
 use app\common\model\cms\CrawlerMetaModel;
 use app\common\model\cms\CrawlerModel;
 use app\common\model\cms\CategoryModel;
-use think\facade\Queue;
+use think\Queue;
 use think\Db;
-use think\exception\ValidateException;
 
 /**
- 采集控制器
+ * 采集控制器
  */
 class Crawler extends Base
 {
@@ -28,7 +25,6 @@ class Crawler extends Base
 
         $this->assign('list', $list);
         $this->assign('page', $list->render());
-        $this->assign('CrawlerModel', $crawlerModel);
 
         return $this->fetch('index');
     }
@@ -71,26 +67,32 @@ class Crawler extends Base
         if (empty($id)) {
             return $this->error('参数错误');
         }
-        $crawler = CrawlerModel::find($id);
+        $crawler = CrawlerModel::get($id);
         if (!$crawler) {
             return $this->error('采集规则不存在！');
         }
+
+        $CrawlerModel = new CrawlerModel();
 
         if (request()->isAjax()) {
             $data = input('post.');
             $data['is_timing'] = isset($data['is_timing']) && $data['is_timing'] == 'on' ? true : false;
             $data['is_paging'] = isset($data['is_paging']) && $data['is_paging'] == 'on' ? true : false;
 
-            try {
-                validate(ValidateCrawler::class)->scene('edit')->check($data);
-                $res = $crawler->save($data);
-            } catch (ValidateException $e) {
-                // 验证失败 输出错误信息
-                return ($e->getError());
+            $check = validate('Crawler')->scene('edit')->check($data);
+            if ($check !== true) {
+                return $this->error(validate('Crawler')->getError());
             }
-            return $this->success('规则修改成功！', 'Crawler/index');
+
+            $res = $CrawlerModel->allowField(true)->isUpdate(true)->save($data);
+            if ($res === true) {
+                return $this->success('规则修改成功！', url('Crawler/index'));
+            } else {
+                return $this->error('修改失败！');
+            }
         }
 
+        $crawler = CrawlerModel::get($id);
         $this->assign('crawler', $crawler);
 
         $CategoryModel = new CategoryModel();
@@ -135,12 +137,14 @@ class Crawler extends Base
         try {
             $endPage = $isPaging ? $startPage : $endPage; //测试抓取时，分页只抓取一页的urls
             $urls = \app\admin\job\Crawler::crawlUrls($url, $articleUrl, $isPaging, $startPage, $endPage, $pagingUrl);
+            //dump($urls);
             if (empty($urls)) {
                 return $this->error('未采集到文章网址', 'javascript:void(0)');
             }
 
             $contentUrl = $urls[0];
             $result = \app\admin\job\Crawler::crawlArticle($contentUrl, $encoding, $articleTitle, $articleDescription, $articleKeywords, $articleContent, $articleAuthor, $articleImage);
+            //dump($result);
 
             $this->assign('article', $result);
         } catch (\Exception $e) {
@@ -155,8 +159,7 @@ class Crawler extends Base
     public function startCrawl()
     {
         $id = input('id/d', 0);
-        $crawler = CrawlerModel::find($id);
-
+        $crawler = CrawlerModel::get($id);
         if (!$crawler) {
             return $this->error('采集规则不存在');
         }
@@ -172,7 +175,7 @@ class Crawler extends Base
         //任务归属的队列名称，如果为新队列，会自动创建
         $jobQueue = config('queue.default');
 
-        $isPushed = Queue::later(10, $jobHandlerClass, $jobData, $jobQueue);
+        $isPushed = Queue::push($jobHandlerClass, $jobData, $jobQueue);
         // database 驱动时，返回值为 1|false; redis 驱动时，返回值为 随机字符串|false
         if ($isPushed !== false) {
             return $this->success('采集任务已经启动...');
@@ -184,9 +187,9 @@ class Crawler extends Base
     //删除采集规则
     public function deleteCrawler()
     {
-        $cid = input('id/d', 0);
+        $cid = input('id/d',0);
         if ($cid <= 0) {
-            return $this->error('参数错误');
+            $this->error('参数错误');
         }
 
         $res = CrawlerModel::where('id', $cid)->update(['status' => CrawlerModel::STATUS_DELETED]);
@@ -200,12 +203,12 @@ class Crawler extends Base
     //克隆采集规则
     public function cloneCrawler()
     {
-        $cid = input('id/d', 0);
+        $cid = input('id/d',0);
         if ($cid <= 0) {
             return $this->error('参数错误');
         }
 
-        $crawler = CrawlerModel::find($cid);
+        $crawler = CrawlerModel::get($cid);
         if (empty($crawler)) {
             return $this->error('采集规则不存在!');
         }
@@ -264,22 +267,23 @@ class Crawler extends Base
                         $data[$replaceField] = Db::raw("replace($replaceField, '$searchText', '$replaceText')");
                     }
 
-                    $ArticleModel->where('id', 'in', function ($query) use ($crawlerId) {
+                    $ArticleModel->where('id', 'in', function($query) use ($crawlerId) {
                         $query->table('cms_crawler_meta')->where('target_id', '=', $crawlerId)->field('article_id')->select();
                     })->cache('article_preprocess_replace_' . $replaceField)->update($data);
+
                 } else {
                     $articleIds = CrawlerMetaModel::where('target_id', '=', $crawlerId)->column('article_id');
                     $articles = ArticleModel::where('id', 'in', $articleIds)->select();
 
                     foreach ($articles as $key => $article) {
                         if ($replaceField == 'all') {
-                            $article->title = str_replace($searchText, $replaceText, $article['title']);
-                            $article->keywords = str_replace($searchText, $replaceText, $article['keywords']);
-                            $article->description = str_replace($searchText, $replaceText, $article['description']);
-                            $article->content = str_replace($searchText, $replaceText, $article['content']);
+                            $article->title = str_replace($searchText, $replaceText, (string)$article['title']);
+                            $article->keywords = str_replace($searchText, $replaceText, (string)$article['keywords']);
+                            $article->description = str_replace($searchText, $replaceText, (string)$article['description']);
+                            $article->content = str_replace($searchText, $replaceText, (string)$article['content']);
                             $article->save();
                         } else {
-                            $article->$replaceField = str_replace($searchText, $replaceText, $article[$replaceField]);
+                            $article->$replaceField = str_replace($searchText, $replaceText, (string)$article[$replaceField]);
                             $article->save();
                         }
                     }
@@ -304,19 +308,20 @@ class Crawler extends Base
                     $ArticleModel->where('id', 'in', function ($query) use ($crawlerId) {
                         $query->table('cms_crawler_meta')->where('target_id', '=', $crawlerId)->field('article_id')->select();
                     })->cache('article_preprocess_regexp_replace_' . $replaceField)->update($data);
+
                 } else {
                     $articleIds = CrawlerMetaModel::where('target_id', '=', $crawlerId)->column('article_id');
                     $articles = ArticleModel::where('id', 'in', $articleIds)->select();
 
                     foreach ($articles as $key => $article) {
                         if ($replaceField == 'all') {
-                            $article->title = preg_replace($searchText, $replaceText, $article['title']);
-                            $article->keywords = preg_replace($searchText, $replaceText, $article['keywords']);
-                            $article->description = preg_replace($searchText, $replaceText, $article['description']);
-                            $article->content = preg_replace($searchText, $replaceText, $article['content']);
+                            $article->title = preg_replace($searchText, $replaceText, (string)$article['title']);
+                            $article->keywords = preg_replace($searchText, $replaceText, (string)$article['keywords']);
+                            $article->description = preg_replace($searchText, $replaceText, (string)$article['description']);
+                            $article->content = preg_replace($searchText, $replaceText, (string)$article['content']);
                             $article->save();
                         } else {
-                            $article->$replaceField = preg_replace($searchText, $replaceText, $article[$replaceField]);
+                            $article->$replaceField = preg_replace($searchText, $replaceText, (string)$article[$replaceField]);
                             $article->save();
                         }
                     }
@@ -325,6 +330,8 @@ class Crawler extends Base
 
                 return $this->success('数据正则替换成功！');
             }
+
+
         }
 
 
@@ -354,8 +361,6 @@ class Crawler extends Base
         $articleList = $query->field($fields)->order('id desc')->paginate(20, false, $pageConfig);
         $this->assign('articleList', $articleList);
         $this->assign('pages', $articleList->render());
-        $this->assign('ArticleModel', $ArticleModel);
-
 
         return $this->fetch('preprocess');
     }
@@ -411,13 +416,14 @@ class Crawler extends Base
                 ];
                 $articles = $ArticleModel->where($where)->alias('a')->join('cms_crawler_meta b', 'a.id=b.article_id')->field($fields)->select();
 
-                foreach ($articles as $key => $article) {
+                foreach ($articles as $key =>$article) {
                     $article->status = ArticleModel::STATUS_WAREHOUSED;
                     $article->save();
                 }
 
                 return $this->success('成功入库' . count($articles) . '篇文章');
             }
+
         }
 
 
@@ -513,6 +519,7 @@ class Crawler extends Base
 
                         ArticleModel::update(['status' => ArticleModel::STATUS_DRAFT, 'id' => $aid], ['id' => $aid]);
                     }
+
                 }
             }
 
@@ -538,8 +545,8 @@ class Crawler extends Base
 
         $this->assign('articleList', $articleList);
         $this->assign('pages', $articleList->render());
-        $this->assign('ArticleModel', $ArticleModel);
 
         return $this->fetch('postPlan');
     }
 }
+

@@ -1,5 +1,4 @@
 <?php
-
 namespace app\admin\controller;
 
 use app\common\model\cms\AdServingModel;
@@ -116,7 +115,7 @@ class Ad extends Base
             }
         }
 
-        $ad = AdModel::find($adId);
+        $ad = AdModel::get(['id' => $adId]);
         if (empty($ad)) {
             return $this->error('广告不存在');
         }
@@ -159,4 +158,8 @@ class Ad extends Base
         }
         return $this->success('成功排序');
     }
+
+
+
+
 }

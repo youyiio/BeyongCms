@@ -1,11 +1,8 @@
 <?php
-
 namespace app\admin\controller;
 
 use app\common\model\ActionLogModel;
 use app\common\model\cms\ArticleModel;
-use app\common\model\AuthGroupAccessModel;
-use app\common\model\AuthGroupModel;
 use app\common\model\UserModel;
 use beyong\echarts\charts\Bar;
 use beyong\echarts\Option;
@@ -15,20 +12,22 @@ use app\common\model\MessageModel;
 use app\common\logic\MessageLogic;
 use app\common\model\RoleModel;
 use app\common\model\UserRoleModel;
+use beyong\commons\utils\PregUtils;
 
 /**
- * 用户管理控制器
- */
+* 用户管理控制器
+*/
 class User extends Base
 {
     //用户列表
     public function index()
     {
         $map['status'] = ['egt', 0];
-        $type = input('param.type');
-        $key = input('param.key');
+        $type = input('param.type', '');
+        $key = input('param.key', '');
         $map = [];
         if ($key && $type) {
+            $type = PregUtils::isEmail($key) ? 'email' : (PregUtils::isMobile($key) ? 'mobile' : 'uid');
             switch ($type) {
                 case 'mobile':
                     $key = trim($key);
@@ -40,7 +39,7 @@ class User extends Base
                     break;
                 case 'uid':
                     $key = intval($key);
-                    $map['id'] = $key;
+                    $map[] = ['id', '=', $key];
                     break;
                 default:
                     break;
@@ -48,15 +47,15 @@ class User extends Base
         }
 
         $UserModel = new UserModel();
-        $list = $UserModel->where($map)->order('id desc')->with('roles')->paginate(10, false, ['query' => input('param.')]);
+        $list = $UserModel->where($map)->order('id desc')->with('roles')->paginate(10, false, ['query'=>input('param.')]);
         if (request()->param('status')) {
             $status = input('param.status');
-            $list = $UserModel->where($map)->where('status', $status)->order('id desc')->with('roles')->paginate(10, false, ['query' => input('param.')]);
+            $list = $UserModel->where($map)->where('status',$status)->order('id desc')->with('roles')->paginate(10,false,['query'=>input('param.')]);
         }
 
         $userTotal = $UserModel->count('id');
-        $freezeTotal = $UserModel->where('status', '=', UserModel::STATUS_FREEZED)->count('id');
-        $activeTotal = $UserModel->where('status', '=', UserModel::STATUS_ACTIVED)->count('id');
+        $freezeTotal = $UserModel->where('status','=',UserModel::STATUS_FREEZED)->count('id');
+        $activeTotal = $UserModel->where('status','=',UserModel::STATUS_ACTIVED)->count('id');
         $this->assign('userTotal', $userTotal);
         $this->assign('freezeTotal', $freezeTotal);
         $this->assign('activeTotal', $activeTotal);
@@ -151,7 +150,7 @@ class User extends Base
             return $this->error('参数错误');
         }
 
-        $user = UserModel::find($uid);
+        $user = UserModel::get($uid);
         $this->assign('user', $user);
 
         $UserRoleModel = new UserRoleModel();
@@ -190,13 +189,13 @@ class User extends Base
         }
 
         $userModel = new UserModel();
-        $user = $userModel::find($uid);
+        $user = $userModel::get($uid);
         $this->assign('user', $user);
 
         //最新文章列表
         $ArticleModel = new ArticleModel();
         $field = 'id,title,description,author,thumb_image_id,post_time,read_count,comment_count,status,is_top';
-        $articleList = $ArticleModel->where('uid', $uid)->field($field)->order('id desc')->paginate(20, false, ['query' => input('param.')]);
+        $articleList = $ArticleModel->where('uid', $uid)->field($field)->order('id desc')->paginate(20, false, ['query'=>input('param.')]);
         $this->assign('articleList', $articleList);
 
         //操作日志
@@ -235,7 +234,7 @@ class User extends Base
             }
         }
 
-        $user = UserModel::find($uid);
+        $user = UserModel::get($uid);
         if (!$user) {
             return $this->error('用户不存在');
         }
@@ -254,7 +253,7 @@ class User extends Base
         }
 
         $UserModel = new UserModel();
-        $res = $UserModel->where('id', $uid)->where('status', UserModel::STATUS_ACTIVED)->update(['status' => UserModel::STATUS_FREEZED]);
+        $res = $UserModel->where('id', $uid)->where('status', UserModel::STATUS_ACTIVED)->setField('status', UserModel::STATUS_FREEZED);
         if ($res) {
             return $this->success('操作成功');
         } else {
@@ -272,9 +271,9 @@ class User extends Base
         $UserModel = new UserModel();
         $res = $UserModel->where('id', $uid)->update(['status' => UserModel::STATUS_ACTIVED]);
         if ($res) {
-            return $this->success('操作成功');
+            $this->success('操作成功');
         } else {
-            return $this->error('操作失败');
+            $this->error('操作失败');
         }
     }
 
@@ -400,7 +399,7 @@ class User extends Base
         $data = input('post.');
         $check = $this->validate($data, ['uid' => 'require|gt:0', 'title' => 'require', 'content' => 'require']);
         if ($check !== true) {
-            return $this->error($check);
+            $this->error($check);
         }
 
         $uid = input('post.uid/d');
@@ -438,4 +437,5 @@ class User extends Base
             return $this->error('消息推送失败');
         }
     }
+
 }

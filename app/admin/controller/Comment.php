@@ -1,5 +1,4 @@
 <?php
-
 namespace app\admin\controller;
 
 use app\common\model\cms\CommentModel;
@@ -8,21 +7,20 @@ use app\common\model\UserModel;
 use think\facade\Session;
 
 /**
- * 评论控制器
- */
+* 评论控制器
+*/
 class Comment extends Base
 {
-
+ 
     //评论列表
     public function index()
     {
         $CommentModel = new CommentModel();
-        $this->assign('CommentModel', $CommentModel);
 
         $map = [];
         $key = input('param.key');
         if (!empty($key)) {
-            $map[] = ['content', 'like', "%{$key}%"];
+            $map[] = ['content', 'like',"%{$key}%"];
         }
 
         $startTime = input('param.startTime', '');
@@ -40,23 +38,23 @@ class Comment extends Base
         $this->assign('list', $list);
         $this->assign('pages', $list->render());
 
-        // $MessageModel = new MessageModel();
-        // $data['status'] = MessageModel::STATUS_READ;
-        // $data['read_time'] = date_time();
-        // $data['is_readed'] = 1; //0未读，1已读
-        // $data['type'] = MessageModel::TYPE_COMMENT;
-        // $MessageModel->save($data);
+        $MessageModel = new MessageModel();
+        $data['status'] = MessageModel::STATUS_READ;
+        $data['read_time'] = date_time();
+        $data['is_readed'] = 1;//0未读，1已读
+        $MessageModel->save($data, ['type' => MessageModel::TYPE_COMMENT]);
 
         $this->assign('startTime', $startTime);
         $this->assign('endTime', $endTime);
+
 
         return $this->fetch('comment/index');
     }
 
     //审核评论
-    public function auditComment($id = 0, $pass = 1)
+    public function auditComment($id=0, $pass=1)
     {
-        $com = CommentModel::find($id);
+        $com = CommentModel::get(['id'=>$id]);
         if (empty($com)) {
             return $this->error('评论不存在');
         }
@@ -77,6 +75,7 @@ class Comment extends Base
         } else {
             return $this->error('操作失败');
         }
+
     }
 
     //回复评论
@@ -91,7 +90,7 @@ class Comment extends Base
             if (session('uid')) {
                 $uid = session('uid');
 
-                $user = UserModel::find($uid);
+                $user = UserModel::get($uid);
                 $author = $user->nickname;
                 $data['uid'] = $uid;
                 $data['author'] = $author;
@@ -117,7 +116,7 @@ class Comment extends Base
             }
         }
 
-        return $this->fetch('comment/index');
+         return $this->fetch('comment/index');
     }
 
     //删除评论
@@ -138,7 +137,7 @@ class Comment extends Base
     //查看评论下的回复
     public  function viewComments($id)
     {
-        $comment = CommentModel::find($id);
+        $comment = CommentModel::get(['id'=>$id]);
 
         if (empty($comment)) {
             return $this->error('评论不存在');
@@ -159,4 +158,5 @@ class Comment extends Base
 
         return $this->fetch('comment/viewComments');
     }
+
 }

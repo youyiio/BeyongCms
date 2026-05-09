@@ -17,7 +17,7 @@ class Ucenter extends Base
     {
         //个人信息
         $uid = session('uid');
-        $user = UserModel::find($uid);
+        $user = UserModel::get($uid);
         $this->assign('user', $user);
 
         //个人文章
@@ -47,7 +47,7 @@ class Ucenter extends Base
         }
 
 
-        $user = UserModel::find($uid);
+        $user = UserModel::get($uid);
         $this->assign('user', $user);
 
         return $this->fetch('profile');
@@ -81,4 +81,5 @@ class Ucenter extends Base
 
         return $this->fetch('password');
     }
+
 }

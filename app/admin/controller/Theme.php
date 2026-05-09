@@ -45,9 +45,9 @@ class Theme extends Base
             $themes[] = $theme;
         }
 
-        //        $themePath = root_path()  . 'public' . DIRECTORY_SEPARATOR . 'theme' . DIRECTORY_SEPARATOR;
-        //        $zipFile = $themePath . 'classic.zip';
-        //        x_zip($themePath . 'classic', $zipFile);
+//        $themePath = Env::get('root_path')  . 'public' . DIRECTORY_SEPARATOR . 'theme' . DIRECTORY_SEPARATOR;
+//        $zipFile = $themePath . 'classic.zip';
+//        x_zip($themePath . 'classic', $zipFile);
 
         $this->assign('themes', $themes);
 
@@ -74,7 +74,7 @@ class Theme extends Base
     public function upload()
     {
         $fileId = input('fileId/d', 0);
-        $file = FileModel::find($fileId);
+        $file = FileModel::get($fileId);
         if (!$file) {
             return $this->error('文件不存在！');
         }

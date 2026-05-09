@@ -1,5 +1,4 @@
 <?php
-
 namespace app\admin\controller;
 
 use think\facade\Env;
@@ -69,11 +68,13 @@ class Webmaster extends Base
             if (isset($res['success'])) {
                 return $this->success("操作成功, 成功 {$res['success']} 个");
             }
-        }
+            
+        }        
+
     }
 
     //分析sitemap分割方式
-    public function sitemapInfo($pageSize)
+    public function sitemapInfo($pageSize) 
     {
 
         $data = $this->_sitemapInfo($pageSize);
@@ -87,7 +88,7 @@ class Webmaster extends Base
         $xmlFileName = Env::get('root_path') . 'public' . DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . $this->config['xml_file'];
         //清除旧的文件(当前方案不清除)
         if (file_exists($xmlFileName . LibSitemap::SITEMAP_SEPERATOR . LibSitemap::INDEX_SUFFIX . LibSitemap::SITEMAP_EXT)) {
-            foreach (glob($xmlFileName . "*") as $file) {
+            foreach(glob($xmlFileName . "*") as $file) {
                 //unlink($file);
             }
         }
@@ -98,9 +99,9 @@ class Webmaster extends Base
         $sitemapInfo = $this->_sitemapInfo($pageSize);
 
         $sitemap = new LibSitemap($this->config['domain'] ? $this->config['domain'] : config('url_domain_root'));
-        $sitemap->setXmlFile($xmlFileName);     // 设置xml文件（可选）
+        $sitemap->setXmlFile($xmlFileName);	 // 设置xml文件（可选）
         $sitemap->setDomain($this->config['domain'] ? $this->config['domain'] : config('url_domain_root')); // 设置自定义的根域名（可选）
-        $sitemap->setIsSchemeMore(true);    // 设置是否写入额外的Schema头信息（可选）
+        $sitemap->setIsSchemeMore(true);	// 设置是否写入额外的Schema头信息（可选）
 
         $lastPage = $sitemapInfo['lastPage'];
         $hookLastPage = $sitemapInfo['hookLastPage'];
@@ -112,13 +113,13 @@ class Webmaster extends Base
 
         if ($currentPage <= 1) {
             //生成index 首页
-            $sitemap->addItem(url('frontend/Index/index', [], false, get_config('domain_name')), 1, "hourly", date_time());
-            $sitemap->addItem(url('frontend/Index/business', [], false, get_config('domain_name')), 1, "monthly", date_time());
-            $sitemap->addItem(url('frontend/Index/team', [], false, get_config('domain_name')), 1, "monthly", date_time());
-            $sitemap->addItem(url('frontend/Index/partner', [], false, get_config('domain_name')), 1, "monthly", date_time());
-            $sitemap->addItem(url('frontend/Index/about', [], false, get_config('domain_name')), 1, "monthly", date_time());
-            $sitemap->addItem(url('frontend/Index/contact', [], false, get_config('domain_name')), 1, "monthly", date_time());
-
+            $sitemap->addItem(url('frontend/Index/index', null, false, get_config('domain_name')), 1, "hourly", date_time());
+            $sitemap->addItem(url('frontend/Index/business', null, false, get_config('domain_name')), 1, "monthly", date_time());
+            $sitemap->addItem(url('frontend/Index/team', null, false, get_config('domain_name')), 1, "monthly", date_time());
+            $sitemap->addItem(url('frontend/Index/partner', null, false, get_config('domain_name')), 1, "monthly", date_time());
+            $sitemap->addItem(url('frontend/Index/about', null, false, get_config('domain_name')), 1, "monthly", date_time());
+            $sitemap->addItem(url('frontend/Index/contact', null, false, get_config('domain_name')), 1, "monthly", date_time());
+            
 
             //生成栏目item
             $CategoryModel = new CategoryModel();
@@ -156,7 +157,7 @@ class Webmaster extends Base
                 $sitemap->forceEndSitemap();
             }
         }
-
+        
 
         //sitemap_xml_hook 函数来实现hook sitemap，提供外部的url项目写入
         //外部建议，把sitemap_xml_hook函数定义在common_business.php中
@@ -172,12 +173,12 @@ class Webmaster extends Base
         //生成sitemap index;
         $sitemapLoc = url('cms/Sitemap/xml', null, false, get_config('domain_name'));
         $sitemapLoc = substr($sitemapLoc, 0, strlen($sitemapLoc) - 4);
-        $sitemap->createSitemapIndex($sitemapLoc);
-
+        $sitemap->createSitemapIndex($sitemapLoc);        
+        
 
         // 计算生成的时间
         $costTime = millisecond() - $costTimeStart;
-        $costTime = sprintf('%01.2f', $costTime);
+        $costTime= sprintf('%01.2f', $costTime);
 
         return $this->success("生成sitemap成功，用时 : $costTime (ms)");
     }
@@ -212,7 +213,7 @@ class Webmaster extends Base
         echo implode("\n", $urls);
     }
 
-    private function _sitemapInfo($pageSize)
+    private function _sitemapInfo($pageSize) 
     {
         $data = Cache::get('sitemap_info', []);
         if (!empty($data)) {
@@ -246,7 +247,7 @@ class Webmaster extends Base
         $articleCount = $ArticleModel->where($where)->count();
         $total += $articleCount;
 
-        $lastPage += (int) ceil($articleCount / $listRows);
+        $lastPage += (int) ceil($articleCount / $listRows);        
 
         //sitemap_xml_count_hook 函数来实现业务类链接统计
         if (function_exists('sitemap_xml_count_hook')) {

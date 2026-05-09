@@ -25,6 +25,9 @@ class BaiduUeditor extends Base
     {
         parent::initialize();
 
+        //避免输出app_trace代码, 造成错误
+        Env::set('app_trace', false);
+
         $this->uid = ""; //置为"", 避免增加一个目录级;
 
         $this->thumb = 1;
@@ -34,7 +37,7 @@ class BaiduUeditor extends Base
             $this->waterText = get_config('domain_name');
         }
 
-        $this->rootPath = root_path() . 'public';
+        $this->rootPath = Env::get('root_path') . 'public';
         $this->savePath = DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . $this->uid;
 
         // 水印位置, 9为右下角
@@ -43,7 +46,7 @@ class BaiduUeditor extends Base
 
     public function index()
     {
-        $configJson = file_get_contents(app()->getConfigPath() . "ueditor.json");
+        $configJson = file_get_contents(Env::get('config_path') . "ueditor.json");
         $configJson = preg_replace("/\/\*[\s\S]+?\*\//", "", $configJson);
         $CONFIG = json_decode($configJson, true);
 

@@ -1,8 +1,9 @@
 <?php
-
 namespace app\admin\controller;
 
 use app\common\model\FileModel;
+use app\common\model\ImageModel;
+use app\common\model\UserModel;
 use think\facade\Env;
 
 /**
@@ -18,10 +19,10 @@ class Image extends Base
      * */
     public function upcrop()
     {
-        ini_set("memory_limit", "-1");
-
+        ini_set ("memory_limit", "-1");
+        
         $imageId = request()->param('imageId/d', 0);
-
+        
         //id不存在时，图片上传
         if (empty($imageId)) {
             $tmpFile = request()->file('file');
@@ -42,7 +43,7 @@ class Image extends Base
             //表单验证
             $check = $this->validate(
                 ['file' => $tmpFile],
-                ['file' => 'require|image|fileSize:4097152'],
+                ['file'=> 'require|image|fileSize:4097152'],
                 [
                     'file.require' => '请上传图片',
                     'file.image' => '不是图片文件',
@@ -50,32 +51,27 @@ class Image extends Base
                 ]
             );
             if ($check !== true) {
-                return $this->error($check);
+                $this->error($check);
             }
 
             //文件验证&文件move操作
-            if (!in_array($tmpFile->Extension(), ['jpg', 'gif', 'png', 'jpeg', 'bmp', 'ico', 'webp'])) {
-                return $this->error('文件格式错误');
+            $file = $tmpFile->validate(['ext' => 'jpg,gif,png,jpeg,bmp,ico,webp'])->move($path);
+            if (!$file) {
+                // 上传失败获取错误信息
+                return $this->error($tmpFile->getError());
             }
-
-            //保存目录
-            $savePath = root_path() . 'public' . DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . date('Ymd');
-            if (!file_exists($savePath)) {
-                mkdir($savePath, 0777, true);
-            }
-            $saveName = md5(uniqid()) . '.' . $tmpFile->extension(); //实际包含日期+名字：如20180724/erwrwiej...dfd.ext
-            $file = $tmpFile->move($savePath, $saveName);
-
             list($width, $height, $type) = getimagesize($file->getRealPath()); //获得图片宽高类型
+            
+            $saveName = $file->getSaveName();
 
             $data = [
-                'file_url' => DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . date('Ymd') .  DIRECTORY_SEPARATOR . $saveName,
+                'file_url' => DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . dirname($saveName) . DIRECTORY_SEPARATOR . $file->getFilename(),
                 'file_path' => root_path() . DIRECTORY_SEPARATOR . 'public',
                 'size' => $file->getSize(),
-                'ext' => $tmpFile->extension(),
-                'name' => $tmpFile->getoriginalName(),
-                'real_name' => $tmpFile->getoriginalName(),
-                'thumb_image_url' => DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . date('Ymd') .  DIRECTORY_SEPARATOR . $saveName,
+                'ext' => strtolower($file->getExtension()),
+                'name' => $file->getFilename(),
+                'real_name' => $file->getinfo()['name'],
+                'thumb_image_url' => DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . dirname($saveName) . DIRECTORY_SEPARATOR . $file->getFilename(),
                 'remark' => input('post.remark'),
                 'create_by' => $this->uid,
                 'create_time' => date_time(),
@@ -87,7 +83,7 @@ class Image extends Base
 
                 $vendor = get_config('oss_vendor');
                 $m = new \think\oss\OSSContext($vendor);
-                $ossImgUrl = $m->doUpload($saveName(), 'cms');
+                $ossImgUrl = $m->doUpload($file->getSaveName(), 'cms');
                 $data['oss_image_url'] = $ossImgUrl;
             }
 
@@ -96,15 +92,16 @@ class Image extends Base
 
             $data['id'] = $imageId;
             if ($imgWidth > 0 && $imgHeight > 0) {
-                if (!($width >= $imgWidth - 10 && $width <= $imgWidth + 10 && $height >= $imgHeight - 10 && $height <= $imgHeight + 10)) {
+                if (!($width >= $imgWidth-10 && $width <= $imgWidth+10 && $height >= $imgHeight-10 && $height <= $imgHeight+10)) {
                     return $this->result($data, 1, 'image_need_crop', 'json');
                 }
             }
             return $this->result($data, 1, '图片上传成功', 'json');
         }
 
+
         //图片裁剪
-        $FileModel = FileModel::find($imageId);
+        $FileModel = FileModel::get($imageId);
         if (!$FileModel) {
             return $this->error('图片不存在');
         }
@@ -129,7 +126,7 @@ class Image extends Base
         $height = request()->param('height/d', 0); //源图截取的高
 
 
-        $path = root_path() . 'public';
+        $path = root_path() . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR;
         $realPath = $path . $FileModel->file_url;
         $file = new \SplFileInfo($realPath);
         $srcImage = \think\Image::open($file);
@@ -145,7 +142,7 @@ class Image extends Base
 
         $imgUrl = $file->getPath() . DIRECTORY_SEPARATOR . 'tb_crop_' . $file->getFilename();
         $quality = get_config('image_upload_quality', 80); //获取图片清晰度设置，默认是80
-        list(,, $type) = getimagesize($file->getRealPath());
+        list(, , $type) = getimagesize($file->getRealPath());
         $extension = image_type_to_extension($type, 0);
         $srcImage->save($imgUrl, $extension, $quality, true);
 
@@ -154,11 +151,12 @@ class Image extends Base
         $tbImgUrl = $file->getPath() . DIRECTORY_SEPARATOR . 'crop_' . $file->getFilename();
         $srcImage->save($tbImgUrl, $extension, $quality, true);
 
-        $FileModel->file_url = DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . date('Ymd') . DIRECTORY_SEPARATOR . 'crop_' . $file->getFilename();
-        $FileModel->thumb_image_url = DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . date('Ymd') . DIRECTORY_SEPARATOR . 'tb_crop_' . $file->getFilename();
+        $FileModel->file_url = DIRECTORY_SEPARATOR.'upload'.DIRECTORY_SEPARATOR.date('Ymd').DIRECTORY_SEPARATOR.'crop_'.$file->getFilename();
+        $FileModel->thumb_image_url = DIRECTORY_SEPARATOR.'upload'.DIRECTORY_SEPARATOR.date('Ymd').DIRECTORY_SEPARATOR.'tb_crop_'.$file->getFilename();
         $FileModel->save();
 
         $data = $FileModel;
         return $this->result($data, 1, '图片裁剪成功', 'json');
     }
+
 }

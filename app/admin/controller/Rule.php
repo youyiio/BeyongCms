@@ -1,5 +1,4 @@
 <?php
-
 namespace app\admin\controller;
 
 use app\common\model\MenuModel;
@@ -65,8 +64,14 @@ class Rule extends Base
         $map = [
             'id' => $data['id']
         ];
+
         $MenuModel = new MenuModel();
-        $result = $MenuModel->editData($map, $data);
+        // 去除键值首位空格
+        foreach ($data as $k => $v) {
+            $data[$k] = trim($v);
+        }
+        
+        $result = $MenuModel->where($map)->update($data);
         if ($result) {
             return $this->success('修改成功', url('Rule/index'));
         } else {
@@ -90,6 +95,7 @@ class Rule extends Base
         } else {
             return $this->error('请先删除子权限');
         }
+
     }
 
     /**
@@ -132,13 +138,13 @@ class Rule extends Base
         }
     }
 
-    //*******************用户组**********************
+//*******************用户组**********************
     /**
      * 用户组列表
      */
     public function group()
     {
-        $data = RoleModel::select();
+        $data = RoleModel::all();
         $this->assign('data', $data);
         return view('group');
     }
@@ -171,7 +177,12 @@ class Rule extends Base
         ];
 
         $RoleModel = new RoleModel();
-        $result = $RoleModel->editData($map, $data);
+        // 去除键值首位空格
+        foreach ($data as $k => $v) {
+            $data[$k] = trim($v);
+        }
+
+        $result = $RoleModel->where($map)->update($data);
         if ($result) {
             return $this->success('修改成功', url('Rule/group'));
         } else {
@@ -182,8 +193,7 @@ class Rule extends Base
     /**
      * 删除用户组
      */
-    public function deleteGroup()
-    {
+    public function deleteGroup(){
         $id = input('param.id');
         $map = [
             'id' => $id
@@ -197,7 +207,7 @@ class Rule extends Base
         }
     }
 
-    //*****************权限-用户组*****************
+//*****************权限-用户组*****************
     /**
      * 分配权限
      */
@@ -206,11 +216,11 @@ class Rule extends Base
         if (request()->isPost()) {
             $data = input('post.');
             $roleId = $data['id'];
-
+           
             $RoleMenuModel = new RoleMenuModel();
             $RoleMenuModel->where('role_id', $roleId)->delete();
             $group = [];
-
+            
             foreach ($data['rule_ids'] as $menuId) {
                 $group[] = [
                     'role_id' => $roleId,
@@ -242,7 +252,7 @@ class Rule extends Base
         $menu = $MenuModel->where('belongs_to', 'admin')->select();
         $tree = new \beyong\commons\data\Tree();
         $ruleData = $tree::channelLevel($menu, 0, '&nbsp;', 'id');
-
+        
         // 分组信息
         $roles = $RoleModel->field('id, title')->select();
         $assign = [
@@ -274,10 +284,10 @@ class Rule extends Base
                 $userList = '';
             } else {
                 $UserModel = new UserModel();
-                $userList = $UserModel->where('mobile|email', 'like', "%$username%")->field('id,mobile,email')->select();
+                $userList = $UserModel->where('mobile|email','like',"%$username%")->field('id,mobile,email')->select();
             }
             if (empty($userList)) {
-                return $this->error('未找到相关用户');
+                $this->error('未找到相关用户');
             }
 
             foreach ($userList as $k => $user) {
@@ -285,7 +295,7 @@ class Rule extends Base
                     $userList[$k]['isInGroup'] = 1;
                 } else {
                     $userList[$k]['isInGroup'] = 0;
-                    $userList[$k]['setUrl'] = url('Rule/addUserToGroup', ['uid' => $user['id'], 'role_id' => $groupId, 'username' => $user['mobile']]);
+                    $userList[$k]['setUrl'] = url('Rule/addUserToGroup', ['uid'=>$user['id'], 'role_id'=>$groupId, 'username'=>$user['mobile']]);
                 }
             }
 
@@ -440,7 +450,7 @@ class Rule extends Base
             if (empty($data['password'])) {
                 unset($data['password']);
             } else {
-                $user = UserModel::find($uid);
+                $user = UserModel::get($uid);
                 $data['password'] = encrypt_password($data['password'], $user['salt']);
             }
             $result = $userModel->editUser($uid, $data);
@@ -455,12 +465,13 @@ class Rule extends Base
                     // 操作失败
                     return $this->error($errorMsg);
                 }
+
             }
         }
 
         $id = input('param.id/d', 0);
         // 获取用户数据
-        $user = UserModel::find($id);
+        $user = UserModel::get($id);
         $this->assign('user', $user);
 
         //用户所属分组

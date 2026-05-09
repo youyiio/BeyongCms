@@ -11,7 +11,6 @@ use app\common\model\MessageModel;
 use app\common\model\UserModel;
 use app\common\model\cms\ArticleModel;
 use app\common\model\cms\CategoryModel;
-use app\common\validate\Article as ValidateArticle;
 use think\facade\Cookie;
 use think\facade\Queue;
 
@@ -87,7 +86,6 @@ class Article extends Base
         $list = $ArticleModel->where($where)->field($fields)->order($orders)->paginate($listRow, false, $pageConfig);
 
         $this->assign('list', $list);
-        $this->assign('ArticleModel', $ArticleModel);
         $this->assign('pages', $list->render());
         $this->assign('sortedFields', $sortedFields);
         $this->assign('startTime', $startTime);
@@ -108,10 +106,9 @@ class Article extends Base
             $data = input('post.');
             $data['content'] = remove_xss($data['content']);
 
-            $validate = new ValidateArticle;
-            $result = $validate->scene('add')->check($data);
-            if (!$result) {
-                return $this->error($validate->getError());
+            $check = validate('Article')->scene('add')->check($data);
+            if ($check !== true) {
+                return $this->error(validate('Article')->getError());
             }
 
             //审核开关关闭时
@@ -161,7 +158,7 @@ class Article extends Base
             }
         }
 
-        $article = ArticleModel::find($id);
+        $article = ArticleModel::get(['id' => $id]);
         if (empty($article)) {
             return $this->error('文章不存在');
         }
@@ -192,7 +189,7 @@ class Article extends Base
     //查看文章
     public function viewArticle($id)
     {
-        $article = ArticleModel::find($id);
+        $article = ArticleModel::get(['id' => $id]);
         if (empty($article)) {
             return $this->error('文章不存在');
         }
@@ -210,17 +207,16 @@ class Article extends Base
         $comments = $CommentModel->where($where)->order('id desc')->paginate(6, false, $pageConfig);
         $this->assign('comments', $comments);
         $this->assign('id', $id);
-        $ArticleModel = new ArticleModel();
-        $this->assign('ArticleModel', $ArticleModel);
+
         //检测索引
         $jobHandlerClass  = 'app\admin\job\Webmaster@checkIndex';
         $jobData = [
             'id' => $id,
-            'url' => (string)url('cms/Article/viewArticle', ['aid' => $id], true, get_config('domain_name')),
+            'url' => url('cms/Article/viewArticle', ['aid' => $id], true, get_config('domain_name')),
             'create_time' => date_time()
         ];
         $jobQueue = config('queue.default');
-        Queue::later(10, $jobHandlerClass, $jobData, $jobQueue);
+        \think\Queue::push($jobHandlerClass, $jobData, $jobQueue);
 
         return $this->fetch('article/viewArticle');
     }
@@ -255,7 +251,7 @@ class Article extends Base
 
         $ids = [];
         if (is_int($id)) {
-            $article = ArticleModel::find($id);
+            $article = ArticleModel::get(['id' => $id]);
             if (empty($article)) {
                 return $this->error('文章不存在');
             }
@@ -301,7 +297,7 @@ class Article extends Base
     //发布文章
     public function postArticle($id)
     {
-        $article = ArticleModel::find($id);
+        $article = ArticleModel::get($id);
         if (empty($article)) {
             return $this->error('文章不存在');
         }
@@ -315,7 +311,7 @@ class Article extends Base
             $data['status'] = ArticleModel::STATUS_PUBLISHED;
         }
 
-        $res = $article->update($data, ['id' => $id]);
+        $res = $article->isUpdate(true)->save($data, ['id' => $id]);
         if ($res) {
             return $this->success('成功发布');
         } else {
@@ -326,7 +322,7 @@ class Article extends Base
     //文章初审
     public function auditFirst($id = 0, $pass = 1)
     {
-        $article = ArticleModel::find($id);
+        $article = ArticleModel::get(['id' => $id]);
         if (empty($article)) {
             return $this->error('文章不存在');
         }
@@ -352,7 +348,7 @@ class Article extends Base
     //文章终审
     public function auditSecond($id = 0, $pass = 1)
     {
-        $article = ArticleModel::find($id);
+        $article = ArticleModel::get(['id' => $id]);
         if (empty($article)) {
             return $this->error('文章不存在');
         }
@@ -408,7 +404,7 @@ class Article extends Base
     public function setTop()
     {
         $aid = input('param.id/d');
-        $article = ArticleModel::find(['id' => $aid]);
+        $article = ArticleModel::get(['id' => $aid]);
         if (empty($article)) {
             return $this->error('文章不存在!');
         }
@@ -427,7 +423,7 @@ class Article extends Base
     public function unsetTop()
     {
         $aid = input('param.id/d');
-        $article = ArticleModel::find(['id' => $aid]);
+        $article = ArticleModel::get(['id' => $aid]);
         if (empty($article)) {
             return $this->error('文章不存在!');
         }
@@ -442,411 +438,12 @@ class Article extends Base
         }
     }
 
-    //评论列表
-    public function commentList()
-    {
-        $CommentModel = new CommentModel();
-
-        $map = [];
-        $key = input('param.key');
-        if (!empty($key)) {
-            $map[] = ['content', 'like', "%{$key}%"];
-        }
-
-        $startTime = input('param.startTime', '');
-        $endTime = input('param.endTime', '');
-
-        if (!empty($endTime)) {
-            $map[] = ['create_time', '<=', $endTime . ' 23:59:59'];
-        }
-        if (!empty($startTime)) {
-            $map[] = ['create_time', '>=', $startTime . ' 00:00:00'];
-        }
-
-        $fields = 'id, content, article_id, create_time, status, author, ip, pid';
-        $list = $CommentModel->where($map)->field($fields)->order('create_time desc')->distinct('id')->paginate(20, false);
-        $this->assign('list', $list);
-        $this->assign('pages', $list->render());
-
-        $MessageModel = new MessageModel();
-        $data['status'] = MessageModel::STATUS_READ;
-        $data['read_time'] = date_time();
-        $data['is_readed'] = 1; //0未读，1已读
-        $MessageModel->save($data, ['type' => MessageModel::TYPE_COMMENT]);
-
-        $this->assign('startTime', $startTime);
-        $this->assign('endTime', $endTime);
-
-
-        return $this->fetch('commentList');
-    }
-
-    //审核评论
-    public function auditComment($id = 0, $pass = 1)
-    {
-        $com = CommentModel::find($id);
-        if (empty($com)) {
-            return $this->error('评论不存在');
-        }
-
-        if ($com->status != CommentModel::STATUS_PUBLISHING) {
-            return $this->error('评论审核未通过，无法发布');
-        }
-
-        if ($pass) {
-            $com->status = CommentModel::STATUS_PUBLISHED;
-        } else {
-            $com->status = CommentModel::STATUS_REFUSE;
-        }
-
-        $res = $com->save();
-        if ($res !== false) {
-            return $this->success('操作成功');
-        } else {
-            return $this->error('操作失败');
-        }
-    }
-
-    //回复评论
-    public function postComment()
-    {
-        if (request()->isAjax()) {
-            $aid = input('article_id/d', 0);
-            $pid = input('pid/d', 0);
-            $content = input('content/s', '');
-
-            $data = [];
-            if (session('uid')) {
-                $uid = session('uid');
-
-                $user = UserModel::find($uid);
-                $author = $user->nickname;
-                $data['uid'] = $uid;
-                $data['author'] = $author;
-            } else {
-                $author = session('visitor');
-                $data['author'] = $author;
-            }
-
-            $data['create_time'] = date_time();
-            $data['status'] = CommentModel::STATUS_PUBLISHED;
-            $data['ip'] = request()->ip(0, true);
-            $data['article_id'] = $aid;
-            $data['content'] = remove_xss($content);
-            $data['pid'] = $pid;
-            $CommentModel = new CommentModel();
-            $result = $CommentModel->save($data);
-            if (!$result) {
-                return $this->error('回复失败');
-            } elseif (stripos($_SERVER["HTTP_REFERER"], 'viewComments')) {
-                return $this->success('回复成功', url("Article/viewComments", ['id' => $pid]));
-            } else {
-                return $this->success('回复成功', url('Article/commentList'));
-            }
-        }
-
-        return $this->fetch('commentList');
-    }
-
-    //删除评论
-    public function deleteComment($id)
-    {
-        $ids = explode(',', $id);
-        $CommentModel = new CommentModel();
-
-        $numRows = $CommentModel->where([['id', 'in', $ids]])->delete();
-        if ($numRows  == count($ids)) {
-            return $this->success('成功删除');
-        } else {
-            $fails = count($ids) - $numRows;
-            return $this->error("成功删除 $numRows 条，失败 $fails 条!");
-        }
-    }
-
-    //查看评论下的回复
-    public  function viewComments($id)
-    {
-        $comment = CommentModel::find($id);
-
-        if (empty($comment)) {
-            return $this->error('评论不存在');
-        }
-
-        $CommentModel = new CommentModel();
-        $where = [
-            'pid' => $comment['id'],
-            'status' => CommentModel::STATUS_PUBLISHED
-        ];
-        $pageConfig = [
-            'type' => '\\app\\common\\paginator\\BootstrapTable',
-        ];
-        $comments = $CommentModel->where($where)->order('id desc')->paginate(6, false, $pageConfig);
-
-        $this->assign('comments', $comments);
-        $this->assign('comment', $comment);
-
-        return $this->fetch('article/viewComments');
-    }
-
-    //文章分类
-    public function categoryList()
-    {
-        if (request()->isPost()) {
-            $id = input('post.id', 0);
-            $checked = input('post.checked', 'false');
-            $category = CategoryModel::find($id);
-            if (!$category) {
-                return $this->error('分类不存在!');
-            }
-
-            $msg = "";
-            if ($checked == 'true') {
-                $category->status = CategoryModel::STATUS_ONLINE;
-                $msg = '分类上线成功!';
-            } else {
-                $category->status = CategoryModel::STATUS_OFFLINE;
-                $msg = '分类下线成功!';
-            }
-
-            $category->save();
-
-            return $this->success($msg);
-        }
-
-        $CategoryModel = new CategoryModel();
-        $list = $CategoryModel->getTreeData('tree', 'sort,id', 'title', 'id', 'pid');
-        $this->assign('list', $list);
-
-        return $this->fetch('categoryList');
-    }
-
-    //新增分类
-    public function addCategory()
-    {
-        //数据处理
-        if (request()->isAjax()) {
-            $data = input('post.');
-            $CategoryModel = new CategoryModel();
-            if (empty($data['id'])) {
-                $res = $CategoryModel->isUpdate(false)->save($data);
-            } else {
-                $res = $CategoryModel->isUpdate(true)->save($data);
-            }
-
-            if ($res) {
-                return $this->success('操作成功', url('Article/categoryList'));
-            } else {
-                return $this->error('操作失败');
-            }
-        }
-
-        //获取默认排序
-        $where = [];
-        if (input('pid', 0)) {
-            $where['pid'] = input('pid', 0);
-        }
-        $defaultSort = CategoryModel::where($where)->max('sort') + 1;
-        $this->assign('defaultSort', $defaultSort);
-
-        return $this->fetch('addCategory');
-    }
-
-    //分类排序
-    public function orderCategory()
-    {
-        $data = input('post.');
-        $arr = [];
-        foreach ($data as $k => $v) {
-            $arr[] = [
-                'id' => $k,
-                'sort' => empty($v) ? 0 : $v
-            ];
-        }
-        $CategoryModel = new CategoryModel();
-        $result = $CategoryModel->isUpdate(true)->saveAll($arr);
-        if ($result) {
-            return $this->success('排序成功', url('Article/categoryList'));
-        } else {
-            return $this->error('排序失败');
-        }
-    }
-
-    //编辑分类
-    public function editCategory($id)
-    {
-        $CategoryModel = new CategoryModel();
-        $category = $CategoryModel->find($id);
-        if (empty($category)) {
-            return $this->error('数据不存在');
-        }
-        $this->assign('category', $category);
-        return $this->fetch('addCategory');
-    }
-
-    //删除分类
-    public function deleteCategory($id)
-    {
-        $CategoryModel = new CategoryModel();
-        $res = $CategoryModel->where('id', $id)->delete();
-        if ($res) {
-            return $this->success('成功删除');
-        } else {
-            return $this->error('删除失败');
-        }
-    }
-
-    //广告内链列表
-    public function adList()
-    {
-        $title = input('param.title', '');
-        $slotId = input('param.slot_id', '');
-
-        $where = [];
-        if (!empty($title)) {
-            $where[] = ['title', 'like', "%$title%"];
-        }
-        if (!empty($slotId)) {
-            $AdServingModel = new AdServingModel();
-            $adIds = $AdServingModel->where('slot_id', $slotId)->field('distinct ad_id')->column('ad_id'); //column变成一维数组
-            $where[] = ['id', 'in', $adIds];
-        }
-
-        $AdModel = new AdModel();
-        $list = $AdModel->where($where)->order('sort asc,id desc')->paginate(10, false, ['query' => input('param.')]);
-        $this->assign('list', $list);
-        $this->assign('pages', $list->render());
-
-        //广告槽列表
-        $AdSlotModel = new AdSlotModel();
-        $slotList = $AdSlotModel->order('id asc')->field('id, title')->select();
-        $this->assign('slotList', $slotList);
-
-        return $this->fetch('adList');
-    }
-
-    //新增广告内链
-    public function addAd()
-    {
-        if (request()->isAjax()) {
-            $data = input('post.');
-            $rule = [
-                'title|标题' => 'require',
-                'url' => ['require'],
-                'slot_ids' => ['require'],
-                //'image_id|专题图片' => 'require|number',
-            ];
-            $check = $this->validate($data, $rule);
-            if ($check !== true) {
-                return $this->error($check);
-            }
-
-            $AdModel = new AdModel();
-            $data['create_time'] = date_time();
-            $rowsNum = $AdModel->isUpdate(false)->allowField(true)->save($data);
-
-            //新增中间表数据
-            $pivot = ['update_time' => date_time(), 'create_time' => date_time()];
-            $AdModel->adSlots()->attach($data['slot_ids'], $pivot);
-
-            if ($rowsNum !== false) {
-                return $this->success('成功新增广告', url('article/adList'));
-            } else {
-                return $this->error('新增失败');
-            }
-        }
-
-        //类型列表
-        $AdSlotModel = new AdSlotModel();
-        $slotList = $AdSlotModel->order('id asc')->field('id,title,name,remark')->select();
-        $this->assign('slotList', $slotList);
-
-        return $this->fetch('article/addAd');
-    }
-
-    //修改广告内链
-    public function editAd($adId = 0)
-    {
-        if (request()->isAjax()) {
-            $data = input('post.');
-            $rule = [
-                'id' => ['require'],
-                'title|标题' => 'require',
-                'url' => ['require'],
-                'slot_ids' => ['require'],
-                //'image_id|专题图片' => 'require|number',
-            ];
-            $check = $this->validate($data, $rule);
-            if ($check !== true) {
-                return $this->error($check);
-            }
-
-            $data['create_time'] = date_time();
-            $id = $data['id'];
-            $AdModel = new AdModel();
-            $rowsNum = $AdModel->isUpdate(true)->allowField(true)->save($data, ['id' => $id]);
-
-            //更新中间表数据
-            $AdModel->adSlots()->detach();
-            $pivot = ['update_time' => date_time(), 'create_time' => date_time()];
-            $AdModel->adSlots()->attach($data['slot_ids'], $pivot);
-
-            if ($rowsNum !== false) {
-                return $this->success('成功修改广告', url('article/adList'));
-            } else {
-                return $this->error('修改失败');
-            }
-        }
-
-        $ad = AdModel::find(['id' => $adId]);
-        if (empty($ad)) {
-            return $this->error('广告不存在');
-        }
-        $this->assign('ad', $ad);
-
-        //old slots
-        $relationSlots = $ad->adSlots;
-        $oldSlots = [];
-        foreach ($relationSlots as $adSlot) {
-            $oldSlots[] = $adSlot['id'];
-        }
-        $this->assign('oldSlots', $oldSlots);
-
-        //类型列表
-        $AdSlotModel = new AdSlotModel();
-        $slotList = $AdSlotModel->order('id asc')->field('id,title,name')->select();
-        $this->assign('slotList', $slotList);
-
-        return $this->fetch('article/addAd');
-    }
-
-    //删除广告内链
-    public function deleteAd($adId = 0)
-    {
-        $res = AdModel::destroy($adId);
-        if ($res) {
-            return $this->success('删除成功');
-        } else {
-            return $this->error('删除失败');
-        }
-    }
-
-    //广告排序
-    public function orderAd()
-    {
-        $data = input('post.');
-        $AdModel = new AdModel();
-        foreach ($data as $k => $v) {
-            $AdModel->where('id', $k)->update(['sort' => $v]);
-        }
-        return $this->success('成功排序');
-    }
-
     //文章访问统计
     public function articleStat($id)
     {
-        $article = ArticleModel::find($id);
+        $article = ArticleModel::get(['id' => $id]);
         if (empty($article)) {
-            return $this->error('文章不存在');
+            $this->error('文章不存在');
         }
         $this->assign('article', $article);
 
@@ -861,15 +458,16 @@ class Article extends Base
         $endDatetime = date('Y-m-d 23:59:59', strtotime($endTime));
 
         $where = [
-            ['update_time', 'between', [$startDatetime, $endDatetime]]
+            ['view_time', 'between', [$startDatetime, $endDatetime]]
         ];
 
         $pageConfig = [
             'type' => '\\app\\common\\paginator\\BootstrapTable',
         ];
 
-        $ArticleMetaModel = new ArticleMetaModel();
-        $list = $ArticleMetaModel->where(['article_id' => $id, 'meta_key' => 'read_ip'])->where($where)->order('update_time desc')->paginate(15, false, $pageConfig);
+        // TODO 修改成 article_view
+        $ArticleViewModel = new ArticleViewModel();
+        $list = $ArticleViewModel->where(['article_id' => $id])->where($where)->order('id desc')->paginate(15, false, $pageConfig);
         $startTimestamp = strtotime($startTime);
         $endTimestamp = strtotime($endTime);
 
@@ -888,9 +486,9 @@ class Article extends Base
     //文章访问统计图
     public function echartShow($id)
     {
-        $article = ArticleModel::find($id);
+        $article = ArticleModel::get(['id' => $id]);
         if (empty($article)) {
-            return $this->error('文章不存在');
+            $this->error('文章不存在');
         }
 
         $option = [
@@ -915,6 +513,6 @@ class Article extends Base
             array_push($option['xAxis']['data'], $day);
             array_push($option['series'][0]['data'], $inquiryCount);
         }
-        return $this->success('success', '', $option);
+        $this->success('success', '', $option);
     }
 }

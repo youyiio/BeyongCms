@@ -18,7 +18,7 @@ require __DIR__ . '/../vendor/autoload.php';
 $http = (new App())->http;
 
 // name绑定时，省去/frontend路径
-$response = $http->name('admin')->run();
+$response = $http->name('frontend')->run();
 
 $response->send();
 
