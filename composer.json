@@ -1,70 +1,70 @@
 {
-    "name": "youyiio/beyongcms",
-    "description": "BeyongCms is a free and open source Content Management System, based on ThinkPHP 5.1.* and easy to secondary development.",
-    "type": "project",
-    "keywords": [
-        "framework",
-        "thinkphp",
-        "ORM",
-        "BeyongCms",
-        "beyongx",
-        "cms"
-    ],
-    "homepage": "https://www.beyongx.com/",
-    "license": "Apache-2.0",
-    "authors": [
-        {
-            "name": "youyiio",
-            "email": "developer@jifenbang.net"
-        },
-        {
-            "name": "tangym",
-            "email": "tangym@mytable.net"
-        }
-    ],
-    "require": {
-        "php": ">=8.0.0",
-        "topthink/framework": "^8.1.0",
-        "topthink/think-orm": "^4.0",
-        "topthink/think-filesystem": "^2.0",
-        "topthink/think-multi-app": "^1.0",        
-        "topthink/think-captcha": "^3.0",
-        "topthink/think-image": "^1.0",
-        "topthink/think-helper": "^3.1",        
-        "topthink/think-view": "^2.0",
-        "cattong/think-mailer": "^1.0",
-        "jaeger/querylist": "^4.2",
-        "topthink/think-queue": "^3.0",       
-        "phpoffice/phpspreadsheet": "^1.0",
-        "firebase/php-jwt": "^5.4",
-        "youyiio/beyong-sms": "^0.9.1",
-        "youyiio/beyong-commons": "^1.0",
-        "youyiio/php-echarts": "^0.2.0",
-        "jenssegers/date": "^4.0"                    
+  "name": "youyiio/beyongcms",
+  "description": "BeyongCms is a free and open source Content Management System, based on ThinkPHP 5.1.* and easy to secondary development.",
+  "type": "project",
+  "keywords": [
+    "framework",
+    "thinkphp",
+    "ORM",
+    "BeyongCms",
+    "beyongx",
+    "cms"
+  ],
+  "homepage": "https://www.beyongx.com/",
+  "license": "Apache-2.0",
+  "authors": [
+    {
+      "name": "youyiio",
+      "email": "developer@jifenbang.net"
     },
-    "require-dev": {
-        "symfony/var-dumper": "^4.2",
-        "topthink/think-trace": "^1.0"
-    },
-    "autoload": {
-        "psr-4": {
-            "app\\": "app",
-            "theme\\": "public/theme"
-        },
-        "psr-0": {
-            "": "extend/"
-        }
-    },
-    "config": {
-        "preferred-install": "dist",
-        "allow-plugins": {
-            "topthink/think-installer": true
-        }
-    },
-    "scripts": {
-        "post-autoload-dump": [
-            "@php think service:discover",
-            "@php think vendor:publish"
-        ]
+    {
+      "name": "tangym",
+      "email": "tangym@mytable.net"
     }
+  ],
+  "require": {
+    "php": ">=8.2.0",
+    "topthink/framework": "^8.1.0",
+    "topthink/think-orm": "^4.0",
+    "topthink/think-filesystem": "^2.0",
+    "topthink/think-multi-app": "^1.0",
+    "topthink/think-captcha": "^3.0",
+    "topthink/think-image": "^1.0",
+    "topthink/think-helper": "^3.1",
+    "topthink/think-view": "^2.0",
+    "cattong/think-mailer": "^1.0",
+    "jaeger/querylist": "^4.2",
+    "topthink/think-queue": "^3.0",
+    "phpoffice/phpspreadsheet": "^1.0",
+    "firebase/php-jwt": "^5.4",
+    "youyiio/beyong-sms": "^0.9.1",
+    "youyiio/beyong-commons": "^1.0",
+    "youyiio/php-echarts": "^0.2.0",
+    "jenssegers/date": "^4.0"
+  },
+  "require-dev": {
+    "symfony/var-dumper": "^4.2",
+    "topthink/think-trace": "^1.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "app\\": "app",
+      "theme\\": "public/theme"
+    },
+    "psr-0": {
+      "": "extend/"
+    }
+  },
+  "config": {
+    "preferred-install": "dist",
+    "allow-plugins": {
+      "topthink/think-installer": true
+    }
+  },
+  "scripts": {
+    "post-autoload-dump": [
+      "@php think service:discover",
+      "@php think vendor:publish"
+    ]
+  }
 }

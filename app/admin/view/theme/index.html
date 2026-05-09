@@ -128,7 +128,7 @@
             //执行实例
             var uploadInst = upload.render({
                 elem: '#uploadTheme' //绑定元素
-                , url: "{:url('/admin/File/upload')}" //上传接口
+                , url: "{:url('admin/File/upload')}" //上传接口
                 , accept: 'file'
                 , exts: 'zip|7z'
                 , before: function () {
@@ -143,7 +143,7 @@
                     }
 
                     let fileId = res.data.id;
-                    $.getJSON("{:url('/admin/Theme/upload')}", { fileId: fileId }, function (json) {
+                    $.getJSON("{:url('admin/Theme/upload')}", { fileId: fileId }, function (json) {
                         layer.close(loading);
                         if (json.code != 1) {
                             layer.msg(json.msg, function () { });

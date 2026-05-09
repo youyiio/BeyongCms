@@ -6,6 +6,12 @@
 - api常用基本接口；
 - 移动优选原则；
 
+thinkphp8与thinkphp5差异：
+1、Model::get不存在
+2、setField不支持，使用update
+3、$Think 改为 $Request
+4、模版中app\common\model\XXXModel::STATUS_XXX, 改为$XXXModel::STATUS_XXX
+
 ## v1.7.0 (undo)
 
 - ElasticSearch支持，实现对文章的全文搜索；

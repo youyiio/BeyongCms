@@ -15,17 +15,26 @@ use think\Db;
 class Crawler extends Base
 {
 
+    public function initialize()
+    {
+        parent::initialize();
+        
+        // 用于页面快速访问静态变量，$Model->STATUS_xxx
+        $this->assign("CrawlerModel", new CategoryModel());
+        $this->assign("ArticleModel", new ArticleModel());
+    }
+
     public function index()
     {
-        $crawlerModel = new CrawlerModel();
+        $CrawlerModel = new CrawlerModel();
         $where = [
             ['status', '>', CrawlerModel::STATUS_DELETED],
         ];
-        $list = $crawlerModel->where($where)->order('id desc')->paginate(10);
+        $list = $CrawlerModel->where($where)->order('id desc')->paginate(10);
 
         $this->assign('list', $list);
         $this->assign('page', $list->render());
-
+        
         return $this->fetch('index');
     }
 
@@ -67,7 +76,7 @@ class Crawler extends Base
         if (empty($id)) {
             return $this->error('参数错误');
         }
-        $crawler = CrawlerModel::get($id);
+        $crawler = CrawlerModel::find($id);
         if (!$crawler) {
             return $this->error('采集规则不存在！');
         }
@@ -92,7 +101,7 @@ class Crawler extends Base
             }
         }
 
-        $crawler = CrawlerModel::get($id);
+        $crawler = CrawlerModel::find($id);
         $this->assign('crawler', $crawler);
 
         $CategoryModel = new CategoryModel();
@@ -159,7 +168,7 @@ class Crawler extends Base
     public function startCrawl()
     {
         $id = input('id/d', 0);
-        $crawler = CrawlerModel::get($id);
+        $crawler = CrawlerModel::find($id);
         if (!$crawler) {
             return $this->error('采集规则不存在');
         }
@@ -208,7 +217,7 @@ class Crawler extends Base
             return $this->error('参数错误');
         }
 
-        $crawler = CrawlerModel::get($cid);
+        $crawler = CrawlerModel::find($cid);
         if (empty($crawler)) {
             return $this->error('采集规则不存在!');
         }

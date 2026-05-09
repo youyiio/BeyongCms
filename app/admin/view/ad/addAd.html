@@ -124,7 +124,7 @@
     //图片上传
     Dropzone.autoDiscover = false;
     $("#uploadImage").dropzone({
-        url: "{:url('/admin/Image/upcrop')}",
+        url: "{:url('Image/upcrop')}",
         paramName: 'file', //input的name
         maxFilesize: 5, // MB
         addRemoveLinks: true, //添加删除链接

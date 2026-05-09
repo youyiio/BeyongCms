@@ -62,12 +62,14 @@ class Base extends BaseController
         }
 
         //用户信息
-        $myself = UserModel::get($uid);
+        $myself = UserModel::find($uid);
         $this->assign('myself', $myself);
 
         //昨日新增用户
         $UserModel = new UserModel();
-        $yesterdayNewUserCount = $UserModel->cache('yesterdayNewUserCount',time_left())->whereTime('register_time','between',Time::yesterday())->count();
+        $beginYesterday = date("Y-m-d 00:00:00", strtotime("-1 day"));
+        $endYesterday = date("Y-m-d 23:59:59", strtotime("-1 day"));
+        $yesterdayNewUserCount = $UserModel->cache('yesterdayNewUserCount',time_left())->whereTime('register_time','between',[$beginYesterday, $endYesterday])->count();
         $this->assign('yesterdayNewUserCount', $yesterdayNewUserCount);
 
         //菜单数据,Cache::tag不支持redis

@@ -50,7 +50,8 @@
                                 <td>{$vo['name']}</td>
                                 <td>{$vo.remark}</td>
                                 <td><input type="checkbox" name="status[]" value="{$vo.id}" class="ajax-switch" {if
-                                        $vo.status==$CategoryModel->STATUS_ONLINE}checked="checked"{/if} ></td>
+                                        $vo.status==$CategoryModel->STATUS_ONLINE}checked="checked"
+                                    {/if}></td>
                                 <td>
                                     <a href="{:url('/admin/Category/addCategory',['pid'=>$vo['id']])}"
                                         class="btn btn-xs btn-info" data-toggle="tooltip" data-placement="top"
@@ -85,7 +86,7 @@
 <script src="__PUBLIC__/static/inspinia/js/plugins/switchery/switchery.js"></script>
 <script>
     function changeStatus(value, checked) {
-        var url = "{:url('/admin/' . request()->controller() . '/categoryList')}" + "?id=" + value + '&checked=' + checked;
+        var url = "{:url('/admin/' . request()->controller() . '/index')}" + "?id=" + value + '&checked=' + checked;
         var data = { id: value, checked: checked };
 
         $.post(url, data, function (res) {

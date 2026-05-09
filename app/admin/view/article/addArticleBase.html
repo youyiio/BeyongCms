@@ -45,7 +45,7 @@
         <label class="col-lg-2 control-label" for="keywords">关键词</label>
         <div class="col-lg-10">
             <input class="form-control" type="text" id="keywords" name="keywords" placeholder="关键词" value="{$article.keywords|default=''}">
-            <span class="help-block m-b-none">多个关键词以英文逗号(,)分隔</span>
+            <span class="help-block m-b-none">输入关键词后按回车，支持多个关键词</span>
         </div>
     </div>
 
@@ -61,7 +61,7 @@
         <label class="col-lg-2 control-label" for="keywords">标签</label>
         <div class="col-lg-10">
             <input class="form-control" type="text" id="tags" name="tags" placeholder="添加标签" value="{$article ? implode(',',$article->metas('tag')) : ''}">
-            <span class="help-block m-b-none"></span>
+            <span class="help-block m-b-none">输入标签后按回车，支持多个标签</span>
         </div>
     </div>
 
@@ -77,7 +77,7 @@
                  data-thumb-width="{$articleThumbImage.thumb_width}" data-thumb-height="{$articleThumbImage.thumb_height}">
                 <div class="dz-message needsclick">
                     {if isset($article) && $article.thumb_image_id > 0}
-                    <img src="{$article.thumb_image.full_thumb_image_url|default=''}" style="border:1px solid #ccc;{$articleThumbImage.thumb_width}px;height:{$articleThumbImage.thumb_height}px">
+                    <img src="{$article.thumb_image.full_file_url}" style="border:1px solid #ccc;{$articleThumbImage.thumb_width}px;height:{$articleThumbImage.thumb_height}px">
                     {else/}
                     点击此处上传文章缩略图 {$articleThumbImage.width}*{$articleThumbImage.height}<br>
                     <span class="note needsclick"></span>

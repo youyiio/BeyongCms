@@ -106,7 +106,7 @@
     });
 
     let config = {
-        '.chosen-select': {},
+        '.chosen-select': { placeholder_text_multiple: '选择分类' },
         '.chosen-select-deselect': { allow_single_deselect: true },
         '.chosen-select-search': { search_contains: true },
         '.chosen-select-no-single': { disable_search_threshold: 10 },
@@ -122,6 +122,14 @@
     });
     $('button.btn-post').click(function () {
         $('input[name=status]').val("{:\\app\\common\\model\\cms\\ArticleModel::STATUS_PUBLISHED}");
+    });
+
+    $('#keywords').tagsInput({
+        'height': '48px',
+        'width': '100%',
+        'interactive': true,
+        'defaultText': '{empty name="$article.keywords"}关键词{/empty}',
+        'delimiter': [','],
     });
 
     $('#tags').tagsInput({

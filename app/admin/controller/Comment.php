@@ -47,6 +47,7 @@ class Comment extends Base
         $this->assign('startTime', $startTime);
         $this->assign('endTime', $endTime);
 
+        $this->assign("CommentModel", $CommentModel);
 
         return $this->fetch('comment/index');
     }
@@ -54,7 +55,7 @@ class Comment extends Base
     //审核评论
     public function auditComment($id=0, $pass=1)
     {
-        $com = CommentModel::get(['id'=>$id]);
+        $com = CommentModel::find(['id'=>$id]);
         if (empty($com)) {
             return $this->error('评论不存在');
         }
@@ -90,7 +91,7 @@ class Comment extends Base
             if (session('uid')) {
                 $uid = session('uid');
 
-                $user = UserModel::get($uid);
+                $user = UserModel::find($uid);
                 $author = $user->nickname;
                 $data['uid'] = $uid;
                 $data['author'] = $author;
@@ -137,7 +138,7 @@ class Comment extends Base
     //查看评论下的回复
     public  function viewComments($id)
     {
-        $comment = CommentModel::get(['id'=>$id]);
+        $comment = CommentModel::find(['id'=>$id]);
 
         if (empty($comment)) {
             return $this->error('评论不存在');

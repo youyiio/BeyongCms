@@ -15,7 +15,7 @@ class Category extends Base
         if (request()->isPost()) {
             $id = input('post.id', 0);
             $checked = input('post.checked', 'false');
-            $category = CategoryModel::get($id);
+            $category = CategoryModel::find($id);
             if (!$category) {
                 return $this->error('分类不存在!');
             }
@@ -38,6 +38,8 @@ class Category extends Base
         $list = $CategoryModel->getTreeData('tree','sort,id', 'title', 'id', 'pid');
         $this->assign('list', $list);
 
+        $this->assign("CategoryModel", $CategoryModel);
+        
         return $this->fetch('category/index');
     }
 

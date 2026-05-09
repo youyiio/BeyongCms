@@ -101,7 +101,7 @@ class Image extends Base
 
 
         //图片裁剪
-        $FileModel = FileModel::get($imageId);
+        $FileModel = FileModel::find($imageId);
         if (!$FileModel) {
             return $this->error('图片不存在');
         }

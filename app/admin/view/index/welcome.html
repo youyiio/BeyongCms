@@ -3,7 +3,7 @@
 {block name="css"}
 <link href="__PUBLIC__/static/inspinia/css/plugins/dropzone/dropzone-4.3.0.min.css" rel="stylesheet">
 <link href="__PUBLIC__/static/inspinia/css/plugins/chosen/chosen.css" rel="stylesheet">
-<link href="__PUBLIC__/static/admin/css/bootstrap.min.css" rel="stylesheet" >
+<link href="__PUBLIC__/static/admin/css/bootstrap.min.css" rel="stylesheet">
 {/block}
 
 {block name="main"}
@@ -27,17 +27,17 @@
                 <div class="ibox-content text-center p-md">
                     <table class="table table-bordered">
                         <thead>
-                        <tr>
-                            <th colspan="6" style="text-align: center;">系统信息</th>
-                        </tr>
+                            <tr>
+                                <th colspan="6" style="text-align: center;">系统信息</th>
+                            </tr>
                         </thead>
                         <tbody>
-                        {volist name="info" id="v"}
-                        <tr>
-                            <td colspan="3">{$key}：</td>
-                            <td colspan="3">{$v}</td>
-                        </tr>
-                        {/volist}
+                            {volist name="info" id="v"}
+                            <tr>
+                                <td colspan="3">{$key}：</td>
+                                <td colspan="3">{$v}</td>
+                            </tr>
+                            {/volist}
                         </tbody>
                     </table>
                 </div>
@@ -50,14 +50,16 @@
                 <div class="ibox-content text-center p-md">
                     <table class="table table-bordered">
                         <thead>
-                        <tr>
-                            <th colspan="6" style="text-align: center; size: A3">官方动态</th>
-                        </tr>
+                            <tr>
+                                <th colspan="6" style="text-align: center; size: A3">官方动态</th>
+                            </tr>
                         </thead>
                         <tbody>
-                        <tr>
-                            <td colspan="6">CMS系统更新版本至V<?php echo \app\common\thinkphp\AppInit::beyongCmsVersion(); ?></td>
-                        </tr>
+                            <tr>
+                                <td colspan="6">CMS系统更新版本至V
+                                    <?php echo \app\common\thinkphp\AppInit::beyongCmsVersion(); ?>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>

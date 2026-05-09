@@ -178,7 +178,7 @@
                                     </a>
                                 </td>
                                 <td>{if $vo.status == $ArticleModel->STATUS_PUBLISHED}
-                                    {$vo.post_time|default=''}
+                                    {$vo.post_time}
                                     {else /}
                                     {notempty name="$vo.timing"}{$vo.timing}<i class="fa fa-clock-o"></i>{/notempty}
                                     {/if}
@@ -230,7 +230,8 @@
                                                 {if $vo.status == $ArticleModel->STATUS_PUBLISHING}
                                                 <a href="{:url('/admin/Article/auditFirst',['id'=>$vo['id']])}"
                                                     class="ajax-a" style="color: black">初审</a>
-                                                {elseif $vo.status >= $ArticleModel->STATUS_FIRST_AUDITED/}
+                                                {elseif $vo.status >=
+                                                $ArticleModel->STATUS_FIRST_AUDITED/}
                                                 <a class="firstTrial">已初审</a>
                                                 {else /}
                                                 <a class="trial">初审</a>
@@ -238,10 +239,12 @@
                                             </li>
                                             <li class="divider"></li>
                                             <li>
-                                                {if $vo.status == $ArticleModel->STATUS_FIRST_AUDITED}
-                                                <a href="{:url('/admin/Article/auditSecond',['id'=>$vo['id']])}"
-                                                    class="ajax-a" style="color: black">终审</a>
-                                                {elseif $vo.status >= $ArticleModel->STATUS_PUBLISHED/}
+                                                {if $vo.status ==
+                                                $ArticleModel->STATUS_FIRST_AUDITED}
+                                                <a href="{:url('Article/auditSecond',['id'=>$vo['id']])}" class="ajax-a"
+                                                    style="color: black">终审</a>
+                                                {elseif $vo.status >=
+                                                $ArticleModel->STATUS_PUBLISHED/}
                                                 <a class="secondTrial">已终审</a>
                                                 {else /}
                                                 <a class="trial">终审</a>
@@ -262,9 +265,9 @@
                                     {/eq}
 
                                     {if $vo.status >= $ArticleModel->STATUS_DRAFT && $vo.status < $ArticleModel->
-                                        STATUS_PUBLISHED}
-                                        <button class="btn btn-xs btn-info" onclick="showTimingPost(this)"
-                                            data-id="{$vo['id']}"><i class="fa fa-clock-o"></i>定时发布</button>
+                                        STATUS_PUBLISHED} <button class="btn btn-xs btn-info"
+                                            onclick="showTimingPost(this)" data-id="{$vo['id']}"><i
+                                                class="fa fa-clock-o"></i>定时发布</button>
                                         {elseif $vo.status == $ArticleModel->STATUS_PUBLISHED}
                                         <button class="btn btn-xs btn-default" onclick="javascript:void(0)"
                                             data-id="{$vo['id']}" disabled><i class="fa fa-clock-o"></i>定时发布</button>

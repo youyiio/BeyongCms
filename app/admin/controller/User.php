@@ -150,7 +150,7 @@ class User extends Base
             return $this->error('参数错误');
         }
 
-        $user = UserModel::get($uid);
+        $user = UserModel::find($uid);
         $this->assign('user', $user);
 
         $UserRoleModel = new UserRoleModel();
@@ -189,7 +189,7 @@ class User extends Base
         }
 
         $userModel = new UserModel();
-        $user = $userModel::get($uid);
+        $user = $userModel::find($uid);
         $this->assign('user', $user);
 
         //最新文章列表
@@ -234,7 +234,7 @@ class User extends Base
             }
         }
 
-        $user = UserModel::get($uid);
+        $user = UserModel::find($uid);
         if (!$user) {
             return $this->error('用户不存在');
         }

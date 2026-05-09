@@ -2,17 +2,11 @@
 
 namespace app\admin\controller;
 
-use app\common\model\cms\AdServingModel;
-use app\common\model\cms\AdModel;
-use app\common\model\cms\AdSlotModel;
 use app\common\model\cms\ArticleMetaModel;
 use app\common\model\cms\CommentModel;
-use app\common\model\MessageModel;
-use app\common\model\UserModel;
 use app\common\model\cms\ArticleModel;
 use app\common\model\cms\CategoryModel;
 use think\facade\Cookie;
-use think\facade\Queue;
 
 /**
  * 文章控制器
@@ -86,6 +80,7 @@ class Article extends Base
         $list = $ArticleModel->where($where)->field($fields)->order($orders)->paginate($listRow, false, $pageConfig);
 
         $this->assign('list', $list);
+        $this->assign('ArticleModel', $ArticleModel);
         $this->assign('pages', $list->render());
         $this->assign('sortedFields', $sortedFields);
         $this->assign('startTime', $startTime);
@@ -158,7 +153,7 @@ class Article extends Base
             }
         }
 
-        $article = ArticleModel::get(['id' => $id]);
+        $article = ArticleModel::find(['id' => $id]);
         if (empty($article)) {
             return $this->error('文章不存在');
         }
@@ -189,7 +184,7 @@ class Article extends Base
     //查看文章
     public function viewArticle($id)
     {
-        $article = ArticleModel::get(['id' => $id]);
+        $article = ArticleModel::find(['id' => $id]);
         if (empty($article)) {
             return $this->error('文章不存在');
         }
@@ -212,12 +207,15 @@ class Article extends Base
         $jobHandlerClass  = 'app\admin\job\Webmaster@checkIndex';
         $jobData = [
             'id' => $id,
-            'url' => url('cms/Article/viewArticle', ['aid' => $id], true, get_config('domain_name')),
+            'url' => url('frontend/Article/viewArticle', ['aid' => $id], true, get_config('domain_name'))->build(),
             'create_time' => date_time()
         ];
         $jobQueue = config('queue.default');
-        \think\Queue::push($jobHandlerClass, $jobData, $jobQueue);
+        \think\facade\Queue::push($jobHandlerClass, $jobData, $jobQueue);
 
+        $ArticleModel = new ArticleModel();
+        $this->assign('ArticleModel', $ArticleModel);
+        
         return $this->fetch('article/viewArticle');
     }
 
@@ -251,7 +249,7 @@ class Article extends Base
 
         $ids = [];
         if (is_int($id)) {
-            $article = ArticleModel::get(['id' => $id]);
+            $article = ArticleModel::find(['id' => $id]);
             if (empty($article)) {
                 return $this->error('文章不存在');
             }
@@ -297,7 +295,7 @@ class Article extends Base
     //发布文章
     public function postArticle($id)
     {
-        $article = ArticleModel::get($id);
+        $article = ArticleModel::find($id);
         if (empty($article)) {
             return $this->error('文章不存在');
         }
@@ -322,7 +320,7 @@ class Article extends Base
     //文章初审
     public function auditFirst($id = 0, $pass = 1)
     {
-        $article = ArticleModel::get(['id' => $id]);
+        $article = ArticleModel::find(['id' => $id]);
         if (empty($article)) {
             return $this->error('文章不存在');
         }
@@ -348,7 +346,7 @@ class Article extends Base
     //文章终审
     public function auditSecond($id = 0, $pass = 1)
     {
-        $article = ArticleModel::get(['id' => $id]);
+        $article = ArticleModel::find(['id' => $id]);
         if (empty($article)) {
             return $this->error('文章不存在');
         }
@@ -404,7 +402,7 @@ class Article extends Base
     public function setTop()
     {
         $aid = input('param.id/d');
-        $article = ArticleModel::get(['id' => $aid]);
+        $article = ArticleModel::find(['id' => $aid]);
         if (empty($article)) {
             return $this->error('文章不存在!');
         }
@@ -423,7 +421,7 @@ class Article extends Base
     public function unsetTop()
     {
         $aid = input('param.id/d');
-        $article = ArticleModel::get(['id' => $aid]);
+        $article = ArticleModel::find(['id' => $aid]);
         if (empty($article)) {
             return $this->error('文章不存在!');
         }
@@ -441,7 +439,7 @@ class Article extends Base
     //文章访问统计
     public function articleStat($id)
     {
-        $article = ArticleModel::get(['id' => $id]);
+        $article = ArticleModel::find(['id' => $id]);
         if (empty($article)) {
             $this->error('文章不存在');
         }
@@ -466,8 +464,8 @@ class Article extends Base
         ];
 
         // TODO 修改成 article_view
-        $ArticleViewModel = new ArticleViewModel();
-        $list = $ArticleViewModel->where(['article_id' => $id])->where($where)->order('id desc')->paginate(15, false, $pageConfig);
+        $ArticleModel = new ArticleModel();
+        $list = $ArticleModel->where(['article_id' => $id])->where($where)->order('id desc')->paginate(15, false, $pageConfig);
         $startTimestamp = strtotime($startTime);
         $endTimestamp = strtotime($endTime);
 
@@ -486,7 +484,7 @@ class Article extends Base
     //文章访问统计图
     public function echartShow($id)
     {
-        $article = ArticleModel::get(['id' => $id]);
+        $article = ArticleModel::find(['id' => $id]);
         if (empty($article)) {
             $this->error('文章不存在');
         }

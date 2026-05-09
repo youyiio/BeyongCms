@@ -127,7 +127,7 @@
 
                                     {if $vo.status == $CommentModel->STATUS_PUBLISHING}
                                     <button class="btn btn-xs btn-primary ajax-btn-warning"
-                                        data-action="{:url('/admin/'.request()->controller().'/auditComment',['id'=>$vo['id']])}"
+                                        data-action="{:url(request()->controller().'/auditComment',['id'=>$vo['id']])}"
                                         data-title="提示" data-text="确认评论审核通过？"><i class="fa fa-check"></i> 审核</button>
                                     {elseif $vo.status >= $CommentModel->STATUS_PUBLISHED /}
                                     <button class="btn btn-xs btn-primary ajax-btn-warning"

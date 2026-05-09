@@ -12,6 +12,14 @@ use think\facade\Env;
  */
 class System extends Base
 {
+    public function initialize()
+    {
+        parent::initialize();
+        
+        // 用于页面快速访问静态变量，$Model->STATUS_xxx
+        $this->assign("LinkModel", new LinkModel());
+    }
+
     //系统设置
     public function index()
     {
@@ -167,7 +175,7 @@ class System extends Base
         if (request()->isPost()) {
             $id = input('post.id', 0);
             $checked = input('post.checked', 'false');
-            $link = LinkModel::get($id);
+            $link = LinkModel::find($id);
             if (!$link) {
                 return $this->error('友链不存在!');
             }
@@ -205,7 +213,7 @@ class System extends Base
         }
         
         $LinkModel = new LinkModel();
-        $res = $LinkModel->allowField(true)->save($data);
+        $res = $LinkModel->save($data);
         if ($res) {
             cache('links', null);
             return $this->success('添加成功');

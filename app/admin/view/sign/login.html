@@ -1,4 +1,7 @@
-{extend name="sign/base"/} {block name='title'}登录{/block} {block name="main"}
+{extend name="sign/base"/}
+{block name='title'}登录{/block}
+
+{block name="main"}
 <h3>{:get_config('site_name')}管理后台</h3>
 <p>请用email及您的密码登录后台管理系统</p>
 <form class="m-t ajax-form" role="form" action="{:url('/' . app('http')->getName() . '/Sign/login')}" method="post"
@@ -30,7 +33,8 @@
     <a class="btn btn-sm btn-white btn-block" href="{:url('/admin/Login/register')}">注册</a>
     -->
 </form>
-{/block} {block name="js"}
+{/block}
+{block name="js"}
 <script type="text/javascript">
   if (window != top) {
     //top.location.href = location.href;
