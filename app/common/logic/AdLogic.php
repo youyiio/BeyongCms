@@ -10,7 +10,6 @@ namespace app\common\logic;
 
 
 use app\common\model\cms\AdModel;
-use think\Model;
 
 class AdLogic extends BaseLogic
 {
@@ -20,7 +19,7 @@ class AdLogic extends BaseLogic
         $where = [];
         $AdModel = new AdModel();
         if ($slotId) {
-            $AdModel = AdModel::has('adServings', ['slot_id'=>$slotId]);
+            $AdModel = AdModel::hasWhere('adServings', ['slot_id' => $slotId]);
         }
 
         $list = $AdModel->where($where)->order('sort asc')->limit($limit)->select();

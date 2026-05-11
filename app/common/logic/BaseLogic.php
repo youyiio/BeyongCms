@@ -1,5 +1,5 @@
 <?php
-namespace app\common\model;
+namespace app\common\logic;
 
 
 class BaseLogic

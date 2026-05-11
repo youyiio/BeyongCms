@@ -229,7 +229,7 @@ class Sign extends BaseController
         $this->afterRegister($user['id']);
 
         //注册成功，调整登录页面
-        return $this->success("恭喜您，账号注册成功！", url(request()->module() . '/Sign/login'));
+        return $this->success("恭喜您，账号注册成功！", url('/' . app('http')->getName() . '/Sign/login'));
     }
 
     /**
@@ -409,10 +409,10 @@ class Sign extends BaseController
         $UserModel = new UserModel();
         $user = $UserModel->findByEmail($email);
         if (!$user) {
-            return $this->error('邮箱不存在', url(request()->module() . '/Sign/register'));
+            return $this->error('邮箱不存在', url('/' . app('http')->getName() . '/Sign/register'));
         }
         if ($user['status'] == UserModel::STATUS_ACTIVED) {
-            return $this->success('邮箱已激活过，无需重新激活！', url(request()->module() . '/Sign/login'));
+            return $this->success('邮箱已激活过，无需重新激活！', url('/' . app('http')->getName() . '/Sign/login'));
         }
 
         //激活用户

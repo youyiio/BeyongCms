@@ -10,7 +10,6 @@
 namespace app\common\logic;
 
 use think\Exception;
-use think\Model;
 use app\common\model\UserModel;
 use think\facade\Cache;
 
