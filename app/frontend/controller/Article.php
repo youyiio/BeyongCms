@@ -2,8 +2,9 @@
 
 namespace app\frontend\controller;
 
-use app\common\model\cms\ArticleMetaModel;
+use app\frontend\controller\Base;
 use app\common\model\cms\ArticleModel;
+use app\common\model\cms\ArticleViewModel;
 use app\common\model\cms\CategoryModel;
 use app\common\model\cms\CommentModel;
 use Jenssegers\Date\Date;
@@ -14,9 +15,26 @@ use Jenssegers\Date\Date;
 class Article extends Base
 {
 
+    // 定义前置操作方法列表
+    protected $beforeActionList = [
+        'checkHttpReferer' => ['except' => 'viewArticle'],
+    ];
+
     public function initialize()
     {
         parent::initialize();
+    }
+
+    protected function checkHttpReferer()
+    {
+        $referer = $this->request->header('Referer');
+        //$referer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : "";
+        // 输出：https://www.yourdomain.com
+        $domain = $this->request->domain();
+        if (strpos($referer, $domain) === false) {
+            $this->redirect($domain);
+            die('invalid');
+        }
     }
 
     /**
@@ -126,33 +144,23 @@ class Article extends Base
         }
         $this->assign('aid', $aid);
 
-        //阅读量+1(一个ip一天只能添加1的浏览量),但阅读记录保持入库
+        //阅读量+1(一个ip一天只能添加1的浏览量[废弃，太耗io]),但阅读记录保持入库
         $id = $article['id'];
-        $ip = \think\facade\Request::ip(0, true);
-        $today = [Date::today(), new Date('now')];
-        $where = [
-            ['article_id', '=', $id],
-            ['meta_key', '=', 'read_ip'],
-            ['meta_value', '=', $ip],
-            ['create_time', '>=', date_time($today[0]->unix())],
-            ['create_time', '<', date_time($today[1]->unix())]
-        ];
+        $ip = $this->request->ip(0, true);
 
-        $ArticleMetaModel = new ArticleMetaModel();
-        $meta = $ArticleMetaModel->where($where)->find();
-        if (!$meta) {
-            $ArticleModel->where('id', $aid)->inc('read_count');
-        }
+        $ArticleViewModel = new ArticleViewModel();
 
         $data = [
             'article_id' => $id,
-            'meta_key' => 'read_ip',
-            'meta_value' => $ip,
-            'update_time' => date_time(),
-            'create_time' => date_time()
+            'uid' => null,
+            'view_time' => date_time(),
+            'ip' => $ip,
+            'user_agent' => $this->request->header("user-agent"),
+            'referrer_url' => $this->request->server('HTTP_REFERER')
         ];
-        $ArticleMetaModel->insert($data);
+        $ArticleViewModel->insert($data);
 
+        $ArticleModel->where('id', $aid)->setInc('read_count');
 
         if (empty($cid)) {
             $categorys = $article->categorys;

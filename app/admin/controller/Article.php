@@ -5,6 +5,7 @@ namespace app\admin\controller;
 use app\common\model\cms\ArticleMetaModel;
 use app\common\model\cms\CommentModel;
 use app\common\model\cms\ArticleModel;
+use app\common\model\cms\ArticleViewModel;
 use app\common\model\cms\CategoryModel;
 use think\facade\Cookie;
 
@@ -464,8 +465,8 @@ class Article extends Base
         ];
 
         // TODO 修改成 article_view
-        $ArticleModel = new ArticleModel();
-        $list = $ArticleModel->where(['article_id' => $id])->where($where)->order('id desc')->paginate(15, false, $pageConfig);
+        $ArticleViewModel = new ArticleViewModel();
+        $list = $ArticleViewModel->where(['article_id' => $id])->where($where)->order('id desc')->paginate(15, false, $pageConfig);
         $startTimestamp = strtotime($startTime);
         $endTimestamp = strtotime($endTime);
 
