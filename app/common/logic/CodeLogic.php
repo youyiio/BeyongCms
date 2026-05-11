@@ -22,7 +22,7 @@ use app\common\library\ResultCode;
 /**
  * 验证码管理
  */
-class CodeLogic
+class CodeLogic extends BaseLogic
 {
 
     const STATUS_UNUSED = 1; //未使用

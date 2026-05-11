@@ -1,5 +1,4 @@
 <?php
-
 namespace app\common\model\cms;
 
 use app\common\model\BaseModel;
@@ -7,13 +6,12 @@ use app\common\model\BaseModel;
 use think\facade\Log;
 use think\facade\Cache;
 use app\common\exception\ModelException;
-use think\facade\Queue;
 
 class ArticleModel extends BaseModel
 {
     protected $name = CMS_PREFIX . 'article';
 
-    const STATUS_DELETED = -1; //删除
+    const STATUS_DELETED = -1;//删除
     const STATUS_DRAFT = 0; //草稿
     const STATUS_PUBLISHING = 1; //申请发布
     const STATUS_FIRST_AUDIT_REJECT = 2; //初审拒绝
@@ -26,6 +24,11 @@ class ArticleModel extends BaseModel
 
     protected $pk = 'id';
 
+    // 设置json类型字段
+    protected $json = ['source'];
+    // 设置JSON数据返回数组
+    protected $jsonAssoc = true;
+    
     protected $auto = ['update_time'];
     protected $insert = ['status', 'create_time', 'sort' => 0, 'uid'];
     protected $update = ['update_time'];
@@ -36,7 +39,7 @@ class ArticleModel extends BaseModel
     // }
 
     //AfterInsert事件后：计算文章相似度，article_a_id > article_b_id
-    public static function onAfterInsert($article)
+    public static function onAfterInsert($article) 
     {
         $id = $article->id;
 
@@ -47,7 +50,7 @@ class ArticleModel extends BaseModel
         //任务归属的队列名称，如果为新队列，会自动创建
         $jobQueue = config('queue.default');
 
-        $isPushed = Queue::push($jobHandlerClass, $jobData, $jobQueue);
+        $isPushed = \think\Queue::push($jobHandlerClass, $jobData, $jobQueue);
         // database 驱动时，返回值为 1|false; redis 驱动时，返回值为 随机字符串|false
         if ($isPushed !== false) {
             Log::info('文章相似度LCS更新Job入列成功...');
@@ -57,22 +60,22 @@ class ArticleModel extends BaseModel
 
         //若文章已发布，提交链接|检测收录，$article['status'] == ArticleModel::STATUS_PUBLISHED 此时做这个判断会有延迟
 
-        $articleUrl = get_config('domain_name') . url('frontend/Article/viewArticle', ['aid' => $id], true, false);
+        $articleUrl = get_config('domain_name') . url('cms/Article/viewArticle', ['aid' => $id], true, false);
 
         //提交链接
         if ($article['status'] == ArticleModel::STATUS_PUBLISHED) {
             $jobHandlerClass = 'app\admin\job\Webmaster@pushLinks';
             $jobData = ['id' => $id, 'url' => $articleUrl, 'create_time' => date_time()];
             $jobQueue = config('queue.default');
-            Queue::push($jobHandlerClass, $jobData, $jobQueue);
+            \think\Queue::push($jobHandlerClass, $jobData, $jobQueue);
         }
 
         //检测收录,延迟4,6,24小时
         $jobHandlerClass  = 'app\admin\job\Webmaster@checkIndex';
         $jobData = ['id' => $id, 'url' => $articleUrl, 'create_time' => date_time()];
         $jobQueue = config('queue.default');
-        Queue::later(2 * 60 * 60, $jobHandlerClass, $jobData, $jobQueue);
-        Queue::later(4 * 60 * 60, $jobHandlerClass, $jobData, $jobQueue);
+        \think\Queue::later(2 * 60 * 60, $jobHandlerClass, $jobData, $jobQueue);
+        \think\Queue::later(4 * 60 * 60, $jobHandlerClass, $jobData, $jobQueue);
     }
 
     //AfterUpdate事件后：计算/更新文章相似度
@@ -87,7 +90,7 @@ class ArticleModel extends BaseModel
         //任务归属的队列名称，如果为新队列，会自动创建
         $jobQueue = config('queue.default');
 
-        $isPushed = Queue::push($jobHandlerClass, $jobData, $jobQueue);
+        $isPushed = \think\Queue::push($jobHandlerClass, $jobData, $jobQueue);
         // database 驱动时，返回值为 1|false; redis 驱动时，返回值为 随机字符串|false
         if ($isPushed !== false) {
             Log::info('文章相似度LCS更新Job入列成功...');
@@ -104,20 +107,21 @@ class ArticleModel extends BaseModel
         }
         if ($article->status == ArticleModel::STATUS_PUBLISHED) {
             $jobHandlerClass  = 'app\admin\job\Webmaster@pushLinks';
-            $articleUrl = get_config('domain_name') . url('frontend/Article/viewArticle', ['aid' => $id], true, false);
+            $articleUrl = get_config('domain_name') . url('cms/Article/viewArticle', ['aid' => $id], true, false);
             $jobData = ['id' => $id, 'url' => $articleUrl, 'create_time' => date_time()];
             $jobQueue = config('queue.default');
-            Queue::push($jobHandlerClass, $jobData, $jobQueue);
+            \think\Queue::push($jobHandlerClass, $jobData, $jobQueue);
 
             //检测收录,延迟4,6,24小时
             $jobHandlerClass  = 'app\admin\job\Webmaster@checkIndex';
             $jobData = ['id' => $id, 'url' => $articleUrl, 'create_time' => date_time()];
             $jobQueue = config('queue.default');
-            Queue::later(2 * 60 * 60, $jobHandlerClass, $jobData, $jobQueue);
-            Queue::later(4 * 60 * 60, $jobHandlerClass, $jobData, $jobQueue);
+            \think\Queue::later(2 * 60 * 60, $jobHandlerClass, $jobData, $jobQueue);
+            \think\Queue::later(4 * 60 * 60, $jobHandlerClass, $jobData, $jobQueue);
         } else {
             Log::info('上次更新无需提交链接，状态值 为:' . $article->status_text);
         }
+
     }
 
     //属性：status_text
@@ -155,7 +159,7 @@ class ArticleModel extends BaseModel
     //关联表：文章分类
     public function categorys()
     {
-        return $this->belongsToMany('CategoryModel', config('database.prefix') . CMS_PREFIX . 'category_article', 'category_id', 'article_id');
+        return $this->belongsToMany('CategoryModel', config('database.prefix'). CMS_PREFIX . 'category_article', 'category_id', 'article_id');
     }
     //关联表：中间表，用于获取中间表数据，或查询has/hasWhere
     protected function categoryArticle()
@@ -184,7 +188,7 @@ class ArticleModel extends BaseModel
     //新增文章
     public function add($data = [])
     {
-        $data = $data ?: input('post.');
+        $data = $data?:input('post.');
 
         $validator = new \app\common\validate\Article();
         $check = $validator->scene('add')->check($data);
@@ -196,7 +200,7 @@ class ArticleModel extends BaseModel
             $data['post_time'] = date_time();
         }
 
-        $res = $this->save($data);
+        $res = $this->isUpdate(false)->save($data);
 
         if (!$res) {
             return false;
@@ -208,7 +212,7 @@ class ArticleModel extends BaseModel
         //标签，添加至meta表
         if (!empty($data['tags'])) {
             $tags = explode(',', $data['tags']);
-            foreach ($tags as $tag) {
+            foreach($tags as $tag) {
                 if (empty($tag)) {
                     continue;
                 }
@@ -220,7 +224,7 @@ class ArticleModel extends BaseModel
         //附加图片，添加至meta表
         if (!empty($data['meta_image_ids'])) {
             $imageIds = explode(',', $data['meta_image_ids']);
-            foreach ($imageIds as $imageId) {
+            foreach($imageIds as $imageId) {
                 if (empty($imageId)) {
                     continue;
                 }
@@ -232,7 +236,7 @@ class ArticleModel extends BaseModel
         //附加图片，添加至meta表
         if (!empty($data['meta_file_ids'])) {
             $fileIds = explode(',', $data['meta_file_ids']);
-            foreach ($fileIds as $fileId) {
+            foreach($fileIds as $fileId) {
                 if (empty($fileId)) {
                     continue;
                 }
@@ -248,18 +252,18 @@ class ArticleModel extends BaseModel
     public function edit($data = [])
     {
         $data = $data ?: input('post.');
-        $art = self::find(['id' => $data['id']]);
+        $art = self::get(['id' => $data['id']]);
         if (empty($art)) {
             throw new ModelException(0, '文章不存在');
         }
 
         if ($art->status == ArticleModel::STATUS_DRAFT && $data['status'] == ArticleModel::STATUS_PUBLISHED) {
             //审核开关关闭时
-            if (get_config('article_audit_switch') === 'true') {
+            if (get_config('article_audit_switch') === 'true' ) {
                 $data['status'] = ArticleModel::STATUS_PUBLISHING;
             }
             if (empty($art->post_time)) {
-                $data['post_time'] = date_time(); //设置发布时间
+                $data['post_time'] = date_time();//设置发布时间
             }
         }
 
@@ -270,7 +274,7 @@ class ArticleModel extends BaseModel
             return false;
         }
 
-        $res = $art->update($data);
+        $res = $this->isUpdate(true)->save($data);
 
         // 删除中间表数据
         if (!empty($data['category_ids'])) {
@@ -331,10 +335,5 @@ class ArticleModel extends BaseModel
                 }
             }
         }
-    }
-
-    public static function getStatuses()
-    {
-        return (new \ReflectionClass(__CLASS__))->getConstants();
     }
 }

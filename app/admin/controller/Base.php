@@ -26,7 +26,8 @@ class Base extends BaseController
             if (request()->isAjax()) {
                 $this->error('请重新登陆', '/' . app('http')->getName() . '/Sign/login')->send();
             } else {
-                $this->redirect('/' . app('http')->getName() . '/Sign/index')->send();
+                $url = url('/' . app('http')->getName() . '/Sign/index', ['redirect' => urlencode($this->url())])->build();
+                $this->redirect($url)->send();
             }
             exit;
         }

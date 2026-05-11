@@ -1,5 +1,4 @@
 <?php
-
 namespace app\common\model;
 
 use think\facade\Cookie;
@@ -77,7 +76,7 @@ class UserModel extends BaseModel
             $exts[$key] = $value;
         }
 
-        $this->where('id', $this->id)->update(['ext' => json_encode($exts)]);
+        $this->where('id', $this->id)->setField('ext', json_encode($exts));
     }
 
     public function createUser($mobile, $password, $nickname = '', $email = '', $account = '', $status = UserModel::STATUS_ACTIVED)
@@ -113,8 +112,8 @@ class UserModel extends BaseModel
 
         //设置来源及入口url
         if (Cookie::has('from_referee') || Cookie::has('entrance_url')) {
-            $user->from_referee = Cookie::get('from_referee');
-            $user->entrance_url = Cookie::get('entrance_url');
+            $user->from_referee = sub_str(Cookie::get('from_referee'), 0, 250);
+            $user->entrance_url = sub_str(Cookie::get('entrance_url'), 0, 250);
         }
 
         $result = $user->save();
@@ -173,7 +172,7 @@ class UserModel extends BaseModel
         return $this->where('id', $uid)->update($data);
     }
 
-    public function setProfile($userId, $nickname, $sex = '', $headUrl = '', $qq = '', $weixin = '')
+    public function setProfile($userId, $nickname, $sex='', $headUrl='', $qq='', $weixin='')
     {
         $data['id'] = $userId;
         $data['nickname'] = $nickname;
@@ -190,7 +189,7 @@ class UserModel extends BaseModel
             $data['weixin'] = $weixin;
         }
 
-        $result = $this->update($data);
+        $result = $this->save($data);
         if ($result == false) {
             return false;
         }
@@ -255,13 +254,13 @@ class UserModel extends BaseModel
         $validate = validate('User');
         $check = $validate->scene('edit')->check($data);
         if ($check !== true) {
-            return $this->error = $validate->getError();
+            $this->error = $validate->getError();
             return false;
         }
 
-        $res = $this->allowField(true)->isUpdate(true)->save($data, ['id' => $uid]);
+        $res = $this->isUpdate(true)->save($data, ['id' => $uid]);
         if ($res === false) {
-            return $this->error = '修改失败';
+            $this->error = '修改失败';
             return false;
         }
 

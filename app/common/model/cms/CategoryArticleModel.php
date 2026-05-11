@@ -1,5 +1,4 @@
 <?php
-
 namespace app\common\model\cms;
 
 use app\common\model\BaseModel;

@@ -14,7 +14,7 @@ use app\common\model\BaseModel;
 use app\common\model\cms\ArticleMetaModel;
 use app\common\model\cms\ArticleModel;
 
-class ArticleLogic
+class ArticleLogic extends BaseLogic
 {
 
     public function getHotList($pageIndex = 1, $pageSize = 10)

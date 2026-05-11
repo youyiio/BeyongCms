@@ -77,19 +77,21 @@ class FileModel extends Model
             return [];
         }
 
-        $ImageModel = new ImageModel();
-        $data = $ImageModel->where([['id', 'in', $ids]])->select();
-        if (empty($data)) {
+        $FileModel = new FileModel();
+        $results = $FileModel->where([['id', 'in', $ids]])->select();
+        if (empty($results)) {
             return [];
         }
         $res = [];
-        foreach ($data as $v) {
+        foreach ($results as $v) {
             $res[] = [
                 'id'           => $v->id,
                 'file_url'     => $v->file_url,
+                'full_file_url' => $v->full_file_url,
                 'thumb_image_url'    => $v->thumb_image_url,
+                'full_thumb_image_url' => $v->full_thumb_image_url,
                 'image_url'       => $v->file_url,
-                'full_image_url'   => url_add_domain($v->file_url),
+                'full_image_url'  => $v->full_file_url,
                 'remark' => $v->remark,
             ];
         }

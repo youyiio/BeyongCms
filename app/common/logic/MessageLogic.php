@@ -8,9 +8,7 @@
 
 namespace app\common\logic;
 
-use think\Model;
-
-class MessageLogic extends Model
+class MessageLogic extends BaseLogic
 {
 
     public function createMessage($receiveUserId, $type, $title, $content, $extra = null)

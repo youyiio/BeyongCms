@@ -1,5 +1,4 @@
 <?php
-
 namespace app\common\model;
 
 use app\api\library\RolePermission;
@@ -58,17 +57,17 @@ class MenuModel extends BaseModel
      * @return   boolean   操作是否成功
      * @throws \Exception
      */
-    public function deleteData($map)
+	public function deleteData($map)
     {
-        $count = $this
-            ->where('pid', $map['id'])
-            ->count();
-        if ($count != 0) {
-            return false;
-        }
-        $result = $this->where($map)->delete();
-        return $result;
-    }
+		$count = $this
+			->where('pid', $map['id'])
+			->count();
+		if ($count != 0) {
+			return false;
+		}
+		$result = $this->where($map)->delete();
+		return $result;
+	}
 
     /**
      *
@@ -83,7 +82,7 @@ class MenuModel extends BaseModel
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    public function getTreeDataBelongsTo($type = 'tree', $order = 'sort', $name = 'name', $fieldPK = 'id', $filedPid = 'pid', $belongsTo = '')
+    public function getTreeDataBelongsTo($type='tree', $order='sort', $name='name', $fieldPK='id', $filedPid='pid', $belongsTo='')
     {
         $where = [
             'belongs_to' => $belongsTo
@@ -97,10 +96,10 @@ class MenuModel extends BaseModel
         $data = $data->toArray();
         // 获取树形或者结构数据
         $tree = new \beyong\commons\data\Tree();
-        if ($type == 'tree') { //供给如下拉菜单使用
+        if ($type == 'tree') {//供给如下拉菜单使用
             $data = $tree::tree($data, $name, $fieldPK, $filedPid);
-        } else if ($type == "level") { //给左测菜单使用
-            $data = $tree::channelLevel($data, 0, '&nbsp;', $fieldPK);
+        } else if ($type == "level") {//给左测菜单使用
+            $data = $tree::channelLevel($data,0,'&nbsp;', $fieldPK);
 
             $auth = new RolePermission();
             //清理不显示的菜单
@@ -111,7 +110,7 @@ class MenuModel extends BaseModel
                     unset($data['_data']);
                     continue;
                 }
-
+             
                 //是否有权限
                 if (!$auth->checkPermission(session('uid'), strtolower($v['path']), 'admin')) {
                     unset($data[$k]);
@@ -148,4 +147,5 @@ class MenuModel extends BaseModel
         //dump($data);die;
         return $data;
     }
+
 }

@@ -12,7 +12,7 @@ namespace app\common\logic;
 use app\common\model\cms\AdModel;
 use think\Model;
 
-class AdLogic extends Model
+class AdLogic extends BaseLogic
 {
     //获取广告或内链
     public function getAdList($slotId=0, $limit=5)

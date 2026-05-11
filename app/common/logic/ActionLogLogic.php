@@ -13,7 +13,7 @@ namespace app\common\logic;
 use app\common\model\ActionLogModel;
 use think\Model;
 
-class ActionLogLogic
+class ActionLogLogic extends BaseLogic
 {
     //增加日志，data为传递的参数
     public function addLog($userId, $action, $remark, $params = [])

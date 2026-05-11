@@ -10,7 +10,7 @@ use app\common\model\api\TokenModel;
 use beyong\commons\utils\StringUtils;
 use think\facade\Cookie;
 
-class UserLogic
+class UserLogic extends BaseLogic
 {
 
     public function register($mobile, $password, $nickname = '', $email = '', $account = '', $status = UserModel::STATUS_ACTIVED)
