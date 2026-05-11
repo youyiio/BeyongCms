@@ -199,13 +199,13 @@ class Cms extends TagLib
         $parse .= "  \$where = [];";
         $parse .= "  \$where[] = ['status', '=', \app\common\model\cms\LinkModel::STATUS_ONLINE]; ";
         $parse .= "  \$current_time = date_time(); ";
-        $parse .= "  \$startWhere1 = ['=', null]; ";
-        $parse .= "  \$startWhere2 = ['<=', \$current_time]; ";
-        $parse .= "  \$endWhere1 = ['=', null]; ";        
-        $parse .= "  \$endWhere2 = ['>=', \$current_time]; ";
+        $parse .= "  \$startWhere1 = ['start_time', '=', null]; ";
+        $parse .= "  \$startWhere2 = ['start_time', '<=', \$current_time]; ";
+        $parse .= "  \$endWhere1 = ['end_time', '=', null]; ";        
+        $parse .= "  \$endWhere2 = ['end_time', '>=', \$current_time]; ";
         $parse .= "  if (empty($internalList)) { ";
         $parse .= "    \$LinkModel = new \app\common\model\cms\LinkModel();";
-        $parse .= "    $internalList = \$LinkModel->where(\$where)->where('start_time', \$startWhere1, \$startWhere2, 'OR')->where('end_time', \$endWhere1, \$endWhere2, 'OR')->field('id,title,url')->order('sort asc')->limit($limit)->select();";
+        $parse .= "    $internalList = \$LinkModel->where(\$where)->whereOr([\$startWhere1, \$startWhere2])->whereOr([\$endWhere1, \$endWhere2])->field('id,title,url')->order('sort asc')->limit($limit)->select();";
         $parse .= "    if ($cache) { ";
         $parse .= "      cache(\$cacheMark, $internalList, $cache); ";
         $parse .= "    } ";

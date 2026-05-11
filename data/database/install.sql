@@ -46,6 +46,14 @@ drop table if exists cms_article_data;
 
 drop table if exists cms_article_meta;
 
+#drop index idx_article_view_view_time on cms_article_view;
+
+#drop index idx_article_view_article on cms_article_view;
+
+#drop index idx_article_view_user_view on cms_article_view;
+
+drop table if exists cms_article_view;
+
 drop table if exists cms_category;
 
 #drop index idx_category_article_aid on cms_category_article;
@@ -243,6 +251,7 @@ create table cms_article
    read_count           int not null default 0,
    comment_count        int not null default 0,
    author               varchar(64),
+   source               json,
    uid                  int not null,
    sort                 int default 0 comment '排序',
    relateds             text comment '相关文章',
@@ -377,6 +386,52 @@ create index idx_article_meta_update_time on cms_article_meta
 (
    update_time
 );
+
+/*==============================================================*/
+/* Table: cms_article_view                                      */
+/*==============================================================*/
+create table cms_article_view
+(
+   id                   int not null auto_increment comment '序号',
+   article_id           int not null comment '文章id',
+   uid                  int comment '用户id',
+   view_time            datetime not null comment '浏览时间',
+   ip                   varchar(45) not null comment 'ip地址，支持IPv6',
+   user_agent           varchar(255) comment '用户设备信息（如浏览器、OS）',
+   referrer_url         varchar(512) comment '来源页面url',
+   primary key (id)
+)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci;
+
+alter table cms_article_view comment '文章浏览记录表';
+
+/*==============================================================*/
+/* Index: idx_article_view_user_view                            */
+/*==============================================================*/
+create index idx_article_view_user_view on cms_article_view
+(
+   uid,
+   view_time
+);
+
+/*==============================================================*/
+/* Index: idx_article_view_article                              */
+/*==============================================================*/
+create index idx_article_view_article on cms_article_view
+(
+   article_id,
+   uid
+);
+
+/*==============================================================*/
+/* Index: idx_article_view_view_time                            */
+/*==============================================================*/
+create index idx_article_view_view_time on cms_article_view
+(
+   view_time
+);
+
 
 /*==============================================================*/
 /* Table: cms_category                                          */
