@@ -86,8 +86,6 @@ drop table if exists sys_config;
 
 drop table if exists sys_file;
 
-drop table if exists sys_hooks;
-
 drop table if exists sys_menu;
 
 #drop index idx_message_to_uid on sys_message;
@@ -707,26 +705,6 @@ DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci;
 alter table sys_file comment '文件表';
 
 /*==============================================================*/
-/* Table: sys_hooks                                             */
-/*==============================================================*/
-create table sys_hooks
-(
-   id                   int not null auto_increment,
-   name                 varchar(40) not null comment '钩子名称',
-   description          text comment '描述',
-   type                 tinyint not null default 1 comment '类型',
-   status               tinyint not null default 1 comment '状态',
-   addons               varchar(256) comment '钩子挂载的插件，用'',''分割',
-   update_time          datetime not null comment '更新时间',
-   create_time          datetime not null comment '安装时间',
-   primary key (id)
-)
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci;
-
-alter table sys_hooks comment '钩子表';
-
-/*==============================================================*/
 /* Table: sys_menu                                              */
 /*==============================================================*/
 create table sys_menu
@@ -1001,7 +979,7 @@ create unique index uniq_user_role_uid_role_id on sys_user_role
 truncate table sys_config;
 
 INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('网站名称', 'base', 'site_name', 'BeyongCms内容管理系统', '网站名称', 'string', 1);
-INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('域名', 'base', 'domain_name', 'www.beyongx.com', '域名', 'string', 2);
+INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('域名', 'base', 'domain_name', 'www.beyong.run', '域名', 'string', 2);
 INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('网址协议', 'base', 'protocol', 'http://', '网址协议', 'string', 3);
 INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('备案号', 'base', 'icp', '闽ICP备xxxxxxxx号-1', '备案号', 'string', 4);
 INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('主题名称', 'base', 'theme_package_name', 'classic', '主题名称', 'string', 5);
@@ -1027,7 +1005,7 @@ INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES
 INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('邮编', 'contact', 'zip_code', '361008', '邮编', 'string', 2);
 INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('传真', 'contact', 'fax', '0592-1234567', '传真', 'string', 3);
 INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('联系电话', 'contact', 'tel', '0592-5000000', '联系电话', 'string', 4);
-INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('联系人', 'contact', 'contact', 'beyongx sir', '联系人', 'string', 5);
+INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('联系人', 'contact', 'contact', 'beyong dot run', '联系人', 'string', 5);
 INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('联系邮箱', 'contact', 'email', 'xx@xxx.com', '联系邮箱', 'string', 6);
 INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('联系QQ', 'contact', 'qq', 'qq_xxx', '联系QQ', 'string', 7);
 INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('联系微信', 'contact', 'weixin', 'weixin_xx', '联系微信', 'string', 8);
@@ -1035,7 +1013,7 @@ INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES
 INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('邮箱服务器端口', 'email', 'email_port', '465', 'SMTP服务器端口,一般为25', 'number', 1);
 INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('加密方式', 'email', 'email_security', 'ssl', '加密方式：null|ssl|tls, QQ邮箱必须使用ssl', 'string', 2);
 INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('发件邮箱名称', 'email', 'email_name', 'service', '发件邮箱名称', 'string', 3);
-INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('发件邮箱地址', 'email', 'email_addr', 'service@beyongx.com', '发件邮箱地址', 'string', 4);
+INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('发件邮箱地址', 'email', 'email_addr', 'service@beyong.run', '发件邮箱地址', 'string', 4);
 INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('发件邮箱密码', 'email', 'email_pass', 'password', '发件邮箱密码', 'string', 5);
 INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('新用户邮箱激活格式', 'email_template', 'email_activate_user', '<style type=\"text/css\">\r\n  p{text-indent: 2em;}\r\n</style>\r\n<div><strong>尊敬的用户</strong></div>\r\n<p>您好，非常感谢您对Beyongx(<a href=\"https://www.ituizhan.com/\" target=\"_blank\" title=\"Beyongx\">Beyongx</a>)的关注和热爱</p>\r\n<p>您本次申请注册成为Beyongx会员的邮箱验证链接是: <a style=\"font-size: 30px;color: red;\" href=\"{url}\">{url}</a></p>\r\n<p>如果非您本人操作，请忽略该邮件。</p>\r\n', '新用户邮箱激活html格式', 'text', 6);
 INSERT INTO `sys_config`(name,`group`,`key`,value,remark,value_type,sort) VALUES ('邮箱重置密码格式', 'email_template', 'email_reset_password', '<style type=\"text/css\">\r\np{text-indent: 2em;}\r\n</style>\r\n<div><strong>尊敬的用户</strong></div>\r\n<p>您好，非常感谢您对Beyongx(<a href=\"https://www.ituizhan.com/\" target=\"_blank\" title=\"Beyongx\">Beyongx</a>)的关注和热爱</p>\r\n<p>您本次申请找回密码的邮箱验证码是: <strong style=\"font-size: 30px;color: red;\">{code}</strong></p>\r\n<p>您本次重置密码的邮箱链接是: <a style=\"font-size: 30px;color: red;\"  href=\"{url}\">{url}</strong>\r\n<p>如果非您本人操作，请忽略该邮件。</p>\r\n', '用户邮箱重置密码html格式', 'text', 7);
@@ -1070,7 +1048,7 @@ truncate sys_user;
 INSERT INTO
     `sys_user`(`id`,`mobile`,`email`,`account`,`password`,`status`,`nickname`,`sex`,`head_url`,`salt`,`register_time`,`last_login_time`,`last_login_ip`)
 VALUES
-    (1,'18888888888','admin@beyongcms.com','admin','f6bc5c8794afdae1dd41edb7939020e2',2,'超级管理员',1,null,'lGfFSc17z8Q15P5kU0guNqq906DHNbA3','2015-01-01 00:00:00','2017-05-12 15:55:52','110.84.32.49');
+    (1,'18888888888','admin@beyong.run','admin','f6bc5c8794afdae1dd41edb7939020e2',2,'超级管理员',1,null,'lGfFSc17z8Q15P5kU0guNqq906DHNbA3',NOW(),null,'127.0.0.1');
 
 truncate `sys_user_role`;
 
@@ -1099,16 +1077,16 @@ INSERT INTO `sys_menu`(id,pid,title,name,component,path,icon,type,is_menu,permis
 INSERT INTO `sys_menu`(id,pid,title,name,component,path,icon,type,is_menu,permission,status,sort,belongs_to) VALUES (6, 0, '系统管理', 'SystemIndex', 'Layout', 'system', 'el-icon-news', 1, 1, null, 1, 9, 'api');
 
 /*****admin*******/
-INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (20, 0, '综合面板', 'admin/ShowNav/Index', 'fa-th-large', 1, 1, 1, 1,'admin');
-INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (21, 0, '个人中心', 'admin/ShowNav/Ucenter', 'fa-user', 1, 1, 14, 1,'admin');
-INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (22, 0, '用户管理', 'admin/ShowNav/User', 'fa-users', 1, 1, 16, 1,'admin');
-INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (23, 0, '权限管理', 'admin/ShowNav/Rule', 'fa-key', 1, 1, 17, 1,'admin');
-INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (24, 0, '系统管理', 'admin/ShowNav/System', 'fa-cog', 1, 1, 18, 1,'admin');
-INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (25, 0, '扩展管理', 'admin/ShowNav/Extension', 'fa-th-list', 1, 1, 15, 1,'admin');
-INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (26, 0, '内容管理', 'admin/ShowNav/Cms', 'fa-file-text', 1, 1, 11, 1,'admin');
-INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (27, 0, '客服管理', 'admin/ShowNav/Feedback', 'fa-comment', 1, 1, 12, 1,'admin');
-INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (28, 0, '资源管理', 'admin/ShowNav/Resource', 'fa-archive', 1, 1, 13, 1,'admin');
-INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (29, 0, '采集系统', 'admin/ShowNav/Crawler', 'fa-bug', 1, 1, 14, 1,'admin');
+INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (20, 0, '综合面板', '/admin/ShowNav/Index', 'fa-th-large', 1, 1, 1, 1,'admin');
+INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (21, 0, '个人中心', '/admin/ShowNav/Ucenter', 'fa-user', 1, 1, 14, 1,'admin');
+INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (22, 0, '用户管理', '/admin/ShowNav/User', 'fa-users', 1, 1, 16, 1,'admin');
+INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (23, 0, '权限管理', '/admin/ShowNav/Rule', 'fa-key', 1, 1, 17, 1,'admin');
+INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (24, 0, '系统管理', '/admin/ShowNav/System', 'fa-cog', 1, 1, 18, 1,'admin');
+INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (25, 0, '扩展管理', '/admin/ShowNav/Extension', 'fa-th-list', 1, 1, 15, 1,'admin');
+INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (26, 0, '内容管理', '/admin/ShowNav/Cms', 'fa-file-text', 1, 1, 11, 1,'admin');
+INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (27, 0, '客服管理', '/admin/ShowNav/Feedback', 'fa-comment', 1, 1, 12, 1,'admin');
+INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (28, 0, '资源管理', '/admin/ShowNav/Resource', 'fa-archive', 1, 1, 13, 1,'admin');
+INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (29, 0, '采集系统', '/admin/ShowNav/Crawler', 'fa-bug', 1, 1, 14, 1,'admin');
 
 
 /**************************二级菜单******************************/
@@ -1130,47 +1108,47 @@ INSERT INTO `sys_menu`(id,pid,title,name,component,path,icon,type,is_menu,permis
 INSERT INTO `sys_menu`(id,pid,title,name,component,path,icon,type,is_menu,permission,status,sort,belongs_to) VALUES (114, 6, '友链管理', 'LinkIndex', 'system/link/index', 'link/index', '', 1, 0, null, 1, 6, 'api');
 
 /*****admin*******/
-INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (201, 20, '后台主框架', 'admin/Index/index', '', 1, 0, 1, 1,'admin');
-INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (202, 20, '欢迎页面', 'admin/Index/welcome', '', 1, 0, 1, 1,'admin');
-INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (203, 20, '基础面板','admin/Index/dashboard', '', 1, 1, 1, 1,'admin');
-INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (209, 20, '公共功能列表', 'admin/ShowNav/Common', '', 1, 0, 1, 1,'admin');
+INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (201, 20, '后台主框架', '/admin/Index/index', '', 1, 0, 1, 1,'admin');
+INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (202, 20, '欢迎页面', '/admin/Index/welcome', '', 1, 0, 1, 1,'admin');
+INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (203, 20, '基础面板','/admin/Index/dashboard', '', 1, 1, 1, 1,'admin');
+INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (209, 20, '公共功能列表', '/admin/ShowNav/Common', '', 1, 0, 1, 1,'admin');
 
-INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (211, 21, '个人首页', 'admin/Ucenter/index', '', 1, 1, 1, 1,'admin');
-INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (212, 21, '修改资料', 'admin/Ucenter/profile', '', 1, 1, 1, 1,'admin');
-INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (213, 21, '修改密码', 'admin/Ucenter/password', '', 1, 1, 1, 1,'admin');
+INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (211, 21, '个人首页', '/admin/Ucenter/index', '', 1, 1, 1, 1,'admin');
+INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (212, 21, '修改资料', '/admin/Ucenter/profile', '', 1, 1, 1, 1,'admin');
+INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (213, 21, '修改密码', '/admin/Ucenter/password', '', 1, 1, 1, 1,'admin');
 
-INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (221, 22, '用户列表', 'admin/User/index', '', 1, 1, 1, 1,'admin');
-INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (222, 22, '新增用户', 'admin/User/addUser', '', 1, 1, 1, 1,'admin');
-INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (223, 22, '用户统计', 'admin/User/userStat', '', 1, 1, 1, 1,'admin');
+INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (221, 22, '用户列表', '/admin/User/index', '', 1, 1, 1, 1,'admin');
+INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (222, 22, '新增用户', '/admin/User/addUser', '', 1, 1, 1, 1,'admin');
+INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (223, 22, '用户统计', '/admin/User/userStat', '', 1, 1, 1, 1,'admin');
 
-INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (231, 23, '权限规则', 'admin/Rule/index', '', 1, 1, 1, 1,'admin');
-INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (232, 23, '用户分组', 'admin/Rule/group', '', 1, 1, 1, 1,'admin');
-INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (233, 23, '管理员列表', 'admin/Rule/userList', '', 1, 0, 1, 1,'admin');
+INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (231, 23, '权限规则', '/admin/Rule/index', '', 1, 1, 1, 1,'admin');
+INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (232, 23, '用户分组', '/admin/Rule/group', '', 1, 1, 1, 1,'admin');
+INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (233, 23, '管理员列表', '/admin/Rule/userList', '', 1, 0, 1, 1,'admin');
 
-INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (241, 24, '系统设置', 'admin/System/index', '', 1, 1, 1, 1,'admin');
-INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (242, 24, '友情链接', 'admin/System/links', '', 1, 1, 1, 1,'admin');
-INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (243, 24, '清理缓存', 'admin/System/clearCache', '', 1, 1, 1, 1,'admin');
-INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (244, 24, '日志审计', 'admin/System/actionLogs', '', 1, 1, 1, 1,'admin');
-INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (245, 24, '站长工具', 'admin/Webmaster/index', '', 1, 1, 1, 1,'admin');
+INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (241, 24, '系统设置', '/admin/System/index', '', 1, 1, 1, 1,'admin');
+INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (242, 24, '友情链接', '/admin/System/links', '', 1, 1, 1, 1,'admin');
+INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (243, 24, '清理缓存', '/admin/System/clearCache', '', 1, 1, 1, 1,'admin');
+INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (244, 24, '日志审计', '/admin/System/actionLogs', '', 1, 1, 1, 1,'admin');
+INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (245, 24, '站长工具', '/admin/Webmaster/index', '', 1, 1, 1, 1,'admin');
 
-INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (251, 25, '主题管理', 'admin/Theme/index', '', 1, 1, 1, 1,'admin');
-INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (252, 25, '插件管理', 'admin/Addon/index', '', 1, 1, 1, 1,'admin');
+INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (251, 25, '主题管理', '/admin/Theme/index', '', 1, 1, 1, 1,'admin');
+INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (252, 25, '插件管理', '/admin/Addon/index', '', 1, 1, 1, 1,'admin');
 
-INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (261, 26, '文章管理', 'admin/Article/index', '', 1, 1, 1, 1,'admin');
-INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (262, 26, '评论管理', 'admin/Comment/index', '', 1, 1, 1, 1,'admin');
-INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (263, 26, '文章分类', 'admin/Category/index', '', 1, 1, 1, 1,'admin');
-INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (264, 26, '广告管理', 'admin/Ad/index', '', 1, 1, 1, 1,'admin');
+INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (261, 26, '文章管理', '/admin/Article/index', '', 1, 1, 1, 1,'admin');
+INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (262, 26, '评论管理', '/admin/Comment/index', '', 1, 1, 1, 1,'admin');
+INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (263, 26, '文章分类', '/admin/Category/index', '', 1, 1, 1, 1,'admin');
+INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (264, 26, '广告管理', '/admin/Ad/index', '', 1, 1, 1, 1,'admin');
 
-INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (271, 27, '客服消息', 'admin/Feedback/index', '', 1, 1, 1, 1,'admin');
+INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (271, 27, '客服消息', '/admin/Feedback/index', '', 1, 1, 1, 1,'admin');
 
-INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (281, 28, '文档管理', 'admin/Resource/documents', '', 1, 1, 1, 1,'admin');
-INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (282, 28, '图片管理', 'admin/Resource/images', '', 1, 1, 1, 1,'admin');
+INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (281, 28, '文档管理', '/admin/Resource/documents', '', 1, 1, 1, 1,'admin');
+INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (282, 28, '图片管理', '/admin/Resource/images', '', 1, 1, 1, 1,'admin');
 
-INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (291, 29, '采集列表', 'admin/Crawler/index', '', 1, 1, 1, 1,'admin');
-INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (292, 29, '新增采集', 'admin/Crawler/create', '', 1, 0, 1, 1,'admin');
-INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (293, 29, '数据预处理', 'admin/Crawler/preprocess', '', 1, 1, 1, 1,'admin');
-INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (294, 29, '数据入库', 'admin/Crawler/warehouse', '', 1, 1, 1, 1,'admin');
-INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (295, 29, '发布计划', 'admin/Crawler/postPlan', '', 1, 1, 1, 1,'admin');
+INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (291, 29, '采集列表', '/admin/Crawler/index', '', 1, 1, 1, 1,'admin');
+INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (292, 29, '新增采集', '/admin/Crawler/create', '', 1, 0, 1, 1,'admin');
+INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (293, 29, '数据预处理', '/admin/Crawler/preprocess', '', 1, 1, 1, 1,'admin');
+INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (294, 29, '数据入库', '/admin/Crawler/warehouse', '', 1, 1, 1, 1,'admin');
+INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES (295, 29, '发布计划', '/admin/Crawler/postPlan', '', 1, 1, 1, 1,'admin');
 
 INSERT INTO `sys_menu`(pid,title,name,component,path,icon,type,is_menu,permission,status,sort,belongs_to) VALUES 
 (2, '查询字典信息', '', null, '', null, 2, 0, "config:query", 1, 0, 'api'),
@@ -1302,135 +1280,135 @@ INSERT INTO `sys_menu`(pid,title,name,component,path,icon,type,is_menu,permissio
 
 /*****admin*******/
 INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES 
-(201, '面板消息', 'admin/Message/index', '', 1, 0, 1, 1,'admin'),
-(203, '今日数据','admin/Index/today', '', 1, 0, 1, 1,'admin'),
-(203, '本月数据', 'admin/Index/month', '', 1, 0, 1, 1,'admin'),
-(203, '年度数据', 'admin/Index/year', '', 1, 0, 1, 1,'admin'),
-(209, '文件上传', 'admin/File/upload', '', 1, 0, 1, 1,'admin'),
-(209, '软件上传', 'admin/File/uploadSoftware', '', 1, 0, 1, 1,'admin'),
-(209, '移动App上传', 'admin/File/uploadApp', '', 1, 0, 1, 1,'admin'),
-(209, '百度编辑器接口', 'admin/BaiduUeditor/index', '', 1, 0, 1, 1,'admin'),
-(209, '图片上传截取', 'admin/Image/upcrop', '', 1, 0, 1, 1,'admin')
+(201, '面板消息', '/admin/Message/index', '', 1, 0, 1, 1,'admin'),
+(203, '今日数据','/admin/Index/today', '', 1, 0, 1, 1,'admin'),
+(203, '本月数据', '/admin/Index/month', '', 1, 0, 1, 1,'admin'),
+(203, '年度数据', '/admin/Index/year', '', 1, 0, 1, 1,'admin'),
+(209, '文件上传', '/admin/File/upload', '', 1, 0, 1, 1,'admin'),
+(209, '软件上传', '/admin/File/uploadSoftware', '', 1, 0, 1, 1,'admin'),
+(209, '移动App上传', '/admin/File/uploadApp', '', 1, 0, 1, 1,'admin'),
+(209, '百度编辑器接口', '/admin/BaiduUeditor/index', '', 1, 0, 1, 1,'admin'),
+(209, '图片上传截取', '/admin/Image/upcrop', '', 1, 0, 1, 1,'admin')
 ;
 
 INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES 
-(211, '查看文章', 'admin/Ucenter/viewArticle', '', 1, 0, 1, 1,'admin'),
-(211, '编辑文章', 'admin/Ucenter/editArticle', '', 1, 0, 1, 1,'admin'),
-(211, '删除文章', 'admin/Ucenter/deleteArticle', '', 1, 0, 1, 1,'admin'),
-(211, '发布文章', 'admin/Ucenter/postArticle', '', 1, 0, 1, 1,'admin'),
-(211, '上头条', 'admin/Ucenter/upTop', '', 1, 0, 1, 1,'admin'),
-(211, '取消头条', 'admin/Ucenter/deleteTop', '', 1, 0, 1, 1,'admin')
+(211, '查看文章', '/admin/Ucenter/viewArticle', '', 1, 0, 1, 1,'admin'),
+(211, '编辑文章', '/admin/Ucenter/editArticle', '', 1, 0, 1, 1,'admin'),
+(211, '删除文章', '/admin/Ucenter/deleteArticle', '', 1, 0, 1, 1,'admin'),
+(211, '发布文章', '/admin/Ucenter/postArticle', '', 1, 0, 1, 1,'admin'),
+(211, '上头条', '/admin/Ucenter/upTop', '', 1, 0, 1, 1,'admin'),
+(211, '取消头条', '/admin/Ucenter/deleteTop', '', 1, 0, 1, 1,'admin')
 ;
 
 INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES 
-(221, '修改用户', 'admin/User/editUser', '', 1, 0, 1, 1,'admin'),
-(221, '查看用户', 'admin/User/viewUser', '', 1, 0, 1, 1,'admin'),
-(221, '修改密码', 'admin/User/changePwd', '', 1, 0, 1, 1,'admin'),
-(221, '删除用户', 'admin/User/deleteUser', '', 1, 0, 1, 1,'admin'),
-(221, '发送邮件', 'admin/User/sendMail', '', 1, 0, 1, 1,'admin'),
-(221, '激活用户', 'admin/User/active', '', 1, 0, 1, 1,'admin'),
-(221, '冻结用户', 'admin/User/freeze', '', 1, 0, 1, 1,'admin'),
-(221, '延迟会员时间', 'admin/User/vip', '', 1, 0, 1, 1,'admin'),
-(223, '统计报表数据', 'admin/User/echartShow', '', 1, 0, 1, 1,'admin')
+(221, '修改用户', '/admin/User/editUser', '', 1, 0, 1, 1,'admin'),
+(221, '查看用户', '/admin/User/viewUser', '', 1, 0, 1, 1,'admin'),
+(221, '修改密码', '/admin/User/changePwd', '', 1, 0, 1, 1,'admin'),
+(221, '删除用户', '/admin/User/deleteUser', '', 1, 0, 1, 1,'admin'),
+(221, '发送邮件', '/admin/User/sendMail', '', 1, 0, 1, 1,'admin'),
+(221, '激活用户', '/admin/User/active', '', 1, 0, 1, 1,'admin'),
+(221, '冻结用户', '/admin/User/freeze', '', 1, 0, 1, 1,'admin'),
+(221, '延迟会员时间', '/admin/User/vip', '', 1, 0, 1, 1,'admin'),
+(223, '统计报表数据', '/admin/User/echartShow', '', 1, 0, 1, 1,'admin')
 ;
 
 INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES 
-(231, '新增权限规则', 'admin/Rule/add', '', 1, 0, 1, 1,'admin'),
-(231, '编辑权限规则', 'admin/Rule/edit', '', 1, 0, 1, 1,'admin'),
-(231, '删除权限规则', 'admin/Rule/delete', '', 1, 0, 1, 1,'admin'),
-(231, '排序权限规则', 'admin/Rule/order', '', 1, 0, 1, 1,'admin'),
-(231, '设置菜单值', 'admin/Rule/setMenu', '', 1, 0, 1, 1,'admin'),
-(232, '新增分组', 'admin/Rule/addGroup', '', 1, 0, 1, 1,'admin'),
-(232, '编辑分组', 'admin/Rule/editGroup', '', 1, 0, 1, 1,'admin'),
-(232, '删除分组', 'admin/Rule/deleteGroup', '', 1, 0, 1, 1,'admin'),
-(232, '分配权限', 'admin/Rule/ruleGroup', '', 1, 0, 1, 1,'admin'),
-(232, '分组成员', 'admin/Rule/checkUser', '', 1, 0, 1, 1,'admin'),
-(232, '添加成员', 'admin/Rule/addUserToGroup', '', 1, 0, 1, 1,'admin'),
-(232, '移除成员', 'admin/Rule/deleteUserFromGroup', '', 1, 0, 1, 1,'admin'),
-(233, '添加管理员', 'admin/Rule/addAdmin', '', 1, 0, 1, 1,'admin'),
-(233, '编辑管理员', 'admin/Rule/editAdmin', '', 1, 0, 1, 1,'admin')
+(231, '新增权限规则', '/admin/Rule/add', '', 1, 0, 1, 1,'admin'),
+(231, '编辑权限规则', '/admin/Rule/edit', '', 1, 0, 1, 1,'admin'),
+(231, '删除权限规则', '/admin/Rule/delete', '', 1, 0, 1, 1,'admin'),
+(231, '排序权限规则', '/admin/Rule/order', '', 1, 0, 1, 1,'admin'),
+(231, '设置菜单值', '/admin/Rule/setMenu', '', 1, 0, 1, 1,'admin'),
+(232, '新增分组', '/admin/Rule/addGroup', '', 1, 0, 1, 1,'admin'),
+(232, '编辑分组', '/admin/Rule/editGroup', '', 1, 0, 1, 1,'admin'),
+(232, '删除分组', '/admin/Rule/deleteGroup', '', 1, 0, 1, 1,'admin'),
+(232, '分配权限', '/admin/Rule/ruleGroup', '', 1, 0, 1, 1,'admin'),
+(232, '分组成员', '/admin/Rule/checkUser', '', 1, 0, 1, 1,'admin'),
+(232, '添加成员', '/admin/Rule/addUserToGroup', '', 1, 0, 1, 1,'admin'),
+(232, '移除成员', '/admin/Rule/deleteUserFromGroup', '', 1, 0, 1, 1,'admin'),
+(233, '添加管理员', '/admin/Rule/addAdmin', '', 1, 0, 1, 1,'admin'),
+(233, '编辑管理员', '/admin/Rule/editAdmin', '', 1, 0, 1, 1,'admin')
 ;
 
 INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES 
-(241, '基本设置', 'admin/System/index', '', 1, 0, 1, 1,'admin'),
-(241, '联系信息', 'admin/System/contact', '', 1, 0, 1, 1,'admin'),
-(241, '通知邮箱', 'admin/System/email', '', 1, 0, 1, 1,'admin'),
-(241, 'SEO设置', 'admin/System/seo', '', 1, 0, 1, 1,'admin'),
-(242, '添加友链', 'admin/System/addLinks', '', 1, 0, 1, 1,'admin'),
-(242, '修改友链', 'admin/System/editLinks', '', 1, 0, 1, 1,'admin'),
-(242, '排序友链', 'admin/System/orderLinks', '', 1, 0, 1, 1,'admin'),
-(242, '删除友链', 'admin/System/deleteLinks', '', 1, 0, 1, 1,'admin')
+(241, '基本设置', '/admin/System/index', '', 1, 0, 1, 1,'admin'),
+(241, '联系信息', '/admin/System/contact', '', 1, 0, 1, 1,'admin'),
+(241, '通知邮箱', '/admin/System/email', '', 1, 0, 1, 1,'admin'),
+(241, 'SEO设置', '/admin/System/seo', '', 1, 0, 1, 1,'admin'),
+(242, '添加友链', '/admin/System/addLinks', '', 1, 0, 1, 1,'admin'),
+(242, '修改友链', '/admin/System/editLinks', '', 1, 0, 1, 1,'admin'),
+(242, '排序友链', '/admin/System/orderLinks', '', 1, 0, 1, 1,'admin'),
+(242, '删除友链', '/admin/System/deleteLinks', '', 1, 0, 1, 1,'admin')
 ;
 
 INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES 
-(245, '站长工具', 'admin/Webmaster/index', '', 1, 0, 1, 1,'admin'),
-(245, '百度站长', 'admin/Webmaster/baidu', '', 1, 0, 1, 1,'admin'),
-(245, '生成站点地图', 'admin/Webmaster/sitemap', '', 1, 0, 1, 1,'admin')
+(245, '站长工具', '/admin/Webmaster/index', '', 1, 0, 1, 1,'admin'),
+(245, '百度站长', '/admin/Webmaster/baidu', '', 1, 0, 1, 1,'admin'),
+(245, '生成站点地图', '/admin/Webmaster/sitemap', '', 1, 0, 1, 1,'admin')
 ;
 
 INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES 
-(251, '查看主题', 'admin/Theme/viewTheme', '', 1, 0, 1, 1,'admin'),
-(251, '主题演示', 'admin/Theme/demo', '', 1, 0, 1, 1,'admin'),
-(251, '下载主题', 'admin/Theme/download', '', 1, 0, 1, 1,'admin'),
-(251, '上传主题', 'admin/Theme/upload', '', 1, 0, 1, 1,'admin'),
-(251, '更新主题', 'admin/Theme/update', '', 1, 0, 1, 1,'admin'),
-(251, '切换主题', 'admin/Theme/setCurrentTheme', '', 1, 0, 1, 1,'admin'),
-(252, '查看插件', 'admin/Theme/viewTheme', '', 1, 0, 1, 1,'admin'),
-(252, '插件演示', 'admin/Theme/demo', '', 1, 0, 1, 1,'admin'),
-(252, '下载插件', 'admin/Theme/download', '', 1, 0, 1, 1,'admin'),
-(252, '上传插件', 'admin/Theme/upload', '', 1, 0, 1, 1,'admin'),
-(252, '更新插件', 'admin/Theme/upload', '', 1, 0, 1, 1,'admin')
+(251, '查看主题', '/admin/Theme/viewTheme', '', 1, 0, 1, 1,'admin'),
+(251, '主题演示', '/admin/Theme/demo', '', 1, 0, 1, 1,'admin'),
+(251, '下载主题', '/admin/Theme/download', '', 1, 0, 1, 1,'admin'),
+(251, '上传主题', '/admin/Theme/upload', '', 1, 0, 1, 1,'admin'),
+(251, '更新主题', '/admin/Theme/update', '', 1, 0, 1, 1,'admin'),
+(251, '切换主题', '/admin/Theme/setCurrentTheme', '', 1, 0, 1, 1,'admin'),
+(252, '查看插件', '/admin/Theme/viewTheme', '', 1, 0, 1, 1,'admin'),
+(252, '插件演示', '/admin/Theme/demo', '', 1, 0, 1, 1,'admin'),
+(252, '下载插件', '/admin/Theme/download', '', 1, 0, 1, 1,'admin'),
+(252, '上传插件', '/admin/Theme/upload', '', 1, 0, 1, 1,'admin'),
+(252, '更新插件', '/admin/Theme/upload', '', 1, 0, 1, 1,'admin')
 ;
 
 INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES 
-(261, '查看文章', 'admin/Article/viewArticle', '', 1, 0, 1, 1,'admin'),
-(261, '新增文章', 'admin/Article/addArticle', '', 1, 0, 1, 1,'admin'),
-(261, '编辑文章', 'admin/Article/editArticle', '', 1, 0, 1, 1,'admin'),
-(261, '删除文章', 'admin/Article/deleteArticle', '', 1, 0, 1, 1,'admin'),
-(261, '置顶', 'admin/Article/setTop', '', 1, 0, 1, 1,'admin'),
-(261, '取消置顶', 'admin/Article/unsetTop', '', 1, 0, 1, 1,'admin')
+(261, '查看文章', '/admin/Article/viewArticle', '', 1, 0, 1, 1,'admin'),
+(261, '新增文章', '/admin/Article/addArticle', '', 1, 0, 1, 1,'admin'),
+(261, '编辑文章', '/admin/Article/editArticle', '', 1, 0, 1, 1,'admin'),
+(261, '删除文章', '/admin/Article/deleteArticle', '', 1, 0, 1, 1,'admin'),
+(261, '置顶', '/admin/Article/setTop', '', 1, 0, 1, 1,'admin'),
+(261, '取消置顶', '/admin/Article/unsetTop', '', 1, 0, 1, 1,'admin')
 ;
 
 INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES 
-(262, '审核评论', 'admin/Comment/auditComment', '', 1, 0, 1, 1,'admin'),
-(262, '回发评论', 'admin/Comment/postComment', '', 1, 0, 1, 1,'admin'),
-(262, '删除评论', 'admin/Comment/deleteComment', '', 1, 0, 1, 1,'admin'),
-(262, '查看评论', 'admin/Comment/viewComments', '', 1, 0, 1, 1,'admin'),
-(263, '新增分类', 'admin/Category/addCategory', '', 1, 0, 1, 1,'admin'),
-(263, '编辑分类', 'admin/Category/editCategory', '', 1, 0, 1, 1,'admin'),
-(263, '排序分类', 'admin/Category/orderCategory', '', 1, 0, 1, 1,'admin'),
-(263, '删除分类', 'admin/Category/deleteCategory', '', 1, 0, 1, 1,'admin'),
-(264, '新增广告', 'admin/Ad/addAd', '', 1, 0, 1, 1,'admin'),
-(264, '编辑广告', 'admin/Ad/editAd', '', 1, 0, 1, 1,'admin'),
-(264, '广告排序', 'admin/Ad/orderAd', '', 1, 0, 1, 1,'admin'),
-(264, '删除广告', 'admin/Ad/deleteAd', '', 1, 0, 1, 1,'admin')
+(262, '审核评论', '/admin/Comment/auditComment', '', 1, 0, 1, 1,'admin'),
+(262, '回发评论', '/admin/Comment/postComment', '', 1, 0, 1, 1,'admin'),
+(262, '删除评论', '/admin/Comment/deleteComment', '', 1, 0, 1, 1,'admin'),
+(262, '查看评论', '/admin/Comment/viewComments', '', 1, 0, 1, 1,'admin'),
+(263, '新增分类', '/admin/Category/addCategory', '', 1, 0, 1, 1,'admin'),
+(263, '编辑分类', '/admin/Category/editCategory', '', 1, 0, 1, 1,'admin'),
+(263, '排序分类', '/admin/Category/orderCategory', '', 1, 0, 1, 1,'admin'),
+(263, '删除分类', '/admin/Category/deleteCategory', '', 1, 0, 1, 1,'admin'),
+(264, '新增广告', '/admin/Ad/addAd', '', 1, 0, 1, 1,'admin'),
+(264, '编辑广告', '/admin/Ad/editAd', '', 1, 0, 1, 1,'admin'),
+(264, '广告排序', '/admin/Ad/orderAd', '', 1, 0, 1, 1,'admin'),
+(264, '删除广告', '/admin/Ad/deleteAd', '', 1, 0, 1, 1,'admin')
 ;
 
 
 INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES 
-(271, '消息列表', 'admin/Feedback/chat', '', 1, 0, 1, 1,'admin'),
-(271, '消息回复', 'admin/Feedback/reply', '', 1, 0, 1, 1,'admin')
+(271, '消息列表', '/admin/Feedback/chat', '', 1, 0, 1, 1,'admin'),
+(271, '消息回复', '/admin/Feedback/reply', '', 1, 0, 1, 1,'admin')
 ;
 
 INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES 
-(281, '上传文档', 'admin/Resource/uploadDocument', '', 1, 0, 1, 1,'admin'),
-(281, '删除文档', 'admin/Resource/deleteDocument', '', 1, 0, 1, 1,'admin'),
-(282, '上传图片', 'admin/Resource/uploadImage', '', 1, 0, 1, 1,'admin'),
-(282, '删除图片', 'admin/Resource/deleteImage', '', 1, 0, 1, 1,'admin')
+(281, '上传文档', '/admin/Resource/uploadDocument', '', 1, 0, 1, 1,'admin'),
+(281, '删除文档', '/admin/Resource/deleteDocument', '', 1, 0, 1, 1,'admin'),
+(282, '上传图片', '/admin/Resource/uploadImage', '', 1, 0, 1, 1,'admin'),
+(282, '删除图片', '/admin/Resource/deleteImage', '', 1, 0, 1, 1,'admin')
 ;
 
 INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES 
-(291, '编辑规则', 'admin/Crawler/edit', '', 1, 0, 1, 1,'admin'),
-(291, '采集操作', 'admin/Crawler/startCrawl', '', 1, 0, 1, 1,'admin'),
-(291, '删除规则', 'admin/Crawler/deleteCrawler', '', 1, 0, 1, 1,'admin'),
-(291, '克隆规则', 'admin/Crawler/cloneCrawler', '', 1, 0, 1, 1,'admin'),
-(292, '采集测试', 'admin/Crawler/crawlTest', '', 1, 0, 1, 1,'admin'),
-(293, '数据清洗', 'admin/Crawler/cleanData', '', 1, 0, 1, 1,'admin')
+(291, '编辑规则', '/admin/Crawler/edit', '', 1, 0, 1, 1,'admin'),
+(291, '采集操作', '/admin/Crawler/startCrawl', '', 1, 0, 1, 1,'admin'),
+(291, '删除规则', '/admin/Crawler/deleteCrawler', '', 1, 0, 1, 1,'admin'),
+(291, '克隆规则', '/admin/Crawler/cloneCrawler', '', 1, 0, 1, 1,'admin'),
+(292, '采集测试', '/admin/Crawler/crawlTest', '', 1, 0, 1, 1,'admin'),
+(293, '数据清洗', '/admin/Crawler/cleanData', '', 1, 0, 1, 1,'admin')
 ;
 
 # 测试menu
 INSERT INTO `sys_menu`(pid,title,name,component,path,icon,type,is_menu,permission,status,sort,belongs_to) VALUES 
-(0, '官网链接', '', null, 'https://www.beyongx.com', null, 0, 1, "", 1, 999, 'api')
+(0, '官网链接', '', null, 'https://www.beyong.run', null, 0, 1, "", 1, 999, 'api')
 ;
 INSERT INTO `sys_menu`(id,pid,title,name,component,path,icon,type,is_menu,permission,status,sort,belongs_to) VALUES 
 (1000, 0, '二级菜单', 'twoMenu', 'Layout', 'twoMenu', 'nested', 1, 1, "", 1, 999, 'api')
@@ -1442,13 +1420,13 @@ INSERT INTO `sys_menu`(id,pid,title,name,component,path,icon,type,is_menu,permis
 ;
 
 INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES
-(2617, 261, '发布文章', 'admin/Article/postArticle', '', 1, 0, 1, 1,'admin'),
-(26171,2617, '初审', 'admin/Article/auditFirst', '', 1, 0, 1, 1,'admin'),
-(26172,2617, '终审', 'admin/Article/auditSecond', '', 1, 0, 1, 1,'admin'),
-(26173,2617, '定时发布', 'admin/Article/setTimingPost', '', 1, 0, 1, 1,'admin'),
-(26174,2617, '文章访问统计', 'admin/Article/articleStat', '', 1, 0, 1, 1,'admin'),
-(26175,2617, '文章访问量统计图', 'admin/Article/echartShow', '', 1, 0, 1, 1,'admin'),
-(26176,2617, '批量修改分类', 'admin/Article/batchCategory', '', 1, 0, 1, 1,'admin')
+(2617, 261, '发布文章', '/admin/Article/postArticle', '', 1, 0, 1, 1,'admin'),
+(26171,2617, '初审', '/admin/Article/auditFirst', '', 1, 0, 1, 1,'admin'),
+(26172,2617, '终审', '/admin/Article/auditSecond', '', 1, 0, 1, 1,'admin'),
+(26173,2617, '定时发布', '/admin/Article/setTimingPost', '', 1, 0, 1, 1,'admin'),
+(26174,2617, '文章访问统计', '/admin/Article/articleStat', '', 1, 0, 1, 1,'admin'),
+(26175,2617, '文章访问量统计图', '/admin/Article/echartShow', '', 1, 0, 1, 1,'admin'),
+(26176,2617, '批量修改分类', '/admin/Article/batchCategory', '', 1, 0, 1, 1,'admin')
 ;
 
 truncate `sys_role_menu`;
@@ -1456,20 +1434,6 @@ truncate `sys_role_menu`;
 
 INSERT INTO `sys_role_menu`(role_id,menu_id) SELECT 1, id FROM `sys_menu`;
 
-
-/* ================================================================================================*/
-/* =========================================数据初始脚本：插件及钩子=============================*/
-truncate sys_addons;
-truncate sys_hooks;
-
-#配置插件
-INSERT INTO `sys_addons`(id,name,title,description,status,config,author,version,create_time,has_adminlist) VALUES (1, 'test', 'test插件', 'test插件简介', 1, NULL, 'test', '0.1', '2018-01-01 00:00:00', 0);
-INSERT INTO `sys_addons`(id,name,title,description,status,config,author,version,create_time,has_adminlist) VALUES (2, 'enhance', '系统增强插件', 'Cms系统增强插件,用于前后部分定制', 1, NULL, 'beyongx', '0.1', '2018-06-12 00:00:00', 0);
-
-#配置插件中可使用的钩子
-INSERT INTO `sys_hooks`(id,name,description,type,status,addons,update_time,create_time) VALUES (21, 'demo', 'demo钩子', 1, 1, 'test', '2018-01-01 00:00:00', '2018-01-01 00:00:00');
-INSERT INTO `sys_hooks`(id,name,description,type,status,addons,update_time,create_time) VALUES (22, 'userTimeline', '用户动态列表', 1, 1, 'enhance', '2018-06-12 00:00:00', '2018-06-12 00:00:00');
-INSERT INTO `sys_hooks`(id,name,description,type,status,addons,update_time,create_time) VALUES (23, 'userBalance', '用户帐户信息', 1, 1, 'enhance', '2018-06-12 00:00:00', '2018-06-12 00:00:00');
 
 
 /* ================================================================================================*/
