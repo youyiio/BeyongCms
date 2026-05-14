@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace app\common\controller;
 
 use think\App;
-
+use think\facade\Config;
 use think\exception\HttpResponseException;
 use think\exception\ValidateException;
 use think\Validate;
@@ -145,7 +145,7 @@ abstract class BaseController
         }
 
         // 普通请求
-        return View::fetch($url, $result);
+        return View::fetch(Config::get('app.dispatch_success_tmpl'), $result);
     }
 
     protected function error($msg = '', $url = null, $data = '', int $wait = 3, array $header = [])
@@ -171,7 +171,7 @@ abstract class BaseController
         }
 
         // 普通请求
-        return View::fetch($url, $result);
+        return View::fetch(Config::get('app.dispatch_error_tmpl'), $result);
     }
 
     /**
@@ -196,7 +196,7 @@ abstract class BaseController
         // AJAX 请求
         if ($type == "json") {
             $header['Content-Type'] = 'application/json; charset=utf-8';
-            return Response::create($result, 'json', 200, $header);
+            return Response::create($result, 'json', 200)->header($header);
         }
 
         // 普通请求

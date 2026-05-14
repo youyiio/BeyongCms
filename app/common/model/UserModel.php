@@ -204,7 +204,7 @@ class UserModel extends BaseModel
 
         $data['id'] = $userId;
         $data['password'] = $newPassword;
-        $this->isUpdate(true)->save($data);
+        $this->update($data, ['id' => $userId]);
 
         return $this->find($userId);
     }
@@ -258,7 +258,7 @@ class UserModel extends BaseModel
             return false;
         }
 
-        $res = $this->isUpdate(true)->save($data, ['id' => $uid]);
+        $res = $this->save($data, ['id' => $uid]);
         if ($res === false) {
             $this->error = '修改失败';
             return false;

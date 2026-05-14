@@ -86,7 +86,7 @@ class ActionLogLogic extends BaseLogic
         ];
 
         $ActionLogModel = new ActionLogModel();
-        $result = $ActionLogModel->isUpdate(false)->save($data);
+        $result = $ActionLogModel->save($data);
 
         return $result;
     }

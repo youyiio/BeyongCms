@@ -116,10 +116,10 @@ class Comment extends Base
                 $msgContent = $author . '评论了文章 “' . $article['title'] . '”';
                 send_message(0, 1, $msgTitle, $msgContent, MessageModel::TYPE_COMMENT);
 
-                $this->success('评论添加成功', url('cms/Article/viewArticle', ['aid' => $aid]));
+                $this->success('评论添加成功', url('Article/viewArticle', ['aid' => $aid])->build());
             }
         }
 
-        return $this->fetch('create');
+        return $this->fetch('comment/create');
     }
 }

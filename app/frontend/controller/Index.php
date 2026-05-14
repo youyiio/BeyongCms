@@ -65,7 +65,7 @@ class Index extends Base
      * @param $name
      * @return mixed|\think\response\View
      */
-    public function __extPage($name)
+    public function __extPage($name="")
     {
         //动态方法调用
         if (method_exists($this, $name)) {

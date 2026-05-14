@@ -53,20 +53,20 @@ class Sitemap extends Base
 
 
         //生成index 首页
-        $sitemap->addItem(url('frontend/Index/index', [], false, get_config('domain_name')), 1, "hourly", date_time());
-        $sitemap->addItem(url('frontend/Index/about', [], false, get_config('domain_name')), 1, "monthly", date_time());
-        $sitemap->addItem(url('frontend/Index/contact', [], false, get_config('domain_name')), 1, "monthly", date_time());
-        $sitemap->addItem(url('frontend/Index/about', [], false, get_config('domain_name')), 1, "monthly", date_time());
+        $sitemap->addItem(url('Index/index', [], false, get_config('domain_name'))->build(), 1, "hourly", date_time());
+        $sitemap->addItem(url('Index/about', [], false, get_config('domain_name'))->build(), 1, "monthly", date_time());
+        $sitemap->addItem(url('Index/contact', [], false, get_config('domain_name'))->build(), 1, "monthly", date_time());
+        $sitemap->addItem(url('Index/about', [], false, get_config('domain_name'))->build(), 1, "monthly", date_time());
 
         //生成栏目item
         $CategoryModel = new CategoryModel();
         $resultSet = $CategoryModel->where(['status' => CategoryModel::STATUS_ONLINE])->order('sort asc')->select();
         foreach ($resultSet as $category) {
             $priority = LibSitemap::$PRIORITY[1];
-            $loc = url('cms/Article/articleList', ['cid' => $category->id], false, get_config('domain_name'));
+            $loc = url('Article/articleList', ['cid' => $category->id], false, get_config('domain_name'))->build();
             $sitemap->addItem($loc, $priority, "daily", date_time());
 
-            $loc = url('cms/Article/articleList', ['cname' => $category->name], false, get_config('domain_name'));
+            $loc = url('Article/articleList', ['cname' => $category->name], false, get_config('domain_name'))->build();
             $sitemap->addItem($loc, $priority, "daily", date_time());
         }
 
@@ -78,7 +78,7 @@ class Sitemap extends Base
         $resultSet = $ArticleModel->where($where)->order('sort desc, id desc')->select();
         foreach ($resultSet as $article) {
             $priority = LibSitemap::$PRIORITY[2];
-            $loc = url('cms/Article/viewArticle', ['aid' => $article->id], false, get_config('domain_name'));
+            $loc = url('Article/viewArticle', ['aid' => $article->id], false, get_config('domain_name'))->build();
             $sitemap->addItem($loc, $priority, "weekly", $article->update_time);
         }
 
@@ -91,7 +91,7 @@ class Sitemap extends Base
         $sitemap->endSitemap();
 
         //生成sitemap index;
-        $sitemapLoc = url('cms/Sitemap/xml', [], false, get_config('domain_name'));
+        $sitemapLoc = url('Sitemap/xml', [], false, get_config('domain_name'))->build();
         $sitemapLoc = substr($sitemapLoc, 0, strlen($sitemapLoc) - 4);
         $sitemap->createSitemapIndex($sitemapLoc);
 

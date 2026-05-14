@@ -182,7 +182,7 @@ class Article extends Base
         $this->assign('comments', $list);
         $this->assign('page', $page);
 
-        return $this->fetch('viewArticle');
+        return $this->fetch('article/viewArticle');
     }
 
     /**

@@ -20,13 +20,14 @@ Route::pattern([
 
 /*****************frontend 通用路由 begin*******************/
 //首页
-Route::get('index', 'Index/index');
+Route::get('/', 'Index/index');
+//Route::get('index', 'Index/index');
 Route::get('business', 'Index/business');
 Route::get('team', 'Index/team');
 Route::get('partner', 'Index/partner');
 Route::get('about', 'Index/about');
 Route::get('contact', 'Index/contact');
-Route::get('index/:name', 'Index/__extPage'); //可动态扩充页面
+Route::get('Index/:name', 'Index/__extPage')->pattern(['name' => '[\w|\-]+']);; //可动态扩充页面
 
 //用户操作
 Route::rule('sign/index', 'Sign/index', 'get,post');

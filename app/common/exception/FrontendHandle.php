@@ -100,7 +100,7 @@ class FrontendHandle extends Handle
         //获取当前的response 输出类型
         $type = request()->type();
         if ('html' == strtolower($type)) {
-            $result = View::fetch(Config::get('dispatch_error_tmpl'), $result);
+            $result = View::fetch(Config::get('frontend.dispatch_error_tmpl'), $result);
         }
 
         $response = Response::create($result, $type, 200)->header($header);

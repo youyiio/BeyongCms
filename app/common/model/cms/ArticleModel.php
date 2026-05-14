@@ -200,7 +200,7 @@ class ArticleModel extends BaseModel
             $data['post_time'] = date_time();
         }
 
-        $res = $this->isUpdate(false)->save($data);
+        $res = $this->save($data);
 
         if (!$res) {
             return false;
@@ -271,10 +271,9 @@ class ArticleModel extends BaseModel
         $check = $validate->scene('edit')->check($data);
         if ($check !== true) {
             throw new ModelException(0, $validate->getError());
-            return false;
         }
 
-        $res = $this->isUpdate(true)->save($data);
+        $res = $this->update($data);
 
         // 删除中间表数据
         if (!empty($data['category_ids'])) {
