@@ -62,7 +62,7 @@ class Index
             return false;
         }
 
-        $url = url('article/' . $aid, [], true, get_config('domain_name')); //job中使用url，获取异常
+        $url = url('article/' . $aid, [], true, get_config('domain_name'))->build(); //job中使用url，获取异常
 
         $indexed = Webmaster::baiduCheckIndex($url);
         if ($indexed) {

@@ -76,7 +76,7 @@ class Ucenter extends Base
                 return $this->error("出错了!");
             }
 
-            return $this->success('成功修改密码', url('admin/Sign/logout'));
+            return $this->success('成功修改密码', url($this->appPath . 'Sign/logout')->build());
         }
 
         return $this->fetch('password');

@@ -36,7 +36,7 @@
     "jaeger/querylist": "^4.2",
     "topthink/think-queue": "^3.0",
     "phpoffice/phpspreadsheet": "^1.0",
-    "firebase/php-jwt": "^5.4",
+    "firebase/php-jwt": "^6.0",
     "youyiio/beyong-sms": "^0.9.1",
     "youyiio/beyong-commons": "^1.0",
     "youyiio/php-echarts": "^0.2.0",
@@ -59,6 +59,9 @@
     "preferred-install": "dist",
     "allow-plugins": {
       "topthink/think-installer": true
+    },
+    "audit": {
+      "block-insecure": false
     }
   },
   "scripts": {

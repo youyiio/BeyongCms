@@ -49,7 +49,7 @@ class Rule extends Base
         $MenuModel = new MenuModel();
         $result = $MenuModel->save($data);
         if ($result) {
-            return $this->success('添加成功', url('Rule/index'));
+            return $this->success('添加成功', url($this->appPath . 'Rule/index')->build());
         } else {
             return $this->error('添加失败');
         }
@@ -73,7 +73,7 @@ class Rule extends Base
         
         $result = $MenuModel->where($map)->update($data);
         if ($result) {
-            return $this->success('修改成功', url('Rule/index'));
+            return $this->success('修改成功', url($this->appPath . 'Rule/index')->build());
         } else {
             return $this->error('修改失败');
         }
@@ -91,7 +91,7 @@ class Rule extends Base
         $MenuModel = new MenuModel();
         $result = $MenuModel->deleteData($map);
         if ($result) {
-            return $this->success('删除成功', url('Rule/index'));
+            return $this->success('删除成功', url($this->appPath . 'Rule/index')->build());
         } else {
             return $this->error('请先删除子权限');
         }
@@ -112,9 +112,9 @@ class Rule extends Base
             ];
         }
         $MenuModel = new MenuModel();
-        $result = $MenuModel->isUpdate(true)->saveAll($arr);
+        $result = $MenuModel->saveAll($arr);
         if ($result) {
-            return $this->success('排序成功', url('Rule/index'));
+            return $this->success('排序成功', url($this->appPath . 'Rule/index')->build());
         } else {
             return $this->error('排序失败');
         }
@@ -130,9 +130,9 @@ class Rule extends Base
         $isMenu = $isMenu === 'true' ? true : false;
 
         $MenuModel = new MenuModel();
-        $result = $MenuModel->isUpdate(true)->save(['id' => $id, 'is_menu' => $isMenu]);
+        $result = $MenuModel->save(['id' => $id, 'is_menu' => $isMenu]);
         if ($result) {
-            return $this->success('修改成功', url('Rule/index'));
+            return $this->success('修改成功', url($this->appPath . 'Rule/index')->build());
         } else {
             return $this->error('修改失败');
         }
@@ -160,7 +160,7 @@ class Rule extends Base
         $RoleModel = new RoleModel();
         $result = $RoleModel->save($data);
         if ($result) {
-            return $this->success('添加成功', url('Rule/group'));
+            return $this->success('添加成功', url($this->appPath . 'Rule/group')->build());
         } else {
             return $this->error('添加失败');
         }
@@ -184,7 +184,7 @@ class Rule extends Base
 
         $result = $RoleModel->where($map)->update($data);
         if ($result) {
-            return $this->success('修改成功', url('Rule/group'));
+            return $this->success('修改成功', url($this->appPath . 'Rule/group')->build());
         } else {
             return $this->error('修改失败');
         }
@@ -201,7 +201,7 @@ class Rule extends Base
         $RoleModel = new RoleModel();
         $result = $RoleModel->deleteData($map);
         if ($result !== false) {
-            return $this->success('删除成功', url('Rule/group'));
+            return $this->success('删除成功', url($this->appPath . 'Rule/group')->build());
         } else {
             return $this->error('删除失败');
         }
@@ -235,7 +235,7 @@ class Rule extends Base
                 foreach ($groupUserIds as $uid) {
                     Cache::tag('menu')->rm($uid);
                 }
-                return $this->success('操作成功', url('Rule/group'));
+                return $this->success('操作成功', url($this->appPath . 'Rule/group')->build());
             } else {
                 return $this->error('操作失败');
             }
@@ -295,7 +295,8 @@ class Rule extends Base
                     $userList[$k]['isInGroup'] = 1;
                 } else {
                     $userList[$k]['isInGroup'] = 0;
-                    $userList[$k]['setUrl'] = url('Rule/addUserToGroup', ['uid'=>$user['id'], 'role_id'=>$groupId, 'username'=>$user['mobile']]);
+                    $urlParams = ['uid'=>$user['id'], 'role_id'=>$groupId, 'username'=>$user['mobile']];
+                    $userList[$k]['setUrl'] = url($this->appPath . 'Rule/addUserToGroup', $urlParams)->build();
                 }
             }
 
@@ -359,7 +360,7 @@ class Rule extends Base
         $numRows = $UserRoleModel->where($where)->delete();
         if ($numRows >= 1) {
             Cache::tag('menu')->rm($data['uid']);
-            return $this->success('操作成功', url('Rule/userList'));
+            return $this->success('操作成功', url($this->appPath .  'Rule/userList')->build());
         } else {
             return $this->error('操作失败');
         }
@@ -406,7 +407,7 @@ class Rule extends Base
                 }
                 Cache::tag('menu')->rm($newUserId);
                 // 操作成功
-                return $this->success('添加成功', url('Rule/userList'));
+                return $this->success('添加成功', url($this->appPath . 'Rule/userList')->build());
             } else {
                 // 操作失败
                 return $this->error($userModel->getError());
@@ -456,11 +457,11 @@ class Rule extends Base
             $result = $userModel->editUser($uid, $data);
             if ($result) {
                 // 操作成功
-                return $this->success('编辑成功', url('Rule/editAdmin', ['id' => $uid]));
+                return $this->success('编辑成功', url($this->appPath . 'Rule/editAdmin', ['id' => $uid])->build());
             } else {
                 $errorMsg = $userModel->getError();
                 if (empty($errorMsg)) {
-                    return $this->success('编辑成功', url('Rule/editAdmin', ['id' => $uid]));
+                    return $this->success('编辑成功', url($this->appPath . 'Rule/editAdmin', ['id' => $uid])->build());
                 } else {
                     // 操作失败
                     return $this->error($errorMsg);

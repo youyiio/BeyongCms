@@ -16,17 +16,20 @@ use think\exception\HttpResponseException;
  */
 class Base extends BaseController
 {
+    protected $appPath = "";
     protected $uid;
 
     public function initialize()
     {
+        $this->appPath = '/' . app('http')->getName() . '/'; 
+
         //判断登陆session('uid')
         $uid = session('uid');
         if (empty($uid)) {
             if (request()->isAjax()) {
-                $this->error('请重新登陆', '/' . app('http')->getName() . '/Sign/login')->send();
+                $this->error('请重新登陆', $this->appPath . 'Sign/login')->send();
             } else {
-                $url = url('/' . app('http')->getName() . '/Sign/index', ['redirect' => urlencode($this->url())])->build();
+                $url = url($this->appPath . 'Sign/index', ['redirect' => urlencode($this->url())])->build();
                 $this->redirect($url)->send();
             }
             exit;

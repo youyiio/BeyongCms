@@ -51,8 +51,7 @@ class Webmaster
             return;
         }
 
-        //$url = url('cms/Article/viewArticle', ['aid' => $aid], true, get_config('domain_name')); //job中使用url，获取异常
-        //$url = get_config('domain_name') . url('cms/Article/viewArticle', ['aid' => $id], true, false); //hack
+        //$url = url('cms/Article/viewArticle', ['aid' => $aid], true, get_config('domain_name'))->build(); //job中使用url，获取异常
         $url = $data['url'];
         $indexed = self::baiduCheckIndex($url);
         if ($indexed) {

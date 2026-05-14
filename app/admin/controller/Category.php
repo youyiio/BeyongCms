@@ -37,8 +37,6 @@ class Category extends Base
         $CategoryModel = new CategoryModel();
         $list = $CategoryModel->getTreeData('tree','sort,id', 'title', 'id', 'pid');
         $this->assign('list', $list);
-
-        $this->assign("CategoryModel", $CategoryModel);
         
         return $this->fetch('category/index');
     }
@@ -51,13 +49,13 @@ class Category extends Base
             $data = input('post.');
             $CategoryModel = new CategoryModel();
             if (empty($data['id'])) {
-                $res = $CategoryModel->isUpdate(false)->save($data);
+                $res = $CategoryModel->save($data);
             } else {
-                $res = $CategoryModel->isUpdate(true)->save($data);
+                $res = $CategoryModel->update($data, ['id' => $data['id']]);
             }
 
             if ($res) {
-                return $this->success('操作成功', url('category/index'));
+                return $this->success('操作成功', url($this->appPath . 'Category/index')->build());
             } else {
                 return $this->error('操作失败');
             }
@@ -86,9 +84,9 @@ class Category extends Base
             ];
         }
         $CategoryModel = new CategoryModel();
-        $result = $CategoryModel->isUpdate(true)->saveAll($arr);
+        $result = $CategoryModel->saveAll($arr);
         if ($result) {
-            return $this->success('排序成功', url('category/index'));
+            return $this->success('排序成功', url($this->appPath . 'category/index')->build());
         } else {
             return $this->error('排序失败');
         }

@@ -116,7 +116,7 @@ class Article extends Base
             $res = $articleModel->add($data);
 
             if ($res) {
-                return $this->success('新增成功', url('Article/index'));
+                return $this->success('新增成功', url($this->appPath . 'Article/index')->build());
             } else {
                 return $this->error('新增失败:' . $articleModel->getError());
             }
@@ -131,7 +131,7 @@ class Article extends Base
     }
 
     //编辑文章
-    public function editArticle($id)
+    public function editArticle($id = "")
     {
         if (request()->isAjax()) {
             $data = input('post.');
@@ -141,7 +141,7 @@ class Article extends Base
             if ($data['status'] == ArticleModel::STATUS_PUBLISHING && get_config('article_audit_switch') === 'false') {
                 $data['status'] = ArticleModel::STATUS_PUBLISHED;
             }
-            $ArticleModel = new ArticleModel();
+            $ArticleModel = new ArticleModel();            
             $res = $ArticleModel->edit($data);
 
             if ($res) {
@@ -176,14 +176,14 @@ class Article extends Base
 
         //记录上一级来源，方便回跳; 优先redirect参数传递
         $fromReferee = input('redirect/s', $this->request->server('HTTP_REFERER'));
-        $url = !empty($fromReferee) ? $fromReferee : url('Article/index');
+        $url = !empty($fromReferee) ? $fromReferee : url($this->appPath . 'Article/index')->build();
         Cookie::set('HTTP_REFERER', $url);
 
         return $this->fetch('article/addArticle');
     }
 
     //查看文章
-    public function viewArticle($id)
+    public function viewArticle($id = 0)
     {
         $article = ArticleModel::find(['id' => $id]);
         if (empty($article)) {
@@ -221,7 +221,7 @@ class Article extends Base
     }
 
     //删除文章,支持批量删除
-    public function deleteArticle($id)
+    public function deleteArticle($id = 0)
     {
         $ids = explode(',', $id);
         $ArticleModel = new ArticleModel();
@@ -276,7 +276,7 @@ class Article extends Base
             $meta = $ArticleMetaModel->where($where)->find(); //$ArticleMetaModel->find($where) 这种写法要求$where是主键值
             if ($meta) {
                 $data['update_time'] = date_time();
-                $res = $ArticleMetaModel->isUpdate(true)->save($data, ['id' => $meta->id]);
+                $res = $ArticleMetaModel->save($data, ['id' => $meta->id]);
                 $numRows++;
             } else {
                 $data['update_time'] = date_time();
@@ -310,7 +310,7 @@ class Article extends Base
             $data['status'] = ArticleModel::STATUS_PUBLISHED;
         }
 
-        $res = $article->isUpdate(true)->save($data, ['id' => $id]);
+        $res = $article->save($data, ['id' => $id]);
         if ($res) {
             return $this->success('成功发布');
         } else {

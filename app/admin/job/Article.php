@@ -121,7 +121,7 @@ class Article
         foreach ($metas as $meta) {
             $articleId = $meta->article_id;
 
-            $ArticleModel = ArticleModel::get($articleId);
+            $ArticleModel = ArticleModel::find($articleId);
             if ($ArticleModel['status'] == ArticleModel::STATUS_PUBLISHED
                 || $ArticleModel['status'] == ArticleModel::STATUS_DELETED) {
                 ArticleMetaModel::destroy(['id' => $meta->id]);
@@ -168,7 +168,7 @@ class Article
         $totalCount = count($ids);
         $successCount = 0;
         foreach ($ids as $id) {
-            $ArticleModel = ArticleModel::get($id);
+            $ArticleModel = ArticleModel::find($id);
 
             $data = [
                 'status' => ArticleModel::STATUS_PUBLISHED,
@@ -190,7 +190,7 @@ class Article
     //全量相似度计算
     public static function fullSimilarCompute($articleId)
     {
-        $article = ArticleModel::get($articleId);
+        $article = ArticleModel::find($articleId);
         if (!$article) {
             return false;
         }

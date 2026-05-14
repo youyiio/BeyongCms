@@ -39,6 +39,10 @@
                                 <th>状态</th>
                                 <th>操作</th>
                             </tr>
+                            {php}
+                            use \app\common\model\cms\CategoryModel;
+                            $STATUS_ONLINE = CategoryModel::STATUS_ONLINE;
+                            {/php}
                             {foreach name="list" item="vo"}
                             <tr>
                                 <td>
@@ -50,8 +54,7 @@
                                 <td>{$vo['name']}</td>
                                 <td>{$vo.remark}</td>
                                 <td><input type="checkbox" name="status[]" value="{$vo.id}" class="ajax-switch" {if
-                                        $vo.status==$CategoryModel->STATUS_ONLINE}checked="checked"
-                                    {/if}></td>
+                                        $vo.status==$STATUS_ONLINE}checked="checked" {/if}></td>
                                 <td>
                                     <a href="{:url('/admin/Category/addCategory',['pid'=>$vo['id']])}"
                                         class="btn btn-xs btn-info" data-toggle="tooltip" data-placement="top"

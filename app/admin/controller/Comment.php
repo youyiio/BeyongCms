@@ -111,9 +111,9 @@ class Comment extends Base
             if (!$result) {
                 return $this->error('回复失败');
             } elseif (stripos($_SERVER["HTTP_REFERER"], 'viewComments')) {
-                return $this->success('回复成功', url("Comment/viewComments", ['id' => $pid]));
+                return $this->success('回复成功', url($this->appPath . "Comment/viewComments", ['id' => $pid])->build());
             } else {
-                return $this->success('回复成功', url('Comment/index'));
+                return $this->success('回复成功', url($this->appPath . 'Comment/index')->build());
             }
         }
 

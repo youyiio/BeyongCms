@@ -92,7 +92,7 @@ class User extends Base
                     $UserRoleModel = new UserRoleModel();
                     $UserRoleModel->insertAll($group);
                 }
-                return $this->success('成功新增用户', url('User/index'));
+                return $this->success('成功新增用户', url($this->appPath . 'User/index')->build());
             } else {
                 return $this->error($userModel->getError());
             }
@@ -139,7 +139,7 @@ class User extends Base
             $res = $userModel->editUser($uid, $data);
 
             if ($res !== false) {
-                return $this->success('成功修改', url('User/index'));
+                return $this->success('成功修改', url($this->appPath . 'User/index')->build());
             } else {
                 return $this->error($userModel->getError());
             }

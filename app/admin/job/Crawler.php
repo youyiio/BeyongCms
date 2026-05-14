@@ -12,7 +12,7 @@ use app\common\model\cms\CrawlerMetaModel;
 use think\facade\Env;
 use think\facade\Log;
 use think\queue\Job;
-use think\Queue;
+use think\facade\Queue;
 
 use QL\QueryList;
 
@@ -39,7 +39,7 @@ class Crawler
             return;
         }
 
-        $crawler = CrawlerModel::get($id);
+        $crawler = CrawlerModel::find($id);
         if (!$crawler) {
             Log::info('采集规则不存在!');
             $job->delete();
@@ -120,7 +120,7 @@ class Crawler
             return;
         }
 
-        $crawler = CrawlerModel::get($id);
+        $crawler = CrawlerModel::find($id);
         if (!$crawler) {
             Log::info('采集规则不存在!');
             $job->delete();
@@ -211,7 +211,7 @@ class Crawler
 
             //获取自增Id,存入crawler_meta表
             $articleId = $article->id;
-            $CrawlerMeta = CrawlerMetaModel::get($vo['meta_id']);
+            $CrawlerMeta = CrawlerMetaModel::find($vo['meta_id']);
             $CrawlerMeta->article_id = $articleId;
             $CrawlerMeta->save();
         }

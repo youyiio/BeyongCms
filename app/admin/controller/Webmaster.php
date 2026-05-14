@@ -113,12 +113,12 @@ class Webmaster extends Base
 
         if ($currentPage <= 1) {
             //生成index 首页
-            $sitemap->addItem(url('frontend/Index/index', null, false, get_config('domain_name')), 1, "hourly", date_time());
-            $sitemap->addItem(url('frontend/Index/business', null, false, get_config('domain_name')), 1, "monthly", date_time());
-            $sitemap->addItem(url('frontend/Index/team', null, false, get_config('domain_name')), 1, "monthly", date_time());
-            $sitemap->addItem(url('frontend/Index/partner', null, false, get_config('domain_name')), 1, "monthly", date_time());
-            $sitemap->addItem(url('frontend/Index/about', null, false, get_config('domain_name')), 1, "monthly", date_time());
-            $sitemap->addItem(url('frontend/Index/contact', null, false, get_config('domain_name')), 1, "monthly", date_time());
+            $sitemap->addItem(url('frontend/Index/index', [], false, get_config('domain_name'))->build(), 1, "hourly", date_time());
+            $sitemap->addItem(url('frontend/Index/business', [], false, get_config('domain_name'))->build(), 1, "monthly", date_time());
+            $sitemap->addItem(url('frontend/Index/team', [], false, get_config('domain_name'))->build(), 1, "monthly", date_time());
+            $sitemap->addItem(url('frontend/Index/partner', [], false, get_config('domain_name'))->build(), 1, "monthly", date_time());
+            $sitemap->addItem(url('frontend/Index/about', [], false, get_config('domain_name'))->build(), 1, "monthly", date_time());
+            $sitemap->addItem(url('frontend/Index/contact', [], false, get_config('domain_name'))->build(), 1, "monthly", date_time());
             
 
             //生成栏目item
@@ -126,10 +126,10 @@ class Webmaster extends Base
             $resultSet = $CategoryModel->where(['status' => CategoryModel::STATUS_ONLINE])->order('sort asc')->select();
             foreach ($resultSet as $category) {
                 $priority = LibSitemap::$PRIORITY[1];
-                $loc = url('cms/Article/articleList', ['cid' => $category->id], false, get_config('domain_name'));
+                $loc = url('frontend/Article/articleList', ['cid' => $category->id], false, get_config('domain_name'))->build();
                 $sitemap->addItem($loc, $priority, "daily", date_time());
 
-                $loc = url('cms/Article/articleList', ['cname' => $category->name], false, get_config('domain_name'));
+                $loc = url('frontend/Article/articleList', ['cname' => $category->name], false, get_config('domain_name'))->build();
                 $sitemap->addItem($loc, $priority, "daily", date_time());
             }
 
@@ -147,7 +147,7 @@ class Webmaster extends Base
             $resultSet = $ArticleModel->where($where)->order('id asc')->page($currentPage - 1, $pageSize)->select();
             foreach ($resultSet as $article) {
                 $priority = LibSitemap::$PRIORITY[2];
-                $loc = url('cms/Article/viewArticle', ['aid' => $article->id], false, get_config('domain_name'));
+                $loc = url('frontend/Article/viewArticle', ['aid' => $article->id], false, get_config('domain_name'))->build();
                 $sitemap->addItem($loc, $priority, "weekly", $article->update_time);
             }
 
@@ -171,7 +171,7 @@ class Webmaster extends Base
 
 
         //生成sitemap index;
-        $sitemapLoc = url('cms/Sitemap/xml', null, false, get_config('domain_name'));
+        $sitemapLoc = url('frontend/Sitemap/xml', [], false, get_config('domain_name'))->build();
         $sitemapLoc = substr($sitemapLoc, 0, strlen($sitemapLoc) - 4);
         $sitemap->createSitemapIndex($sitemapLoc);        
         
@@ -196,7 +196,7 @@ class Webmaster extends Base
         $fileCount = count($files);
         $lastPage = $fileCount < $lastPage ? $fileCount : $lastPage;
 
-        $sitemapLoc = url('cms/Sitemap/xml', null, false, get_config('domain_name'));
+        $sitemapLoc = url('frontend/Sitemap/xml', [], false, get_config('domain_name'))->build();
         $sitemapLoc = substr($sitemapLoc, 0, strlen($sitemapLoc) - 4);
         $urls = [];
         for ($i = 1; $i <= $lastPage; $i++) {

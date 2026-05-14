@@ -54,7 +54,7 @@ class Crawler extends Base
             $CrawlerModel = new CrawlerModel();
             $res = $CrawlerModel->save($data);
             if ($res === true) {
-                return $this->success('成功添加新规则', url('crawler/index'));
+                return $this->success('成功添加新规则', url($this->appPath . 'crawler/index')->build());
             } else {
                 return $this->error($CrawlerModel->getError());
             }
@@ -93,9 +93,9 @@ class Crawler extends Base
                 return $this->error(validate('Crawler')->getError());
             }
 
-            $res = $CrawlerModel->allowField(true)->isUpdate(true)->save($data);
+            $res = $CrawlerModel->save($data);
             if ($res === true) {
-                return $this->success('规则修改成功！', url('Crawler/index'));
+                return $this->success('规则修改成功！', url($this->appPath . 'Crawler/index')->build());
             } else {
                 return $this->error('修改失败！');
             }

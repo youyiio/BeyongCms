@@ -67,7 +67,7 @@ class Ad extends Base
             $AdModel->adSlots()->attach($data['slot_ids'], $pivot);
 
             if ($rowsNum !== false) {
-                return $this->success('成功新增广告', url('/admin/ad/index'));
+                return $this->success('成功新增广告', url($this->appPath . 'ad/index')->build());
             } else {
                 return $this->error('新增失败');
             }
@@ -101,7 +101,7 @@ class Ad extends Base
             $data['create_time'] = date_time();
             $id = $data['id'];
             $AdModel = new AdModel();
-            $rowsNum = $AdModel->isUpdate(true)->allowField(true)->save($data, ['id' => $id]);
+            $rowsNum = $AdModel->save($data, ['id' => $id]);
 
             //更新中间表数据
             $AdModel->adSlots()->detach();
@@ -109,7 +109,7 @@ class Ad extends Base
             $AdModel->adSlots()->attach($data['slot_ids'], $pivot);
 
             if ($rowsNum !== false) {
-                return $this->success('成功修改广告', url('ad/index'));
+                return $this->success('成功修改广告', url($this->appPath . 'ad/index')->build());
             } else {
                 return $this->error('修改失败');
             }
