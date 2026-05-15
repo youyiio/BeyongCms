@@ -77,12 +77,17 @@ class Category extends Base
     {
         $data = input('post.');
         $arr = [];
+
         foreach ($data as $k => $v) {
+            if ($k == "status") {
+                continue;
+            }
             $arr[] = [
                 'id' => $k,
                 'sort' => empty($v) ? 0 : $v
             ];
         }
+        
         $CategoryModel = new CategoryModel();
         $result = $CategoryModel->saveAll($arr);
         if ($result) {

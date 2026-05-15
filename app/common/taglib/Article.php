@@ -28,6 +28,7 @@ class Article extends TagLib
         'timeline' => ['attr' => 'cid,cname,cache,page-size,id,assign', 'close' => true], //文章时间线列表标签
         'search'  => ['attr' => 'cid,keyword,page-size,id,assign', 'close' => true], //搜索文章列表标签
         'hotlist' => ['attr' => 'cid,cname,cache,limit,id', 'close' => true], //热门文章列表标签
+        'toplist' => ['attr' => 'cid,cname,cache,limit,id', 'close' => true], //置顶文章列表标签
         'latestlist' => ['attr' => 'cid,cname,cache,limit,id', 'close' => true], //最新文章列表标签
         'relatedlist' => ['attr' => 'aid,cid,cname,cache,limit,id', 'close' => true], //相关推荐文章列表标签
         'randomlist' => ['attr' => 'cid,cname,cache,limit,id', 'close' => true], //随机文章列表标签
@@ -237,7 +238,7 @@ class Article extends TagLib
 
         $parse .= "  $assign = $internalList;";
         $parse .= "  ?> ";
-        $parse .= "  {volist name='$internalList' id='$id'}";
+        $parse .= "  {volist name='$internalList' id='$id' key='index'}";
         $parse .= $content;
         $parse .= "  {/volist}";
 
@@ -309,7 +310,7 @@ class Article extends TagLib
 
         $parse .= "  $assign = $internalList;";
         $parse .= "  ?> ";
-        $parse .= "  {volist name='$internalList' id='$id'}";
+        $parse .= "  {volist name='$internalList' id='$id' key='index'}";
         $parse .= $content;
         $parse .= "  {/volist}";
 
@@ -360,7 +361,7 @@ class Article extends TagLib
 
         $parse .= "  $assign = $internalList;";
         $parse .= "  ?>";
-        $parse .= "  {volist name='$internalList' id='$id'}";
+        $parse .= "  {volist name='$internalList' id='$id' key='index'}";
         $parse .= $content;
         $parse .= "  {/volist}";
 
@@ -426,7 +427,73 @@ class Article extends TagLib
         $parse .= "  } ";
 
         $parse .= "  ?> ";
-        $parse .= "  {volist name='$internalList' id='$id'}";
+        $parse .= "  {volist name='$internalList' id='$id' key='index'}";
+        $parse .= $content;
+        $parse .= "  {/volist}";
+
+        return $parse;
+    }
+
+    /**
+     * 置顶文章
+     * {article:toplist cid='' cache='true' limit='10' id='vo'} {/article:toplist}
+     * @param $tag
+     * @param $content
+     * @return string
+     */
+    public function tagToplist($tag, $content)
+    {
+        $cid = empty($tag['cid']) ? 0 : $tag['cid'];
+        $cname = empty($tag['cname']) ? '' : $tag['cname'];
+        $defaultCache = 10 * 60;
+        $cache = empty($tag['cache']) ? $defaultCache : (strtolower($tag['cache'] == 'true') ? $defaultCache : intval($tag['cache']));
+        $limit = empty($tag['limit']) ? 10 : $tag['limit'];
+        $id = empty($tag['id']) ? '_id' : $tag['id'];
+
+        //作用绑定上下文变量，以':'开头调用函数；以'$'解析为值；非'$'开头的字符串中解析为变量名表达式；
+        $cid = $this->autoBuildVar($cid);
+        $cache = $this->autoBuildVar($cache);
+        $limit = $this->autoBuildVar($limit);
+
+        //标签内局部变量
+        $internalList = '$_list_' . $this->_randVarName(10);
+        $internalCid = '$_cid_' . $this->_randVarName(10);
+        $internalCname = '$_cname_' . $this->_randVarName(10);
+
+        $parse  = '<?php ';
+        $parse .= "  $internalCid = $cid;";
+        $parse .= "  $internalCname = \"$cname\";";
+        $parse .= "  $internalList = [];";
+        $parse .= "  if (empty($internalCid) && !empty($internalCname)) {";
+        $parse .= "    \$internalCategory = \app\common\model\cms\CategoryModel::where(['name'=>$internalCname])->find();";
+        $parse .= "    if (!empty(\$internalCategory)) { $internalCid = \$internalCategory['id'];}";
+        $parse .= "  }";
+        $parse .= "  \$cacheMark = 'article_top_list_' . $internalCid . $cache . $limit;";
+        $parse .= '  $where = [];';
+        $parse .= '  $where[] = [\'status\', \'=\', \app\common\model\cms\ArticleModel::STATUS_PUBLISHED];';
+        $parse .= "  \$ArticleModel = new \app\common\model\cms\ArticleModel();";
+        $parse .= "  if ($cache) { ";
+        $parse .= "    $internalList = cache(\$cacheMark); ";
+        $parse .= "  } ";
+        $parse .= "  \$field = 'id,title,description,author,thumb_image_id,post_time,read_count,comment_count';";
+        $parse .= "  \$order = 'sort desc,id desc';";
+        $parse .= "  if (empty($internalList)) { ";
+        $parse .= "    if ($internalCid) { ";
+        $parse .= "      \$childs = \app\common\model\cms\CategoryModel::getChild($internalCid);";
+        $parse .= "      \$cids = \$childs['ids'];";
+        $parse .= "      array_push(\$cids, $internalCid);";
+        $parse .= "      \$field = 'cms_article.id,title,description,author,thumb_image_id,post_time,read_count,comment_count';";
+        $parse .= "      $internalList = \app\common\model\cms\ArticleModel::hasWhere('CategoryArticle', [['category_id','in',\$cids]], \$field)->where(\$where)->field(\$field)->order(\$order)->limit($limit)->select();";
+        $parse .= "    } else { ";
+        $parse .= "      $internalList = \$ArticleModel->where(\$where)->field(\$field)->order(\$order)->limit($limit)->select();";
+        $parse .= "    } ";
+        $parse .= "    if ($cache) {";
+        $parse .= "      cache(\$cacheMark, $internalList, $cache);";
+        $parse .= "    }";
+        $parse .= "  } ";
+
+        $parse .= "  ?> ";
+        $parse .= "  {volist name='$internalList' id='$id' key='index'}";
         $parse .= $content;
         $parse .= "  {/volist}";
 
@@ -490,7 +557,7 @@ class Article extends TagLib
         $parse .= "  } ";
 
         $parse .= "  ?>";
-        $parse .= "  {volist name='$internalList' id='$id' }";
+        $parse .= "  {volist name='$internalList' id='$id' key='index'}";
         $parse .= $content;
         $parse .= "  {/volist}";
 
@@ -575,7 +642,7 @@ class Article extends TagLib
         $parse .= "  } ";
 
         $parse .= "  ?>";
-        $parse .= "  {volist name='$internalList' id='$id' }";
+        $parse .= "  {volist name='$internalList' id='$id' key='index'}";
         $parse .= $content;
         $parse .= "  {/volist}";
 
@@ -638,7 +705,7 @@ class Article extends TagLib
         $parse .= "  } ";
 
         $parse .= "  ?>";
-        $parse .= "  {volist name='$internalList' id='$id' }";
+        $parse .= "  {volist name='$internalList' id='$id' key='index'}";
         $parse .= $content;
         $parse .= "  {/volist}";
 
