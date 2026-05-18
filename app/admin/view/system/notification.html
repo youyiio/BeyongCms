@@ -12,7 +12,8 @@
                 <ul class="nav nav-tabs">
                     {volist name="tabs" id="vo"}
                     <li class="{if $vo.tab===$tab}active{/if}"><a
-                            href="{:url('admin/System/notification')}?tab={$vo.tab}" aria-expanded="true">{$vo.name}</a>
+                            href="{:url('/admin/System/notification')}?tab={$vo.tab}"
+                            aria-expanded="true">{$vo.name}</a>
                     </li>
                     {/volist}
 
@@ -23,7 +24,7 @@
 
                             <div class="col-12">
 
-                                <form class="form-horizontal ajax-form" action="{:url('admin/System/notification')}"
+                                <form class="form-horizontal ajax-form" action="{:url('/admin/System/notification')}"
                                     method="post">
                                     {volist name="configs" id="config"}
                                     <div class="form-group">
@@ -54,7 +55,7 @@
                                         <div class="col-lg-offset-2 col-lg-10">
                                             <button class="btn btn-success" type="submit">提交</button>
                                             {if $tab == "email"}
-                                            <a href="{:url('admin/System/testEmail')}"
+                                            <a href="{:url('/admin/System/testEmail')}"
                                                 class="btn btn-info ajax-a">测试邮件</a>
                                             {/if}
                                         </div>

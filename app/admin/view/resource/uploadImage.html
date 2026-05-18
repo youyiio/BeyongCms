@@ -100,7 +100,7 @@
     Dropzone.autoDiscover = false;
     $("#uploadImage").dropzone({
         // autoProcessQueue:false,
-        url: "{:url('File/upload')}",
+        url: "{:url('/admin/File/upload')}",
         paramName: 'file', //input的name
         maxFilesize: 5, // MB
         addRemoveLinks: true, //添加删除链接

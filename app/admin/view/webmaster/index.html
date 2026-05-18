@@ -93,7 +93,7 @@
 
                             <div class="col-12">
 
-                                <form class="form-horizontal" action="{:url('admin/Webmaster/sitemap')}" method="post">
+                                <form class="form-horizontal" action="{:url('/admin/Webmaster/sitemap')}" method="post">
 
                                     <div class="form-group">
                                         <label class="col-lg-2 col-md-3 control-label">每页url数量(&lt;50000)</label>
@@ -155,7 +155,7 @@
 <script src="__PUBLIC__/static/inspinia/js/plugins/switchery/switchery.js"></script>
 <script>
     function changeConfig(name, value) {
-        var url = "{:url(request()->controller() . '/index')}" + "?" + name + "=" + value;
+        var url = "{:url('/admin/' . request()->controller() . '/index')}" + "?" + name + "=" + value;
 
         $.get(url, function (data) {
             if (data.code) {
@@ -180,7 +180,7 @@
         $(btn).prop('disabled', true).find('i').remove();
         $(btn).prepend('<i class="fa fa-spinner fa-spin"></i>');
 
-        $.post("{:url('Webmaster/sitemapInfo')}", { pageSize: pageSize, maxPage: maxPage }, function (data) {
+        $.post("{:url('/admin/Webmaster/sitemapInfo')}", { pageSize: pageSize, maxPage: maxPage }, function (data) {
             if (data.code != 1) {
                 layer.msg(data.msg, function () { });
                 return false;

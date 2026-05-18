@@ -17,7 +17,7 @@ class System extends Base
         parent::initialize();
         
         // 用于页面快速访问静态变量，$Model->STATUS_xxx
-        $this->assign("LinkModel", new LinkModel());
+        $this->assign("STATUS_ONLINE", LinkModel::STATUS_ONLINE);
     }
 
     //系统设置
@@ -124,26 +124,26 @@ class System extends Base
                 return $this->error("请选择要清理的缓存！");
             }
 
-            $dir = new \beyong\commons\io\Dir(Env::get('runtime_path'));
+            $dir = new \beyong\commons\io\Dir(runtime_path());
             foreach ($types as $k => $v) {
                 switch ($v) {
                     case 'temp':
-                        is_dir(Env::get('runtime_path') . 'temp') && $dir->delDir(Env::get('runtime_path') . 'temp');
+                        is_dir(runtime_path() . 'temp') && $dir->delDir(runtime_path() . 'temp');
                         break;
                     case 'data':
                         if (config('cache.type') == 'File') {
-                            is_dir(Env::get('runtime_path') . 'cache') && $dir->delDir(Env::get('runtime_path') . 'cache');
+                            is_dir(runtime_path() . 'cache') && $dir->delDir(runtime_path() . 'cache');
                         } elseif (config('cache.type') == 'Redis') {
                             Cache::clear();
                         }
 
                         break;
                     case 'log':
-                        is_dir(Env::get('runtime_path') . 'log') && $dir->delDir(Env::get('runtime_path') . 'log');
+                        is_dir(runtime_path() . 'log') && $dir->delDir(runtime_path() . 'log');
                         break;
                     case 'vars':
                         //删除自定义的缓存，已经的缓存变量
-                        //is_dir(Env::get('runtime_path') . 'cache') && $dir->delDir(Env::get('runtime_path') . 'cache');
+                        //is_dir(runtime_path() . 'cache') && $dir->delDir(runtime_path() . 'cache');
                         Cache::rm('menu' . session('uid'));
                         Cache::rm('config');
                         break;
@@ -250,8 +250,9 @@ class System extends Base
         foreach ($data as $k => $v) {
             $LinkModel->where('id', $k)->update(['sort' => $v]);
         }
+
         cache('links',null);
-        $this->success('成功排序');
+        return $this->success('成功排序');
     }
 
     //删除友链

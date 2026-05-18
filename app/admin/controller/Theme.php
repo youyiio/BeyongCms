@@ -45,7 +45,7 @@ class Theme extends Base
             $themes[] = $theme;
         }
 
-//        $themePath = Env::get('root_path')  . 'public' . DIRECTORY_SEPARATOR . 'theme' . DIRECTORY_SEPARATOR;
+//        $themePath = root_path()  . 'public' . DIRECTORY_SEPARATOR . 'theme' . DIRECTORY_SEPARATOR;
 //        $zipFile = $themePath . 'classic.zip';
 //        x_zip($themePath . 'classic', $zipFile);
 

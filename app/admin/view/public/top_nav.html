@@ -3,7 +3,7 @@
   <nav class="navbar navbar-static-top" role="navigation" style="margin-bottom: 0">
     <div class="navbar-header">
       <a class="navbar-minimalize minimalize-styl-2 btn btn-primary " href="#"><i class="fa fa-bars"></i> </a>
-      <form role="search" class="navbar-form-custom" action="{:url('User/index')}">
+      <form role="search" class="navbar-form-custom" action="{:url('/admin/User/index')}">
         <div class="form-group">
           <input type="text" placeholder="输入用户邮箱" class="form-control" name="key" id="top-search">
           <input type="hidden" class="form-control" name="type" value="email">
@@ -18,7 +18,7 @@
         </a>
       </li>
       <li>
-        <a href="{:url('Login/logout')}">
+        <a href="{:url('/admin/Sign/logout')}">
           <i class="fa fa-sign-out"></i> 退出
         </a>
       </li>

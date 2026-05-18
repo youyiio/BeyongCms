@@ -193,14 +193,14 @@ abstract class BaseController
             'data' => $data,
         ];
 
-        // AJAX 请求
+         $type = $this->getResponseType();
         if ($type == "json") {
             $header['Content-Type'] = 'application/json; charset=utf-8';
             return Response::create($result, 'json', 200)->header($header);
         }
 
         // 普通请求
-        return View::fetch($data, $result);
+        return View::fetch(Config::get('app.dispatch_success_tmpl'), $result);
     }
 
 

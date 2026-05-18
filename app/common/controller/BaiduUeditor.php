@@ -8,6 +8,7 @@ namespace app\common\controller;
 
 use think\facade\Env;
 use think\Image;
+use think\Response;
 
 trait BaiduUeditor
 {
@@ -43,7 +44,7 @@ trait BaiduUeditor
 
     public function index()
     {
-        $configJson = file_get_contents(Env::get('config_path') . "ueditor.json");
+        $configJson = file_get_contents(config_path() . "ueditor.json");
         $configJson = preg_replace("/\/\*[\s\S]+?\*\//", "", $configJson);
         $CONFIG = json_decode($configJson, true);
 
@@ -178,9 +179,11 @@ trait BaiduUeditor
                     'state' => 'callback参数不合法'
                 ));
             }
-        } else {
-            echo $result;
-        }
+            return;
+        } 
+
+        $header['Content-Type'] = 'application/json; charset=utf-8';
+        return Response::create(json_decode($result), 'json', 200)->header($header);
     }
     /**
      * 上传文件的主处理方法

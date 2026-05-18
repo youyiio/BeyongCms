@@ -26,7 +26,7 @@ trait AdminBase
         $uid = Session::get('uid', $this->prefix);
         if (!$uid) {
             if (request()->isAjax()) {
-                return $this->error('请重新登陆', url('admin/Sign/login'));
+                return $this->error('请重新登陆', url('/admin/Sign/login'));
             }
             return $this->redirect('admin/Sign/index', ['redirect' => urlencode($this->url())]);
         }
@@ -37,7 +37,7 @@ trait AdminBase
         // $cacheLoginHash = Cache::get($uid . CACHE_SEPARATOR . 'login_hash');
         // if ($localLoginHash != $cacheLoginHash) {
         //     if (request()->isAjax()) {
-        //         return $this->error('请重新登陆', url('admin/Sign/index'));
+        //         return $this->error('请重新登陆', url('/admin/Sign/index'));
         //     } else {
         //         return $this->redirect('admin/Sign/index', ['redirect' => urlencode($this->url())]);
         //     }

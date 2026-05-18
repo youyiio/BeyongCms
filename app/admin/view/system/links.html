@@ -58,7 +58,7 @@
                                 <td>{$vo.end_time|default=""}</td>
                                 <td>
                                     <input type="checkbox" name="status[]" value="{$vo.id}" class="ajax-switch" {if
-                                        $vo.status==$LinkModel->STATUS_ONLINE}checked="checked"{/if} >
+                                        $vo.status==$STATUS_ONLINE}checked="checked" {/if}>
                                 </td>
                                 <td>
                                     <a href="javascript:;" data-id="{$vo['id']}" data-title="{$vo['title']}"
@@ -96,7 +96,7 @@
                 </h4>
             </div>
             <div class="modal-body">
-                <form class="form-horizontal ajax-form" action="{:url('System/addLinks')}" method="post">
+                <form class="form-horizontal ajax-form" action="{:url('/admin/System/addLinks')}" method="post">
                     <div class="form-group">
                         <label class="col-lg-2 control-label">网站名称:</label>
                         <div class="col-lg-10"><input type="text" name="title" placeholder="网站名称" class="form-control"
@@ -106,8 +106,7 @@
                     <div class="form-group">
                         <label class="col-lg-2 control-label">网站链接:</label>
                         <div class="col-lg-10"><input type="url" name="url" placeholder="网站链接" class="form-control"
-                                autocomplete="off"> <span
-                                class="help-block m-b-none">例:https://www.beyongcms.com/</span>
+                                autocomplete="off"> <span class="help-block m-b-none">例:https://www.beyong.run/</span>
                         </div>
                     </div>
                     <div class="form-group">
@@ -162,7 +161,7 @@
                     <div class="form-group">
                         <label class="col-lg-2 control-label">网站链接:</label>
                         <div class="col-lg-10"><input type="url" name="url" placeholder="网站链接" class="form-control">
-                            <span class="help-block m-b-none">例:http://www.beyongcms.com/</span>
+                            <span class="help-block m-b-none">例:https://www.beyong.run/</span>
                         </div>
                     </div>
                     <div class="form-group">

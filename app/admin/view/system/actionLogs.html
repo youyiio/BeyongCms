@@ -102,7 +102,7 @@
                                 <!-- <td><input type="checkbox" class="ajax-check" id="{$vo.id}"></td> -->
                                 <td>{$vo.id}</td>
                                 <td><a
-                                        href="{:url('admin/User/viewUser',['uid'=>$vo.username])}">{$vo.user.username|default=""}</a>
+                                        href="{:url('/admin/User/viewUser',['uid'=>$vo.username])}">{$vo.user.username|default=""}</a>
                                 </td>
                                 <td>{$vo.action_text}</td>
                                 <td>{$vo.module}</td>

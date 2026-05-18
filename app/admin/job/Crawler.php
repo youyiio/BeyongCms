@@ -406,7 +406,7 @@ class Crawler
     public static function saveRemoteImage($imgUrl)
     {
         //使用ueditor.json作为配置信息
-        $configJson = file_get_contents(Env::get('config_path') . "ueditor.json");
+        $configJson = file_get_contents(config_path() . "ueditor.json");
         $configJson = preg_replace("/\/\*[\s\S]+?\*\//", "", $configJson);
         $CONFIG = json_decode($configJson, true);
         // 保留需要的数据
@@ -417,7 +417,7 @@ class Crawler
             "oriName" => "remote.png"
         );
 
-        $rootPath = Env::get('root_path') . 'public';
+        $rootPath = root_path() . 'public';
         $savePath = DIRECTORY_SEPARATOR . 'upload'. DIRECTORY_SEPARATOR;
 
 

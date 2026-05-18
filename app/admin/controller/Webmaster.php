@@ -85,7 +85,7 @@ class Webmaster extends Base
     //sitemap xml生成工具
     public function sitemap($pageSize, $startPage = 1, $endPage = 50)
     {
-        $xmlFileName = Env::get('root_path') . 'public' . DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . $this->config['xml_file'];
+        $xmlFileName = root_path() . 'public' . DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . $this->config['xml_file'];
         //清除旧的文件(当前方案不清除)
         if (file_exists($xmlFileName . LibSitemap::SITEMAP_SEPERATOR . LibSitemap::INDEX_SUFFIX . LibSitemap::SITEMAP_EXT)) {
             foreach(glob($xmlFileName . "*") as $file) {
@@ -191,7 +191,7 @@ class Webmaster extends Base
         $hookLastPage = $sitemapInfo['hookLastPage'];
 
         //统计生成的数量
-        $xmlFileName = Env::get('root_path') . 'public' . DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . $this->config['xml_file'];
+        $xmlFileName = root_path() . 'public' . DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . $this->config['xml_file'];
         $files = glob($xmlFileName . "-[0-9]*.xml");
         $fileCount = count($files);
         $lastPage = $fileCount < $lastPage ? $fileCount : $lastPage;

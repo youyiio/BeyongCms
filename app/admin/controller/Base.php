@@ -43,8 +43,8 @@ class Base extends BaseController
             if (request()->isAjax()) {
                 $this->error('请重新登陆', '/' . app('http')->getName() . '/Sign/login')->send();
             } else {
-                $this->redirect('/' . app('http')->getName() . '/Sign/index')->send();
-                //throw new HttpResponseException(redirect(app('http')->getName() . '/Sign/index'));                
+                $url = url($this->appPath . 'Sign/index', ['redirect' => urlencode($this->url())])->build();
+                $this->redirect($url)->send();           
             }
             exit;
         }
@@ -61,7 +61,8 @@ class Base extends BaseController
             $rolePermission = new RolePermission();
             $module = app('http')->getName();
             if (!$rolePermission->checkPermission($uid, $permission, $module, 'path')) {
-                throw new HttpResponseException($this->error('没有访问权限', 'javascript:void(0);'));
+                return $this->error('没有访问权限', 'javascript:void(0);');
+                exit;
             }
         }
 

@@ -38,7 +38,7 @@ class Image extends Base
             $tbWidth = request()->param('thumbWidth/d', 0);
             $tbHeight = request()->param('thumbHeight/d', 0);
 
-            $path = Env::get('root_path') . 'public' . DIRECTORY_SEPARATOR . 'upload';
+            $path = root_path() . 'public' . DIRECTORY_SEPARATOR . 'upload';
 
             //表单验证
             $check = $this->validate(
@@ -55,23 +55,24 @@ class Image extends Base
             }
 
             //文件验证&文件move操作
-            $file = $tmpFile->validate(['ext' => 'jpg,gif,png,jpeg,bmp,ico,webp'])->move($path);
+            $saveName = $tmpFile->getOriginalName();
+            $saveNamePath = date('Ymd') . DIRECTORY_SEPARATOR . $saveName;
+            $file = $tmpFile->move($path . DIRECTORY_SEPARATOR . date('Ymd'), $saveName);
             if (!$file) {
                 // 上传失败获取错误信息
                 return $this->error($tmpFile->getError());
             }
+
             list($width, $height, $type) = getimagesize($file->getRealPath()); //获得图片宽高类型
-            
-            $saveName = $file->getSaveName();
 
             $data = [
-                'file_url' => DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . dirname($saveName) . DIRECTORY_SEPARATOR . $file->getFilename(),
+                'file_url' => DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . dirname($saveNamePath) . DIRECTORY_SEPARATOR . $file->getFilename(),
                 'file_path' => root_path() . DIRECTORY_SEPARATOR . 'public',
                 'size' => $file->getSize(),
                 'ext' => strtolower($file->getExtension()),
                 'name' => $file->getFilename(),
-                'real_name' => $file->getinfo()['name'],
-                'thumb_image_url' => DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . dirname($saveName) . DIRECTORY_SEPARATOR . $file->getFilename(),
+                'real_name' => $tmpFile->getOriginalName(),
+                'thumb_image_url' => DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . dirname($saveNamePath) . DIRECTORY_SEPARATOR . $file->getFilename(),
                 'remark' => input('post.remark'),
                 'create_by' => $this->uid,
                 'create_time' => date_time(),
@@ -83,7 +84,7 @@ class Image extends Base
 
                 $vendor = get_config('oss_vendor');
                 $m = new \think\oss\OSSContext($vendor);
-                $ossImgUrl = $m->doUpload($file->getSaveName(), 'cms');
+                $ossImgUrl = $m->doUpload($saveName, 'cms');
                 $data['oss_image_url'] = $ossImgUrl;
             }
 
@@ -96,6 +97,7 @@ class Image extends Base
                     return $this->result($data, 1, 'image_need_crop', 'json');
                 }
             }
+
             return $this->result($data, 1, '图片上传成功', 'json');
         }
 

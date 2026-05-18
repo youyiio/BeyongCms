@@ -20,6 +20,7 @@ use think\exception\ValidateException;
 use think\db\exception\DbException;
 use think\db\exception\PDOException;
 use think\exception\ErrorException;
+use think\exception\FileException;
 use think\exception\HttpResponseException;
 use think\facade\Config;
 use think\facade\Log;
@@ -71,6 +72,11 @@ class AdminHandle extends Handle
         }
 
         if ($e instanceof TypeError) {
+            $response = $this->getResponse($e->getMessage(), null);
+            return $response;
+        }
+
+        if ($e instanceof FileException) {
             $response = $this->getResponse($e->getMessage(), null);
             return $response;
         }

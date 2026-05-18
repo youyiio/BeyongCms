@@ -6,19 +6,22 @@
 
 namespace app\admin\controller;
 
+use beyong\commons\utils\StringUtils;
 use think\facade\Env;
 use think\Image;
+use think\Response;
 
 class BaiduUeditor extends Base
 {
 
-    private $thumb; //缩略图模式：1、标识缩略图等比例缩放类型，2、标识缩略图缩放后填充类型
-    private $water; //是否加水印(0:无水印,1:水印文字,2:水印图片)
-    private $waterText; //水印文字
-    private $waterPosition; //水印位置
+    private $thumb = 1; //缩略图模式：1、标识缩略图等比例缩放类型，2、标识缩略图缩放后填充类型
+    private $water = 0; //是否加水印(0:无水印,1:水印文字,2:水印图片)
+    private $waterText = ""; //水印文字
+    private $waterPosition = 0; //水印位置
+    private $waterImage = "";
 
-    private $rootPath; //保存的根目录，默认为public/upload
-    private $savePath; //保存位置
+    private $rootPath = ""; //保存的根目录，默认为public/upload
+    private $savePath = ""; //保存位置
 
 
     public function initialize()
@@ -30,15 +33,19 @@ class BaiduUeditor extends Base
 
         $this->uid = ""; //置为"", 避免增加一个目录级;
 
-        $this->thumb = 1;
+        $this->thumb = \think\Image::THUMB_SCALING;
         $this->water = intval(get_config('article_water', '0'));
         $this->waterText = get_config('article_water_text', '');
         if ($this->water != 0 && empty($this->waterText)) {
             $this->waterText = get_config('domain_name');
         }
 
-        $this->rootPath = Env::get('root_path') . 'public';
-        $this->savePath = DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . $this->uid;
+        $this->rootPath = root_path() . 'public';
+        $this->savePath = DIRECTORY_SEPARATOR . 'upload';
+        if ($this->uid) {
+            $this->savePath = DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . $this->uid;
+        }
+        
 
         // 水印位置, 9为右下角
         $this->waterPosition = 9;
@@ -46,7 +53,7 @@ class BaiduUeditor extends Base
 
     public function index()
     {
-        $configJson = file_get_contents(Env::get('config_path') . "ueditor.json");
+        $configJson = file_get_contents(config_path() . "ueditor.json");
         $configJson = preg_replace("/\/\*[\s\S]+?\*\//", "", $configJson);
         $CONFIG = json_decode($configJson, true);
 
@@ -181,9 +188,11 @@ class BaiduUeditor extends Base
                     'state' => 'callback参数不合法'
                 ));
             }
-        } else {
-            echo $result;
+            return;
         }
+
+        $header['Content-Type'] = 'application/json; charset=utf-8';
+        return Response::create(json_decode($result), 'json', 200)->header($header);
     }
     /**
      * 上传文件的主处理方法
@@ -200,45 +209,51 @@ class BaiduUeditor extends Base
         $dirname = $this->rootPath . $this->savePath;
         $tmpFile = request()->file('upfile');
 
-        $file = $tmpFile->move($dirname); //tp方法会自动加上日期date('Ymd');$info->getSaveName()为date('Ymd')/name.ext;
+        //$saveName = $tmpFile->getOriginalName();
+        $saveName = StringUtils::getRandString(20) . "." . $tmpFile->getOriginalExtension();
+        $saveNameWithPath = date('Ymd') . DIRECTORY_SEPARATOR . $saveName;
+        $file = $tmpFile->move($dirname . DIRECTORY_SEPARATOR . date('Ymd') , $saveName); //tp方法会自动加上日期date('Ymd');$info->getSaveName()为date('Ymd')/name.ext;
         $savePath = $this->savePath;
-        if ($file) {
-            $fname = $dirname . DIRECTORY_SEPARATOR . $file->getSaveName();
-            $imagearr = explode(',', 'jpg,gif,png,jpeg,bmp,ttf,tif');
-            $ext = $file->getExtension();
-            $quality = get_config('image_upload_quality', 80); //获取图片清晰度设置，默认是80
-
-            $isImage = in_array($ext, $imagearr) ? 1 : 0;
-            if ($isImage) {
-                $maxLimit = get_config('image_upload_max_limit', 680); //获取图片宽高的最大限制值，0为不限制
-
-                $image = Image::open($fname);
-                if ($maxLimit > 0) {
-                    $image->thumb($maxLimit, $maxLimit, $this->thumb); //设置缩略图模式，按宽最大680或高最大680压缩
-                }
-                if ($this->water == 1) {
-                    $font = Env::get('VENDOR_PATH') . '/topthink/think-captcha/assets/zhttfs/1.ttf';
-                    $image->text($this->waterText, $font, 10, '#FFCC66', $this->waterPosition, [-8, -8])->save($fname, $ext, $quality);
-                } else if ($this->water == 2) {
-                    $image->water($this->waterImage)->save($fname, $ext, $quality);
-                } else {
-                    $image->save($fname, $ext, $quality);
-                }
-            }
-
-            $data = array(
-                'state' => 'SUCCESS',
-                'url' => config('view_replace_str.__PUBLIC__') . str_replace(DIRECTORY_SEPARATOR, '/', $savePath . $file->getSaveName()),
-                'title' => $file->getFileName(),
-                'original' => $file->getInfo('name'),
-                'type' => '.' . $ext,
-                'size' => $file->getSize(),
-            );
-        } else {
+        if (!$file) {
             $data = array(
                 'state' => $tmpFile->getError(),
             );
+            return json_encode($data);
         }
+
+        $fname = $dirname . DIRECTORY_SEPARATOR . $saveNameWithPath;
+        $imagearr = explode(',', 'jpg,gif,png,jpeg,bmp,ttf,tif');
+        $ext = $file->getExtension();
+        $quality = get_config('image_upload_quality', 80); //获取图片清晰度设置，默认是80
+
+        $isImage = in_array($ext, $imagearr) ? 1 : 0;
+        if ($isImage) {
+            $maxLimit = get_config('image_upload_max_limit', 680); //获取图片宽高的最大限制值，0为不限制
+
+            $image = Image::open($fname);
+            if ($maxLimit > 0) {
+                //$image = $image->thumb($maxLimit, $maxLimit, $this->thumb); //设置缩略图模式，按宽最大680或高最大680压缩
+            }
+            
+            if ($this->water == 1) {
+                $font =  root_path() . '/vendor'. '/topthink/think-captcha/assets/zhttfs/1.otf';
+                $image->text($this->waterText, $font, 10, '#FFCC66', $this->waterPosition, [-8, -8])->save($fname, $ext, $quality);
+            } else if ($this->water == 2) {
+                $image->water($this->waterImage)->save($fname, $ext, $quality);
+            } else {
+                $image->save($fname, $ext, $quality);
+            }
+        }
+
+        $data = array(
+            'state' => 'SUCCESS',
+            'url' => config('view_replace_str.__PUBLIC__') . str_replace(DIRECTORY_SEPARATOR, '/', $savePath . DIRECTORY_SEPARATOR . $saveNameWithPath),
+            'title' => $file->getFileName(),
+            'original' => $tmpFile->getOriginalName(),
+            'type' => '.' . $ext,
+            'size' => $file->getSize(),
+        );
+       
 
         return json_encode($data);
     }

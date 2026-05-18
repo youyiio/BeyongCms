@@ -149,7 +149,7 @@ class BaseModel extends Model
     //大量数据导入
     public function bigDataInsertFromCsv($data, $replace = false)
     {
-        $tempFile  = Env::get('runtime_path') . 'big_data_tmp.csv';
+        $tempFile  = runtime_path() . 'big_data_tmp.csv';
         $f         = new \SplFileObject($tempFile, 'w');
         $delimiter = ","; //分隔符
         $enclosure = '"'; //数据引号
