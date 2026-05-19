@@ -14,6 +14,23 @@ use think\facade\Cookie;
  */
 class Article extends Base
 {
+    public function initialize()
+    {
+        parent::initialize();
+        
+        // 用于页面快速访问静态变量，$Model->STATUS_xxx
+        $ArticleModel = new ArticleModel();
+        $ArticleModel->STATUS_DELETED = ArticleModel::STATUS_DELETED;
+        $ArticleModel->STATUS_DRAFT = ArticleModel::STATUS_DRAFT;
+        $ArticleModel->STATUS_PUBLISHING = ArticleModel::STATUS_PUBLISHING;
+        $ArticleModel->STATUS_FIRST_AUDIT_REJECT = ArticleModel::STATUS_FIRST_AUDIT_REJECT;
+        $ArticleModel->STATUS_FIRST_AUDITED = ArticleModel::STATUS_FIRST_AUDITED;
+        $ArticleModel->STATUS_SECOND_AUDIT_REJECT = ArticleModel::STATUS_SECOND_AUDIT_REJECT;
+        $ArticleModel->STATUS_PUBLISHED = ArticleModel::STATUS_PUBLISHED;
+        
+        $this->assign('ArticleModel', $ArticleModel);
+    }
+
     //文章列表
     public function index()
     {
@@ -34,8 +51,8 @@ class Article extends Base
             array_push($childCateIds, $categoryId);
 
             //$ArticleModel = ArticleModel::has('CategoryArticle', [['category_id','in',$childCateIds]]);
-            $fields = 'ArticleModel.id,title,thumb_image_id,post_time,update_time,create_time,is_top,status,read_count,sort';
-            $ArticleModel = ArticleModel::hasWhere('CategoryArticle', [['category_id', 'in', $childCateIds]], $fields)->group([]); //hack:group用于清理hasmany默认加group key
+            $fields = 'a.id,title,thumb_image_id,post_time,update_time,create_time,is_top,status,read_count,sort';
+            $ArticleModel = ArticleModel::alias('a')->hasWhere('CategoryArticle', [['category_id', 'in', $childCateIds]], $fields)->group([]); //hack:group用于清理hasmany默认加group key
         }
 
         //文章状态
@@ -81,7 +98,6 @@ class Article extends Base
         $list = $ArticleModel->where($where)->field($fields)->order($orders)->paginate($listRow, false, $pageConfig);
 
         $this->assign('list', $list);
-        $this->assign('ArticleModel', $ArticleModel);
         $this->assign('pages', $list->render());
         $this->assign('sortedFields', $sortedFields);
         $this->assign('startTime', $startTime);
@@ -213,9 +229,6 @@ class Article extends Base
         ];
         $jobQueue = config('queue.default');
         \think\facade\Queue::push($jobHandlerClass, $jobData, $jobQueue);
-
-        $ArticleModel = new ArticleModel();
-        $this->assign('ArticleModel', $ArticleModel);
         
         return $this->fetch('article/viewArticle');
     }

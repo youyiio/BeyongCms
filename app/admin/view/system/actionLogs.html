@@ -38,13 +38,16 @@
                             <div class="form-group">
                                 <select name="action" class="form-control m-b-xs">
                                     <option value="">操作类型</option>
-                                    <option value="login" {heq name="Think.get.action" value="login" }selected{/heq}>登录
+                                    <option value="login" {heq name="Request.get.action" value="login" }selected{/heq}>
+                                        登录
                                     </option>
-                                    <option value="logout" {heq name="Think.get.action" value="logout" }selected{/heq}>
+                                    <option value="logout" {heq name="Request.get.action" value="logout"
+                                        }selected{/heq}>
                                         登出</option>
-                                    <option value="check_in" {heq name="Think.get.action" value="check_in"
+                                    <option value="check_in" {heq name="Request.get.action" value="check_in"
                                         }selected{/heq}>签到</option>
-                                    <option value="access" {heq name="Think.get.action" value="access" }selected{/heq}>
+                                    <option value="access" {heq name="Request.get.action" value="access"
+                                        }selected{/heq}>
                                         浏览</option>
                                 </select>
                             </div>

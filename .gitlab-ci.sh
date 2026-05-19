@@ -16,7 +16,6 @@ fi
 
 if [ "$deploy_first" = true ]; then
   /bin/cp -fr .env $deploy_path
-  /bin/cp -fr config $deploy_path
   /bin/cp -fr data $deploy_path
 else
   rm -fr $deploy_path/thinkphp
@@ -29,15 +28,15 @@ fi
 rm -fr data/install/database.php
 
 # 实际部署文件
-/bin/cp -fr addons $deploy_path
-/bin/cp -fr application $deploy_path
+/bin/cp -fr app $deploy_path
+/bin/cp -fr config $deploy_path
 /bin/cp -fr data $deploy_path
 /bin/cp -fr extend $deploy_path
 /bin/cp -fr public $deploy_path
 /bin/cp -fr route $deploy_path
-/bin/cp -fr think $deploy_path
-/bin/cp -fr thinkphp $deploy_path
 /bin/cp -fr vendor $deploy_path
+/bin/cp -fr .version $deploy_path
+/bin/cp -fr think $deploy_path
 
 /bin/cp -fr check_env.sh $deploy_path
 /bin/cp -fr start_* $deploy_path

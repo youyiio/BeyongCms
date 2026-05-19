@@ -30,8 +30,8 @@
                                 <select name="crawlerId" class="form-control m-b-xs">
                                     <option value="-1">请选择采集规则</option>
                                     {volist name='crawlerList' id='vo'}
-                                    <option value="{$vo.id}" {notempty name="Think.get.crawlerId" }{eq
-                                        name="Think.get.crawlerId" value="$vo['id']" }selected{/eq}{/notempty}>
+                                    <option value="{$vo.id}" {notempty name="Request.get.crawlerId" }{eq
+                                        name="Request.get.crawlerId" value="$vo['id']" }selected{/eq}{/notempty}>
                                         {$vo.title}</option>
                                     {/volist}
                                 </select>

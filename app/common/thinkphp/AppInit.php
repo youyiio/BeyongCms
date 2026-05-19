@@ -29,7 +29,11 @@ class AppInit
         $app->setRuntimePath($app->getRootPath() . 'data' . DIRECTORY_SEPARATOR . 'runtime' . DIRECTORY_SEPARATOR);
 
         $app->config->load($app->getConfigPath() . 'database.php', 'database');
+        $app->config->load($app->getConfigPath() . 'cache.php', 'cache');
         $app->config->load($app->getConfigPath() . 'log.php', 'log');
+        $app->config->load($app->getConfigPath() . 'session.php', 'session');
+        $app->config->load($app->getConfigPath() . 'log.php', 'log');
+        
 
         if (is_file($app->getRootPath() . '.version')) {
             $app->env->load($app->getRootPath() . '.version');

@@ -28,8 +28,8 @@
                                     <select name="crawlerId" class="form-control" onchange="selectChange()">
                                         <option value="-1">查看全部</option>
                                         {volist name='crawlerList' id='vo'}
-                                        <option value="{$vo.id}" {notempty name="Think.get.crawlerId" }{eq
-                                            name="Think.get.crawlerId" value="$vo['id']" }selected{/eq} {/notempty}>
+                                        <option value="{$vo.id}" {notempty name="Request.get.crawlerId" }{eq
+                                            name="Request.get.crawlerId" value="$vo['id']" }selected{/eq} {/notempty}>
                                             {$vo.title}
                                         </option>
                                         {/volist}
@@ -42,20 +42,21 @@
                                         class="text text-danger">*</span>:</label>
                                 <div class="col-lg-10">
                                     <select class="form-control" name="replaceField" data-placeholder="选择替换范围">
-                                        <option value="all" {notempty name="Think.get.crawlerId" }{eq
-                                            name="Think.get.replaceField" value="all" } selected{/eq}{/notempty}>全部(all)
+                                        <option value="all" {notempty name="Request.get.crawlerId" }{eq
+                                            name="Request.get.replaceField" value="all" } selected{/eq}{/notempty}>
+                                            全部(all)
                                         </option>
-                                        <option value="title" {notempty name="Think.get.crawlerId" }{eq
-                                            name="Think.get.replaceField" value="title" } selected{/eq}{/notempty}>
+                                        <option value="title" {notempty name="Request.get.crawlerId" }{eq
+                                            name="Request.get.replaceField" value="title" } selected{/eq}{/notempty}>
                                             标题(title)</option>
-                                        <option value="keywords" {notempty name="Think.get.crawlerId" }{eq
-                                            name="Think.get.replaceField" value="keywords" } selected{/eq}{/notempty}>
+                                        <option value="keywords" {notempty name="Request.get.crawlerId" }{eq
+                                            name="Request.get.replaceField" value="keywords" } selected{/eq}{/notempty}>
                                             关键词(keywords)</option>
-                                        <option value="description" {notempty name="Think.get.crawlerId" }{eq
-                                            name="Think.get.replaceField" value="description" }
+                                        <option value="description" {notempty name="Request.get.crawlerId" }{eq
+                                            name="Request.get.replaceField" value="description" }
                                             selected{/eq}{/notempty}>简介(description)</option>
-                                        <option value="content" {notempty name="Think.get.crawlerId" }{eq
-                                            name="Think.get.replaceField" value="content" } selected{/eq}{/notempty}>
+                                        <option value="content" {notempty name="Request.get.crawlerId" }{eq
+                                            name="Request.get.replaceField" value="content" } selected{/eq}{/notempty}>
                                             内容(content)</option>
                                     </select>
                                 </div>

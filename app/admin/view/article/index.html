@@ -74,18 +74,19 @@
                             <div class="form-group">
                                 <select name="status" class="form-control m-b-xs">
                                     <option value="">文章状态</option>
-                                    <option value="0" {heq name="Think.get.status" value="0" }selected{/heq}>草稿</option>
+                                    <option value="0" {heq name="Request.get.status" value="0" }selected{/heq}>草稿
+                                    </option>
                                     {if get_config('article_audit_switch') == 'true'}
-                                    <option value="1" {heq name="Think.get.status" value="1" }selected{/heq}>申请发布
+                                    <option value="1" {heq name="Request.get.status" value="1" }selected{/heq}>申请发布
                                     </option>
-                                    <option value="2" {heq name="Think.get.status" value="2" }selected{/heq}>初审拒绝
+                                    <option value="2" {heq name="Request.get.status" value="2" }selected{/heq}>初审拒绝
                                     </option>
-                                    <option value="3" {heq name="Think.get.status" value="3" }selected{/heq}>初审通过
+                                    <option value="3" {heq name="Request.get.status" value="3" }selected{/heq}>初审通过
                                     </option>
-                                    <option value="4" {heq name="Think.get.status" value="4" }selected{/heq}>终审拒绝
+                                    <option value="4" {heq name="Request.get.status" value="4" }selected{/heq}>终审拒绝
                                     </option>
                                     {/if}
-                                    <option value="5" {heq name="Think.get.status" value="5" }selected{/heq}>已发布
+                                    <option value="5" {heq name="Request.get.status" value="5" }selected{/heq}>已发布
                                     </option>
                                 </select>
                             </div>
@@ -93,8 +94,8 @@
                                 <select name="categoryId" class="form-control m-b-xs">
                                     <option value="-1">不限分类</option>
                                     {volist name="categoryList" id="vo"}
-                                    <option value="{$vo.id}" {notempty name="Think.get.categoryId" }{eq
-                                        name="Think.get.categoryId" value="$vo['id']" }selected{/eq}{/notempty}>
+                                    <option value="{$vo.id}" {notempty name="Request.get.categoryId" }{eq
+                                        name="Request.get.categoryId" value="$vo['id']" }selected{/eq}{/notempty}>
                                         {$vo._name|raw}</option>
                                     {/volist}
                                 </select>
