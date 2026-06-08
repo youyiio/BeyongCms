@@ -41,12 +41,14 @@
                                 <li><a href="javascript:void(0)" class="ajax-batch-set"
                                         data-action="{:url('/admin/' . request()->controller().'/postArticle')}">立即发布</a>
                                 </li>
+                                {if get_config('article_audit_switch') == 'true'}
                                 <li><a href="javascript:void(0)" class="ajax-batch-set"
                                         data-action="{:url('/admin/' . request()->controller().'/auditFirst')}">初审</a>
                                 </li>
                                 <li><a href="javascript:void(0)" class="ajax-batch-set"
                                         data-action="{:url('/admin/' . request()->controller().'/auditSecond')}">终审</a>
                                 </li>
+                                {/if}
                                 <li role="separator" class="divider"></li>
                                 <li><a class="batchCategory">修改分类</a></li>
                             </ul>
@@ -224,6 +226,12 @@
                                             <li>
                                                 <a href="{:url('/admin/Article/postArticle',['id'=>$vo['id']])}"
                                                     class="ajax-a" style="color: black">立即发布</a>
+                                            </li>
+                                            {/if}
+                                            {if $vo.status == $ArticleModel->STATUS_PUBLISHED}
+                                            <li>
+                                                <a href="{:url('/admin/Article/pullOffArticle',['id'=>$vo['id']])}"
+                                                    class="ajax-a" style="color: black">下架</a>
                                             </li>
                                             {/if}
                                             {if get_config('article_audit_switch') == 'true'}

@@ -383,6 +383,30 @@ class Article extends Base
         }
     }
 
+    //下架文章
+    public function pullOffArticle(int $id)
+    {
+        $article = ArticleModel::find($id);
+        if (empty($article)) {
+            return $this->error('文章不存在');
+        }
+
+        if ($article->status != ArticleModel::STATUS_PUBLISHED) {
+            return $this->error('文章未发不');
+        }
+
+        $data = [
+            'status' => ArticleModel::STATUS_DRAFT
+        ];
+
+        $res = $article->save($data, ['id' => $id]);
+        if ($res) {
+            return $this->success('下架成功');
+        } else {
+            return $this->error('下架失败');
+        }
+    }
+        
     //批量修改分类
     public function batchCategory($ids = null, $cids = null)
     {

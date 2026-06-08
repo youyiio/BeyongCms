@@ -32,6 +32,37 @@ class AdminHandle extends Handle
     public function render($request, Throwable $e): Response
     {
         if ($e instanceof HttpResponseException) {
+            // 403 禁止访问异常处理
+            if ($e->getResponse()->getCode() == 403) {
+                // 如果是 AJAX 请求，返回 JSON
+                if ($request->isAjax()) {
+                    return json([
+                        'code' => 403,
+                        'msg'  => $e->getResponse()->getData() ?? $e->getMessage(),
+                        'data' => null
+                    ], 403);
+                }
+                
+                // 返回自定义 403 页面
+                return view('public/403', [
+                    'error' => $e->getResponse()->getData() ?? $e->getMessage(),
+                    'code'  => 403
+                ])->code(403);
+            }
+            
+            // 404 未找到异常处理
+            if ($e->getCode() == 404) {
+                if ($request->isAjax()) {
+                    return json([
+                        'code' => 404,
+                        'msg'  => '页面不存在',
+                        'data' => null
+                    ], 404);
+                }
+                
+                return view('public/404')->code(404);
+            }
+            
             return parent::render($request, $e);
         }
 
