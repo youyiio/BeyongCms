@@ -189,7 +189,7 @@ class UserModel extends BaseModel
             $data['weixin'] = $weixin;
         }
 
-        $result = $this->save($data);
+        $result = $this->save($data, ['id' => $userId]);
         if ($result == false) {
             return false;
         }

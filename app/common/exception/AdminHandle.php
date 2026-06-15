@@ -9,7 +9,6 @@
 
 namespace app\common\exception;
 
-use InvalidArgumentException;
 use Throwable;
 use TypeError;
 use think\Response;
@@ -19,7 +18,6 @@ use think\exception\HttpException;
 use think\exception\ValidateException;
 use think\db\exception\DbException;
 use think\db\exception\PDOException;
-use think\exception\ErrorException;
 use think\exception\FileException;
 use think\exception\HttpResponseException;
 use think\facade\Config;
@@ -51,7 +49,7 @@ class AdminHandle extends Handle
             }
             
             // 404 未找到异常处理
-            if ($e->getCode() == 404) {
+            else if ($e->getCode() == 404) {
                 if ($request->isAjax()) {
                     return json([
                         'code' => 404,
@@ -61,6 +59,17 @@ class AdminHandle extends Handle
                 }
                 
                 return view('public/404')->code(404);
+            }
+            else if ($e->getCode() == 500) {
+                if ($request->isAjax()) {
+                    return json([
+                        'code' => 500,
+                        'msg'  => '服务器报错',
+                        'data' => null
+                    ], 500);
+                }
+                
+                return view('public/500')->code(500);
             }
             
             return parent::render($request, $e);

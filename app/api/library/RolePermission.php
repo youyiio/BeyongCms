@@ -22,14 +22,13 @@ class RolePermission
      * @param string $module 要验证权限的模块
      * @param string $name 要验证权限的列名
      */
-    public function checkPermission($uid, $permission, $module = 'api', $name = 'permission')
+    public function checkPermission(int $uid, string $permission, $module = 'api', $name = 'permission')
     {
         $permissions = Cache::get("permission" . CACHE_SEPARATOR . $module . $uid, null);
         if ($permissions === null) {
             $permissions = $this->getPermissionList($uid, $module, $name);
             Cache::set("permission" . CACHE_SEPARATOR . $module . $uid, $permissions, 3600);
         }
-
         if (!array_key_exists($permission, $permissions)) {
             return false;
         }
@@ -38,7 +37,7 @@ class RolePermission
     }
 
     //查询权限列表
-    public function getPermissionList($uid, $module, $name)
+    public function getPermissionList(int $uid, string $module, string $name)
     {
 
         $roleIds = UserRoleModel::where(['uid' => $uid])->column('role_id');
@@ -52,9 +51,9 @@ class RolePermission
         ];
         $MenuModel = new MenuModel();
         //$fields = 'id,pid,title,name,component,path,icon,type,is_menu,permission,status,sort,belongs_to';
-        $fields = 'id';
+        $fields = "id";
 
-        $permissions = $MenuModel->where($where)->field($fields)->column($fields, "lower($name)");
+        $permissions = $MenuModel->where($where)->field($fields)->column($fields, "$name");
 
         return $permissions;
     }

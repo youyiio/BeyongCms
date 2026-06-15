@@ -57,12 +57,12 @@ class Base extends BaseController
         //权限验证
         if (config('cms.auth_on') == 'on') {
             $permission = '/' . app('http')->getName() . '/' . request()->controller() . '/' . request()->action();
-            $permission = strtolower($permission);
+            $permission = $permission;
             $rolePermission = new RolePermission();
             $module = app('http')->getName();
             if (!$rolePermission->checkPermission($uid, $permission, $module, 'path')) {
-                return $this->error('没有访问权限', 'javascript:void(0);');
-                exit;
+                //$this->error('没有访问权限', 'javascript:void(0);');
+                throw new HttpResponseException(response('没有访问权限', 403));
             }
         }
 
