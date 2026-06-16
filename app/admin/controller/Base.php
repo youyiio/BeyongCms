@@ -77,7 +77,7 @@ class Base extends BaseController
         $yesterdayNewUserCount = $UserModel->cache('yesterdayNewUserCount',time_left())->whereTime('register_time','between',[$beginYesterday, $endYesterday])->count();
         $this->assign('yesterdayNewUserCount', $yesterdayNewUserCount);
 
-        //菜单数据,Cache::tag不支持redis
+        // 缓存用户菜单
         if (Cache::has($uid . '_menu')) {
             $menus = Cache::get($uid . '_menu');
         } else {

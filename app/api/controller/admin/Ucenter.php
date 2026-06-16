@@ -4,14 +4,11 @@ namespace app\api\controller\admin;
 
 use app\common\library\ResultCode;
 use app\common\logic\UserLogic;
-use app\common\model\DeptModel;
-use app\common\model\JobModel;
 use app\common\model\MenuModel;
-use app\common\model\RoleMenuModel;
 use app\common\model\RoleModel;
 use app\common\model\UserModel;
 use app\common\model\UserRoleModel;
-use think\Validate;
+use think\facade\Validate;
 
 //个人中心
 class Ucenter extends Base
@@ -134,7 +131,7 @@ class Ucenter extends Base
     public function modifyPassword()
     {
         $params = request()->put();
-        $validate = Validate::make([
+        $validate = Validate::rule([
             'oldPassword' => 'require',
             'password' => 'require|length:6,20|alphaDash'
         ]);
@@ -142,20 +139,15 @@ class Ucenter extends Base
         if (!$validate->check($params)) {
             return ajax_error(ResultCode::E_PARAM_VALIDATE_ERROR, $validate->getError());
         }
+
         $uid = $this->user_info;
-        $uid = $uid->uid;
-        $user = UserModel::find($uid);
 
         $oldPassword = $params['oldPassword'];
-        $oldPassword = encrypt_password($oldPassword, $user['salt']);
+        $password = $params['password'];
 
-        if ($user['password'] !== $oldPassword) {
-            return ajax_error(ResultCode::E_PARAM_ERROR, '旧密码不正确');
-        }
-
-        $password = encrypt_password($params['password'], $user['salt']);
-        $res = $user->isUpdate(true)->save(['password' => $password]);
-        if (!$res) {
+        $userLogic = new UserLogic();
+        $result = $userLogic->modifyPassword($uid, $oldPassword, $password);
+        if (!$result) {
             return ajax_error(ResultCode::E_DB_ERROR, '修改失败!');
         }
 

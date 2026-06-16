@@ -8,7 +8,6 @@ use app\common\model\RoleMenuModel;
 use app\common\model\RoleModel;
 use app\common\model\UserModel;
 use app\common\model\UserRoleModel;
-use think\facade\Cache;
 use think\facade\Validate;
 
 class Role extends Base
@@ -105,7 +104,7 @@ class Role extends Base
 
         $params['update_by'] = $userInfo['nickname'] ?? '';
         $params['update_time'] = date_time();
-        $res = $role->save($params);
+        $res = $role->save($params, ['id' => $params['id']]);
         if (!$res) {
             return ajax_return(ResultCode::E_DB_ERROR, '操作失败!');
         }
@@ -118,11 +117,11 @@ class Role extends Base
     //删除角色
     public function delete($id)
     {
-        $Role = RoleModel::find($id);
-        if (!$Role) {
+        $role = RoleModel::find($id);
+        if (!$role) {
             return ajax_return(ResultCode::E_DATA_NOT_FOUND, '角色不存在!');
         }
-        $res = $Role->save(['status' => RoleModel::STATUS_DELETED]);
+        $res = $role->save(['status' => RoleModel::STATUS_DELETED]);
         if (!$res) {
             return ajax_return(ResultCode::E_DB_ERROR, '操作失败!');
         }

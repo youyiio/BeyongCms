@@ -2,7 +2,6 @@
 namespace app\common\model;
 
 use app\api\library\RolePermission;
-use think\facade\Env;
 use think\facade\Cache;
 
 /**
@@ -12,31 +11,20 @@ class MenuModel extends BaseModel
 {
     protected $name = 'sys_menu';
 
-    // public static function init()
-    // {
-    //     MenuModel::afterInsert(function ($menu) {
-    //         Cache::clear('menu');
-    //     });
-    //     MenuModel::afterUpdate(function ($menu) {
-    //         Cache::clear('menu');
-    //     });
-    //     MenuModel::afterDelete(function ($menu) {
-    //         Cache::clear('menu');
-    //     });
-    // }
     public static function onAfterInsert($menu)
     {
-        Cache::clear('menu');
+        //Cache::tag('menu')->clear();
+        Cache::delete('menu');
     }
 
     public static function onAfterUpdate($menu)
     {
-        Cache::clear('menu');
+        Cache::delete('menu');
     }
 
     public static function onAfterDelete($menu)
     {
-        Cache::clear('menu');
+        Cache::delete('menu');
     }
 
     //关联角色表
@@ -112,7 +100,7 @@ class MenuModel extends BaseModel
                 }
              
                 //是否有权限
-                if (!$auth->checkPermission(session('uid'), strtolower($v['path']), 'admin')) {
+                if (!$auth->checkPermission(session('uid'), $v['path'], 'admin')) {
                     unset($data[$k]);
                     unset($data['_data']);
                     continue;
@@ -124,7 +112,7 @@ class MenuModel extends BaseModel
                         unset($data[$k]['_data'][$m]['_data']);
                         continue;
                     }
-                    if (!$auth->checkPermission(session('uid'), strtolower($v['path']), 'admin')) {
+                    if (!$auth->checkPermission(session('uid'), $v['path'], 'admin')) {
                         unset($data[$k]['_data'][$m]);
                         unset($data[$k]['_data'][$m]['_data']);
                         continue;
@@ -135,7 +123,7 @@ class MenuModel extends BaseModel
                             unset($data[$k]['_data'][$m]['_data'][$o]['_data']);
                             continue;
                         }
-                        if (!$auth->checkPermission(session('uid'), strtolower($v['path']), 'admin')) {
+                        if (!$auth->checkPermission(session('uid'), $v['path'], 'admin')) {
                             unset($data[$k]['_data'][$m]['_data'][$o]);
                             unset($data[$k]['_data'][$m]['_data'][$o]['_data']);
                             continue;
@@ -144,7 +132,7 @@ class MenuModel extends BaseModel
                 }
             }
         }
-        //dump($data);die;
+        
         return $data;
     }
 

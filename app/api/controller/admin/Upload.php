@@ -37,15 +37,12 @@ class Upload extends Base
         $remark = request()->param('remark/s', 0);
 
         //表单验证
-        $check = Validate::check(
-            ['file' => $tmpFile],
-            ['file' => 'require|image|fileSize:4097152'],
-            [
-                'file.require' => '请上传图片',
-                'file.image' => '不是图片文件',
-                'file.fileSize' => '图片太大了',
-            ]
-        );
+        //表单验证
+        $check = Validate::rule('UploadImage',  ['file' => 'require|image|fileSize:4097152'])->message([
+            'file.require' => '请上传图片',
+            'file.image' => '不是图片文件',
+            'file.fileSize' => '图片太大了'
+            ])->check(['file' => $tmpFile]);
         if ($check !== true) {
             return ajax_return(ResultCode::E_PARAM_VALIDATE_ERROR, '参数验证失败！');
         }

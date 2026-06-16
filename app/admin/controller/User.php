@@ -133,7 +133,7 @@ class User extends Base
                 }
                 $UserRoleModel->insertAll($group);
             }
-            Cache::tag('menu')->rm($uid); //删除用户菜单配置缓存
+            Cache::delete($uid . '_menu'); //删除用户菜单配置缓存
 
             $userModel = new UserModel();
             $res = $userModel->editUser($uid, $data);

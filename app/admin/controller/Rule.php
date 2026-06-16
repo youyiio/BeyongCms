@@ -130,7 +130,7 @@ class Rule extends Base
         $isMenu = $isMenu === 'true' ? true : false;
 
         $MenuModel = new MenuModel();
-        $result = $MenuModel->save(['id' => $id, 'is_menu' => $isMenu]);
+        $result = $MenuModel->save(['is_menu' => $isMenu], ['id' => $id]);
         if ($result) {
             return $this->success('修改成功', url($this->appPath . 'Rule/index')->build());
         } else {
@@ -230,11 +230,7 @@ class Rule extends Base
             $result = $RoleMenuModel->insertAll($group);
 
             if ($result !== false) {
-                $UserRoleModel = new UserRoleModel();
-                $groupUserIds = $UserRoleModel->where('role_id', $roleId)->column('uid');
-                foreach ($groupUserIds as $uid) {
-                    Cache::tag('menu')->rm($uid);
-                }
+                Cache::tag('role_' . $roleId . '_menu')->clear();
                 return $this->success('操作成功', url($this->appPath . 'Rule/group')->build());
             } else {
                 return $this->error('操作失败');
@@ -245,7 +241,7 @@ class Rule extends Base
         // 获取用户组数据
         $RoleModel = new RoleModel();
         $roleData = $RoleModel->where('id', $id)->find();
-        $roleData['rules'] = MenuModel::hasWhere('roleMenus', [['role_id', '=', $id]])->where('belongs_to', '=', 'admin')->column('sys_menu.id');
+        $roleData['rules'] = MenuModel::hasWhere('roleMenus', [['role_id', '=', $id]])->where('belongs_to', '=', 'admin')->column('menu_model.id');
 
         // 获取规则数据
         $MenuModel = new MenuModel();
@@ -336,7 +332,7 @@ class Rule extends Base
         if ($count == 0) {
             $res = $UserRoleModel->save($data);
             if ($res) {
-                Cache::tag('menu')->rm($data['uid']);
+                Cache::delete($data['uid'] . '_menu');
                 return $this->success('操作成功');
             } else {
                 return $this->error('操作失败');
@@ -359,7 +355,7 @@ class Rule extends Base
         $UserRoleModel = new UserRoleModel();
         $numRows = $UserRoleModel->where($where)->delete();
         if ($numRows >= 1) {
-            Cache::tag('menu')->rm($data['uid']);
+            Cache::delete($data['uid'] . '_menu');            
             return $this->success('操作成功', url($this->appPath .  'Rule/userList')->build());
         } else {
             return $this->error('操作失败');
@@ -405,7 +401,7 @@ class Rule extends Base
                     $UserRoleModel = new UserRoleModel();
                     $UserRoleModel->insertAll($group);
                 }
-                Cache::tag('menu')->rm($newUserId);
+                Cache::delete($newUserId . '_menu');
                 // 操作成功
                 return $this->success('添加成功', url($this->appPath . 'Rule/userList')->build());
             } else {
@@ -445,7 +441,7 @@ class Rule extends Base
                 ];
             }
             $UserRoleModel->insertAll($group);
-            Cache::tag('menu')->rm($uid);
+            Cache::delete($uid . '_menu');
 
             $userModel = new UserModel();
             if (empty($data['password'])) {

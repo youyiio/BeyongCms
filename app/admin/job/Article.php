@@ -133,7 +133,7 @@ class Article
                 'post_time' => $meta->meta_value,
             ];
 
-            $result = $ArticleModel->isUpdate(true)->save($data, ['id' => $articleId]);
+            $result = $ArticleModel->update($data, ['id' => $articleId]);
             if ($result) {
                 $successCount++;
             }
@@ -175,7 +175,7 @@ class Article
                 'post_time' => date_time(),
             ];
 
-            $result = $ArticleModel->isUpdate(true)->save($data, ['id' => $id]);
+            $result = $ArticleModel->update($data, ['id' => $id]);
             if ($result) {
                 $successCount++;
             }

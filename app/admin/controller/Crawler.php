@@ -93,7 +93,7 @@ class Crawler extends Base
                 return $this->error(validate('Crawler')->getError());
             }
 
-            $res = $CrawlerModel->save($data);
+            $res = $CrawlerModel->save($data, ['id' => $id]);
             if ($res === true) {
                 return $this->success('规则修改成功！', url($this->appPath . 'Crawler/index')->build());
             } else {
