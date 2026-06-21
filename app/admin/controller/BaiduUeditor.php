@@ -10,6 +10,8 @@ use beyong\commons\utils\StringUtils;
 use think\facade\Env;
 use think\Image;
 use think\Response;
+use think\facade\Validate;
+use think\exception\FileException;
 
 class BaiduUeditor extends Base
 {
@@ -200,26 +202,41 @@ class BaiduUeditor extends Base
      */
     private function upFile($config, $fieldName)
     {
+       $tmpFile = request()->file('upfile');
 
-        $validate = [
+        $rule = [
             'size' => $config['maxSize'],
             'ext' => $this->format_exts($config['allowFiles'])
         ];
 
-        $dirname = $this->rootPath . $this->savePath;
-        $tmpFile = request()->file('upfile');
+        $check = Validate::rule('FileUpload', $rule)->message([
+            'size' => '尺寸过大', 
+            'ext' => '文件类型不符合要求'
+        ])->check(['size' => $tmpFile->getSize(), 'ext' => $tmpFile->getExtension()]);
+        if ($check !== true) {
+             $data = array(
+                'state' => $check,
+            );
+            return json_encode($data);
+        }
+
+        $dirname = $this->rootPath . $this->savePath;       
 
         //$saveName = $tmpFile->getOriginalName();
         $saveName = StringUtils::getRandString(20) . "." . $tmpFile->getOriginalExtension();
         $saveNameWithPath = date('Ymd') . DIRECTORY_SEPARATOR . $saveName;
-        $file = $tmpFile->move($dirname . DIRECTORY_SEPARATOR . date('Ymd') , $saveName); //tp方法会自动加上日期date('Ymd');$info->getSaveName()为date('Ymd')/name.ext;
-        $savePath = $this->savePath;
-        if (!$file) {
-            $data = array(
-                'state' => $tmpFile->getError(),
+
+        try {
+            $file = $tmpFile->move($dirname . DIRECTORY_SEPARATOR . date('Ymd'), $saveName);
+        } catch (FileException $e) {
+             $data = array(
+                'state' => $e->getMessage(),
             );
             return json_encode($data);
         }
+
+        $savePath = $this->savePath;
+
 
         $fname = $dirname . DIRECTORY_SEPARATOR . $saveNameWithPath;
         $imagearr = explode(',', 'jpg,gif,png,jpeg,bmp,ttf,tif');

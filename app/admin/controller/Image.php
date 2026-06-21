@@ -2,9 +2,7 @@
 namespace app\admin\controller;
 
 use app\common\model\FileModel;
-use app\common\model\ImageModel;
-use app\common\model\UserModel;
-use think\facade\Env;
+use think\exception\FileException;
 
 /**
  * 图片控制器
@@ -57,10 +55,12 @@ class Image extends Base
             //文件验证&文件move操作
             $saveName = $tmpFile->getOriginalName();
             $saveNamePath = date('Ymd') . DIRECTORY_SEPARATOR . $saveName;
-            $file = $tmpFile->move($path . DIRECTORY_SEPARATOR . date('Ymd'), $saveName);
-            if (!$file) {
+            $file = null;
+            try {
+                $file = $tmpFile->move($path . DIRECTORY_SEPARATOR . date('Ymd'), $saveName);
+            } catch (FileException $e) {                
                 // 上传失败获取错误信息
-                return $this->error($tmpFile->getError());
+                return $this->error($e->getMessage());
             }
 
             list($width, $height, $type) = getimagesize($file->getRealPath()); //获得图片宽高类型

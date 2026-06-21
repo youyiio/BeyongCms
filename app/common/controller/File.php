@@ -3,6 +3,9 @@
 namespace app\common\controller;
 
 use app\common\model\FileModel;
+use think\facade\Validate;
+use beyong\commons\utils\StringUtils;
+use think\exception\FileException;
 
 /**
  * 文件上传组件
@@ -42,23 +45,30 @@ trait File
             'ext' => $exts
         ];
 
+        //不能信任前端传进来的文件名, thinkphp默认使表单里的filename后
+        $check = Validate::rule('FileUpload', $rule)->message([
+            'size' => '尺寸过大', //200M
+            'ext' => '文件类型不符合要求'
+        ])->check(['size' => $tmpFile->getSize(), 'ext' => $tmpFile->getExtension()]);
+        if ($check !== true) {
+            return $this->result($check);
+        }
+        
         //文件目录
+        $saveName = StringUtils::getRandString(20) . "." . $tmpFile->getOriginalExtension();
+        $saveNameWithPath = date('Ymd') . DIRECTORY_SEPARATOR . $saveName;
         $filePath = root_path() . 'public';
-        $fileUrl = DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . 'file';
+        $fileUrl = DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . 'file' . DIRECTORY_SEPARATOR . $saveNameWithPath;
         $path = $filePath . $fileUrl;
 
-        //不能信任前端传进来的文件名, thinkphp默认使表单里的filename后
-        if ($tmpFile->getSize() > 200) {
-            return $this->result('尺寸过大');
-        }
-        if (in_array($tmpFile->getExtension(), (array)$exts)) {
-            return $this->result('文件类型不符合要求');
-        }
 
-        $file = $tmpFile->move($path);
-        $fileInfo = $file->getFileInfo();
-        $saveName = $fileInfo['filename']; //实际包含日期+名字：如20180724/erwrwiej...dfd.ext
-        $fileUrl = DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . 'file' . DIRECTORY_SEPARATOR . $saveName;
+        $file = null;
+        try {
+            $movePath = str_replace(DIRECTORY_SEPARATOR . $saveName, '', $path);
+            $file = $tmpFile->move($movePath, $saveName);
+        } catch (FileException $e) {
+            return $this->error($e->getMessage());
+        }
 
         $fileSize = $file->getSize();
         $ext = $file->getExtension();
@@ -92,44 +102,52 @@ trait File
         ini_set('memory_limit', '256M');
         //ini_set('post_max_size', '128M');
         //ini_set('upload_max_filesize', '128M');
-        $file = request()->file('file');
-        if (empty($file)) {
+        $tmpFile = request()->file('file');
+        if (empty($tmpFile)) {
             //return $this->error('请选择上传文件');
             return $this->result(null, 0, '请选择上传文件', 'json');
         }
+        
         $rule = [
             'ext' => 'zip,rar,exe',
             'size' => 1024 * 1024 * 200, //200M
         ];
+        //不能信任前端传进来的文件名, thinkphp默认使表单里的filename后
+        $check = Validate::rule('FileUpload', $rule)->message([
+            'size' => '尺寸过大', //200M
+            'ext' => '文件类型不符合要求'
+        ])->check(['size' => $tmpFile->getSize(), 'ext' => $tmpFile->getExtension()]);
+        if ($check !== true) {
+            return $this->result($check);
+        }
 
+        //文件目录
+        $saveName = StringUtils::getRandString(20) . "." . $tmpFile->getOriginalExtension();
+        $saveNameWithPath = date('Ymd') . DIRECTORY_SEPARATOR . $saveName;
         $filePath = root_path() . 'public';
-        $fileUrl = DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . 'software';
+        $fileUrl = DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . 'software' . DIRECTORY_SEPARATOR . $saveNameWithPath;
         $path = $filePath . $fileUrl;
-        $check = $file->validate($rule);
 
-        if (!$check) {
-            return $this->error($file->getError());
+        $file = null;
+        try {
+            $movePath = str_replace(DIRECTORY_SEPARATOR . $saveName, '', $path);
+            $file = $tmpFile->move($movePath, $saveName);
+        } catch (FileException $e) {
+            return $this->error($e->getMessage());
         }
 
         $version = input('param.version');
-        $fileName = $file->getInfo('name');
 
-        //不传值时，系统生成文件名，格式为YYYYmmdd/xxx.....xxxx.ext
-        $saveName = $version . DIRECTORY_SEPARATOR . $fileName; //文件命名
-        $info = $file->move($path, $saveName);
-        //$saveName = $info->getSaveName();
-        $fileUrl = DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . 'software' . DIRECTORY_SEPARATOR . $saveName;
-
-        $fileSize = $info->getSize();
+        $fileSize = $file->getSize();
 
         //原始上传文件名
-        $fileName = $_FILES['file']['name'];
+        $originalName = $tmpFile->getOriginalName();
 
         //存入数据库
         $data = [
             'file_url' => $fileUrl,
             'file_path' => $filePath,
-            'file_name' => $fileName,
+            'file_name' => $saveName,
             'file_size' => $fileSize,
             'create_time' => date_time()
         ];
@@ -137,7 +155,7 @@ trait File
         $fileId = $FileModel->insertGetId($data);
 
         $data['id'] = $fileId;
-        $data['ext'] = $info->getExtension(); //文件后缀
+        $data['ext'] = $file->getExtension(); //文件后缀
 
         $this->success('文件上传成功', false, $data);
     }
@@ -145,7 +163,7 @@ trait File
     //上传应用,移动类应用，如apk, ipa
     public function uploadApp()
     {
-        $file = request()->file('file');
+        $tmpFile = request()->file('file');
         if (empty($file)) {
             return $this->error('请选择上传文件');
         }
@@ -154,35 +172,45 @@ trait File
             'size' => 1024 * 1024 * 200, //200M
         ];
 
-        $filePath = root_path() . 'public';
-        $fileUrl = DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . 'app';
-        $path = $filePath . $fileUrl;
-        $check = $file->validate($rule);
-
-        if (!$check) {
-            return $this->error($file->getError());
+        //不能信任前端传进来的文件名, thinkphp默认使表单里的filename后
+        $check = Validate::rule('FileUpload', $rule)->message([
+            'size' => '尺寸过大', //200M
+            'ext' => '文件类型不符合要求'
+        ])->check(['size' => $tmpFile->getSize(), 'ext' => $tmpFile->getExtension()]);
+        if ($check !== true) {
+            return $this->result($check);
         }
 
         $appId = input('param.app_id');
         $version = input('param.version');
         $fileName = $file->getInfo('name');
 
-        //不传值时，系统生成文件名，格式为YYYYmmdd/xxx.....xxxx.ext
-        $saveName = $appId . DIRECTORY_SEPARATOR . $version . DIRECTORY_SEPARATOR . $fileName; //文件命名
-        $info = $file->move($path, $saveName);
-        //$saveName = $info->getSaveName();
-        $fileUrl = DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . $saveName;
+         //文件目录
+        $saveName = StringUtils::getRandString(20) . "." . $tmpFile->getOriginalExtension();
+        $saveNameWithPath = $appId . DIRECTORY_SEPARATOR . $version . DIRECTORY_SEPARATOR . $saveName;
+        $filePath = root_path() . 'public';
+        $fileUrl = DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . $saveNameWithPath;
+        $path = $filePath . $fileUrl;
 
-        $fileSize = $info->getSize();
+        $file = null;
+        try {
+            $movePath = str_replace(DIRECTORY_SEPARATOR . $saveName, '', $path);
+            $file = $tmpFile->move($movePath, $saveName);
+        } catch (FileException $e) {
+            return $this->error($e->getMessage());
+        }
+
+
+        $fileSize = $file->getSize();
 
         //原始上传文件名
-        $fileName = $_FILES['file']['name'];
+        $originalName = $tmpFile->getOriginalName();
 
         //存入数据库
         $data = [
             'file_url' => $fileUrl,
             'file_path' => $filePath,
-            'file_name' => $fileName,
+            'file_name' => $saveName,
             'file_size' => $fileSize,
             'create_time' => date_time()
         ];
@@ -190,7 +218,7 @@ trait File
         $fileId = $FileModel->insertGetId($data);
 
         $data['id'] = $fileId;
-        $data['ext'] = $info->getExtension(); //文件后缀
+        $data['ext'] = $file->getExtension(); //文件后缀
 
         $this->success('文件上传成功', false, $data);
     }

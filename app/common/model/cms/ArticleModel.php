@@ -273,7 +273,7 @@ class ArticleModel extends BaseModel
             throw new ModelException(0, $validate->getError());
         }
 
-        $res = $this->update($data);
+        $res = $art->update($data);
 
         // 删除中间表数据
         if (!empty($data['category_ids'])) {
@@ -282,34 +282,34 @@ class ArticleModel extends BaseModel
         }
 
         //标签，添加至meta表
-        $this->meta(ArticleMetaModel::KEY_TAG, null, BaseModel::MODE_MULTIPLE_VALUE);
+        $art->meta(ArticleMetaModel::KEY_TAG, null, BaseModel::MODE_MULTIPLE_VALUE);
         if (!empty($data['tags'])) {
             $tags = explode(',', $data['tags']);
             foreach ($tags as $tag) {
                 if (!empty($tag)) {
-                    $this->meta(ArticleMetaModel::KEY_TAG, $tag, BaseModel::MODE_MULTIPLE_VALUE);
+                    $art->meta(ArticleMetaModel::KEY_TAG, $tag, BaseModel::MODE_MULTIPLE_VALUE);
                 }
             }
         }
 
         //附加图片，添加至meta表
-        $this->meta(ArticleMetaModel::KEY_IMAGE, null, BaseModel::MODE_MULTIPLE_VALUE);
+        $art->meta(ArticleMetaModel::KEY_IMAGE, null, BaseModel::MODE_MULTIPLE_VALUE);
         if (!empty($data['meta_image_ids'])) {
             $imageIds = explode(',', $data['meta_image_ids']);
             foreach ($imageIds as $imageId) {
                 if (!empty($imageId)) {
-                    $this->meta(ArticleMetaModel::KEY_IMAGE, $imageId, BaseModel::MODE_MULTIPLE_VALUE);
+                    $art->meta(ArticleMetaModel::KEY_IMAGE, $imageId, BaseModel::MODE_MULTIPLE_VALUE);
                 }
             }
         }
 
         //附加文件，添加至meta表
-        $this->meta(ArticleMetaModel::KEY_FILE, null, BaseModel::MODE_MULTIPLE_VALUE);
+        $art->meta(ArticleMetaModel::KEY_FILE, null, BaseModel::MODE_MULTIPLE_VALUE);
         if (!empty($data['meta_file_ids'])) {
             $fileIds = explode(',', $data['meta_file_ids']);
             foreach ($fileIds as $fileId) {
                 if (!empty($fileId)) {
-                    $this->meta(ArticleMetaModel::KEY_FILE, $fileId, BaseModel::MODE_MULTIPLE_VALUE);
+                    $art->meta(ArticleMetaModel::KEY_FILE, $fileId, BaseModel::MODE_MULTIPLE_VALUE);
                 }
             }
         }
