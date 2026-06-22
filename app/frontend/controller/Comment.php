@@ -76,7 +76,7 @@ class Comment extends Base
 
             if (session('uid')) {
                 $uid = session('uid');
-                $user = UserModel::get($uid);
+                $user = UserModel::find($uid);
                 $author = $user->nickname;
                 $data['uid'] = $uid;
                 $data['author'] = $author;

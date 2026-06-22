@@ -2,8 +2,8 @@
 namespace app\common\model\api;
 
 use app\common\model\BaseModel;
-use think\helper\Time;
 use beyong\commons\utils\StringUtils;
+use Jenssegers\Date\Date;
 
 class TokenModel extends BaseModel
 {
@@ -27,8 +27,9 @@ class TokenModel extends BaseModel
         $data['token'] = StringUtils::getRandString(18);
 
         $data['status'] = TokenModel::STATUS_USABLE;
-        $expireTime = Time::daysAfter(30);
-        $data['expire_time'] = date('Y-m-d H:i:s', $expireTime); //30天后过期
+        $now = Date::now();
+        $expireTime = $now->copy()->addDays(30);
+        $data['expire_time'] = $expireTime->format('Y-m-d H:i:s'); //30天后过期
         $data['create_time'] = date_time();
         $data['update_time'] = date_time();
 
@@ -38,7 +39,7 @@ class TokenModel extends BaseModel
             return false;
         }
 
-        $tokenInfo = TokenModel::get($id);
+        $tokenInfo = (new TokenModel())->find($id);
         return $tokenInfo;
     }
 
@@ -56,8 +57,9 @@ class TokenModel extends BaseModel
 
         $tokenInfo->token = StringUtils::getRandString(18);
         $tokenInfo->status = TokenModel::STATUS_USABLE;
-        $expireTime = Time::daysAfter(30);
-        $tokenInfo->expire_time = date('Y-m-d H:i:s', $expireTime); //30天后过期
+        $now = Date::now();
+        $expireTime = $now->copy()->addDays(30);
+        $expireTime->format('Y-m-d H:i:s');; //30天后过期
 
         //成功返回1
         $result = $tokenInfo->save();
@@ -65,7 +67,7 @@ class TokenModel extends BaseModel
             return false;
         }
 
-        $tokenInfo = TokenModel::get($tokenInfo->id);
+        $tokenInfo = (new TokenModel())->find($tokenInfo->id);
 
         return $tokenInfo;
     }

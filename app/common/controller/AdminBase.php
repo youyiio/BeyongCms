@@ -67,7 +67,7 @@ trait AdminBase
         if (Cache::has($uid . '_myself')) {
             $myself = Cache::get($uid . '_myself');
         } else {
-            $myself = UserModel::get($uid);
+            $myself = UserModel::find($uid);
             Cache::set($uid . '_myself', $myself);
         }
         $this->assign('myself', $myself);

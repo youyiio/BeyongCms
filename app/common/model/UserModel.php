@@ -199,7 +199,7 @@ class UserModel extends BaseModel
 
     public function modifyPassword($userId, $password)
     {
-        $user = UserModel::get($userId);
+        $user = UserModel::find($userId);
         $newPassword = encrypt_password($password, $user['salt']);
 
         $data['id'] = $userId;

@@ -455,7 +455,7 @@ function get_image($id)
         $FileModel = new \app\common\model\FileModel();
         return $FileModel->where('id', 'in', $id)->select();
     } else {
-        return \app\common\model\FileModel::get($id);
+        return \app\common\model\FileModel::find($id);
     }
 }
 
@@ -471,7 +471,7 @@ function get_file($id)
         $FileModel = new \app\common\model\FileModel();
         return $FileModel->where('id', 'in', $id)->select();
     } else {
-        return \app\common\model\FileModel::get($id);
+        return \app\common\model\FileModel::find($id);
     }
 }
 
