@@ -64,7 +64,7 @@ class BaseModel extends Model
 
         $pk = $this->getPk();
         $pkVal = $this->$pk;
-        $this->where($pk, $pkVal)->setField('ext', json_encode($exts));
+        $this->where($pk, $pkVal)->update(['ext' => json_encode($exts)]);
     }
 
     //meta扩展表

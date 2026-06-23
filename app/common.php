@@ -882,9 +882,9 @@ function url_get_domain($url = '', $root_domain = false, &$details = [])
 }
 
 //标题截取
-function sub_str($str, $start = 0, $length = 17)
+function sub_str(string|null $str, $start = 0, $length = 17)
 {
-    if (strlen($str) <= $length) {
+    if (empty($str) || strlen($str) <= $length) {
         return $str;
     }
     $str = mb_substr($str, $start, $length);

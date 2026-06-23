@@ -6,7 +6,6 @@ use think\facade\Cache;
 use think\facade\Session;
 use think\captcha\facade\Captcha;
 use think\exception\ValidateException;
-use think\facade\Config;
 use think\facade\View;
 
 use app\common\model\ActionLogModel;
@@ -313,7 +312,7 @@ class Sign extends BaseController
         $CodeLogic = new CodeLogic();
         if ($this->defaultConfig['reset_code_type'] === 'email') {
             //发送重置邮件
-            $res = $CodeLogic->sendResetCodeByEmail($username);
+            $res = $CodeLogic->sendResetCodeEmail($username);
             if ($res) {
                 return $this->success('验证码已发生到您的邮箱!', url('Sign/reset', ['username' => $username]));
             } else {
@@ -450,9 +449,10 @@ class Sign extends BaseController
         cookie('uid', null);
         cookie($uid . CACHE_SEPARATOR . 'login_hash', null);
 
-        //清理相关缓存
+        //清理相关缓存        
         cache($uid . '_menu', null);
         cache($uid . CACHE_SEPARATOR . 'login_hash', null);
+        Cache::tag('uid' . CACHE_SEPARATOR. $uid)->clear();
 
         return $this->redirect($this->defaultConfig['logout_success_view']);
     }

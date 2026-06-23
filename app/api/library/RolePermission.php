@@ -27,7 +27,7 @@ class RolePermission
         $permissions = Cache::get("permission" . CACHE_SEPARATOR . $module . $uid, null);
         if ($permissions === null) {
             $permissions = $this->getPermissionList($uid, $module, $name);
-            Cache::set("permission" . CACHE_SEPARATOR . $module . $uid, $permissions, 3600);
+            Cache::tag('uid' . CACHE_SEPARATOR . $uid)->set("permission" . CACHE_SEPARATOR . $module . $uid, $permissions, 3600);
         }
         if (!array_key_exists($permission, $permissions)) {
             return false;
@@ -41,10 +41,8 @@ class RolePermission
     {
 
         $roleIds = UserRoleModel::where(['uid' => $uid])->column('role_id');
-
         $RolemenuModel = new RoleMenuModel();
         $menuIds = $RolemenuModel->where('role_id', 'in', $roleIds)->column('menu_id');
-
         $where[] = [
             ['belongs_to', '=', $module],
             ['id', 'in', $menuIds]

@@ -76,7 +76,7 @@ class UserModel extends BaseModel
             $exts[$key] = $value;
         }
 
-        $this->where('id', $this->id)->setField('ext', json_encode($exts));
+        $this->where('id', $this->id)->update(['ext' => json_encode($exts)]);
     }
 
     public function createUser($mobile, $password, $nickname = '', $email = '', $account = '', $status = UserModel::STATUS_ACTIVED)
@@ -112,8 +112,10 @@ class UserModel extends BaseModel
 
         //设置来源及入口url
         if (Cookie::has('from_referee') || Cookie::has('entrance_url')) {
-            $user->from_referee = sub_str(Cookie::get('from_referee'), 0, 250);
-            $user->entrance_url = sub_str(Cookie::get('entrance_url'), 0, 250);
+            $fromReferee = Cookie::get('from_referee');
+            $user->from_referee = $fromReferee ? sub_str($fromReferee, 0, 250) : null;
+            $entranceUrl = Cookie::get('entrance_url');
+            $user->entrance_url = $entranceUrl ? sub_str($entranceUrl, 0, 250) : null;
         }
 
         $result = $user->save();
@@ -199,7 +201,7 @@ class UserModel extends BaseModel
 
     public function modifyPassword($userId, $password)
     {
-        $user = UserModel::find($userId);
+        $user = $this->find($userId);
         $newPassword = encrypt_password($password, $user['salt']);
 
         $data['id'] = $userId;

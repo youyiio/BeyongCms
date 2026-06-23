@@ -247,13 +247,13 @@ class User extends Base
     //冻结用户
     public function freeze()
     {
-        $uid = input('uid/d', 0);
-        if ($uid == 0) {
-            return $this->error('参数uid错误');
+        $uids = input('uid/a', []);
+        if (empty($uids)) {
+            return $this->error('请选择要冻结的用户!');
         }
 
         $UserModel = new UserModel();
-        $res = $UserModel->where('id', $uid)->where('status', UserModel::STATUS_ACTIVED)->setField('status', UserModel::STATUS_FREEZED);
+        $res = $UserModel->where('id', 'in', $uids)->where('status', UserModel::STATUS_ACTIVED)->update(['status' => UserModel::STATUS_FREEZED]);
         if ($res) {
             return $this->success('操作成功');
         } else {
@@ -264,16 +264,17 @@ class User extends Base
     //激活用户
     public function active()
     {
-        $uid = input('uid/d', 0);
-        if ($uid == 0) {
-            return $this->error('参数uid错误');
+         $uids = input('uid/a', []);
+        if (empty($uids)) {
+            return $this->error('请选择要激活的用户!');
         }
+
         $UserModel = new UserModel();
-        $res = $UserModel->where('id', $uid)->update(['status' => UserModel::STATUS_ACTIVED]);
+        $res = $UserModel->where('id', 'in', $uids)->where('status', UserModel::STATUS_FREEZED)->update(['status' => UserModel::STATUS_ACTIVED]);
         if ($res) {
-            $this->success('操作成功');
+            return $this->success('操作成功');
         } else {
-            $this->error('操作失败');
+            return $this->error('操作失败');
         }
     }
 

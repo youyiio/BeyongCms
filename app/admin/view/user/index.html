@@ -155,27 +155,37 @@
 <script src="__PUBLIC__/static/inspinia/js/plugins/ladda/ladda.jquery.min.js"></script>
 <script type="text/javascript">
     //批量任务操作 审核,取消审核,删除
-    var l = $('.ajax-batch-set').ladda();
-    l.click(function () {
+    let batchBtn = $('.ajax-batch-set').ladda();
+    batchBtn.click(function () {
         // Start loading
-        $(this).ladda('start');
+        $(batchBtn).ladda('start');
 
-        var uids = getAjaxCheckedValues(); //选择的任务
+        var uids = getAjaxCheckedValues(); //选择的用户
+        if (!uids) {
+            layer.msg("请选择用户!", function () { });
+            $(batchBtn).ladda('stop');
+            return;
+        }
         var action = $(this).data('action');
-        $.each(uids, function (i, uid) {
-            $.post(action, { uid: uid }, function (data) {
-                //console.log(data);
-                if (data.code == 0 && uids.length == 1) {
-                    layer.msg(data.msg, function () { });
-                    location.reload();
-                    return false;
-                }
-            });
-        });
+        // $.each(uids, function (i, uid) {
 
-        setTimeout(function () {
-            location.reload();
-        }, 800);
+        // });
+
+        $.post(action, { uid: uids }, function (data) {
+            //console.log(data);
+            if (data.code != 1) {
+                layer.msg(data.msg, function () { });
+                $(batchBtn).ladda('stop');
+                return false;
+            }
+
+            layer.msg(data.msg, function () {
+                $(batchBtn).ladda('stop');
+                location.reload();
+            });
+
+
+        });
     });
 
     //修改密码
