@@ -66,13 +66,13 @@
                                         class="text text-danger">*</span>:</label>
                                 <div class="col-lg-5">
                                     <input type="text" name="searchText" placeholder="请输入替换的文字，支持正则表达式/regular/Uixs"
-                                        class="form-control" value="{$Response.get.searchText|default=''}"
+                                        class="form-control" value="{$Request.get.searchText|default=''}"
                                         autocomplete="off">
                                     <span class="help-block m-b-none"></span>
                                 </div>
                                 <div class="col-lg-5">
                                     <input type="text" name="replaceText" placeholder="请输入替换后的文本" class="form-control"
-                                        value="{$Response.get.replaceText|default=''}" autocomplete="off">
+                                        value="{$Request.get.replaceText|default=''}" autocomplete="off">
                                     <span class="help-block m-b-none"></span>
                                 </div>
                             </div>

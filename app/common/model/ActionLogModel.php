@@ -41,6 +41,6 @@ class ActionLogModel extends BaseModel
     //表连接：用户
     public function user()
     {
-        return $this->belongsTo('UserModel', 'uid', 'id');
+        return $this->belongsTo('UserModel', 'username', 'id');
     }
 }

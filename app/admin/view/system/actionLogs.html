@@ -33,7 +33,7 @@
                         <form method="get" role="form" class="form-inline">
                             <div class="form-group" style="margin-top: -5px">
                                 <input style="margin-top: 5px" type="text" name="key" placeholder="关键字"
-                                    class="form-control m-b-xs" value="{$Response.get.key|default=''}">
+                                    class="form-control m-b-xs" value="{$Request.get.key|default=''}">
                             </div>
                             <div class="form-group">
                                 <select name="action" class="form-control m-b-xs">
@@ -54,11 +54,11 @@
                             <div class="form-group" style="margin-top: -5px;">
                                 <input type="text" autocomplete="off" class="form-datetime form-control"
                                     placeholder="起始日期" id="queryDate" name="startTime"
-                                    value="{$Response.get.startTime |default=$startTime}">
+                                    value="{$Request.get.startTime |default=$startTime}">
                             </div>
                             <div class="form-group" style="margin-top: -5px">
                                 <input type="text" autocomplete="off" class="form-datetime form-control"
-                                    placeholder="终止日期" name="endTime" value="{$Response.get.endTime |default=$endTime}">
+                                    placeholder="终止日期" name="endTime" value="{$Request.get.endTime |default=$endTime}">
                             </div>
                             <button type="submit" class="btn btn-primary m-b-xs">查找</button>
                         </form>
@@ -105,7 +105,7 @@
                                 <!-- <td><input type="checkbox" class="ajax-check" id="{$vo.id}"></td> -->
                                 <td>{$vo.id}</td>
                                 <td><a
-                                        href="{:url('/admin/User/viewUser',['uid'=>$vo.username])}">{$vo.user.username|default=""}</a>
+                                        href="{:url('/admin/User/viewUser',['uid'=>$vo.username])}">{$vo.user.nickname|default=""}</a>
                                 </td>
                                 <td>{$vo.action_text}</td>
                                 <td>{$vo.module}</td>

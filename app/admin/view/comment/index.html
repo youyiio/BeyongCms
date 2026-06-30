@@ -44,16 +44,16 @@
                         <form method="get" role="form" class="form-inline">
                             <div class="form-group">
                                 <input type="text" name="key" placeholder="关键词" class="form-control m-b-xs"
-                                    value="{$Response.get.key|default=''}">
+                                    value="{$Request.get.key|default=''}">
                             </div>
                             <div class="form-group">
                                 <input type="text" autocomplete="off" class="form-control m-b-xs form-datetime"
                                     placeholder="起始日期" id="queryDate" name="startTime"
-                                    value="{$Response.get.startTime |default=$startTime}">
+                                    value="{$Request.get.startTime |default=$startTime}">
                             </div>
                             <div class="form-group">
                                 <input type="text" autocomplete="off" class="form-control m-b-xs form-datetime"
-                                    placeholder="终止日期" name="endTime" value="{$Response.get.endTime |default=$endTime}">
+                                    placeholder="终止日期" name="endTime" value="{$Request.get.endTime |default=$endTime}">
                             </div>
                             <div class="form-group">
                                 <button type="submit" class="btn btn-primary m-b-xs">查找</button>

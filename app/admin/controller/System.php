@@ -274,7 +274,7 @@ class System extends Base
     {
         $ActionLogModel = new ActionLogModel();
 
-        $key = input('param.key');
+        $keyword = input('param.keyword');
         $action = input('param.action', '');
 
         $startTime = input('param.startTime');
@@ -288,17 +288,17 @@ class System extends Base
         $endDatetime = date('Y-m-d 23:59:59', strtotime($endTime));
 
         $where = [
-            ['remark', 'like', "%{$key}%"],
+            ['remark', 'like', "%{$keyword}%"],
             ['action', '=', $action],
             ['create_time', 'between', [$startDatetime, $endDatetime]],
         ];
-        if ($action == '' && $key == '') {
+        if ($action == '' && $keyword == '') {
             $where = [
                 ['create_time', 'between', [$startDatetime, $endDatetime]],
             ];
         } else if ($action == '') {
             $where = [
-                ['remark', 'like', "%{$key}%"],
+                ['remark', 'like', "%{$keyword}%"],
                 ['create_time', 'between', [$startDatetime, $endDatetime]],
             ];
         }

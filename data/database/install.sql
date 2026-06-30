@@ -2,15 +2,11 @@ SET FOREIGN_KEY_CHECKS=0;
 
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     2022-05-13 11:17:18                          */
+/* Created on:     2026-06-28 18:05:07                          */
 /*==============================================================*/
 
 
 drop table if exists api_config_access;
-
-#drop index idx_api_token_uid_access_device on api_token;
-
-drop table if exists api_token;
 
 drop table if exists cms_ad;
 
@@ -76,6 +72,8 @@ drop table if exists cms_feedback;
 
 drop table if exists cms_link;
 
+#drop index idx_action_log_username on sys_action_log;
+
 #drop index idx_action_log_action_username on sys_action_log;
 
 #drop index idx_action_log_create_time on sys_action_log;
@@ -92,7 +90,13 @@ drop table if exists sys_addons;
 
 drop table if exists sys_config;
 
+drop table if exists sys_dept;
+
 drop table if exists sys_file;
+
+drop table if exists sys_hooks;
+
+drop table if exists sys_job;
 
 drop table if exists sys_menu;
 
@@ -101,6 +105,8 @@ drop table if exists sys_menu;
 #drop index idx_message_type_status on sys_message;
 
 drop table if exists sys_message;
+
+drop table if exists sys_object_store;
 
 drop table if exists sys_region;
 
@@ -133,11 +139,12 @@ drop table if exists sys_user_role;
 /*==============================================================*/
 create table api_config_access
 (
-   access_id            int not null auto_increment,
-   name                 varchar(64),
-   access_key           varchar(32) not null,
-   access_secret        varchar(32) not null,
-   create_time          datetime not null,
+   access_id            int not null auto_increment comment '访问授权id',
+   name                 varchar(64) comment '应用名称',
+   access_key           varchar(32) not null comment '访问key',
+   access_secret        varchar(32) not null comment '访问密钥',
+   create_time          datetime not null comment '创建时间',
+   is_deleted           boolean not null default 0 comment '是否删除',
    primary key (access_id)
 )
 ENGINE = InnoDB
@@ -146,48 +153,16 @@ DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci;
 alter table api_config_access comment '访问配置表';
 
 /*==============================================================*/
-/* Table: api_token                                             */
-/*==============================================================*/
-create table api_token
-(
-   id                   int not null auto_increment,
-   uid                  int not null,
-   access_id            int not null,
-   device_id            varchar(64) not null,
-   token                varchar(64) not null,
-   status               tinyint not null comment '1.有效;2.失效;3.过期',
-   expire_time          datetime not null,
-   update_time          datetime not null,
-   create_time          datetime not null,
-   primary key (id)
-)
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci;
-
-alter table api_token comment 'token表';
-
-/*==============================================================*/
-/* Index: idx_api_token_uid_access_device                       */
-/*==============================================================*/
-create index idx_api_token_uid_access_device on api_token
-(
-   uid,
-   access_id,
-   device_id,
-   token
-);
-
-/*==============================================================*/
 /* Table: cms_ad                                                */
 /*==============================================================*/
 create table cms_ad
 (
-   id                   int not null auto_increment,
-   title                varchar(256) not null,
-   url                  varchar(256) not null,
-   image_id             int,
-   sort                 int not null default 0,
-   create_time          datetime not null,
+   id                   int not null auto_increment comment '序号',
+   title                varchar(256) not null comment '标题',
+   url                  varchar(256) not null comment '链接',
+   image_id             int comment '图片id',
+   sort                 int not null default 0 comment '排序',
+   create_time          datetime not null comment '创建时间',
    primary key (id)
 )
 ENGINE = InnoDB
@@ -200,28 +175,28 @@ alter table cms_ad comment '广告表';
 /*==============================================================*/
 create table cms_ad_serving
 (
-   id                   int not null auto_increment,
-   ad_id                int not null,
-   slot_id              int not null,
-   status               tinyint comment '0.下线;1.上线',
-   sort                 int,
-   start_time           datetime,
-   end_time             datetime,
-   update_time          datetime not null,
-   create_time          datetime not null,
+   id                   int not null auto_increment comment '序号，投放id',
+   ad_id                int not null comment '广告id',
+   slot_id              int not null comment '广告槽id',
+   status               tinyint comment '状态 0.下线;1.上线',
+   sort                 int comment '排序',
+   start_time           datetime comment '开始时间',
+   end_time             datetime comment '结束时间',
+   update_time          datetime not null comment '更新时间',
+   create_time          datetime not null comment '创建时间',
    primary key (id)
 )
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
-alter table cms_ad_serving comment '广告投放表,';
+alter table cms_ad_serving comment '广告投放表';
 
 /*==============================================================*/
 /* Table: cms_ad_slot                                           */
 /*==============================================================*/
 create table cms_ad_slot
 (
-   id                   int not null auto_increment,
+   id                   int not null auto_increment comment '序号',
    name                 varchar(32) not null comment '广告槽名称',
    title                varchar(32) not null comment '广告槽标题',
    remark               varchar(128) comment '备注',
@@ -237,24 +212,26 @@ alter table cms_ad_slot comment '广告槽位表';
 /*==============================================================*/
 create table cms_article
 (
-   id                   int not null auto_increment,
-   title                varchar(64) not null,
-   keywords             varchar(128),
-   description          varchar(256),
-   content              mediumtext not null,
-   post_time            datetime,
-   create_time          datetime not null,
-   update_time          datetime not null,
-   status               tinyint,
-   is_top               boolean default 0,
-   thumb_image_id       int,
-   read_count           int not null default 0,
-   comment_count        int not null default 0,
-   author               varchar(64),
-   source               json,
-   uid                  int not null,
+   id                   int not null auto_increment comment '序号',
+   title                varchar(64) not null comment '标题',
+   keywords             varchar(128) comment '关键字',
+   description          varchar(256) comment '说明',
+   content              mediumtext not null comment '内容',
+   post_time            datetime comment '发布时间',
+   create_time          datetime not null comment '创建时间',
+   update_time          datetime not null comment '更新时间',
+   status               tinyint comment '状态',
+   is_top               boolean default 0 comment '是否置顶',
+   thumb_image_id       int comment '缩略图id',
+   read_count           int not null default 0 comment '阅读数量',
+   comment_count        int not null default 0 comment '评论数量',
+   author               varchar(64) comment '作者',
+   source               json comment '文章来源',
+   uid                  int not null comment '用户id',
    sort                 int default 0 comment '排序',
    relateds             text comment '相关文章',
+   extra                json comment '附加数据',
+   is_deleted           tinyint(1) not null default 0 comment '是否删除',
    primary key (id)
 )
 ENGINE = InnoDB
@@ -307,13 +284,13 @@ create index idx_article_uid on cms_article
 /*==============================================================*/
 create table cms_article_data
 (
-   id                   int not null auto_increment,
-   article_a_id         int not null,
-   article_b_id         int not null,
-   title_similar        float not null,
-   content_similar      float not null,
-   update_time          datetime not null,
-   create_time          datetime not null,
+   id                   int not null auto_increment comment '序号',
+   article_a_id         int not null comment '文章Aid',
+   article_b_id         int not null comment '文章Bid',
+   title_similar        float not null comment '标题相似度',
+   content_similar      float not null comment '内容相似度',
+   update_time          datetime not null comment '更新时间',
+   create_time          datetime not null comment '创建时间',
    primary key (id)
 )
 ENGINE = InnoDB
@@ -350,12 +327,12 @@ create index idx_article_data_title_similar on cms_article_data
 /*==============================================================*/
 create table cms_article_meta
 (
-   id                   int not null auto_increment,
-   article_id           int not null,
-   meta_key             varchar(255) not null,
-   meta_value           longtext,
-   update_time          datetime not null,
-   create_time          datetime not null,
+   id                   int not null auto_increment comment '序号',
+   article_id           int not null comment '文章id',
+   meta_key             varchar(255) not null comment '元数据键',
+   meta_value           longtext comment '元数据值',
+   update_time          datetime not null comment '更新时间',
+   create_time          datetime not null comment '创建时间',
    primary key (id)
 )
 ENGINE = InnoDB
@@ -432,20 +409,20 @@ create index idx_article_view_view_time on cms_article_view
    view_time
 );
 
-
 /*==============================================================*/
 /* Table: cms_category                                          */
 /*==============================================================*/
 create table cms_category
 (
-   id                   int not null auto_increment,
-   pid                  varchar(24) not null,
-   name                 varchar(64) not null,
-   title                varchar(64) not null,
-   remark               varchar(128) not null,
-   status               tinyint not null comment '0.下线;1.上线',
-   sort                 int,
-   create_time          datetime not null,
+   id                   int not null auto_increment comment '序号',
+   pid                  int not null comment '父id',
+   name                 varchar(64) not null comment '分类名称',
+   title                varchar(64) not null comment '分类标题',
+   remark               varchar(128) not null comment '备注',
+   status               tinyint not null comment '状态 0.下线;1.上线',
+   sort                 int comment '排序',
+   create_time          datetime not null comment '创建时间',
+   is_deleted           tinyint(1) not null default 0 comment '是否删除',
    primary key (id)
 )
 ENGINE = InnoDB
@@ -458,9 +435,9 @@ alter table cms_category comment '分类表';
 /*==============================================================*/
 create table cms_category_article
 (
-   id                   int not null auto_increment,
-   category_id          int not null,
-   article_id           int not null,
+   id                   int not null auto_increment comment '序号',
+   category_id          int not null comment '分类id',
+   article_id           int not null comment '文章id',
    primary key (id)
 )
 ENGINE = InnoDB
@@ -489,17 +466,18 @@ create index idx_category_article_aid on cms_category_article
 /*==============================================================*/
 create table cms_comment
 (
-   id                   int not null auto_increment,
-   pid                  int,
-   content              text not null,
-   status               tinyint not null comment '-1,删除;0.草稿;1.申请发布;2.拒绝;3.发布',
-   author               varchar(32) not null,
-   author_email         varchar(128),
-   author_url           varchar(256),
-   ip                   varchar(64) not null,
-   uid                  int,
-   article_id           int not null,
+   id                   int not null auto_increment comment '序号',
+   pid                  int comment '父评论id',
+   content              text not null comment '内容',
+   status               tinyint not null comment '状态 -1,删除;0.草稿;1.申请发布;2.拒绝;3.发布',
+   author               varchar(32) not null comment '作者',
+   author_email         varchar(128) comment '作者邮箱',
+   author_url           varchar(256) comment '作者url',
+   ip                   varchar(64) not null comment 'ip地址',
+   uid                  int comment '用户id',
+   article_id           int not null comment '文章id',
    create_time          datetime not null,
+   is_deleted           tinyint(1) not null default 0 comment '是否删除',
    primary key (id)
 )
 ENGINE = InnoDB
@@ -520,26 +498,27 @@ create index idx_comment_article_id on cms_comment
 /*==============================================================*/
 create table cms_crawler
 (
-   id                   int not null auto_increment,
-   title                text not null,
-   status               tinyint not null comment '-1,删除;0.草稿;1.采集中;2.采集成功;3.采集失败',
-   url                  varchar(256) not null,
-   encoding             varchar(16) not null comment 'auto:自动判断\utf-8\gbk\gb2312\iso-8859-1等',
-   is_timing            tinyint not null default 0,
-   is_paging            tinyint not null default 0 comment '0.否;1.是',
-   start_page           int,
-   end_page             int,
-   paging_url           varchar(128),
-   article_url          varchar(128),
-   article_title        varchar(128),
-   article_description  varchar(128),
-   article_keywords     varchar(128),
-   article_content      varchar(128),
-   article_author       varchar(128),
-   article_image        varchar(128),
-   category_id          int,
-   update_time          datetime not null,
-   create_time          datetime not null,
+   id                   int not null auto_increment comment '序号',
+   title                text not null comment '规则标题',
+   status               tinyint not null comment '状态 -1,删除;0.草稿;1.采集中;2.采集成功;3.采集失败',
+   url                  varchar(256) not null comment '采集链接',
+   encoding             varchar(16) not null comment '编码 auto:自动判断\utf-8\gbk\gb2312\iso-8859-1等',
+   is_timing            tinyint not null default 0 comment '是否定时采集',
+   is_paging            tinyint not null default 0 comment '是否采集分页 0.否;1.是',
+   start_page           int comment '分页开始页码',
+   end_page             int comment '分页结束页码',
+   paging_url           varchar(128) comment '分页网址规则',
+   article_url          varchar(128) comment '文章网址规则',
+   article_title        varchar(128) comment '文章标题',
+   article_description  varchar(128) comment '文章简述',
+   article_keywords     varchar(128) comment '文章关键字',
+   article_content      varchar(128) comment '文章内容',
+   article_author       varchar(128) comment '文章作者',
+   article_image        varchar(128) comment '文章图片',
+   category_id          int comment '采集至栏目',
+   update_time          datetime not null comment '更新时间',
+   create_time          datetime not null comment '创建时间',
+   is_deleted           tinyint(1) not null default 0 comment '是否删除',
    primary key (id)
 )
 ENGINE = InnoDB
@@ -552,13 +531,13 @@ alter table cms_crawler comment '采集规则表';
 /*==============================================================*/
 create table cms_crawler_meta
 (
-   id                   int not null auto_increment,
-   target_id            int not null,
-   meta_key             varchar(32) not null,
-   meta_value           text not null,
-   remark               varchar(128),
-   update_time          datetime not null,
-   create_time          datetime not null,
+   id                   int not null auto_increment comment '序号',
+   target_id            int not null comment '采集规则id',
+   meta_key             varchar(32) not null comment '元数据key',
+   meta_value           text not null comment '元数据value',
+   remark               varchar(128) comment '备注',
+   update_time          datetime not null comment '更新时间',
+   create_time          datetime not null comment '创建时间',
    primary key (id)
 )
 ENGINE = InnoDB
@@ -580,18 +559,19 @@ create index idx_crawler_meta_target_id_meta_key on cms_crawler_meta
 /*==============================================================*/
 create table cms_feedback
 (
-   id                   bigint not null auto_increment,
-   content              text not null,
-   status               tinyint not null,
-   send_client_id       varchar(64),
-   reply_client_id      varchar(64),
-   reply_feedback_id    bigint,
-   ip                   varchar(64),
-   source               varchar(16) comment '发送可能来自网页、app或微信等',
-   send_time            datetime,
-   read_time            datetime,
-   reply_time           datetime,
-   create_time          datetime not null,
+   id                   int not null auto_increment comment '序号',
+   content              text not null comment '内容',
+   status               tinyint not null comment '状态',
+   send_client_id       varchar(64) comment '发送人id',
+   reply_client_id      varchar(64) comment '回复人id',
+   reply_feedback_id    bigint comment '回复反馈id',
+   ip                   varchar(64) comment 'ip地址',
+   source               varchar(16) comment '来源，来自网页、app或微信等',
+   send_time            datetime comment '发送时间',
+   read_time            datetime comment '读取时间',
+   reply_time           datetime comment '回复时间',
+   create_time          datetime not null comment '创建时间',
+   is_deleted           tinyint(1) not null default 0 comment '是否删除',
    primary key (id)
 )
 ENGINE = InnoDB
@@ -604,14 +584,14 @@ alter table cms_feedback comment '意见反馈表';
 /*==============================================================*/
 create table cms_link
 (
-   id                   int not null auto_increment,
-   title                varchar(128) not null,
-   url                  varchar(256) not null,
-   sort                 int not null default 0,
-   status               tinyint not null default 1,
-   start_time           datetime,
-   end_time             datetime,
-   create_time          datetime not null,
+   id                   int not null auto_increment comment '序号',
+   title                varchar(128) not null comment '网站标题',
+   url                  varchar(256) not null comment '网站url',
+   sort                 int not null default 0 comment '排序',
+   status               tinyint not null default 1 comment '状态',
+   start_time           datetime comment '开始时间',
+   end_time             datetime comment '结束时间',
+   create_time          datetime not null comment '创建时间',
    primary key (id)
 )
 ENGINE = InnoDB
@@ -624,20 +604,20 @@ alter table cms_link comment '链接表';
 /*==============================================================*/
 create table sys_action_log
 (
-   id                   bigint not null auto_increment,
+   id                   bigint not null auto_increment comment '序号',
    action               varchar(64) not null comment '操作类型',
    username             varchar(255) comment '用户名',
    module               varchar(255) comment '模块',
    component            varchar(255) comment '组件',
-   ip                   varchar(64),
-   action_time          bigint,
-   params               text,
+   ip                   varchar(64) comment '操作ip',
+   action_time          bigint comment '操作时间',
+   params               text comment '参数',
    user_agent           text comment '用户代理',
-   http_referer         text comment 'http referer来源',
-   response             text,
-   response_time        bigint,
-   remark               varchar(256),
-   create_time          datetime not null,
+   http_referer         text comment '访问来源',
+   response             text comment '返回结果',
+   response_time        bigint comment '返回时间',
+   remark               varchar(256) comment '备注',
+   create_time          datetime not null comment '创建时间',
    primary key (id)
 )
 ENGINE = InnoDB
@@ -663,16 +643,24 @@ create index idx_action_log_action_username on sys_action_log
 );
 
 /*==============================================================*/
+/* Index: idx_action_log_username                               */
+/*==============================================================*/
+create index idx_action_log_username on sys_action_log
+(
+   username
+);
+
+/*==============================================================*/
 /* Table: sys_addons                                            */
 /*==============================================================*/
 create table sys_addons
 (
-   id                   int not null auto_increment,
-   name                 varchar(40) not null comment '插件名或标识',
-   title                varchar(20) not null default '0' comment '中文名',
+   id                   int not null auto_increment comment '序号',
+   name                 varchar(40) not null comment '插件标识',
+   title                varchar(20) not null default '0' comment '插件名称',
    description          text comment '描述',
    status               tinyint not null default 1 comment '状态',
-   config               text,
+   config               text comment '配置',
    author               varchar(40) comment '作者',
    version              varchar(20) comment '版本号',
    create_time          datetime not null comment '安装时间',
@@ -698,9 +686,9 @@ create index uniq_addons_name on sys_addons
 create table sys_config
 (
    id                   int(11) not null auto_increment,
-   name                 varchar(255) comment '字典名称',
-   `group`              varchar(255) comment '字典组',
-   `key`                varchar(255) comment '字典键',
+   name                 varchar(64) comment '字典名称',
+   `group`              varchar(64) comment '字典组',
+   `key`                varchar(64) comment '字典键',
    value                text comment '字典值',
    value_type           varchar(16) comment '值类型 integer,float,string,text,bool',
    status               tinyint comment '启用状态',
@@ -735,20 +723,43 @@ create index idx_sys_config_key on sys_config
 );
 
 /*==============================================================*/
+/* Table: sys_dept                                              */
+/*==============================================================*/
+create table sys_dept
+(
+   id                   int(11) not null auto_increment comment '序号',
+   pid                  int comment '上级部门',
+   name                 varchar(255) comment '部门标识',
+   title                varchar(255) comment '部门名称',
+   status               tinyint comment '状态 -1.删除0.关停1.启用',
+   sort                 int comment '排序',
+   remark               varchar(512) comment '备注',
+   create_by            varchar(255) comment '创建者',
+   update_by            varchar(255) comment '更新者',
+   create_time          datetime comment '创建时间',
+   update_time          datetime comment '更新时间',
+   primary key (id)
+)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci;
+
+alter table sys_dept comment '部门表';
+
+/*==============================================================*/
 /* Table: sys_file                                              */
 /*==============================================================*/
 create table sys_file
 (
-   id                   int not null auto_increment,
+   id                   int not null auto_increment comment '序号',
    file_url             varchar(256) not null comment '文件url',
    file_path            varchar(256) not null comment '文件路径: file_url所在目录',
    name                 varchar(128) not null comment '名称',
    real_name            varchar(128) comment '原始名称',
-   size                 int comment '大小',
+   size                 int comment '大小(单位字节)',
    ext                  varchar(16) comment '后缀',
    thumb_image_url      varchar(256) comment '缩略图',
    oss_type             varchar(16) comment 'oss类型: minio,aliyun,tencent,qiniuyun',
-   oss_object_key       varchar(512) comment 'oss对象key',
+   oss_object_key       varchar(512) comment 'oss对象',
    remark               varchar(512) comment '备注',
    create_by            varchar(255) comment '创建者',
    create_time          datetime not null comment '创建时间',
@@ -760,11 +771,54 @@ DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci;
 alter table sys_file comment '文件表';
 
 /*==============================================================*/
+/* Table: sys_hooks                                             */
+/*==============================================================*/
+create table sys_hooks
+(
+   id                   int not null auto_increment comment '序号',
+   name                 varchar(40) not null comment '钩子名称',
+   description          text comment '描述',
+   type                 tinyint not null default 1 comment '类型',
+   status               tinyint not null default 1 comment '状态',
+   addons               varchar(256) comment '钩子挂载的插件，用'',''分割',
+   update_time          datetime not null comment '更新时间',
+   create_time          datetime not null comment '安装时间',
+   primary key (id)
+)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci;
+
+alter table sys_hooks comment '钩子表';
+
+/*==============================================================*/
+/* Table: sys_job                                               */
+/*==============================================================*/
+create table sys_job
+(
+   id                   int(11) not null auto_increment,
+   name                 varchar(255) comment '岗位标识',
+   title                varchar(255) comment '岗位名称',
+   status               tinyint comment '状态 -1.删除0.关停1.启用',
+   sort                 int comment '排序',
+   remark               varchar(512) comment '备注',
+   create_by            varchar(255),
+   update_by            varchar(255),
+   create_time          datetime,
+   update_time          datetime,
+   is_deleted           int not null default 0 comment '是否删除',
+   primary key (id)
+)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci;
+
+alter table sys_job comment '岗位表';
+
+/*==============================================================*/
 /* Table: sys_menu                                              */
 /*==============================================================*/
 create table sys_menu
 (
-   id                   int not null auto_increment,
+   id                   int not null auto_increment comment '序号',
    pid                  int not null default 0 comment '父节点',
    title                varchar(64) not null comment '标题',
    name                 varchar(64) comment '名称',
@@ -793,7 +847,7 @@ alter table sys_menu comment '菜单表';
 /*==============================================================*/
 create table sys_message
 (
-   id                   bigint not null auto_increment comment '消息id',
+   id                   bigint not null auto_increment comment '序号',
    type                 varchar(16) not null comment '类型',
    title                varchar(256) not null comment '标题',
    content              text not null comment '内容',
@@ -805,6 +859,7 @@ create table sys_message
    read_time            datetime comment '读取时间',
    ext                  text comment '扩展ext',
    create_time          datetime not null comment '创建时间',
+   is_deleted           tinyint(1) not null default 0 comment '是否删除',
    primary key (id)
 )
 ENGINE = InnoDB
@@ -830,22 +885,44 @@ create index idx_message_to_uid on sys_message
 );
 
 /*==============================================================*/
+/* Table: sys_object_store                                      */
+/*==============================================================*/
+create table sys_object_store
+(
+   id                   int not null auto_increment comment '序号',
+   oss_type             varchar(16) not null comment '对象存储系统类型: minio,aliyun,tencent,qiniuyun',
+   endpoint             varchar(128) comment '接入地址',
+   object_key           varchar(512) not null comment '对象key',
+   file_id              int not null comment '文件id',
+   name                 varchar(128) comment '名称',
+   size                 int comment '大小(单位字节)',
+   ext                  varchar(16) comment '后缀',
+   create_by            varchar(255) comment '创建者',
+   create_time          datetime not null comment '创建时间',
+   primary key (id)
+)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci;
+
+alter table sys_object_store comment '对象存储表';
+
+/*==============================================================*/
 /* Table: sys_region                                            */
 /*==============================================================*/
 create table sys_region
 (
    id                   int not null,
-   pid                  int,
-   shortname            varchar(100),
-   name                 varchar(100),
-   merger_name          varchar(255),
-   level                tinyint(4),
-   pinyin               varchar(100),
-   code                 varchar(100),
-   zip_code             varchar(100),
-   first                varchar(50),
-   lng                  varchar(100),
-   lat                  varchar(100),
+   pid                  int comment '父id',
+   shortname            varchar(100) comment '简称',
+   name                 varchar(100) comment '名称',
+   merger_name          varchar(255) comment '全称',
+   level                tinyint(4) comment '层级',
+   pinyin               varchar(100) comment '拼音',
+   code                 varchar(100) comment '地区码',
+   zip_code             varchar(100) comment '邮政编码',
+   first                varchar(50) comment '首字母',
+   lng                  varchar(100) comment '经度',
+   lat                  varchar(100) comment '纬度',
    primary key (id)
 )
 ENGINE = InnoDB
@@ -858,7 +935,7 @@ alter table sys_region comment '地区表';
 /*==============================================================*/
 create table sys_role
 (
-   id                   smallint(6) not null auto_increment,
+   id                   smallint(6) not null auto_increment comment '序号',
    name                 varchar(64) comment '角色标识',
    title                varchar(64) comment '角色名称',
    status               tinyint(1) default 1 comment '状态:1.激活;2.冻结;3.删除',
@@ -867,6 +944,7 @@ create table sys_role
    update_by            varchar(255) comment '更新者',
    create_time          datetime comment '创建时间',
    update_time          datetime comment '更新时间',
+   is_deleted           int not null default 0 comment '是否删除',
    primary key (id)
 )
 ENGINE = InnoDB
@@ -879,9 +957,9 @@ alter table sys_role comment '角色表';
 /*==============================================================*/
 create table sys_role_menu
 (
-   id                   int not null auto_increment,
-   role_id              int not null,
-   menu_id              int not null,
+   id                   int not null auto_increment comment '序号',
+   role_id              int not null comment '角色id',
+   menu_id              int not null comment '菜单id',
    primary key (id)
 )
 ENGINE = InnoDB
@@ -908,9 +986,10 @@ create table sys_template_msg
    type                 varchar(16) not null comment '类型',
    name                 varchar(256) not null comment '名称',
    content              text not null comment '内容模板',
-   status               tinyint not null comment '-1.删除.0.失效;1.生效',
+   status               tinyint not null comment '状态 -1.删除.0.失效;1.生效',
    update_time          datetime not null comment '更新时间',
    create_time          datetime not null comment '创建时间',
+   is_deleted           tinyint(1) not null default 0 comment '是否删除',
    primary key (id)
 )
 ENGINE = InnoDB
@@ -923,7 +1002,7 @@ alter table sys_template_msg comment '模板消息表';
 /*==============================================================*/
 create table sys_user
 (
-   id                   int not null auto_increment,
+   id                   int not null auto_increment comment '序号',
    mobile               varchar(24) not null comment '手机号',
    email                varchar(32) not null comment '邮箱',
    account              varchar(32) not null comment '帐号',
@@ -931,18 +1010,21 @@ create table sys_user
    status               tinyint not null comment '状态:-1.删除;1.申请;2.激活;3.冻结;',
    nickname             varchar(64) comment '昵称',
    sex                  tinyint default 1 comment '性别:1.男;2.女;3.未知;',
-   head_url             varchar(128) comment '头像url',
+   head_url             varchar(512) comment '头像url',
    dept_id              int comment '部门id',
+   phone                varchar(16) comment '联系电话',
    qq                   varchar(16) comment 'qq号',
    weixin               varchar(64) comment '微信号',
    referee              varchar(64) comment '介绍人',
    salt                 varchar(128) comment '盐串',
    register_time        datetime not null comment '注册时间',
    register_ip          varchar(64) comment '注册ip',
-   from_referee         varchar(256) comment '来源',
-   entrance_url         varchar(256) comment '首访页',
+   from_referee         varchar(255) comment '来源',
+   entrance_url         varchar(255) comment '首访页',
+   extra                json comment '扩展信息',
    last_login_time      datetime comment '最后登录时间',
    last_login_ip        varchar(64) comment '最后登录ip',
+   is_deleted           tinyint(1) not null default 0,
    primary key (id)
 )
 ENGINE = InnoDB
@@ -979,12 +1061,12 @@ create unique index uniq_user_account on sys_user
 /*==============================================================*/
 create table sys_user_meta
 (
-   id                   int not null auto_increment,
-   target_id            int not null,
-   meta_key             varchar(32) not null,
-   meta_value           text not null,
-   update_time          datetime not null,
-   create_time          datetime not null,
+   id                   int not null auto_increment comment '元id',
+   target_id            int not null comment '用户id',
+   meta_key             varchar(32) not null comment '元数据key',
+   meta_value           text not null comment '元数据value',
+   update_time          datetime not null comment '更新时间',
+   create_time          datetime not null comment '创建时间',
    primary key (id)
 )
 ENGINE = InnoDB
@@ -1006,7 +1088,7 @@ create index idx_user_meta_target_id_meta_key on sys_user_meta
 /*==============================================================*/
 create table sys_user_role
 (
-   id                   int not null auto_increment,
+   id                   int not null auto_increment comment '序号',
    uid                  int not null comment '用户id',
    role_id              int not null comment '角色id',
    primary key (id)

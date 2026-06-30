@@ -11,7 +11,6 @@ namespace app\common\logic;
 
 
 use app\common\model\ActionLogModel;
-use think\Model;
 
 class ActionLogLogic extends BaseLogic
 {
@@ -25,8 +24,9 @@ class ActionLogLogic extends BaseLogic
         $data = [
             'username' => $userId,
             'action' => $action,
-            'module' => substr(request()->root(), 1),
-            'ip' => request()->ip(0, true),
+            'module' => substr(app('http')->getName(), 0, 64),
+            'component' => request()->url(),
+            'ip' => request()->ip(),
             'params' => substr(json_encode($params), 0, 128),
             'user_agent' => request()->header("user-agent"),
             'response' => 'success',
@@ -49,9 +49,9 @@ class ActionLogLogic extends BaseLogic
         $data = [
             'username' => $username,
             'action' => $action,
-            'module' => app('http')->getName(),
+            'module' => substr(app('http')->getName(), 0, 64),
             'component' => request()->url(),
-            'ip' => request()->ip(0, true),
+            'ip' => request()->ip(),
             'params' => substr(json_encode($params), 0, 128),
             'user_agent' => request()->header("user-agent"),
             'response' => $response,

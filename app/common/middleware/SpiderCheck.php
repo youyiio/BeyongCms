@@ -30,7 +30,7 @@ class SpiderCheck
 
         //登录日志
         $actionLog = new ActionLogLogic();
-        $actionLog->addLog(0, ActionLogModel::ACTION_ACCESS, $userAgent, $params);
+        $actionLog->addLog(0, ActionLogModel::ACTION_ACCESS, 'SpiderCheck', $params);
 
         return $next($request);
     }
