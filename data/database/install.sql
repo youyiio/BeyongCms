@@ -1502,6 +1502,13 @@ INSERT INTO `sys_menu`(pid,title,path,icon,type,is_menu,sort,status,belongs_to) 
 (261, '新增文章', '/admin/Article/addArticle', '', 1, 0, 1, 1,'admin'),
 (261, '编辑文章', '/admin/Article/editArticle', '', 1, 0, 1, 1,'admin'),
 (261, '删除文章', '/admin/Article/deleteArticle', '', 1, 0, 1, 1,'admin'),
+(261, '发布文章', '/admin/Article/postArticle', '', 1, 0, 1, 1,'admin'),
+(261, '初审', '/admin/Article/auditFirst', '', 1, 0, 1, 1,'admin'),
+(261, '终审', '/admin/Article/auditSecond', '', 1, 0, 1, 1,'admin'),
+(261, '定时发布', '/admin/Article/setTimingPost', '', 1, 0, 1, 1,'admin'),
+(261, '文章访问统计', '/admin/Article/articleStat', '', 1, 0, 1, 1,'admin'),
+(261, '文章访问量统计图', '/admin/Article/echartShow', '', 1, 0, 1, 1,'admin'),
+(261, '批量修改分类', '/admin/Article/batchCategory', '', 1, 0, 1, 1,'admin'),
 (261, '置顶', '/admin/Article/setTop', '', 1, 0, 1, 1,'admin'),
 (261, '取消置顶', '/admin/Article/unsetTop', '', 1, 0, 1, 1,'admin')
 ;
@@ -1556,15 +1563,6 @@ INSERT INTO `sys_menu`(id,pid,title,name,component,path,icon,type,is_menu,permis
 (1003, 1000, '平级菜单', 'pingji', 'empty/index', 'pingji/index', null, 1, 1, "", 1, 1, 'api')
 ;
 
-INSERT INTO `sys_menu`(id,pid,title,path,icon,type,is_menu,sort,status,belongs_to) VALUES
-(2617, 261, '发布文章', '/admin/Article/postArticle', '', 1, 0, 1, 1,'admin'),
-(26171,2617, '初审', '/admin/Article/auditFirst', '', 1, 0, 1, 1,'admin'),
-(26172,2617, '终审', '/admin/Article/auditSecond', '', 1, 0, 1, 1,'admin'),
-(26173,2617, '定时发布', '/admin/Article/setTimingPost', '', 1, 0, 1, 1,'admin'),
-(26174,2617, '文章访问统计', '/admin/Article/articleStat', '', 1, 0, 1, 1,'admin'),
-(26175,2617, '文章访问量统计图', '/admin/Article/echartShow', '', 1, 0, 1, 1,'admin'),
-(26176,2617, '批量修改分类', '/admin/Article/batchCategory', '', 1, 0, 1, 1,'admin')
-;
 
 truncate `sys_role_menu`;
 # delete from `sys_role_menu` where role_id = 1;

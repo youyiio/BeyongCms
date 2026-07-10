@@ -9,6 +9,6 @@ if [ ! -e /var/spool/cron/ ];then
 fi
 
 if [ `grep -v '^\s*#' /var/spool/cron/root |grep -c "$basepath"` -eq 0 ];then
-  echo "*/1 * * * * cd ${basepath} && /usr/bin/php think crontab" >> /var/spool/cron/root
+  echo "*/1 * * * * cd ${basepath} && /usr/bin/php think article:crontab" >> /var/spool/cron/root
   echo "30 1 * * * cd ${basepath} && /usr/bin/sh start_queue.sh" >> /var/spool/cron/root
 fi

@@ -15,7 +15,7 @@ use think\console\Output;
 use think\console\input\Option;
 use think\facade\Config;
 use think\facade\Log;
-use think\Queue;
+use think\facade\Queue;
 
 /**
  * Class Crontab
@@ -41,7 +41,7 @@ class Crontab extends Command
 
     protected function configure()
     {
-        $this->setName('crontab')
+        $this->setName('article:crontab')
             ->addOption('period', null, Option::VALUE_OPTIONAL, 'cron period time', null)
             ->setDescription('Unify Crontab command of BeyongCms');
     }
@@ -52,7 +52,7 @@ class Crontab extends Command
         Log::info('BeyongCms Crontab  start..');
 
         //与配置合并
-        $jobs = array_merge($this->jobs, Config::pull('crontab'));
+        $jobs = array_merge($this->jobs, Config::get('crontab'));
         foreach ($jobs as $jobName => $job) {
             $runnable = false;
             try {
